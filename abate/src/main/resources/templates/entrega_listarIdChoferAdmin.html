@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container mb-5">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/entrega/registrarId/__${chofer.id}__}" type="button">
@@ -18,15 +18,11 @@
                                             </a>   
                                         </div>
                                         <div  class="col-10">
-                                            <h4>Entrega Chofer</h4>
+                                            <h4>Lista de Entregas</h4>
                                         </div>
                                     </div>
                                 </div>
-                                 <div class="card-body pb-0">
-                                    <h6 th:text="'Chofer '+${chofer.nombre}"></h6>
-                                    <h6 id="dimgray" th:text="'Total Entregas $'+${total}"></h6>
-                                </div>
-                                <div class="card-header" id="bgWhite">
+                                <div class="card-header pb-0" id="bgWhite">
                                     <form class="row g-3" th:action="@{/entrega/listarIdChoferFiltro}" method="POST">
                                         <input hidden th:value="${id}" name="id">  
                                         <div class="row">    
@@ -50,12 +46,16 @@
                                     </form>   
                                 </div>
                                 <div th:if="${!entregas.isEmpty()}">
+                                <div class="card-body p-2">
+                                    <h6 th:text="'Chofer '+${chofer.nombre}"></h6>
+                                    <h6 id="dimgray" th:text="'Total Entregas $'+${#numbers.formatDecimal(total, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                </div>
                                 <div th:each="entrega : ${entregas}">
-                                    <div class="card-body mb-1" id="color-card">
+                                    <div class="card border-secondary p-3 mb-1" id="color-card">
                                         <div class="row">
                                             <div class="col-8">
-                                                <h6 th:text="'Importe $'+${entrega.importeS}"></h6>
-                                                <h6 id="dimgray" th:text="'Fecha '+${entrega.fecha}+' - ID'+${entrega.idEntrega}"></h6>
+                                                <h6 th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
                                             </div>
                                             <div class="col-4 text-center">
                                                 <a th:href= "@{/entrega/modificarDesdeChofer/__${entrega.id}__}" >
@@ -81,10 +81,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                    <br>
+                                     <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/entrega/registrarId/__${chofer.id}__}">Volver</a>
+                                    </div>
                                 </div>    
                                 <div th:if="${entregas.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
+                                    <br>
+                                     <div class="card border-secondary p-3 mb-1 text-center" id="color-card">
                                         <h6 id="azul">No existen Entregas para la fecha seleccionada</h6>
+                                    </div>
+                                    <br>
+                                     <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/entrega/registrarId/__${chofer.id}__}">Volver</a>
                                     </div>
                                 </div>
                                 

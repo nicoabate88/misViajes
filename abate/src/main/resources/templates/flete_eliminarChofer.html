@@ -11,7 +11,7 @@
                             <section>
                                 <div class="container">
 
-                                    <div class="card-header mb-2">
+                                    <div class="card-header mb-2" style="height: 70px;">
                                         <div class="row">
                                             <div class="col-2">   
                                                 <a title="Volver" th:href="@{/flete/listar}" type="button">
@@ -21,39 +21,36 @@
                                                 </a>   
                                             </div>
                                             <div  class="col-10">
-                                                <h4>Eliminar Flete</h4>
+                                                <h4>Eliminar Viaje</h4>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="card mb-4" id="color-card">
-                                                <div class="card-body">
-                                                    <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
-                                                    <h6 th:text="'Fecha '+${flete.fechaFlete}+' - ID'+${flete.idFlete}"></h6>
-                                                    <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
-                                                    <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
-                                                    <p class='mb-1' id="dimgray" th:text="'KM '+${flete.kmFlete}"></p>
-                                                    <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
-                                                    <h6 id="dimgray" th:text="${flete.tipoCereal}+' '+${flete.kgFleteS}+' KG - Tarifa $'+${flete.tarifaS}"></h6>
-                                                    <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
-                                                    <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
-                                                    <p id="dimgray" th:text="'Gasto: $'+${flete.gasto.importe}" th:if="${flete.gasto != null}"></p>
-                                                </div>
+                                    <div class="card border-secondary p-3 mb-2" id="color-card">
+                                                <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
+                                                <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
+                                                <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
+                                                <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
+                                                <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
+                                                <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
+                                                <h6 id="dimgray" th:text="${flete.tipoCereal}+' '+${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
+                                                <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
+                                                <p id="dimgray" th:text="'Gasto: $'+${flete.gasto.importe}" th:if="${flete.gasto != null}"></p>
                                     </div>    
                                     
-                                    <div class="card-header mb-4 text-center">
-                                    <h6 id="white">¿Seguro desea ELIMINAR este Flete?</h6>
-                                    <p id="dimgray">Si el flete es eliminado del sistema, no podrá ser recuperado</p>
+                                    <div class="card bg-secondary mb-4 p-3 border-secondary text-center">
+                                    <h6 id="white">¿Seguro desea ELIMINAR este Viaje?</h6>
+                                    <p class="mb-1" id="white">Si el viaje es eliminado del sistema, no podrá ser recuperado.</p>
+                                    <h6 th:if="${flete.gasto != null}" id="white">Además, se eliminará el Gasto asociado.</h6>
                                 </div>
-
-                                <div class="row text-center">
-                                    <div th:if="${error == null}" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-1"> 
-                                        <a class="btn btn-primary" type="button" th:href= "@{/flete/elimina/__${flete.id}__}">Eliminar</a>
-                                    </div>
-                                    <div class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2">
-                                        <a class="btn btn-primary" type="button" th:href="@{/flete/listar}">Cancelar</a>
-                                    </div>
-                                </div>
+                                 
+                                    <div class="text-center mb-2">
+                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" th:href="@{/flete/elimina/__${flete.id}__}" title="Eliminar Flete">Eliminar</a>
+                                    </div>    
+                                    <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/listar}" title="Cancelar">Cancelar</a>
+                                    </div> 
                                     
                                 </div>
 

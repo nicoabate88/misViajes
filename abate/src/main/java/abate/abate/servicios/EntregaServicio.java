@@ -45,14 +45,14 @@ public class EntregaServicio {
         Long idEntrega = buscarUltimoIdOrg(idOrg);
 
         Entrega entrega = new Entrega();
-        
+
         entrega.setIdOrg(idOrg);
         entrega.setChofer(chofer);
         entrega.setFecha(f);
         entrega.setObservacion(obsMayusculas);
         entrega.setImporte(importe);
         entrega.setUsuario(usuario);
-        entrega.setIdEntrega(idEntrega+1);
+        entrega.setIdEntrega(idEntrega + 1);
 
         entregaRepositorio.save(entrega);
 
@@ -61,7 +61,7 @@ public class EntregaServicio {
     }
 
     @Transactional
-    public void modificarEntrega(Long idEntrega, Long idChofer, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException { 
+    public void modificarEntrega(Long idEntrega, Long idChofer, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
 
         Entrega entrega = new Entrega();
         Optional<Entrega> ent = entregaRepositorio.findById(idEntrega);
@@ -108,51 +108,51 @@ public class EntregaServicio {
         transaccionServicio.eliminarTransaccionEntrega(idEntrega);
 
         entrega.setChofer(null);
-        entrega.setImporte(0.0);
-        entrega.setObservacion("ELIMINADO");
         entrega.setUsuario(null);
 
         entregaRepositorio.save(entrega);
 
+        entregaRepositorio.deleteById(idEntrega);
+
     }
-    
-     public Long buscarUltimoIdOrg(Long idOrg) {
-        
+
+    public Long buscarUltimoIdOrg(Long idOrg) {
+
         Entrega entrega = new Entrega();
-        Optional<Entrega> etga = entregaRepositorio.findTopByIdOrgAndObservacionNotOrderByIdDesc(idOrg, "ELIMINADO");
+        Optional<Entrega> etga = entregaRepositorio.findTopByIdOrgOrderByIdDesc(idOrg);
         if (etga.isPresent()) {
             entrega = etga.get();
-            
+
             return entrega.getIdEntrega();
-            
+
         } else {
-            
+
             int ultimo = 0;
             Long primero = Long.valueOf(ultimo);
 
             return primero;
-            
+
         }
 
     }
-     
+
     public Long buscarUltimo(Long idOrg) {
 
         return entregaRepositorio.ultimoEntrega(idOrg);
-        
+
     }
-     
+
     public Entrega buscarEntrega(Long id) {
 
         return entregaRepositorio.getById(id);
     }
 
     public ArrayList<Entrega> buscarEntregas(Long idOrg, String desde, String hasta) throws ParseException {
-        
+
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Entrega> lista = entregaRepositorio.findByFechaBetweenAndObservacionNotAndIdOrg(d, h, "ELIMINADO", idOrg);
+        ArrayList<Entrega> lista = entregaRepositorio.findByFechaBetweenAndIdOrg(d, h, idOrg);
 
         Collections.sort(lista, EntregaComparador.ordenarFechaDesc);
 
@@ -164,8 +164,8 @@ public class EntregaServicio {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
-        
-        ArrayList<Entrega> lista = entregaRepositorio.findByFechaBetweenAndObservacionNotAndChoferId(d, h, "ELIMINADO", id);
+
+        ArrayList<Entrega> lista = entregaRepositorio.findByFechaBetweenAndChoferId(d, h, id);
 
         Collections.sort(lista, EntregaComparador.ordenarFechaDesc);
 
@@ -173,7 +173,7 @@ public class EntregaServicio {
 
     }
 
-    public Date convertirFecha(String fecha) throws ParseException { 
+    public Date convertirFecha(String fecha) throws ParseException {
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
         return formato.parse(fecha);
     }

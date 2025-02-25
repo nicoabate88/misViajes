@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container">  
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/chofer/listar}" type="button">
@@ -18,17 +18,16 @@
                                             </a>   
                                         </div>
                                         <div  class="col-10">
-                                            <h4>Ingresos Caja</h4>
+                                            <h4>Lista Ingresos de Caja</h4>
                                         </div>
                                     </div>
                                 </div>
-
                                     <div th:each="ingreso : ${ingresos}">
-                                        <div class="card mb-1" id="color-card">
+                                        <div class="card border-secondary p-2" id="color-card">
                                             <div class="row">
                                                 <div class="col-8">
                                                     <div class="card-body">
-                                                        <h6 th:text="'Importe $'+${ingreso.importe}"></h6>
+                                                        <h6 th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                         <h6 id="dimgray" th:text="'Fecha '+${ingreso.fecha}+' - ID'+${ingreso.idIngreso}"></h6>
                                                         <p id="dimgray" class="mb-1" th:text="'Caja de Chofer '+${ingreso.chofer.nombre}"></p>
                                                         <p class='mb-0' id="dimgray" th:text="${ingreso.observacion}"></p>

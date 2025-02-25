@@ -10,7 +10,7 @@
                         <body>
                             <div class="container">
 
-                                <div class="card-header mb-4">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/usuario/mostrar/__${usuario.id}__}"  type="button">
@@ -24,11 +24,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card p-2 bg-light border-light">
-                                <form id="form" class="row g-3" th:action="@{/usuario/modificaPsw/__${usuario.id}__}" method="POST">
+                                <div class="card border-secondary p-2 mb-2" id="color-card">
+                                <form id="form" th:action="@{/usuario/modificaPsw/__${usuario.id}__}" method="POST">
 
                                     <input hidden th:value="${usuario.id}" name="id">
-                                        
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                             <label for="usuario" class="form-label text-secondary">Nombre de Usuario</label>
                                             <input type="text" class="form-control" id="usuario" name="nombreUsuario" th:value="${usuario.usuario}" disabled readonly>
@@ -36,6 +36,8 @@
                                         
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-7 col-xl-7">
                                         </div>
+                                        </div>
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                             <label for="password" class="form-label text-secondary">Ingrese Nueva Contraseña</label>
                                             <input type="password" class="form-control" id="password" placeholder="Ingrese Contraseña" name="password" required>
@@ -43,6 +45,7 @@
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
                                             <label for="password2" class="form-label text-secondary">Repita Nueva Contraseña</label>
                                             <input type="password" class="form-control" id="password2" placeholder="Repita Contraseña" required>
+                                        </div>
                                         </div>
                                         
                                         <div class="container">
@@ -56,14 +59,12 @@
                                                 <h6 id="white" th:text="${error}"></h6>                                                                             
                                             </div>
                                         </div>
-                                        <div class="row text-center">    
-                                            <div class="col-8 col-md-8">
-                                                <button class="btn btn-primary" type="submit" title="Modificar Contraseña">Modificar</button>
+                                        <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar PSW">Modificar</button>
                                             </div>
-                                            <div class="col-4 col-md-4">
-                                                <a class="btn btn-primary" type="button" th:href= "@{/usuario/mostrar/__${usuario.id}__}" title="Cancelar">Cancelar</a>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/usuario/mostrar/__${usuario.id}__}" title="Cancelar">Cancelar</a>
                                             </div>
-                                        </div>
                                 </form>
                                 </div>
                             </div>

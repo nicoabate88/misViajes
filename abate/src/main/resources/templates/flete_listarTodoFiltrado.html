@@ -24,20 +24,20 @@
                         <section>
                             <div class="container">
 
-                                <div class="card-header">
+                                <div class="card-header" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" th:href="@{/index}"  type="button">
+                                            <a title="Volver" th:href="@{/flete/listarTodo}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
                                             </a>   
                                         </div>
                                         <div  class="col-7">
-                                            <h4>Fletes</h4>
+                                            <h4>Lista de Viajes</h4>
                                         </div>
                                         <div class="col-3 text-center" th:if="${flag == true}">
-                                            <form class="row g-3" th:action="@{/flete/exportarAdminTodos}" method="POST">
+                                            <form th:action="@{/flete/exportarAdminTodos}" method="POST">
                                                    <input hidden th:value="${desde}" name="desde"> 
                                                    <input hidden th:value="${hasta}" name="hasta">     
                                                        <button class="btn btn-light" type="submit">
@@ -48,46 +48,61 @@
                                     </div>
                                 </div>
 
-                                <div class="card-header mb-2" id="bgWhite">
-                                    <form class="row container mb-0" th:action="@{/flete/listarXfechaAdmin}" method="POST">
+                                <div class="card-header pb-0" id="bgWhite">
+                                    <form th:action="@{/flete/listarXfechaAdmin}" method="POST">
                                         <div class="row">
-                                            <div class="col-6 col-md-3 col-lg-3 col-xl-3">
+                                            <div class="col-6 col-md-2 col-lg-2 col-xl-2">
                                                 <label for="desde" class="form-label">Desde</label>
                                                 <input type="date" class="form-control" id="desde" th:value="${desde}" name="desde" required>
                                             </div>
-                                            <div class="col-6 col-md-3 col-lg-3 col-xl-3 mb-1">
+                                            <div class="col-6 col-md-2 col-lg-2 col-xl-2 mb-1">
                                                 <label for="hasta" class="form-label">Hasta</label>
                                                 <input type="date" class="form-control" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                          
                                             </div> 
+                                            <div class="col-10 col-md-3 col-lg-3 col-xl-3 mb-1">
+                                                <label for="chofer" class="form-floting">Chofer</label>  
+                                                <select class="form-control" id="chofer" name="idChofer">
+                                                    <option th:value="${idChofer}" >Todos los Choferes</option>
+                                                    <option th:each="chofer : ${choferes}"
+                                                            th:value="${chofer.id}"
+                                                            th:text="${chofer.nombre}"/>
+                                                </select>
+                                            </div>
                                             <div class="col-10 col-md-4 col-lg-4 col-xl-4">
-                                            <label for="chofer" class="form-floting">Chofer</label>  
-                                            <select class="form-control" id="chofer" name="id">
-                                                <option th:value="${id}" >Todos los Choferes</option>
-                                                <option th:each="chofer : ${choferes}"
-                                                        th:value="${chofer.id}"
-                                                        th:text="${chofer.nombre}"/>
-                                            </select>
+                                                <label for="chofer" class="form-floting">Cliente</label>  
+                                                <select class="form-control" id="cliente" name="idCliente">
+                                                    <option th:value="${idCliente}" >Todos los Clientes</option>
+                                                    <option th:each="cliente : ${clientes}"
+                                                            th:value="${cliente.id}"
+                                                            th:text="${cliente.nombre}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-1">
+                                                <label for="chofer" class="form-floting">Ver</label>
+                                                <button id="ver"  class="btn btn-primary" type="submit">
+                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="16" height="22" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
-                                          <div class="col-1 mt-4">
-                                                  <label for="chofer" class="form-floting"></label> 
-                                                    <button id="ver"  class="btn btn-primary" type="submit">
-                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                                        </svg>
-                                                    </button>
-                                            </div>
-                                            </div>
-                                  
                                     </form>   
                                 </div>
                                 <div th:if="${!fletes.isEmpty()}">
+                                <div class="card-body p-2">
+                                    <h6>
+                                    <span id='dimgray' th:text="'Cantidad de Viajes '+${cantidad}"></span>
+                                    <span id='dimgray' th:text="' / Neto $'+${#numbers.formatDecimal(neto, 0, 'POINT', 2, 'COMMA')}"></span>
+                                    <span id='dimgray' th:text="' / Ganancia Choferes $'+${#numbers.formatDecimal(ganancia, 0, 'POINT', 2, 'COMMA')}"></span>
+                                    </h6>
+                                </div>
                              <div th:each="flete : ${fletes}">
-                                 <div class="card-body mb-1" th:classappend="${flete.estado != null && flete.estado == 'PENDIENTE'} ? 'bg-soft-red' : 'bg-whitesmoke'">
+                                 <div class="card border-secondary p-3 mb-1" th:classappend="${flete.estado != null && flete.estado == 'PENDIENTE'} ? 'bg-soft-red' : 'bg-whitesmoke'">
                                         <div class="row">
                                             <div class="col-9 col-md-9">
                                                 <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
-                                                <h6 th:text="'Fecha '+${flete.fechaFlete}+' - ID'+${flete.idFlete}"></h6>
-                                                <h6 th:if="${flete.estado == 'ACEPTADO'}" class="mb-0" id="dimgray" th:text="${flete.tipoCereal}+ ' ' +${flete.kgFlete}+ ' KG'"></h6>
+                                                <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
+                                                <h6 th:if="${flete.estado == 'ACEPTADO'}" class="mb-0" id="dimgray" th:text="${flete.tipoCereal}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG'"></h6>
                                             </div>
                                             <div class="col-3 col-md-3 text-center">
                                                 <a th:href="@{/flete/mostrarFiltrado/__${flete.id}__}" >
@@ -106,11 +121,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                    <br>
+                                                                        <div class="text-center mb-2">
+                                                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/listarTodo}">Volver</a>
+                                                                        </div>
                                 </div>    
+                                <br>
                                 <div th:if="${fletes.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
-                                        <h6 id="azul">No existen Fletes para la fecha seleccionada</h6>
+                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                        <h6 id="azul">No existen Viajes para la fecha seleccionada</h6>
                                     </div>
+                                                                        <div class="text-center mb-2">
+                                                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/listarTodo}">Volver</a>
+                                                                        </div>
                                 </div>
 
                             </div>

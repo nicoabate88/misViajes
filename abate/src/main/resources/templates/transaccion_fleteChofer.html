@@ -11,7 +11,7 @@
                             <section>
                                 <div class="container">
 
-                                    <div class="card-header mb-2">
+                                    <div class="card-header mb-2" style="height: 70px;">
                                         <div class="row">
                                             <div class="col-2">   
                                                 <a title="Volver" th:href="@{/cuenta/mostrarIdChofer/__${flete.chofer.id}__}" type="button">
@@ -21,27 +21,29 @@
                                                 </a>   
                                             </div>
                                             <div  class="col-10">
-                                                <h4>Mi Flete</h4>
+                                                <h4>Mi Viaje</h4>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card mb-4" id="color-card">
-                                        <div class="card-body">
-                                                    <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
-                                                    <h6 th:text="'Fecha '+${flete.fechaFlete}+' - ID'+${flete.idFlete}"></h6>
-                                                    <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
-                                                    <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
-                                                    <p class='mb-1' id="dimgray" th:text="'KM '+${flete.kmFlete}"></p>
-                                                    <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
-                                                    <h6 id="dimgray" th:text="${flete.tipoCereal}+' '+${flete.kgFleteS}+' KG - Tarifa $'+${flete.tarifaS}"></h6>
-                                                    <h6 th:if="${flete.comisionTpte} != 0.0" id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${flete.comisionS}"></h6>
-                                                    <h6 id="dimgray" th:text="'Neto $'+${flete.netoS}" th:if="${flete.estado == 'ACEPTADO'}"></h6>
-                                                    <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
-                                                    <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${flete.gananciaChofer}" th:if="${flete.estado == 'ACEPTADO'}"></h6>
-                                                    <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
-                                                    <p id="dimgray" th:text="'Gasto: $'+${flete.gasto.importe}" th:if="${flete.gasto != null}"></p>
-                                                </div>
-                                    </div>                                      
+                                    <div class="card border-secondary p-3" id="color-card">
+                                                <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
+                                                <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
+                                                <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
+                                                <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
+                                                <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
+                                                <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
+                                                <h6 id="dimgray" th:text="${flete.tipoCereal}+' '+${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                <h6 th:if="${flete.comisionTpte} != 0.0" id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comision, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                <h6 id="dimgray" th:text="'Neto $'+${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}" th:if="${flete.estado == 'ACEPTADO'}"></h6>
+                                                <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
+                                                <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${#numbers.formatDecimal(flete.porcentajeChofer, 0, 'POINT', 2, 'COMMA')}" th:if="${flete.estado == 'ACEPTADO'}"></h6>
+                                                <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
+                                                <p id="dimgray" th:text="'Gasto: $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 1, 'COMMA')}" th:if="${flete.gasto != null}"></p>
+                                    </div>       
+                                    <br>
+                                    <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/cuenta/mostrarIdChofer/__${flete.chofer.id}__}">Volver</a>
+                                    </div>
                                 </div>
                             </section>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

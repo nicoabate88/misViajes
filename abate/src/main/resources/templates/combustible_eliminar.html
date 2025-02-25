@@ -8,10 +8,10 @@
                         </head>
                         <body>
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" th:href="@{/index}" type="button">
+                                            <a title="Volver" th:href="@{/combustible/listarChofer/__${carga.chofer.id}__}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -23,30 +23,30 @@
                                     </div>
                                 </div>
                                 
-                                <div class="card mb-4" id="color-card">
-                                        <div class="card-body">
+                                <div class="card border-secondary p-3 mb-2" id="color-card">  
                                         <h6 th:text="${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
-                                        <h6 id="dimgray" th:text="'Fecha: '+${carga.fechaCarga}"></h6>
-                                        <p class="mb-1" id="dimgray" th:text="'KM Anterior: '+${carga.kmAnterior}+' - Actual: '+${carga.kmCarga}"></p>
-                                        <h6 id="dimgray" th:text="'Km Recorrido: '+${carga.kmRecorrido}+' - Litros: '+${carga.litro}"></h6>
+                                        <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
+                                        <p class="mb-1" id="dimgray" th:text="'KM Anterior: '+${#numbers.formatDecimal(carga.kmAnterior, 0, 'POINT', 1, 'COMMA')}+' - Actual: '+${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}"></p>
+                                        <h6 id="dimgray" th:text="'Km Recorrido: '+${#numbers.formatDecimal(carga.kmRecorrido, 0, 'POINT', 1, 'COMMA')}+' - Litros: '+${carga.litro}"></h6>
                                         <p class="mb-1" id="darkgray" th:text="'Tanque Lleno: '+${carga.completo}"></p>
                                         <h6 th:text="'Consumo '+${carga.consumo}+' Lts / 100 Km'"></h6>
-                                    </div>
+                                        <span id="dimgray" th:if="${carga.azul != null}" th:text="'Urea '+${carga.azul.litro}+' Lts '"></span>
                                         </div>
 
-                                <div th:if="${error == null}" class="card-header mb-4 text-center">
+                                <div th:if="${error == null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">
                                     <h6 id="white">¿Seguro desea ELIMINAR esta Carga Diesel?</h6>
-                                    <p id="dimgray">Si la carga es eliminada del sistema, no podrá ser recuperada</p>
+                                    <p class='mb-0' id="white">Si la carga es eliminada del sistema, no podrá ser recuperada.</p>
+                                    <p th:if="${carga.azul != null}" id="white">Además, se eliminará la carga de Urea asociada.</p>
                                 </div>
-
-                                <div class="row text-center">
-                                    <div th:if="${error == null}" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-1"> 
-                                        <a class="btn btn-primary" type="button" th:href= "@{/combustible/elimina/__${carga.id}__}" title="Eliminar Carga">Eliminar</a>
+                                  <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                        <h6 id="white" th:text="${error}"></h6>                                                                            
                                     </div>
-                                    <div class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2">
-                                        <a class="btn btn-primary" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
-                                    </div>
-                                </div>
+                                    <div th:if="${error == null}" class="text-center mb-2">
+                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" th:href="@{/combustible/elimina/__${carga.id}__}" title="Eliminar Diesel">Eliminar</a>
+                                    </div>    
+                                    <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/combustible/listarChofer/__${carga.chofer.id}__}" title="Cancelar">Cancelar</a>
+                                    </div> 
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

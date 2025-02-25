@@ -17,17 +17,14 @@ public interface FleteRepositorio extends JpaRepository<Flete, Long> {
 
     @Query("SELECT MAX(id) FROM Flete f WHERE f.idOrg = :id")
     public Long ultimoFlete(@Param("id") Long id);
-    
-    Optional<Flete> findTopByIdOrgAndEstadoNotOrderByIdDesc(Long idOrg, String estado);
 
-    @Query("SELECT f FROM Flete f WHERE chofer_id = :id AND f.estado != 'ELIMINADO'")
+    Optional<Flete> findTopByIdOrgOrderByIdDesc(Long idOrg);
+
+    @Query("SELECT f FROM Flete f WHERE chofer_id = :id")
     public ArrayList<Flete> buscarFletesIdChofer(@Param("id") Long id);
 
-    @Query("SELECT f FROM Flete f WHERE cliente_id = :id AND f.estado != 'ELIMINADO'")
+    @Query("SELECT f FROM Flete f WHERE cliente_id = :id")
     public ArrayList<Flete> buscarFletesIdCliente(@Param("id") Long id);
-
-    @Query("SELECT f FROM Flete f WHERE f.estado != 'ELIMINADO'")
-    public ArrayList<Flete> buscarFletes();
 
     @Query("SELECT f FROM Flete f WHERE f.estado = 'PENDIENTE' AND f.idOrg = :id")
     public ArrayList<Flete> buscarFletePendiente(@Param("id") Long id);
@@ -41,19 +38,21 @@ public interface FleteRepositorio extends JpaRepository<Flete, Long> {
     @Query("SELECT f FROM Flete f WHERE gasto_id = :id")
     public Flete buscarFleteIdGasto(@Param("id") Long id);
 
-    ArrayList<Flete> findByFechaFleteBetweenAndEstadoNotAndIdOrg(Date desde, Date hasta, String estado, Long idOrg);  
+    ArrayList<Flete> findByFechaFleteBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
 
-    ArrayList<Flete> findByFechaFleteBetweenAndChoferAndEstadoNot(Date desde, Date hasta, Usuario chofer, String estado);
-    
-    ArrayList<Flete> findByFechaFleteBetweenAndCamionAndEstadoNot(Date desde, Date hasta, Camion camion, String estado);
-                 
-    ArrayList<Flete> findByFechaFleteBetweenAndClienteAndEstadoNot(Date desde, Date hasta, Cliente cliente, String estado);
-    
-    Flete findTopByCamionAndEstadoNotOrderByIdDesc(Camion camion, String estado);
-    
-    Flete findTopByChoferAndEstadoNotOrderByIdDesc(Usuario chofer, String estado);
-    
+    ArrayList<Flete> findByFechaFleteBetweenAndChofer(Date desde, Date hasta, Usuario chofer);
+
+    ArrayList<Flete> findByFechaFleteBetweenAndCamion(Date desde, Date hasta, Camion camion);
+
+    ArrayList<Flete> findByFechaFleteBetweenAndCliente(Date desde, Date hasta, Cliente cliente);
+
+    ArrayList<Flete> findByFechaFleteBetweenAndChoferAndCliente(Date desde, Date hasta, Usuario chofer, Cliente cliente);
+
+    Flete findTopByCamionOrderByIdDesc(Camion camion);
+
+    Flete findTopByChoferOrderByIdDesc(Usuario chofer);
+
     @Query("SELECT f.id FROM Flete f WHERE gasto_id = :idGasto")
-    Long findFleteIdByIdGasto(@Param("idGasto") Long idGasto);      
+    Long findFleteIdByIdGasto(@Param("idGasto") Long idGasto);
 
 }

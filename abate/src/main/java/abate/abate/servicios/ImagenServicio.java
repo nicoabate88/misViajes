@@ -45,7 +45,7 @@ public class ImagenServicio {
         gastoRepositorio.save(gasto);
 
     }
-    
+
     @Transactional
     public void crearImagenGastoCaja(Long id, Imagen imagen) {
 
@@ -105,7 +105,7 @@ public class ImagenServicio {
         fleteRepositorio.save(flete);
 
     }
-    
+
     @Transactional
     public void crearImagenCombustible(Long id, Imagen imagen) {
 
@@ -129,70 +129,66 @@ public class ImagenServicio {
     @Transactional
     public void modificarImagen(Long id, Imagen imagen) {
 
-        Imagen img = new Imagen();
-        Optional<Imagen> im = imagenRepositorio.findById(id);
-        if (im.isPresent()) {
-            img = im.get();
-        }
+        Imagen img = imagenRepositorio.getById(id);
 
         img.setTipo(imagen.getTipo());
         img.setDatos(imagen.getDatos());
         img.setNombre(imagen.getNombre());
 
-        imagenRepositorio.save(imagen);
+        imagenRepositorio.save(img);
 
     }
-    
+
     @Transactional
-    public void eliminarImagenCombustible(Long id){
-        
+    public void eliminarImagenCombustible(Long id) {
+
         Combustible carga = combustibleRepositorio.buscarCombustibleIdImagen(id);
-        
+
         carga.setImagen(null);
-        
+
         combustibleRepositorio.save(carga);
-        
+
         imagenRepositorio.deleteById(id);
-        
+
     }
-    
+
     @Transactional
-    public void eliminarImagenCP(Long id){
-        
+    public void eliminarImagenCP(Long id) {
+
         Flete flete = fleteRepositorio.buscarFleteIdImagenCP(id);
-        
+
         flete.setImagenCP(null);
-        
+
         fleteRepositorio.save(flete);
-        
+
         imagenRepositorio.deleteById(id);
-        
+
     }
-    
+
     @Transactional
-    public void eliminarImagenDescarga(Long id){
-        
+    public void eliminarImagenDescarga(Long id) {
+
         Flete flete = fleteRepositorio.buscarFleteIdImagenDescarga(id);
-        
+
         flete.setImagenDescarga(null);
-        
+
         fleteRepositorio.save(flete);
-        
+
         imagenRepositorio.deleteById(id);
-        
+
     }
-    
+
     @Transactional
-    public void eliminarImagenGasto(Long id){
-        
+    public void eliminarImagenGasto(Long id) {
+
         Gasto gasto = gastoRepositorio.buscarGastoIdImagen(id);
-        
+
         gasto.setImagen(null);
-        
+
         gastoRepositorio.save(gasto);
-        
+
         imagenRepositorio.deleteById(id);
-        
+
     }
 
     public Imagen obtenerImagenPorId(Long id) {

@@ -94,10 +94,7 @@ public class ClienteControlador {
         try {
             clienteServicio.modificarCliente(id, nombre, cuit, localidad, direccion, telefono, email);
 
-            modelo.put("cliente", clienteServicio.buscarCliente(id));
-            modelo.put("exito", "Cliente MODIFICADO con éxito");
-
-            return "cliente_mostrar.html";
+            return "redirect:/cliente/modificado/" + id;
 
         } catch (MiException ex) {
 
@@ -107,6 +104,16 @@ public class ClienteControlador {
             return "cliente_modificar.html";
 
         }
+    }
+    
+    @GetMapping("/modificado/{id}")
+    public String modificado(@PathVariable Long id, ModelMap modelo) {
+
+            modelo.put("cliente", clienteServicio.buscarCliente(id));
+            modelo.put("exito", "Cliente MODIFICADO con éxito");
+
+            return "cliente_mostrar.html";    
+
     }
 
     @GetMapping("/eliminar/{id}")
@@ -118,18 +125,13 @@ public class ClienteControlador {
     }
 
     @GetMapping("/elimina/{id}")
-    public String elimina(@PathVariable Long id, HttpSession session, ModelMap modelo) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    public String elimina(@PathVariable Long id, ModelMap modelo) {
 
         try {
 
             clienteServicio.eliminarCliente(id);
 
-            modelo.put("id", logueado.getId());
-            modelo.put("exito", "Cliente ELIMINADO con éxito");
-
-            return "index_admin.html";
+            return "redirect:/cliente/eliminado";
 
         } catch (MiException ex) {
 
@@ -138,6 +140,18 @@ public class ClienteControlador {
 
             return "cliente_eliminar.html";
         }
+    }
+    
+    @GetMapping("/eliminado")
+    public String eliminado(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+            modelo.put("id", logueado.getId());
+            modelo.put("exito", "Cliente ELIMINADO con éxito");
+
+            return "index_admin.html";    
+
     }
 
 }

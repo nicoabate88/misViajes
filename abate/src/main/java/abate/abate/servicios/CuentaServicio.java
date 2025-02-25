@@ -9,12 +9,9 @@ import abate.abate.repositorios.CuentaRepositorio;
 import abate.abate.repositorios.TransaccionRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
 import abate.abate.util.CuentaComparador;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +43,7 @@ public class CuentaServicio {
         cuenta.setIdOrg(cliente.getIdOrg());
         cuenta.setCliente(cliente);
         cuenta.setSaldo(0.0);
+        cuenta.setEstado("INHABILITADA");
 
         cuentaRepositorio.save(cuenta);
 
@@ -65,6 +63,33 @@ public class CuentaServicio {
         cuenta.setIdOrg(chofer.getIdOrg());
         cuenta.setChofer(chofer);
         cuenta.setSaldo(0.0);
+        if(chofer.getCuenta().equalsIgnoreCase("SI")){
+            cuenta.setEstado("HABILITADA");
+        } else {
+            cuenta.setEstado("INHABILITADA");
+        }
+
+        cuentaRepositorio.save(cuenta);
+
+    }
+    
+    @Transactional
+    public void habilitarCuenta(Long idUsuario) {
+
+        Cuenta cuenta = cuentaRepositorio.buscarCuentaIdChofer(idUsuario);
+
+        cuenta.setEstado("HABILITADA");
+
+        cuentaRepositorio.save(cuenta);
+
+    }
+
+    @Transactional
+    public void inhabilitarCuenta(Long idUsuario) {
+
+        Cuenta cuenta = cuentaRepositorio.buscarCuentaIdChofer(idUsuario);
+
+        cuenta.setEstado("INHABILITADA");
 
         cuentaRepositorio.save(cuenta);
 
@@ -104,28 +129,24 @@ public class CuentaServicio {
         return cuentaRepositorio.buscarIdCuentaIdChofer(idChofer);
 
     }
-    
-     public Cuenta buscarCuentaChofer(Long idChofer) {
+
+    public Cuenta buscarCuentaChofer(Long idChofer) {
 
         return cuentaRepositorio.buscarCuentaIdChofer(idChofer);
 
     }
-     
+
     public Cuenta buscarCuentaCliente(Long idCliente) {
 
         return cuentaRepositorio.buscarCuentaIdCliente(idCliente);
 
-    } 
+    }
 
     public ArrayList<Cuenta> buscarCuentasChofer(Long idOrg) {
 
         ArrayList<Cuenta> lista = new ArrayList();
 
         lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasChofer(idOrg);
-        
-        for(Cuenta c : lista){
-            c.setSaldoN(convertirNumeroMiles(c.getSaldo()));
-        }
 
         Collections.sort(lista, CuentaComparador.ordenarNombreChoferAsc);
 
@@ -137,10 +158,6 @@ public class CuentaServicio {
         ArrayList<Cuenta> lista = new ArrayList();
 
         lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasCliente(idOrg);
-        
-        for(Cuenta c : lista){
-            c.setSaldoN(convertirNumeroMiles(c.getSaldo()));
-        }
 
         Collections.sort(lista, CuentaComparador.ordenarNombreClienteAsc);
 
@@ -263,15 +280,13 @@ public class CuentaServicio {
         Double saldo = 0.0;
         Long idCliente = transaccion.getCliente().getId();
 
-        transaccion.setConcepto("ELIMINADO");
         transaccion.setCliente(null);
-        transaccion.setImporte(0.0);
         transaccion.setFlete(null);
         transaccion.setRecibo(null);
         transaccionRepositorio.save(transaccion);
 
         Cuenta cuenta = cuentaRepositorio.buscarCuentaIdCliente(idCliente);
-
+        cuenta.getTransaccion().remove(transaccion);
         List<Transaccion> transacciones = cuenta.getTransaccion();
 
         for (Transaccion tr : transacciones) {
@@ -283,6 +298,8 @@ public class CuentaServicio {
         cuenta.setSaldo(saldoRed);
 
         cuentaRepositorio.save(cuenta);
+
+        transaccionRepositorio.deleteById(transaccion.getId());
 
     }
 
@@ -292,17 +309,17 @@ public class CuentaServicio {
         Double saldo = 0.0;
         Long idChofer = transaccion.getChofer().getId();
 
-        transaccion.setConcepto("ELIMINADO");
-        transaccion.setImporte(0.0);
         transaccion.setChofer(null);
         transaccion.setFlete(null);
         transaccion.setGasto(null);
         transaccion.setEntrega(null);
         transaccion.setRecibo(null);
-        
+        transaccion.setIngreso(null);
+
         transaccionRepositorio.save(transaccion);
 
         Cuenta cuenta = cuentaRepositorio.buscarCuentaIdChofer(idChofer);
+        cuenta.getTransaccion().remove(transaccion);
 
         List<Transaccion> transacciones = cuenta.getTransaccion();
 
@@ -316,18 +333,8 @@ public class CuentaServicio {
 
         cuentaRepositorio.save(cuenta);
 
-    }
-    
-    private String convertirNumeroMiles(Double num) {
+        transaccionRepositorio.deleteById(transaccion.getId());
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
-
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
     }
 
 }

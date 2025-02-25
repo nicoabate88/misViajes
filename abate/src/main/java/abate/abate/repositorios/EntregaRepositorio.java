@@ -15,19 +15,19 @@ public interface EntregaRepositorio extends JpaRepository<Entrega, Long> {
 
     @Query("SELECT MAX(id) FROM Entrega e WHERE e.idOrg = :id")
     public Long ultimoEntrega(@Param("id") Long id);
-    
-    Optional<Entrega> findTopByIdOrgAndObservacionNotOrderByIdDesc(Long idOrg, String estado);
 
-    @Query("SELECT e FROM Entrega e WHERE chofer_id = :id AND e.observacion != 'ELIMINADO'")
+    Optional<Entrega> findTopByIdOrgOrderByIdDesc(Long idOrg);
+
+    @Query("SELECT e FROM Entrega e WHERE chofer_id = :id")
     public ArrayList<Entrega> buscarEntregasIdChofer(@Param("id") Long id);
 
-    @Query("SELECT e FROM Entrega e WHERE e.observacion != 'ELIMINADO' AND e.idOrg = :id") 
+    @Query("SELECT e FROM Entrega e WHERE e.idOrg = :id")
     public ArrayList<Entrega> buscarEntregas(@Param("id") Long id);
-    
-    Entrega findTopByChoferAndObservacionNotOrderByIdDesc(Usuario chofer, String estado);
-    
-    ArrayList<Entrega> findByFechaBetweenAndObservacionNotAndIdOrg(Date desde, Date hasta, String observacion, Long idOrg);  
-    
-    ArrayList<Entrega> findByFechaBetweenAndObservacionNotAndChoferId(Date desde, Date hasta, String observacion, Long idChofer); 
+
+    Entrega findTopByChoferOrderByIdDesc(Usuario chofer);
+
+    ArrayList<Entrega> findByFechaBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
+
+    ArrayList<Entrega> findByFechaBetweenAndChoferId(Date desde, Date hasta, Long idChofer);
 
 }

@@ -22,7 +22,7 @@
                         <body>
                                 <div class="container">
 
-                                    <div class="card-header mb-4">
+                                    <div class="card-header mb-2" style="height: 70px;">
                                         <div class="row">
                                             <div class="col-2">   
                                                 <a title="Volver" onclick="window.history.back();"  type="button">
@@ -32,19 +32,19 @@
                                                 </a>   
                                             </div>
                                             <div  class="col-10">
-                                                <h4>Registrar Flete</h4>
+                                                <h4>Registrar Viaje</h4>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card p-2 bg-light border-light">
-                                    <form class="row g-3" id="form" th:action="@{/flete/registroChofer}" method="POST">
-
+                                    <div class="card border-secondary p-2" id="color-card">
+                                    <form id="form" th:action="@{/flete/registroChofer}" method="POST">
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
                                             <label for="chofer" class="form-floting text-secondary">Chofer</label>
                                             <input type="text" class="form-control" id="chofer" th:value="${chofer.nombre}" disabled readonly>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cliente" class="form-floting text-secondary">Camión</label>
+                                            <label for="cliente" class="form-floting text-secondary">Camión*</label>
                                             <select class="form-control" id="cliente" name="idCamion" required>
                                                 <option th:if="${chofer.camion} != null" selected th:text="${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}" th:value="${chofer.camion.id}"></option>
                                                 <option th:each="camion : ${camiones}"
@@ -53,7 +53,7 @@
                                             </select>
                                         </div>
                                          <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-                                            <label for="cliente" class="form-floting text-secondary">Cliente</label>
+                                            <label for="cliente" class="form-floting text-secondary">Cliente*</label>
                                             <select class="form-control" id="cliente" name="idCliente" required>
                                                 <option value="" selected disabled>Seleccione Cliente</option>
                                                 <option th:each="cliente : ${clientes}"
@@ -61,34 +61,40 @@
                                                         th:text="${cliente.nombre}"/>
                                             </select>
                                         </div>
+                                        </div>
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="fc" class="form-label text-secondary">Fecha de Carga</label>
+                                            <label for="fc" class="form-label text-secondary">Fecha de Carga*</label>
                                             <input type="date" class="form-control" id="fc" name="fechaCarga" required>
                                         </div>
                                        
                                          <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="ff" class="form-label text-secondary">Fecha de Flete</label>
+                                            <label for="ff" class="form-label text-secondary">Fecha de Viaje*</label>
                                             <input type="date" class="form-control" id="ff" name="fechaFlete" required>
                                         </div>
                                         <div class="d-none d-sm-block col-md-6 col-lg-6 col-xl-6">
                                         </div>
+                                        </div>
+                                        <div class="row">
                                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-                                            <label for="origen" class="form-label text-secondary">Origen de Carga</label>
+                                            <label for="origen" class="form-label text-secondary">Origen de Carga*</label>
                                             <input type="text" class="form-control" id="origen" placeholder="Ingrese Origen de Carga" name="origen" required minlength="1" maxlength="120" size="120">
                                         </div>
                                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-                                            <label for="destino" class="form-label text-secondary">Destino de Carga</label>
+                                            <label for="destino" class="form-label text-secondary">Destino de Carga*</label>
                                             <input type="text" class="form-control" id="destino" placeholder="Ingrese Destino de Carga" name="destino" required minlength="1" maxlength="120" size="120">
                                         </div>
+                                        </div>
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="km" class="form-label text-secondary">KM de Flete</label>
+                                            <label for="km" class="form-label text-secondary">KM de Viaje*</label>
                                             <div class="input-group">
                                             <span class="input-group-text">km</span>
                                             <input type="number" step="0.01" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
                                             </div>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cereal" class="form-floting text-secondary">Tipo de Carga</label>
+                                            <label for="cereal" class="form-floting text-secondary">Tipo de Carga*</label>
                                             <select class="form-control" id="cereal" name="tipoCereal" required>
                                                 <option selected disabled value="">Tipo de Carga</option>
                                                 <option value="SOJA">SOJA</option>
@@ -121,22 +127,24 @@
                                             </select>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cp" class="form-label text-secondary">Carta de Porte</label>
+                                            <label for="cp" class="form-label text-secondary">Carta de Porte*</label>
                                             <input type="text" class="form-control" id="cp" placeholder="Ingrese CP" name="cPorte" required minlength="1" maxlength="40" size="40">
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="ctg" class="form-label text-secondary">CTG</label>
+                                            <label for="ctg" class="form-label text-secondary">CTG*</label>
                                             <input type="text" class="form-control" id="ctg" placeholder="Ingrese CTG" name="ctg" required minlength="1" maxlength="40" size="40">
                                         </div>
+                                        </div>
+                                        <div class="row">
                                          <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="tarifa" class="form-label text-secondary">Tarifa de Flete</label>
+                                            <label for="tarifa" class="form-label text-secondary">Tarifa de Viaje*</label>
                                             <div class="input-group">
                                             <span class="input-group-text">$</span>
                                             <input type="number" step="0.01" class="form-control" id="tarifa" placeholder="Ingrese Tarifa" name="tarifa" required>
                                             </div>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-5">
-                                            <label for="kg" class="form-label text-secondary">KG de Flete</label>
+                                            <label for="kg" class="form-label text-secondary">KG de Viaje*</label>
                                             <div class="input-group">
                                             <span class="input-group-text">kg</span>
                                             <input type="number" step="0.01" class="form-control" id="kg" placeholder="Ingrese KG" name="kg" required>
@@ -144,15 +152,13 @@
                                         </div>
                                          <div class="col-lg-6 col-xl-6">
                                             </div>
-
-                                       <div class="row text-center mb-5">
-                                            <div class="col-8 col-md-8">
-                                                <button class="btn btn-primary" type="submit" title="Registrar Flete">Aceptar</button>
-                                            </div>
-                                            <div class="col-4 col-md-4">
-                                                <a class="btn btn-primary" type="button" th:href= "@{/flete/registrar}" title="Cancelar">Cancelar</a>
-                                            </div>
                                         </div>
+                                             <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Viaje">Registrar</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
+                                            </div> 
                                     </form>
                                     </div>
                                 </div>

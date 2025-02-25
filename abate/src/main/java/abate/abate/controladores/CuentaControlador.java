@@ -1,14 +1,12 @@
 package abate.abate.controladores;
 
 import abate.abate.entidades.Cuenta;
-import abate.abate.entidades.Detalle;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Transaccion;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.CuentaServicio;
-import abate.abate.servicios.DetalleServicio;
 import abate.abate.servicios.EntregaServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.FleteServicio;
@@ -16,13 +14,10 @@ import abate.abate.servicios.GastoServicio;
 import abate.abate.servicios.ReciboServicio;
 import abate.abate.servicios.TransaccionServicio;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +51,6 @@ public class CuentaControlador {
     private ExcelServicio excelServicio;
     @Autowired
     private ChoferServicio choferServicio;
-    @Autowired
-    private DetalleServicio detalleServicio;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarChofer")
@@ -65,15 +58,11 @@ public class CuentaControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        Double total = 0.0;
+        Double saldo = 0.0;
         ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
         for (Cuenta c : cuentas) {
-            total = total + c.getSaldo();
-            String saldoN = convertirNumeroMiles(c.getSaldo());
-            c.setSaldoN(saldoN);
+            saldo = saldo + c.getSaldo();
         }
-
-        String saldo = convertirNumeroMiles(total);
 
         modelo.addAttribute("cuentas", cuentas);
         modelo.put("saldo", saldo);
@@ -85,7 +74,6 @@ public class CuentaControlador {
     public String mostrarChofer(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
@@ -99,7 +87,6 @@ public class CuentaControlador {
         modelo.put("cuenta", cuenta);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
-        modelo.put("saldo", saldo);
         modelo.addAttribute("transacciones", lista);
 
         return "cuenta_mostrarChoferAdmin.html";
@@ -111,7 +98,7 @@ public class CuentaControlador {
 
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -132,7 +119,7 @@ public class CuentaControlador {
 
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -153,7 +140,7 @@ public class CuentaControlador {
 
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -173,7 +160,6 @@ public class CuentaControlador {
 
         Long idCuenta = cuentaServicio.buscarIdCuentaChofer(id);
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         Boolean flag = true;
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
@@ -186,7 +172,6 @@ public class CuentaControlador {
         modelo.put("chofer", choferServicio.buscarChofer(id));
         modelo.put("flag", flag);
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -200,7 +185,6 @@ public class CuentaControlador {
 
         Long idCuenta = cuentaServicio.buscarIdCuentaChofer(id);
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
@@ -212,7 +196,6 @@ public class CuentaControlador {
 
         modelo.put("flag", flag);
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -227,15 +210,11 @@ public class CuentaControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        Double total = 0.0;
+        Double saldo = 0.0;
         ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
         for (Cuenta c : cuentas) {
-            total = total + c.getSaldo();
-            String saldoN = convertirNumeroMiles(c.getSaldo());
-            c.setSaldoN(saldoN);
+            saldo = saldo + c.getSaldo();
         }
-
-        String saldo = convertirNumeroMiles(total);
 
         modelo.addAttribute("cuentas", cuentas);
         modelo.put("saldo", saldo);
@@ -248,7 +227,6 @@ public class CuentaControlador {
     public String mostrarCliente(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
@@ -260,7 +238,6 @@ public class CuentaControlador {
 
         modelo.put("flag", flag);
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -275,7 +252,6 @@ public class CuentaControlador {
 
         Long idCuenta = cuentaServicio.buscarIdCuentaCliente(id);
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
@@ -287,7 +263,6 @@ public class CuentaControlador {
 
         modelo.put("flag", flag);
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -302,7 +277,7 @@ public class CuentaControlador {
 
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -323,7 +298,7 @@ public class CuentaControlador {
 
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -401,32 +376,21 @@ public class CuentaControlador {
 
         if (transaccion.getEntrega() != null) {
 
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
 
             modelo.put("entrega", entregaServicio.buscarEntrega(transaccion.getEntrega().getId()));
-            modelo.put("importe", convertirNumeroMiles(valorAbsoluto));
+            modelo.put("importe", Math.abs(transaccion.getImporte()));
 
             return "transaccion_entregaAdmin.html";
 
         } else {
 
             Gasto gasto = gastoServicio.buscarGasto(transaccion.getGasto().getId());
-            ArrayList<Detalle> lista = new ArrayList();
             Flete flete = fleteServicio.buscarFleteIdGasto(gasto.getId());
-            String importe = convertirNumeroMiles(gasto.getImporte());
-
-            if (!gasto.getNombre().startsWith("GASTO FTE")) {
-                lista = (ArrayList<Detalle>) detalleServicio.buscarDetallesGasto(gasto.getId());
-            } else {
-                lista = (ArrayList<Detalle>) detalleServicio.buscarDetallesFleteIdGasto(gasto.getId());
-            }
 
             modelo.put("idFlete", flete.getId());
             modelo.put("gasto", gasto);
-            modelo.addAttribute("detalles", lista);
-            modelo.put("importe", importe);
 
-            return "transaccion_gastoAdmin.html";
+            return "transaccion_gastoAdminCuenta.html";
 
         }
 
@@ -449,10 +413,8 @@ public class CuentaControlador {
 
         if (transaccion.getEntrega() != null) {
 
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
-
             modelo.put("entrega", entregaServicio.buscarEntrega(transaccion.getEntrega().getId()));
-            modelo.put("importe", convertirNumeroMiles(valorAbsoluto));
+            modelo.put("importe", Math.abs(transaccion.getImporte()));
             modelo.put("idCuenta", idCuenta);
 
             return "transaccion_entregaCuenta.html";
@@ -460,18 +422,10 @@ public class CuentaControlador {
         } else {
 
             Gasto gasto = gastoServicio.buscarGasto(transaccion.getGasto().getId());
-            ArrayList<Detalle> lista = new ArrayList();
             Flete flete = fleteServicio.buscarFleteIdGasto(gasto.getId());
-
-            if (!gasto.getNombre().startsWith("GASTO FTE")) {
-                lista = (ArrayList<Detalle>) detalleServicio.buscarDetallesGasto(gasto.getId());
-            } else {
-                lista = (ArrayList<Detalle>) detalleServicio.buscarDetallesFleteIdGasto(gasto.getId());
-            }
 
             modelo.put("idFlete", flete.getId());
             modelo.put("gasto", gasto);
-            modelo.addAttribute("detalles", lista);
             modelo.put("idCuenta", idCuenta);
 
             return "transaccion_gastoCuenta.html";
@@ -495,40 +449,91 @@ public class CuentaControlador {
 
         if (transaccion.getEntrega() != null) {
 
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
-
             modelo.put("entrega", entregaServicio.buscarEntrega(transaccion.getEntrega().getId()));
-            modelo.put("importe", valorAbsoluto);
+            modelo.put("importe", Math.abs(transaccion.getImporte()));
 
             return "transaccion_entrega.html";
 
         } else {
 
             Gasto gasto = gastoServicio.buscarGasto(transaccion.getGasto().getId());
-            ArrayList<Detalle> lista = new ArrayList();
             Flete flete = fleteServicio.buscarFleteIdGasto(gasto.getId());
-
-            if (!gasto.getNombre().startsWith("GASTO FTE")) {
-                lista = (ArrayList<Detalle>) detalleServicio.buscarDetallesGasto(gasto.getId());
-            } else {
-                lista = (ArrayList<Detalle>) detalleServicio.buscarDetallesFleteIdGasto(gasto.getId());
-            }
 
             modelo.put("idFlete", flete.getId());
             modelo.put("gasto", gasto);
-            modelo.addAttribute("detalles", lista);
-            modelo.put("importe", convertirNumeroMiles(gasto.getImporte()));
 
-            return "transaccion_gasto.html";
+            return "transaccion_gastoChoferCuenta.html";
 
         }
 
+    }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/habilitar/{id}")
+    public String habilitarCuenta(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("cuenta", cuentaServicio.buscarCuentaChofer(id));
+
+        return "cuenta_habilitar.html";
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/habilita/{id}")
+    public String habilitaCaja(@PathVariable Long id, ModelMap modelo) {
+
+        Cuenta cuenta = cuentaServicio.buscarCuenta(id);
+
+        choferServicio.habilitarCuentaChofer(cuenta.getChofer().getId());
+        
+        return "redirect:/cuenta/habilitado/" +id;
+
+    }
+    
+    @GetMapping("/habilitado/{id}")
+    public String habilitado(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
+        modelo.put("exito", "Cuenta de Chofer HABILITADA con éxito");
+
+        return "cuenta_habilitada.html";
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/inhabilitar/{id}")
+    public String inhabilitarCuenta(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("cuenta", cuentaServicio.buscarCuentaChofer(id));
+
+        return "cuenta_inhabilitar.html";
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/inhabilita/{id}")
+    public String inhabilitaCuenta(@PathVariable Long id, ModelMap modelo) {
+
+        Cuenta cuenta = cuentaServicio.buscarCuenta(id);
+
+        choferServicio.inhabilitarCuentaChofer(cuenta.getChofer().getId());
+
+        return "redirect:/cuenta/inhabilitado/" +id;
+
+    }
+    
+    @GetMapping("/inhabilitado/{id}")
+    public String inhabilitado(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
+        modelo.put("exito", "Cuenta de Chofer INHABILITADA con éxito");
+
+        return "cuenta_habilitada.html";
     }
 
     @PostMapping("/exportarFiltro")
     public String exportarFiltro(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
         modelo.put("desde", desde);
@@ -543,12 +548,10 @@ public class CuentaControlador {
     public String exportarTodoAdmin(@RequestParam Long id, ModelMap modelo) throws ParseException {
 
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
         modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta));
 
         return "cuenta_exportarTodoAdmin.html";
@@ -571,7 +574,7 @@ public class CuentaControlador {
     @PostMapping("/exportarFiltroAdmin")
     public String exportarFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
         modelo.put("desde", desde);
@@ -585,7 +588,7 @@ public class CuentaControlador {
     @PostMapping("/exportarIdFiltroAdmin")
     public String exportarIdFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
         modelo.put("desde", desde);
@@ -601,7 +604,7 @@ public class CuentaControlador {
 
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         ArrayList<Transaccion> myObjects = lista;
         String htmlContent = generateHtmlFromObjects(myObjects);
@@ -613,12 +616,10 @@ public class CuentaControlador {
     public String exportarTodoCliente(@RequestParam Long id, ModelMap modelo) throws ParseException {
 
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
         modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta));
 
         return "cuenta_exportarTodoCliente.html";
@@ -641,7 +642,7 @@ public class CuentaControlador {
     @PostMapping("/exportarFiltroCliente")
     public String exportarFiltroCliente(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
         modelo.put("desde", desde);
@@ -655,7 +656,7 @@ public class CuentaControlador {
     @PostMapping("/exportarIdFiltroCliente")
     public String exportarIdFiltroCliente(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         modelo.put("cuenta", cuentaServicio.buscarCuenta(id));
         modelo.put("desde", desde);
@@ -671,7 +672,7 @@ public class CuentaControlador {
 
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(id, desde, hasta);
 
         ArrayList<Transaccion> myObjects = lista;
         String htmlContent = generateHtmlFromObjects(myObjects);
@@ -699,31 +700,19 @@ public class CuentaControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-
-        private String convertirNumeroMiles(Double num) {
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
-
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
-    }
-
+        
     public String obtenerFechaDesde() {
+        
+    LocalDate now = LocalDate.now();
 
-        LocalDate now = LocalDate.now();
+    LocalDate firstDayTwoMonthsAgo = now.minusMonths(2).withDayOfMonth(1);
 
-        LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String formattedDate = firstDayTwoMonthsAgo.format(formatter);
 
-        String formattedDate = firstDayOfPreviousMonth.format(formatter);
-
-        return formattedDate;
-    }
+    return formattedDate;
+}
 
     public String obtenerFechaHasta() {
 

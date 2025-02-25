@@ -12,7 +12,7 @@
                             <section>
                                 <div class="container">
 
-                                    <div class="card-header mb-4">
+                                    <div class="card-header mb-2" style="height: 70px;">
                                         <div class="row">
                                             <div title="Volver" class="col-2">   
                                                 <a th:href="@{/usuario/listar}" type="button">
@@ -26,8 +26,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card p-2 bg-light border-light">
-                                    <form class="row g-3" th:action="@{/usuario/registro}" method="POST">
+                                    <div class="card border-secondary p-2 mb-2" id="color-card">
+                                    <form th:action="@{/usuario/registro}" method="POST">
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                             <label for="nombre" class="form-label text-secondary">Apellido y Nombre</label>
                                             <input type="text" class="form-control" id="nombre" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
@@ -37,7 +38,8 @@
                                             <input type="text" class="form-control" id="usuario" placeholder="Ingrese Nombre de Usuario" name="nombreUsuario" th:value="${nombreUsuario}" required>
                                             <span id="errorUsuario" style="color: red; display: none;">El nombre de usuario no puede contener espacios.</span>
                                         </div>
-
+                                        </div>
+                                        <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                             <label for="password" class="form-label text-secondary">Contraseña</label>
                                             <input type="password" class="form-control" id="password" placeholder="Ingrese Contraseña" name="password" required>
@@ -46,21 +48,18 @@
                                             <label for="password2" class="form-label text-secondary">Contraseña</label>
                                             <input type="password" class="form-control" id="password2" placeholder="Repita Contraseña" name="password2" required>
                                         </div>
-                                        
+                                        </div>
                                         <div class="container">
                                         <div th:if="${error != null}" class="card-body mb-5 col-sm-12 col-md-12 col-xl-10 col-lg-10 text-center" id="mensaje">                        
                                             <h6 id="white" th:text="${error}"></h6>                                                                             
                                         </div>
                                         </div>
-                                        
-                                         <div class="row text-center">
-                                            <div class="col-8 col-md-8">
-                                                <button class="btn btn-primary" type="submit" title="Registrar Usuario">Registrar</button>
+                                       <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Usuario">Registrar</button>
                                             </div>
-                                            <div class="col-4 col-md-4">
-                                                <a class="btn btn-primary" type="button" th:href= "@{/usuario/registrar}" title="Cancelar">Cancelar</a>
-                                            </div>
-                                        </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/usuario/listar}" title="Cancelar">Cancelar</a>
+                                            </div>                                    
                                     </form>
                                     </div>
                                 </div>   

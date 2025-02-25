@@ -1,4 +1,3 @@
-
 package abate.abate.entidades;
 
 import javax.persistence.Entity;
@@ -8,7 +7,7 @@ import javax.persistence.Id;
 
 @Entity
 public class Camion {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,16 +15,18 @@ public class Camion {
     private String marca;
     private String modelo;
     private String dominio;
+    private String azul;
 
     public Camion() {
     }
 
-    public Camion(Long id, Long idOrg, String marca, String modelo, String dominio) {
+    public Camion(Long id, Long idOrg, String marca, String modelo, String dominio, String azul) {
         this.id = id;
         this.idOrg = idOrg;
         this.marca = marca;
         this.modelo = modelo;
         this.dominio = dominio;
+        this.azul = azul;
     }
 
     public Long getId() {
@@ -67,6 +68,13 @@ public class Camion {
     public void setDominio(String dominio) {
         this.dominio = dominio;
     }
-    
-    
+
+    public String getAzul() {
+        return azul;
+    }
+
+    public void setAzul(String azul) {
+        this.azul = azul;
+    }
+
 }

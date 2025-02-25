@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Detalle {
@@ -15,19 +17,19 @@ public class Detalle {
     private Integer cantidad;
     private Double precio;
     private Double total;
-    private Long flete;
-    private Long gasto;
+    @ManyToOne
+    @JoinColumn(name = "gasto_id")
+    private Gasto gasto;
 
     public Detalle() {
     }
 
-    public Detalle(Long id, String concepto, Integer cantidad, Double precio, Double total, Long flete, Long gasto) {
+    public Detalle(Long id, String concepto, Integer cantidad, Double precio, Double total, Gasto gasto) {
         this.id = id;
         this.concepto = concepto;
         this.cantidad = cantidad;
         this.precio = precio;
         this.total = total;
-        this.flete = flete;
         this.gasto = gasto;
     }
 
@@ -71,22 +73,12 @@ public class Detalle {
         this.total = total;
     }
 
-    public Long getFlete() {
-        return flete;
-    }
-
-    public void setFlete(Long flete) {
-        this.flete = flete;
-    }
-
-    public Long getGasto() {
+    public Gasto getGasto() {
         return gasto;
     }
 
-    public void setGasto(Long gasto) {
+    public void setGasto(Gasto gasto) {
         this.gasto = gasto;
     }
-
-    
 
 }

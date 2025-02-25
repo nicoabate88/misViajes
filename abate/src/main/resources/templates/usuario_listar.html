@@ -11,7 +11,7 @@
 
                             <div class="container">   
                                 
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/index}"  type="button">
@@ -38,15 +38,15 @@
                                 </div>
 
                                 <div th:each="usuario : ${usuarios}">
-
-                                    <div class="card mb-1" id="color-card">
-                                        <div class="card-body">
+                                    <div class="card border-secondary p-3 mb-1" id="color-card">
                                             <h6 th:text="${usuario.nombre}"></h6>
-                                            <h6 class="mb-0" id="dimgray" th:text="'Nombre de Usuario: '+${usuario.usuario}" ></h6>
-                                        </div>   
+                                            <h6 class="mb-0" id="dimgray" th:text="'Nombre de Usuario: '+${usuario.usuario}" ></h6>  
                                     </div>    
                                 </div>
-
+                                <br>
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Salir</a>
+                                    </div>
                             </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

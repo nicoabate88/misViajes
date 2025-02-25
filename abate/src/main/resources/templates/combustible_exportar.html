@@ -22,9 +22,9 @@
 
                     <body>
                         <section>
-                            <div>
+                            <div class="container mb-5"> 
 
-                                <div class="card-header">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/combustible/mostrarConsumoAdmin/__${id}__}" type="button">
@@ -37,7 +37,7 @@
                                             <h4>Exportar Consumo</h4>
                                         </div>
                                         <div class="col-3 text-center">
-                                            <form class="row g-3">
+                                            <form>
                                                 <input id="idCamion" hidden th:value="${id}" name="idCamion">
                                                 <button id="exportButton" onclick="startExport(event)" class="btn btn-light" type="button">
                                                     <h6 id="icono">Excel</h6>
@@ -58,24 +58,24 @@
                                         Exportando... Por favor, espere.
                                     </div>
                                 </div>
-                                <table class="table">
+                                <table class="table table-responsive border-secondary bg-light table-hover table-sm mb-4" id="dimgray">
                                     <thead>
                                         <tr>
-                                            <th>Fecha de Carga</th>
-                                            <th>Dominio de Camión</th>
+                                            <th>FechaCarga</th>
+                                            <th>Camión</th>
                                             <th>Chofer</th>
-                                            <th>Km Anterior</th>
-                                            <th>Km Carga</th>
-                                            <th>Km Recorrido</th>
+                                            <th>KmAnterior</th>
+                                            <th>KmCarga</th>
+                                            <th>KmRecorrido</th>
                                             <th>Litros</th>
-                                            <th>Consumo Carga</th>
-                                            <th>Tanque Lleno</th>   
-                                            <th>Consumo Tanque</th>                                          
+                                            <th>ConsumoCarga</th>
+                                            <th>Lleno</th>   
+                                            <th>ConsumoTanque</th>                                          
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="carga : ${cargas}">
-                                            <td th:text="${carga.fechaCarga}"></td>
+                                            <td th:text="${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></td>
                                             <td th:text="${carga.camion.dominio}"></td>
                                             <td th:text="${carga.usuario.nombre}"></td>
                                             <td th:text="${carga.kmAnterior}"></td>
@@ -88,7 +88,9 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/combustible/mostrarConsumoAdmin/__${id}__}">Volver</a>
+                                    </div>
                             </div>
                         </section>
                                                 <script>

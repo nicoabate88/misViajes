@@ -19,7 +19,7 @@
                         </head>
                         <body>
                                 <div class="container">
-                                    <div class="card-header mb-4">
+                                    <div class="card-header mb-2" style="height: 70px;">
                                         <div class="row">
                                             <div class="col-2">   
                                                 <a title="Volver" th:href="@{/combustible/listarAdmin/__${camion.id}__}" type="button">
@@ -33,42 +33,36 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="mb-3">
-                                        <h6 th:text="'Registrar KM de Camión'"></h6>
-                                    </div>
-                                    <div class="card p-2 bg-light border-light">
-                                    <form class="row g-3" th:action="@{/combustible/registroPrimerCarga}" method="POST">
+
+                                    <div class="card border-secondary p-2" id="color-card">
+                                    <form th:action="@{/combustible/registroPrimerCarga}" method="POST">
                                         
                                         <input hidden th:value="${camion.id}" name="idCamion"> 
-                                       
+                                       <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
                                             <label for="camion" class="form-floting text-secondary">Camión</label>
                                             <input type="text" class="form-control" id="camion" th:value="${camion.dominio}" name="idCamion" disabled readonly>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                            <label for="fecha" class="form-label text-secondary">Fecha</label>
+                                            <label for="fecha" class="form-label text-secondary">Fecha*</label>
                                             <input type="date" class="form-control" id="fecha" name="fecha" required>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
-                                            <label for="km" class="form-label text-secondary">KM Actual</label>
+                                            <label for="km" class="form-label text-secondary">KM Actual*</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">KM</span>
-                                                <input type="number" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
+                                                <input type="number" step="0.01" min="0" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
                                             </div>    
                                         </div>
-                                     
+                                       </div>
                                         <div class="d-block d-md-none col-sm-6 col-md-6">
                                         </div>    
-                                            
-                                        <div class="row text-center">
-                                            <div class="col-8 col-md-8">
-                                                <button class="btn btn-primary" type="submit" title="Registrar KM">Aceptar</button>
+                                         <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar KM Camión">Registrar</button>
                                             </div>
-                                            <div class="col-4 col-md-4">
-                                                <a class="btn btn-primary" type="button" th:href= "@{/combustible/registrarAdmin/__${camion.id}__}" title="Cancelar">Cancelar</a>
-                                            </div>
-                                        </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/combustible/listarAdmin/__${camion.id}__}" title="Cancelar">Cancelar</a>
+                                            </div>    
                                     </form>
                                     </div>
                                 </div>

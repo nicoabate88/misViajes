@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/index}" type="button">
@@ -23,35 +23,31 @@
                                     </div>
                                 </div>
                                 
-                                <div class="card mb-4" id="color-card">
-
-                                    <div class="card-body">
+                                <div class="card border-secondary p-3 mb-2" id="color-card">                                
                                         <h6 th:text="'Camión '+${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
-                                        <h6 id="dimgray" th:text="'Fecha '+${carga.fechaCarga}"></h6>
-                                        <p class="mb-1" id="dimgray" th:text="'Anterior '+${carga.kmAnterior}+' Km - Actual '+${carga.kmCarga}+' Km'"></p>
-                                        <h6 id="dimgray" th:text="'Recorrido '+${carga.kmRecorrido}+' Km'"></h6>
+                                        <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
+                                        <p class="mb-1" id="dimgray" th:text="'Anterior '+${#numbers.formatDecimal(carga.kmAnterior, 0, 'POINT', 1, 'COMMA')}+' Km - Actual '+${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}+' Km'"></p>
+                                        <h6 id="dimgray" th:text="'Recorrido '+${#numbers.formatDecimal(carga.kmRecorrido, 0, 'POINT', 1, 'COMMA')}+' Km'"></h6>
                                         <p class="mb-1" id="darkgray" th:text="${carga.litro}+' L - Tanque Lleno '+${carga.completo}"></p>
                                         <h6 th:text="'Consumo '+${carga.consumo}+' L / 100 Km'"></h6>
-                                    </div>
+                                        <span id="dimgray" th:if="${carga.azul != null}" th:text="'Urea '+${carga.azul.litro}+' Lts '"></span>
                                 </div>
                                 <div th:if="${exito != null}" class="card-body mb-4 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
                                 </div>
-                                
-                                <div class="row">
-                                <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 mb-5 text-center" th:if="${carga.imagen == null}">
-                                    <a th:href="@{/imagen/cargarCombustible/__${carga.id}__}">
+                                <div th:if="${carga.imagen == null}">
+                                    <div title="Cargar Imagen de Combustible" class="mb-4 text-center">
+                                        <a th:href="@{/imagen/cargarCombustible/__${carga.id}__}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
                                             <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
                                             <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"/>
                                         </svg>    <p id="icono2">Cargar Imagen</p>
                                     </a>
+                                    </div>
                                 </div>
-                                
-                                <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
-                                    <a class="btn btn-primary" type="button" th:href="@{/index}">Finalizar</a>
-                                </div>
-                                </div>
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Finalizar" th:href="@{/index}">Finalizar</a>
+                                    </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

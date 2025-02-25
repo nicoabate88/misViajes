@@ -1,4 +1,3 @@
-
 package abate.abate.entidades;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class Caja {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,7 +18,6 @@ public class Caja {
     @OneToOne
     private Usuario chofer;
     private Double saldo;
-    private String saldoN;
     private String estado;
     @OneToMany
     private List<Transaccion> transaccion;
@@ -27,12 +25,11 @@ public class Caja {
     public Caja() {
     }
 
-    public Caja(Long id, Long idOrg, Usuario chofer, Double saldo, String saldoN, String estado, List<Transaccion> transaccion) {
+    public Caja(Long id, Long idOrg, Usuario chofer, Double saldo, String estado, List<Transaccion> transaccion) {
         this.id = id;
         this.idOrg = idOrg;
         this.chofer = chofer;
         this.saldo = saldo;
-        this.saldoN = saldoN;
         this.estado = estado;
         this.transaccion = transaccion;
     }
@@ -69,14 +66,6 @@ public class Caja {
         this.saldo = saldo;
     }
 
-    public String getSaldoN() {
-        return saldoN;
-    }
-
-    public void setSaldoN(String saldoN) {
-        this.saldoN = saldoN;
-    }
-
     public String getEstado() {
         return estado;
     }
@@ -93,8 +82,4 @@ public class Caja {
         this.transaccion = transaccion;
     }
 
-    
-    
-    
-    
 }

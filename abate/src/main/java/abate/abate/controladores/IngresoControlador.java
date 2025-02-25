@@ -5,10 +5,7 @@ import abate.abate.entidades.Ingreso;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.CajaServicio;
 import abate.abate.servicios.IngresoServicio;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.Locale;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,10 +31,8 @@ public class IngresoControlador {
     public String registrarIngreso(@PathVariable Long id, ModelMap modelo) {
 
         Caja caja = cajaServicio.buscarCaja(id);
-        String saldo = convertirNumeroMiles(caja.getSaldo());
 
         modelo.put("caja", caja);
-        modelo.put("saldo", saldo);
 
         return "ingreso_registrar.html";
     }
@@ -62,10 +57,8 @@ public class IngresoControlador {
 
         Long id = ingresoServicio.buscarUltimo(logueado.getIdOrg());
         Ingreso ingreso = ingresoServicio.buscarIngreso(id);
-        String total = convertirNumeroMiles(ingreso.getImporte());
 
         modelo.put("ingreso", ingreso);
-        modelo.put("importe", total);
         modelo.put("exito", "Ingreso de Caja REGISTRADO con éxito");
 
         return "ingreso_mostrar.html";
@@ -106,14 +99,14 @@ public class IngresoControlador {
     public String ingresoModificado(@PathVariable Long id, ModelMap modelo) {
 
         Ingreso ingreso = ingresoServicio.buscarIngreso(id);
-        String total = convertirNumeroMiles(ingreso.getImporte());
 
         modelo.put("ingreso", ingreso);
-        modelo.put("importe", total);
         modelo.put("exito", "Ingreso de Caja MODIFICADO con éxito");
 
         return "ingreso_mostrar.html";
     }
+    
+    
 
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, ModelMap modelo) {
@@ -124,16 +117,23 @@ public class IngresoControlador {
     }
 
     @GetMapping("/elimina/{id}")
-    public String elimina(@PathVariable Long id, HttpSession session, ModelMap modelo) {
+    public String elimina(@PathVariable Long id, ModelMap modelo) {
 
         ingresoServicio.eliminarIngreso(id);
+        
+        return "redirect:/ingreso/eliminado";
 
+    }
+    
+    @GetMapping("/eliminado")
+    public String eliminado(ModelMap modelo, HttpSession session) {
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("id", logueado.getId());
         modelo.put("exito", "Ingreso ELIMINADO con éxito");
 
-        return "index_admin.html";
+        return "index_admin.html";      
 
     }
 
@@ -141,23 +141,9 @@ public class IngresoControlador {
     public String imprimir(@PathVariable Long id, ModelMap modelo) {
 
         Ingreso ingreso = ingresoServicio.buscarIngreso(id);
-        String total = convertirNumeroMiles(ingreso.getImporte());
 
         modelo.put("ingreso", ingreso);
-        modelo.put("total", total);
 
         return "ingreso_imprimir.html";
-    }
-
-    private String convertirNumeroMiles(Double num) {
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
-
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
     }
 }

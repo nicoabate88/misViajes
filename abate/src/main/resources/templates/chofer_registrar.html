@@ -6,149 +6,204 @@
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         </head>
-
                         <body>
-                                <div class="container">
-
-                                    <div class="card-header mb-4">
-                                        <div class="row">
-                                            <div class="col-2">   
-                                                <a title="Volver" th:href= "@{/chofer/listar}" type="button">
-                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                    </svg> 
-                                                </a>   
-                                            </div>
-                                            <div  class="col-10">
-                                                <h4>Registrar Chofer</h4>
-                                            </div>
+                            <div class="container">
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a title="Volver" th:href= "@{/chofer/listar}" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-10">
+                                            <h4>Registrar Chofer</h4>
                                         </div>
                                     </div>
-                                    <div class="card p-2 bg-light border-light"> 
-                                    <form class="row g-3" th:action="@{/chofer/registro}" method="POST">
-                                        <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="nombre" class="form-label text-secondary">Apellido y Nombre de Chofer</label>
-                                            <input type="text" class="form-control" id="nombre" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
-                                        </div>
-                                       
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="cuil" class="form-label text-secondary">CUIL de Chofer</label>
-                                            <input type="number" class="form-control" id="cuil" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIL" name="cuil" th:value="${cuil}" required>
-                                            <span id="error-message" style="color: red; display: none;">El CUIL debe tener 11 dígitos.</span>      
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="camion" class="form-floting text-secondary">Dominio de Camión</label>
-                                            <select class="form-control" id="camion" name="idCamion">
-                                                <option selected disabled value="">Seleccione Camión</option>
-                                                <option th:each="camion : ${camiones}"
-                                                        th:value="${camion.id}"
-                                                        th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
-                                            </select>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="caja" class="form-floting text-secondary">Habilitar Caja de Gastos</label>
-                                            <select class="form-control" id="caja" name="caja" required>
-                                                <option selected disabled value="">Seleccione Opción</option>
-                                                <option value="SI">SI</option>
-                                                <option value="NO">NO</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="porcentaje" class="form-label text-secondary">Porcentaje de Chofer</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">%</span>
-                                                <input type="number" step="0.01" class="form-control" id="porcentaje" placeholder="Ingrese porcentaje" name="porcentaje" th:value="${porcentaje}" required>     
+                                </div>
+                                <div class="card border-secondary p-2" id="color-card"> 
+                                    <form th:action="@{/chofer/registro}" method="POST">
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="nombre" class="form-label text-secondary">Apellido y Nombre de Chofer*</label>
+                                                <input type="text" class="form-control" id="nombre" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
+                                            </div>
+
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="cuil" class="form-label text-secondary">CUIL de Chofer*</label>
+                                                <input type="number" class="form-control" id="cuil" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIL" name="cuil" th:value="${cuil}" required>
+                                                    <span id="error-message" style="color: red; display: none;">El CUIL debe tener 11 dígitos.</span>      
                                             </div>
                                         </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="usuario" class="form-label text-secondary">Nombre de Usuario</label>
-                                            <input type="text" class="form-control" id="usuario" placeholder="Ingrese Nombre de Usuario" name="nombreUsuario" th:value="${nombreUsuario}" required>
-                                            <span id="errorUsuario" style="color: red; display: none;"></span>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="camion" class="form-floting text-secondary">Asocia Camión</label>
+                                                <select class="form-control" id="camion" name="idCamion">
+                                                    <option th:if="${camion} != null" selected th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" th:value="${camion.id}"></option>
+                                                    <option th:if="${camion} == null" selected disabled value="">Seleccione Camión</option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="caja" class="form-floting text-secondary">Habilitar Caja de Gasto*</label>
+                                                <select class="form-control" id="caja" name="caja" required>
+                                                    <option th:if="${caja} != null" selected th:text="${caja}" th:value="${caja}"></option>
+                                                    <option th:if="${caja} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="porcentaje" class="form-label text-secondary">Porcentaje de Chofer*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">%</span>
+                                                    <input type="number" step="0.01" class="form-control" id="porcentaje" placeholder="Ingrese porcentaje" name="porcentaje" th:value="${porcentaje}" required>     
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="cuenta" class="form-floting text-secondary">Mostrar Cuenta a Chofer*</label>
+                                                <select class="form-control" id="cuenta" name="cuenta" required>
+                                                    <option th:if="${cuenta} != null" selected th:text="${cuenta}" th:value="${cuenta}"></option>
+                                                    <option th:if="${cuenta} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="d-block d-md-none col-6 col-sm-6 col-md-6 mb-2">
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="usuario" class="form-label text-secondary">Nombre de Usuario*</label>
+                                                <input type="text" class="form-control" id="usuario" placeholder="Ingrese Nombre de Usuario" name="nombreUsuario" th:value="${nombreUsuario}" required>
+                                                    <span id="errorUsuario" style="color: red; display: none;"></span>
+                                            </div>
+                                            <div class="d-block d-md-none col-6 col-sm-6 col-md-6 mb-2">
+                                            </div>
                                         </div>
-                                       
-                                        
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="contra" class="form-label text-secondary">Contraseña</label>
-                                            <input type="password" class="form-control" id="contra" placeholder="Ingrese Contraseña" name="password" required>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
-                                            <label for="contra2" class="form-label text-secondary">Repita Contraseña</label>
-                                            <input type="password" class="form-control" id="contra2" placeholder="Repita Contraseña" name="password2" required>
+                                        <div class="row">
+
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="password" class="form-label text-secondary">Contraseña*</label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" id="password" placeholder="Ingrese Contraseña" name="password" required>
+                                                        <button class="btn btn-secondary border-secondary bg-light" type="button" id="togglePassword">
+                                                            <i class="fas fa-eye"></i> 
+                                                        </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
+                                                <label for="password2" class="form-label text-secondary">Repita Contraseña*</label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" id="password2" placeholder="Repita Contraseña" name="password2" required>
+                                                        <button class="btn btn-secondary border-secondary bg-light" type="button" id="togglePassword2">
+                                                            <i class="fas fa-eye"></i> 
+                                                        </button>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="container">
                                             <div th:if="${error != null}" class="card-body mb-5 col-lg-10 col-xl-10 text-center" id="mensaje">                        
                                                 <h6 id="white" th:text="${error}"></h6>                                                                             
                                             </div>
                                         </div>
-                                        <div class="row text-center">
-                                            <div class="col-8 col-md-8">
-                                                <button class="btn btn-primary" type="submit" title="Registrar Chofer">Registrar</button>
-                                            </div>
-                                            <div class="col-4 col-md-4">
-                                                <a class="btn btn-primary" type="button" th:href= "@{/chofer/registrar}" title="Cancelar">Cancelar</a>
-                                            </div>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Chofer">Registrar</button>
                                         </div>
+                                        <div class="text-center">
+                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/chofer/listar}" title="Cancelar">Cancelar</a>
+                                        </div> 
                                     </form>
-                                    </div>
                                 </div>
-                                                        <script>
+                            </div>
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+                            <script>
+                                document.getElementById("togglePassword").addEventListener("click", function () {
+                                    var passwordInput = document.getElementById("password");
+                                    var icon = this.querySelector("i");
+
+                                    if (passwordInput.type === "password") {
+                                        passwordInput.type = "text";
+                                        icon.classList.remove("fa-eye");
+                                        icon.classList.add("fa-eye-slash");
+                                    } else {
+                                        passwordInput.type = "password";
+                                        icon.classList.remove("fa-eye-slash");
+                                        icon.classList.add("fa-eye");
+                                    }
+                                });
+                                document.getElementById("togglePassword2").addEventListener("click", function () {
+                                    var passwordInput = document.getElementById("password2");
+                                    var icon = this.querySelector("i");
+
+                                    if (passwordInput.type === "password") {
+                                        passwordInput.type = "text";
+                                        icon.classList.remove("fa-eye");
+                                        icon.classList.add("fa-eye-slash");
+                                    } else {
+                                        passwordInput.type = "password";
+                                        icon.classList.remove("fa-eye-slash");
+                                        icon.classList.add("fa-eye");
+                                    }
+                                });
+
+
                                 function checkLength(input) {
-    const errorMessage = document.getElementById("error-message");
-    const value = input.value;
+                                    const errorMessage = document.getElementById("error-message");
+                                    const value = input.value;
 
-    if (value.length > 11) {
-        input.value = value.slice(0, 11); // Limitar a 11 dígitos
-        errorMessage.style.display = "block";
-    } else if (value.length < 11 && value.length > 0) {
-        errorMessage.style.display = "block";
-    } else {
-        errorMessage.style.display = "none"; // Ocultar error si cumple
-    }
-}
+                                    if (value.length > 11) {
+                                        input.value = value.slice(0, 11); // Limitar a 11 dígitos
+                                        errorMessage.style.display = "block";
+                                    } else if (value.length < 11 && value.length > 0) {
+                                        errorMessage.style.display = "block";
+                                    } else {
+                                        errorMessage.style.display = "none"; // Ocultar error si cumple
+                                    }
+                                }
 
-document.getElementById('usuario').addEventListener('input', function (event) {
-    const usuario = event.target.value;
-    const errorUsuario = document.getElementById('errorUsuario');
+                                document.getElementById('usuario').addEventListener('input', function (event) {
+                                    const usuario = event.target.value;
+                                    const errorUsuario = document.getElementById('errorUsuario');
 
-    // Verificar si contiene espacios
-    if (/\s/.test(usuario)) {
-        errorUsuario.style.display = 'inline';
-        errorUsuario.textContent = 'El nombre de usuario no puede contener espacios.';
-        event.target.value = usuario.replace(/\s/g, ''); // Eliminar espacios automáticamente
-        return;
-    }
+// Verificar si contiene espacios
+                                    if (/\s/.test(usuario)) {
+                                        errorUsuario.style.display = 'inline';
+                                        errorUsuario.textContent = 'El nombre de usuario no puede contener espacios.';
+                                        event.target.value = usuario.replace(/\s/g, ''); // Eliminar espacios automáticamente
+                                        return;
+                                    }
 
-    // Verificar si contiene al menos un número
-    if (!/\d/.test(usuario)) {
-        errorUsuario.style.display = 'inline';
-        errorUsuario.textContent = 'El nombre de usuario debe contener al menos un número.';
-    } else {
-        errorUsuario.style.display = 'none'; // Todo está bien
-    }
-});
+// Verificar si contiene al menos un número
+                                    if (!/\d/.test(usuario)) {
+                                        errorUsuario.style.display = 'inline';
+                                        errorUsuario.textContent = 'El nombre de usuario debe contener al menos un número.';
+                                    } else {
+                                        errorUsuario.style.display = 'none'; // Todo está bien
+                                    }
+                                });
 
 // Validación al enviar el formulario
-function validarFormulario() {
-    const usuario = document.getElementById('usuario').value;
-    const errorUsuario = document.getElementById('errorUsuario');
+                                function validarFormulario() {
+                                    const usuario = document.getElementById('usuario').value;
+                                    const errorUsuario = document.getElementById('errorUsuario');
 
-    // Verificar si contiene espacios
-    if (/\s/.test(usuario)) {
-        alert('El nombre de usuario no puede contener espacios.');
-        return false;
-    }
+// Verificar si contiene espacios
+                                    if (/\s/.test(usuario)) {
+                                        alert('El nombre de usuario no puede contener espacios.');
+                                        return false;
+                                    }
 
-    // Verificar si contiene al menos un número
-    if (!/\d/.test(usuario)) {
-        alert('El nombre de usuario debe contener al menos un número.');
-        return false;
-    }
+// Verificar si contiene al menos un número
+                                    if (!/\d/.test(usuario)) {
+                                        alert('El nombre de usuario debe contener al menos un número.');
+                                        return false;
+                                    }
 
-    // Si todo está bien
-    return true;
-}
+// Si todo está bien
+                                    return true;
+                                }
 
 
                             </script> 

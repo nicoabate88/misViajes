@@ -10,7 +10,7 @@
                         <body>
                                 <div class="container">
 
-                                    <div class="card-header mb-4">
+                                    <div class="card-header mb-2" style="height: 70px;">
                                         <div class="row">
                                             <div class="col-2">   
                                                 <a title="Volver" th:href= "@{/camion/listar}" type="button">
@@ -24,46 +24,58 @@
                                             </div>
                                              <div title="Ir a Eliminar Camión" class="col-3 text-center">
                                             <a th:href="@{/camion/eliminar/__${camion.id}__}">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-truck-front" viewBox="0 0 16 16">
-                                                                <path d="M5 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0m8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-6-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2zM4 2a1 1 0 0 0-1 1v3.9c0 .625.562 1.092 1.17.994C5.075 7.747 6.792 7.5 8 7.5s2.925.247 3.83.394A1.008 1.008 0 0 0 13 6.9V3a1 1 0 0 0-1-1zm0 1h8v3.9q0 .002 0 0l-.002.004-.005.002h-.004C11.088 6.761 9.299 6.5 8 6.5s-3.088.26-3.99.406h-.003l-.005-.002L4 6.9q0 .002 0 0z"/>
-                                                                <path d="M1 2.5A2.5 2.5 0 0 1 3.5 0h9A2.5 2.5 0 0 1 15 2.5v9c0 .818-.393 1.544-1 2v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V14H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a2.5 2.5 0 0 1-1-2zM3.5 1A1.5 1.5 0 0 0 2 2.5v9A1.5 1.5 0 0 0 3.5 13h9a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 12.5 1z"/>
-                                                            </svg> <h6 id="icono">Eliminar</h6> </a>
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                                    </svg> <h6 id="icono">Eliminar</h6> </a>
                                         </div>
                                         </div>
                                     </div>
-                                    <div class="card p-2 bg-light border-light">
-                                    <form class="row g-3" th:action="@{/camion/modifica}" method="POST">
+                                    <div class="card border-secondary p-2" id="color-card">
+                                    <form th:action="@{/camion/modifica}" method="POST">
                                         
                                          <input hidden th:value="${camion.id}" name="id">
+                                              <div class="row">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                            <label for="marca" class="form-label text-secondary">Marca de Camión</label>
+                                            <label for="dominio" class="form-label text-secondary">Dominio de Camión*</label>                                
+                                                <input type="text" step="0.01" class="form-control" id="dominio" name="dominio" th:value="${camion.dominio}" required minlength="6" maxlength="7" size="7">     
+                                        </div>
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                            <label for="marca" class="form-label text-secondary">Marca de Camión*</label>
                                             <input type="text" class="form-control" id="marca" name="marca" th:value="${camion.marca}" required>
                                         </div>
                                        
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                            <label for="modelo" class="form-label text-secondary">Modelo de Camión</label>
+                                            <label for="modelo" class="form-label text-secondary">Modelo de Camión*</label>
                                             <input type="text" class="form-control" id="modelo" name="modelo" th:value="${camion.modelo}" required>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
-                                            <label for="dominio" class="form-label text-secondary">Dominio de Camión</label>                                
-                                                <input type="text" step="0.01" class="form-control" id="dominio" name="dominio" th:value="${camion.dominio}" required minlength="6" maxlength="7" size="7">     
                                         </div>
                                         <div class="d-none d-sm-block col-md-6">
                                         </div>
-
+                                              </div>
+                                             <div class="row">
+                                             <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
+                                                <label for="azul" class="form-floting text-secondary">Carga de Úrea*</label>
+                                                <select class="form-control" id="azul" name="azul" required>
+                                                    <option selected th:text="${camion.azul}" th:value="${camion.azul}"></option>
+                                                    <option value="HABILITADO">HABILITADO</option>
+                                                    <option value="INHABILITADO">INHABILITADO</option>
+                                                </select>
+                                            </div>
+                                                 <div class="col-6 col-sm-6 col-md-6 col-lg-8 col-xl-8">
+                                                 </div>
+                                             </div>
                                         <div class="container">
-                                            <div th:if="${error != null}" class="card-body mb-5 col-md-5 text-center" id="mensaje">                        
+                                            <div th:if="${error != null}" class="card-body mb-5 text-center" id="mensaje">                        
                                                 <h6 id="white" th:text="${error}"></h6>                                                                             
                                             </div>
                                         </div>
-                                        <div class="row text-center">
-                                            <div class="col-8 col-md-8">
-                                                <button class="btn btn-primary" type="submit" title="Modificar Camión">Modificar</button>
+                                               <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Flete">Modificar</button>
                                             </div>
-                                            <div class="col-4 col-md-4">
-                                                <a class="btn btn-primary" type="button" th:href= "@{/camion/listar}" title="Cancelar">Cancelar</a>
-                                            </div>
-                                        </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/camion/listar}" title="Cancelar">Cancelar</a>
+                                            </div> 
+
                                     </form>
                                     </div>
                                 </div>

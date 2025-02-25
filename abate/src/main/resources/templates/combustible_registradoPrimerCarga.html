@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/index}" type="button">
@@ -23,20 +23,19 @@
                                     </div>
                                 </div>
                                 
-                                <div class="card mb-4" id="color-card">
-                                    <div class="card-body">
+                                <div class="card border-secondary p-3 mb-2" id="color-card">                            
                                         <h6 th:text="'Camión '+${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
-                                        <h6 id="dimgray" th:text="'Fecha '+${carga.fechaCarga}"></h6>
-                                        <p class="mb-1" id="dimgray" th:text="${carga.kmCarga}+' Km'"></p>
-                                    </div>
+                                        <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
+                                        <p class="mb-1" id="dimgray" th:text="${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}+' Km'"></p>
                                 </div>
                           
                                 <div th:if="${exito != null}" class="card-body mb-4 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
                                 </div>
-                                <div class="col-2">
-                                    <a class="btn btn-primary" type="button" th:href= "@{/index}">Aceptar</a>
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/index}">Aceptar</a>
                                 </div>
+                               
                             </div>
                  
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

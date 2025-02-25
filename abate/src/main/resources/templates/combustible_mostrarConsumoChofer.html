@@ -23,7 +23,7 @@
                         </head>
                         <body>
                             <div class="container mb-4">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/index}" type="button">
@@ -33,18 +33,18 @@
                                             </a>   
                                         </div>
                                         <div  class="col-10">
-                                            <h4>Consumo Diesel</h4>
+                                            <h4>Consumo de Diesel</h4>
                                         </div>
                                     </div>
                                 </div>
                               
 
-                                    <div class="card-body">
+                                    <div class="card-body pb-2">
                                         <h6 th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h6>
                                         <h6 id="dimgray" th:text="'Consumo '+${consumo}+' L / 100 Km'"></h6>
                                     </div>
                                     <div th:if="${!cargas.isEmpty()}">
-                                    <table class="table table-borderless bg-light table-hover table-sm mb-5" id="dimgray">
+                                    <table class="table border-secondary bg-light table-hover table-sm mb-2" id="dimgray">
                                         <thead>
                                             <tr class="row">
                                                 <th class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">Fecha</th>                                         
@@ -57,20 +57,29 @@
                                         </thead>
                                         <tbody th:each="carga : ${cargas}">
                                             <tr class="row">
-                                                <td class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center" th:text="${carga.fechaCarga}"></td>
-                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${carga.kmCargaS}"></td>
-                                                <td id="darkgray" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${carga.kmRecorrido}"></td>
-                                                <td class="col-1 col-sm-1 col-md-1 col-lg-2 col-xl-2 text-center" th:text="${carga.litro}"></td>
-                                                <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center text-dark" th:text="${carga.consumo}+' L'"></th>
-                                                <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center text-dark" th:text="${carga.consumoPromedio}+' L'" th:if="${carga.completo == 'SI'}"></th>
+                                                <td class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center" th:text="${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></td>
+                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}"></td>
+                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${#numbers.formatDecimal(carga.kmRecorrido, 0, 'POINT', 1, 'COMMA')}"></td>
+                                                <td class="col-1 col-sm-1 col-md-1 col-lg-2 col-xl-2 text-center" th:text="${#numbers.formatDecimal(carga.litro, 0, 'POINT', 1, 'COMMA')}"></td>
+                                                <th id="dimgray" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${carga.consumo}"></th>
+                                                <th id="dimgray" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${carga.consumoPromedio}" th:if="${carga.completo == 'SI'}"></th>
                                                 
                                             </tr>     
                                         </tbody>
                                     </table>
+                                        <br>
+                                        <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                    </div>
                                     </div>
                                 <div th:if="${cargas.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
+                                     <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
                                             <h6 id="azul">No existen Cargas de Combustible para mostrar consumo</h6>
+                                    </div>
+                                    <br>
+                                        
+                                    <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/index}">Volver</a>
                                     </div>
                                 </div>
                             </div>

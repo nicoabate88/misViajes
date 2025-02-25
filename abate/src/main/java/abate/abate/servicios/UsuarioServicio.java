@@ -31,9 +31,9 @@ public class UsuarioServicio implements UserDetailsService {
 
         String nombreMay = nombre.toUpperCase();
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
-        
+
         validarDatos(usuario.getCuil(), nombreMay, nombreUsuarioMin, password, password2);
-        
+
         Usuario user = new Usuario();
 
         user.setNombre(nombreMay);
@@ -51,7 +51,7 @@ public class UsuarioServicio implements UserDetailsService {
         usuarioRepositorio.save(user);
 
     }
-    
+
     @Transactional
     public void crearUsuarioAdmin(Long idOrg, String nombre, String nombreUsuario, Long cuil, String empresa,
             String direccion, String localidad, String telefono, String password, String password2) throws MiException {
@@ -59,9 +59,9 @@ public class UsuarioServicio implements UserDetailsService {
         String nombreMay = nombre.toUpperCase();
         String empresaMay = empresa.toUpperCase();
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
-        
+
         validarDatos(idOrg, nombreMay, nombreUsuarioMin, password, password2);
-        
+
         Usuario user = new Usuario();
 
         user.setNombre(nombreMay);
@@ -79,7 +79,7 @@ public class UsuarioServicio implements UserDetailsService {
         usuarioRepositorio.save(user);
 
     }
-    
+
     @Transactional
     public void modificarUsuario(Long id, String nombre, String nombreUsuario) throws MiException {
 
@@ -87,29 +87,29 @@ public class UsuarioServicio implements UserDetailsService {
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
 
         Usuario user = usuarioRepositorio.getById(id);
-        
+
         validarDatosModifica(user, nombreMay, nombreUsuarioMin);
-        
+
         user.setNombre(nombreMay);
         user.setUsuario(nombreUsuarioMin);
 
         usuarioRepositorio.save(user);
 
     }
-    
+
     @Transactional
     public void modificarPswUsuario(Long id, String password) {
-        
+
         Usuario user = new Usuario();
         Optional<Usuario> u = usuarioRepositorio.findById(id);
         if (u.isPresent()) {
             user = u.get();
         }
-        
+
         user.setPassword(new BCryptPasswordEncoder().encode(password));
-        
+
         usuarioRepositorio.save(user);
-        
+
     }
 
     public Usuario buscarUsuario(Long idUsuario) {
@@ -124,7 +124,7 @@ public class UsuarioServicio implements UserDetailsService {
         return lista;
 
     }
-    
+
     public ArrayList<Usuario> buscarTodosUsuarios() {
 
         ArrayList<Usuario> lista = (ArrayList<Usuario>) usuarioRepositorio.findAll();
@@ -137,60 +137,60 @@ public class UsuarioServicio implements UserDetailsService {
 
         return usuarioRepositorio.ultimoUsuario(idOrg);
     }
-    
+
     public Long buscarUltimoUsuarioCeo() {
 
         return usuarioRepositorio.ultimoUsuarioCeo();
-        
+
     }
 
     public void validarDatos(Long idOrg, String nombre, String nombreUsuario, String password, String password2) throws MiException {
-        
+
         ArrayList<Usuario> listaAdmin = usuarioRepositorio.buscarUsuariosAdmin(idOrg);
-        for(Usuario u : listaAdmin){
+        for (Usuario u : listaAdmin) {
             if (u.getNombre().equalsIgnoreCase(nombre)) {
-                throw new MiException("Apellido y Nombre ya está registrado");
+                throw new MiException("Apellido y Nombre ya está registrado.");
             }
         }
-        
+
         ArrayList<Usuario> lista = buscarTodosUsuarios();
         for (Usuario u : lista) {
             if (u.getUsuario().equals(nombreUsuario)) {
-                throw new MiException("El Nombre de Usuario no está disponible, por favor ingrese otro");
+                throw new MiException("El Nombre de Usuario no está disponible, por favor ingrese otro.");
             }
         }
-        
+
         if (!password.equals(password2)) {
-            throw new MiException("Las Contraseñas ingresadas deben ser iguales");
+            throw new MiException("Las Contraseñas ingresadas deben ser iguales.");
         }
     }
-    
+
     public void validarDatosModifica(Usuario user, String nombre, String nombreUsuario) throws MiException {
 
         ArrayList<Usuario> listaAdmin = usuarioRepositorio.buscarUsuariosAdmin(user.getIdOrg());
         if (!user.getNombre().equalsIgnoreCase(nombre)) {
             for (Usuario u : listaAdmin) {
                 if (u.getNombre().equals(nombre)) {
-                    throw new MiException("Apellido y Nombre ya está registrado");
+                    throw new MiException("Apellido y Nombre ya está registrado.");
                 }
             }
         }
-        
+
         ArrayList<Usuario> lista = buscarTodosUsuarios();
         if (!user.getUsuario().equalsIgnoreCase(nombreUsuario)) {
             for (Usuario u : lista) {
                 if (u.getUsuario().equalsIgnoreCase(nombreUsuario)) {
-                    throw new MiException("El Nombre de Usuario no está disponible, por favor ingrese otro");
+                    throw new MiException("El Nombre de Usuario no está disponible, por favor ingrese otro.");
                 }
             }
         }
     }
-    
+
     @Transactional
     public void crearUsuarioCeo(String nombre, String nombreUsuario, String password, String password2) {
 
         String nombreM = nombre.toUpperCase();
-        
+
         Usuario user = new Usuario();
 
         user.setNombre(nombreM);
@@ -201,14 +201,14 @@ public class UsuarioServicio implements UserDetailsService {
         usuarioRepositorio.save(user);
 
     }
-    
-     public ArrayList<Usuario> buscarUsuariosAdmin() {
+
+    public ArrayList<Usuario> buscarUsuariosAdmin() {
 
         ArrayList<Usuario> lista = usuarioRepositorio.findFirstByIdOrg();
 
         return lista;
 
-    } 
+    }
 
     @Override
     public UserDetails loadUserByUsername(String nombreUsuario) throws UsernameNotFoundException {

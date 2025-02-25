@@ -10,7 +10,7 @@
 
                             <div class="container">
 
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" onclick="window.history.back();"  type="button">
@@ -25,11 +25,11 @@
                                     </div>
                                 </div>
 
-                                <div class="card-body">
+                                <div class="card border-secondary p-2" id="color-card">
                                     <h6 th:text="'Flete ID'+${flete.idFlete}"></h6>
-                                    <p class="card-text" id="dimgray" th:text="'Importe de Gasto $'+${flete.gasto.importe}"></p>
+                                    <p class="card-text" id="dimgray" th:text="'Importe de Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 0, 'POINT')}"></p>
 
-                                    <form class="row g-3" th:action="@{/imagen/cargaGasto}" method="POST" enctype="multipart/form-data">
+                                    <form th:action="@{/imagen/cargaGasto}" method="POST" enctype="multipart/form-data" onsubmit="mostrarCargando()">
                                         <input hidden th:value="${flete.id}" name="id"> 
                                             <div class="col-12 mb-5">
                                                 <label for="file" id="darkblue">Cargar imagen de Gasto</label>
@@ -40,18 +40,22 @@
                                                     <h6 id="white" th:text="${error}"></h6>                                                                             
                                                 </div>
                                             </div>
-
-                                            <div class="row text-center">
-                                                <div class="col-8 col-md-8">
-                                                    <button class="btn btn-primary" type="submit">Aceptar</button>
-                                                </div>
-                                                <div class="col-4 col-md-4">
-                                                    <a class="btn btn-primary" type="button" th:href= "@{/index}">Cancelar</a>
-                                                </div>
+                                            <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Cargar Imagen">Cargar</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
                                             </div>
                                     </form>
                                 </div>
-
+                            </div>
+                            <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; text-align: center; color: white;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                    <div class="spinner-border text-light" role="status">
+                                        <span class="sr-only">Cargando...</span>
+                                    </div>
+                                    <p>Subiendo imagen, por favor espere...</p>
+                                </div>
                             </div>
                             <script>
                                 document.getElementById('file').onchange = function () {
@@ -73,6 +77,11 @@
                                         return; // Detiene la ejecución del script
                                     }
                                 };
+                                function mostrarCargando() {
+                                    document.getElementById("loading-overlay").style.display = "block"; // Muestra el overlay
+                                    document.querySelector("button[type='submit']").disabled = true; // Deshabilita el botón de carga
+
+                                }
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

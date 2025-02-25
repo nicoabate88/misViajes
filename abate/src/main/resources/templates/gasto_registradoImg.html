@@ -7,9 +7,8 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-
                             <div class="container mb-5">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/index}" type="button">
@@ -23,59 +22,46 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="card mb-4" id="color-card">
-                                     <div class="card-body pb-0">
-                                        <h6 id="darkblue" th:text="'Importe: $'+${gasto.importe}"></h6>
-                                        <p class='mb-1' id="dimgray" th:text="'Fecha: '+${gasto.fecha}"></p>
-                                        <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
-                                        <p id="dimgray" th:text="'Camión '+${gasto.camion.dominio}"></p>
-                                    </div>
-
+                                <div  class="card border-secondary p-3 mb-2" id="color-card">                               
+                                    <h6 id="darkblue" th:text="'Importe: $'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></h6>
+                                    <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(gasto.fecha, 'dd-MM-yyyy')}"></p>
+                                    <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
+                                    <p id="dimgray" th:text="'Camión '+${gasto.camion.dominio}"></p> 
                                     <div class="table-responsive">
-                                        <table class="table table-borderless table-sm">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-hover table-sm">
                                             <thead>
-                                                <tr id="darkblue">
-                                                    <td class="col-1"></td>
-                                                    <td class="col-5">Concepto</td>
-                                                    <td class="col-1 text-center}">Cantidad</td>
+                                                <tr id="darkblue">                                              
+                                                    <td class="col-6 text-center">Concepto</td>
+                                                    <td class="col-2 text-center">Cantidad</td>
                                                     <td class="col-2 text-center">Precio</td>
                                                     <td class="col-2 text-center">SubTotal</td> 
-                                                    <td class="col-1"></td>
                                                 </tr>
                                             </thead>
-
-                                            <tbody th:each="detalle : ${detalles}">
+                                                     <tbody th:each="detalle : ${gasto.detalles}">
                                                 <tr id="dimgray">
-                                                    <td class="col-1"></td>
-                                                    <td class="col-5" th:text="${detalle.concepto}"></td>
-                                                    <td class="col-1 text-center" th:text="${detalle.cantidad}"></td>
-                                                    <td class="col-2 text-center" type="number" step="0.01" th:text="'$'+${detalle.precio}"></td>
-                                                    <td class="col-2 text-center" type="number" step="0.01" th:text="'$'+${detalle.total}"></td>
-                                                    <th class="col-1"></th>
+                                                    <td class="col-6 text-center" th:text="${detalle.concepto}"></td>
+                                                    <td class="col-2 text-center" th:text="${detalle.cantidad}"></td>
+                                                    <td class="col-2 text-center" th:text="'$'+${#numbers.formatDecimal(detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
+                                                    <td class="col-2 text-center" th:text="'$'+${#numbers.formatDecimal(detalle.total, 0, 'POINT', 0, 'POINT')}"></td>
                                                 </tr>
-
                                             </tbody>
-                                            <tr id="dimgray">
-                                                <td class="col-1"></td>
-                                                <td class="col-5"></td>
-                                                <td class="col-1"></td>
-                                                <th class="col-2 text-center" id="dimgray">TOTAL</th>
-                                                <th class="col-2 text-center" id="dimgray" th:text="'$'+${gasto.importe}"></th>
-                                                <td class="col-1"></td>
+                                            <tr> 
+                                                <td class="col-6"></td>
+                                                <td class="col-2"></td>
+                                                <th class="text-center col-2" id="dimgray">TOTAL</th>
+                                                <th class="text-center col-2" id="dimgray" th:text="'$'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></th>
                                             </tr>
                                         </table>
                                     </div>
+                                    </div>
                                 </div>
-
                                 <div th:if="${exito != null}" class="card-body mb-4 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
                                 </div>
-
-                                <div class="col-2 mb-5">
-                                    <a class="btn btn-primary" type="button" th:href="@{/index}">Aceptar</a>
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Aceptar" th:href="@{/index}">Finalizar</a>
                                 </div>
-
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

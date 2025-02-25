@@ -10,7 +10,7 @@
                         <body>
                             <div class="container"> 
 
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/chofer/listar}" type="button">
@@ -24,28 +24,28 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card p-2 bg-light border-light">
+                                <div class="card border-secondary p-2" id="color-card">
                                     <div class="card-body">
                                         <h6 th:text="'Caja de Chofer '+${caja.chofer.nombre}"></h6>
-                                        <h6 id="dimgray" th:text="'Saldo $'+${caja.saldo}"></h6>
+                                        <h6 id="dimgray" th:text="'Saldo $'+${#numbers.formatDecimal(caja.saldo, 0, 'POINT', 2, 'COMMA')}"></h6>
                                     </div>
                                     <div th:if="${error == null}" class="container">
                                         <div class="card border-primary mb-5 p-3 text-center" id="eliminar">
                                             <h6 id="darkblue">¿Seguro desea INHABILITAR esta Caja?</h6>
-                                            <p class="mb-1" id="dimgray">Si inhabilita caja, los gastos pasarán a administrarse en Cuenta Corriente del Chofer</p>
+                                            <p class="mb-1" id="dimgray">Si inhabilita Caja, los gastos pasarán a administrarse en Cuenta Corriente del Chofer.</p>
                                         </div>
                                     </div>
                                     <div th:if="${error != null}" class="card-body mb-4 text-center" id="mensaje">                        
                                         <h6 id="white" th:text="${error}"></h6>                                                                             
                                     </div>
+                                    
+                                    <div class="text-center mb-2">
+                                                <a class="btn btn-secondary bg-secondary border-light w-50" type="button" th:href="@{/caja/inhabilita/__${caja.id}__}" title="Inhabilitar Caja">Inhabilitar</a>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/chofer/listar}" title="Cancelar">Cancelar</a>
+                                            </div> 
 
-                                    <div class="row text-center">
-                                        <div th:if="${error == null}" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-1"> 
-                                            <a class="btn btn-primary" type="button" th:href= "@{/caja/inhabilita/__${caja.id}__}" title="Inhabilitar Caja">Inhabilitar</a>
-                                        </div>
-                                        <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-                                            <a class="btn btn-primary" type="button" th:href= "@{/chofer/listar}" title="Cancelar">Cancelar</a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

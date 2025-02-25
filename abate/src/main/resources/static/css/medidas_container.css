@@ -140,6 +140,11 @@ th {
     font-size: 13px;
 }
 
+#cajaInha {
+    font-size: 13px;
+    color : darkgray;
+}
+
 #icono {
     color : white;
     font-size: 14px;

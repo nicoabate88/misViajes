@@ -1,4 +1,3 @@
-
 package abate.abate.repositorios;
 
 import abate.abate.entidades.Caja;
@@ -9,10 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CajaRepositorio extends JpaRepository<Caja, Long> {
-    
+
     @Query("SELECT c FROM Caja c WHERE chofer_id = :id")
     public Caja buscarCajaIdChofer(@Param("id") Long id);
-    
-    
-    
+
 }

@@ -1,23 +1,18 @@
 package abate.abate.controladores;
 
 import abate.abate.entidades.Caja;
-import abate.abate.entidades.Ingreso;
 import abate.abate.entidades.Transaccion;
 import abate.abate.servicios.CajaServicio;
 import abate.abate.servicios.ChoferServicio;
-import abate.abate.servicios.DetalleServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.GastoServicio;
 import abate.abate.servicios.IngresoServicio;
 import abate.abate.servicios.TransaccionServicio;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,8 +40,6 @@ public class CajaControlador {
     @Autowired
     private GastoServicio gastoServicio;
     @Autowired
-    private DetalleServicio detalleServicio;
-    @Autowired
     private IngresoServicio ingresoServicio;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -54,7 +47,6 @@ public class CajaControlador {
     public String mostrarIdChoferAdmin(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
         Caja caja = cajaServicio.buscarCajaChofer(id);
-        String saldo = convertirNumeroMiles(caja.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
@@ -66,7 +58,6 @@ public class CajaControlador {
 
         modelo.put("flag", flag);
         modelo.put("caja", caja);
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -79,10 +70,9 @@ public class CajaControlador {
     @PostMapping("/mostrarFiltroAdmin")
     public String mostrarFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        String saldo = "0.0";
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -90,7 +80,6 @@ public class CajaControlador {
 
         modelo.put("flag", flag);
         modelo.put("caja", cajaServicio.buscarCaja(id));
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -103,7 +92,6 @@ public class CajaControlador {
     public String mostrarChofer(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
         Caja caja = cajaServicio.buscarCajaChofer(id);
-        String saldo = convertirNumeroMiles(caja.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
@@ -115,7 +103,6 @@ public class CajaControlador {
 
         modelo.put("flag", flag);
         modelo.put("caja", caja);
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -129,7 +116,7 @@ public class CajaControlador {
 
         Boolean flag = true;
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta);
 
         if (lista.isEmpty()) {
             flag = false;
@@ -162,12 +149,18 @@ public class CajaControlador {
         Caja caja = cajaServicio.buscarCaja(id);
 
         choferServicio.habilitarCajaChofer(caja.getChofer().getId());
+        
+        return "redirect:/caja/habilitado/" +caja.getId();
 
-        modelo.put("caja", caja);
+    }
+    
+    @GetMapping("/habilitado/{id}")
+    public String habilitado(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("caja", cajaServicio.buscarCaja(id));
         modelo.put("exito", "Caja HABILITADA con éxito");
 
         return "caja_habilitada.html";
-
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -188,11 +181,17 @@ public class CajaControlador {
 
         choferServicio.inhabilitarCajaChofer(caja.getChofer().getId());
 
-        modelo.put("caja", caja);
+        return "redirect:/caja/inhabilitado/" +caja.getId();
+
+    }
+    
+    @GetMapping("/inhabilitado/{id}")
+    public String inhabilitado(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("caja", cajaServicio.buscarCaja(id));
         modelo.put("exito", "Caja INHABILITADA con éxito");
 
         return "caja_habilitada.html";
-
     }
 
     @GetMapping("/mostrarTransaccionChofer/{id}")
@@ -207,23 +206,12 @@ public class CajaControlador {
             return "transaccion_cajaIngreso.html";
 
         }
-        if (transaccion.getGasto() != null && !transaccion.getObservacion().startsWith("GASTO FTE")) {
+        
+        else {
 
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
-            modelo.put("importe", convertirNumeroMiles(valorAbsoluto));
             modelo.put("gasto", gastoServicio.buscarGasto(transaccion.getGasto().getId()));
-            modelo.addAttribute("detalles", detalleServicio.buscarDetallesGasto(transaccion.getGasto().getId()));
 
-            return "transaccion_cajaGasto.html";
-
-        } else {
-
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
-            modelo.put("importe", convertirNumeroMiles(valorAbsoluto));
-            modelo.put("gasto", gastoServicio.buscarGasto(transaccion.getGasto().getId()));
-            modelo.addAttribute("detalles", detalleServicio.buscarDetallesFleteIdGasto(transaccion.getGasto().getId()));
-
-            return "transaccion_cajaGastoFlete.html";
+            return "transaccion_gastoChofer.html";
 
         }
     }
@@ -235,30 +223,15 @@ public class CajaControlador {
 
         if (transaccion.getIngreso() != null) {
 
-            Ingreso ingreso = ingresoServicio.buscarIngreso(transaccion.getIngreso().getId());
-            modelo.put("ingreso", ingreso);
-            modelo.put("importe", convertirNumeroMiles(ingreso.getImporte()));
+            modelo.put("ingreso", ingresoServicio.buscarIngreso(transaccion.getIngreso().getId()));
 
             return "transaccion_cajaIngresoAdmin.html";
 
-        }
-        if (transaccion.getGasto() != null && !transaccion.getObservacion().startsWith("GASTO FTE")) {
-
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
-            modelo.put("importe", convertirNumeroMiles(valorAbsoluto));
-            modelo.put("gasto", gastoServicio.buscarGasto(transaccion.getGasto().getId()));
-            modelo.addAttribute("detalles", detalleServicio.buscarDetallesGasto(transaccion.getGasto().getId()));
-
-            return "transaccion_cajaGastoAdmin.html";
-
         } else {
 
-            Double valorAbsoluto = Math.abs(transaccion.getImporte());
-            modelo.put("importe", convertirNumeroMiles(valorAbsoluto));
             modelo.put("gasto", gastoServicio.buscarGasto(transaccion.getGasto().getId()));
-            modelo.addAttribute("detalles", detalleServicio.buscarDetallesFleteIdGasto(transaccion.getGasto().getId()));
 
-            return "transaccion_cajaGastoAdmin.html";
+            return "transaccion_gastoAdmin.html";
 
         }
 
@@ -268,12 +241,10 @@ public class CajaControlador {
     public String exportarAdmin(@RequestParam Long id, ModelMap modelo) throws ParseException {
 
         Caja caja = cajaServicio.buscarCaja(id);
-        String saldo = convertirNumeroMiles(caja.getSaldo());
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
 
         modelo.put("caja", caja);
-        modelo.put("saldo", saldo);
         modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta));
 
         return "caja_exportarAdmin.html";
@@ -296,16 +267,9 @@ public class CajaControlador {
     @PostMapping("/exportarFiltroChofer")
     public String exportarFiltroChofer(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        String saldo = "0.0";
-
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFechaFiltro(id, desde, hasta);
-        if (!lista.isEmpty()) {
-            Transaccion primeraTransaccion = lista.get(0);
-            saldo = convertirNumeroMiles(primeraTransaccion.getSaldoAcumulado());
-        }
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta);
 
         modelo.put("caja", cajaServicio.buscarCaja(id));
-        modelo.put("saldo", saldo);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
@@ -317,7 +281,7 @@ public class CajaControlador {
     @PostMapping("/exportarFiltroAdmin")
     public String exportarFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta);
 
         modelo.put("caja", cajaServicio.buscarCaja(id));
         modelo.put("desde", desde);
@@ -333,7 +297,7 @@ public class CajaControlador {
 
         Caja caja = cajaServicio.buscarCaja(id);
 
-        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFechaFiltro(id, desde, hasta);
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta);
 
         ArrayList<Transaccion> myObjects = lista;
         String htmlContent = generateHtmlFromObjects(myObjects);
@@ -361,30 +325,19 @@ public class CajaControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
-    private String convertirNumeroMiles(Double num) { 
-
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-    symbols.setGroupingSeparator('.'); 
-    symbols.setDecimalSeparator(','); 
-
-    DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-    String numeroFormateado = formato.format(num);
-
-    return numeroFormateado;
-}
 
     public String obtenerFechaDesde() {
-        LocalDate now = LocalDate.now();
+        
+    LocalDate now = LocalDate.now();
 
-        LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
+    LocalDate firstDayTwoMonthsAgo = now.minusMonths(2).withDayOfMonth(1);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String formattedDate = firstDayOfPreviousMonth.format(formatter);
+    String formattedDate = firstDayTwoMonthsAgo.format(formatter);
 
-        return formattedDate;
-    }
+    return formattedDate;
+}
 
     public String obtenerFechaHasta() {
 

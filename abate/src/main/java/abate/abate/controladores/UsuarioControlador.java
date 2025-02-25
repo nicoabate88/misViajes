@@ -112,10 +112,7 @@ public class UsuarioControlador {
 
             usuarioServicio.modificarUsuario(id, nombre, nombreUsuario);
 
-            modelo.put("usuario", usuarioServicio.buscarUsuario(id));
-            modelo.put("exito", "Usuario MODIFICADO con éxito");
-
-            return "usuario_registrado.html";
+            return "redirect:/usuario/modificado/" + id;
 
         } catch (MiException ex) {
 
@@ -125,6 +122,16 @@ public class UsuarioControlador {
             return "usuario_modificar.html";
 
         }
+
+    }
+    
+    @GetMapping("/modificado/{id}")
+    public String modificado(@PathVariable Long id, ModelMap modelo) {
+
+            modelo.put("usuario", usuarioServicio.buscarUsuario(id));
+            modelo.put("exito", "Usuario MODIFICADO con éxito");
+
+            return "usuario_registrado.html";       
 
     }
 
@@ -144,10 +151,16 @@ public class UsuarioControlador {
 
         usuarioServicio.modificarPswUsuario(id, password);
 
+        return "redirect:/usuario/modificadoPsw/" + id;
+    }
+    
+    @GetMapping("/modificadoPsw/{id}")
+    public String modificadoPsw(@PathVariable Long id, ModelMap modelo) {
+
         modelo.put("usuario", usuarioServicio.buscarUsuario(id));
         modelo.put("exito", "Contraseña de Usuario MODIFICADA con éxito");
 
-        return "usuario_registrado.html";
+        return "usuario_registrado.html";       
 
     }
 

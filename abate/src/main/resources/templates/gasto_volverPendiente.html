@@ -7,9 +7,8 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-                            
                             <div class="container mb-5">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" onclick="window.history.back();" type="button">
@@ -23,63 +22,49 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                  <div class="card mb-4" id="color-card">
-                                            <div class="card-body pb-0">
-                                                <h6 id="darkblue" th:text="'Importe: $'+${gasto.importe}"></h6>
-                                                <p class='mb-1' id="dimgray" th:text="'Fecha: '+${gasto.fecha}"></p>
-                                                <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
-                                                <p id="dimgray" th:text="'Camión '+${gasto.camion.dominio}"></p>
-                                            </div>                     
-                                       <div class="table-responsive">
-                                                    <table class="table table-borderless table-hover table-sm">
-                                                        <thead>
-                                                            <tr id="darkblue">
-                                                                <td class="col-1"></td>
-                                                                <td class="col-5">Concepto</td>
-                                                                <td class="col-1 text-center">Cantidad</td>
-                                                                <td class="col-2 text-center">Precio</td>
-                                                                <td class="col-2 text-center">SubTotal</td> 
-                                                                <td class="col-1"></td>
-                                                            </tr>
-                                                        </thead>
-
-                                                        <tbody th:each="detalle : ${detalles}">
-                                                                        <tr id="dimgray">
-                                                                            <td></td>
-                                                                            <td th:text="${detalle.concepto}"></td>
-                                                                            <td class="text-center" th:text="${detalle.cantidad}"></td>
-                                                                            <td class="text-center" type="number" step="0.01" th:text="'$'+${detalle.precio}"></td>
-                                                                            <td class="text-center" type="number" step="0.01" th:text="'$'+${detalle.total}"></td>
-                                                                            <th></th>
-                                                                        </tr>
-                                                                   
-                                                                        </tbody>
-                                                                        <tr>
-                                                                            <td></td>
-                                                                            <td></td>
-                                                                            <td></td>
-                                                                            <th class="text-center" id="dimgray">TOTAL</th>
-                                                                            <th class="text-center" id="dimgray" th:text="'$'+${gasto.importe}"></th>
-                                                                            <td></td>
-                                                                        </tr>
-                                                                        </table>
-                                                                        </div>
-                                 
-                                </div>
-                                    <div class="card border-primary mb-5 p-3 text-center" id="eliminar">
-                                            <h6 id="darkblue">¿Seguro desea RETORNAR este Gasto a Pendiente?</h6>
-                                            <p id="dimgray">Retornar el Gasto a Pendiente permitirá al Chofer MODIFICAR/ELIMINAR el Gasto</p>
-                                </div>
-
-                                <div class="row text-center">
-                                    <div th:if="${error == null}" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-1"> 
-                                        <a class="btn btn-primary" type="button" th:href="@{/gasto/vuelvePendiente/__${gasto.id}__}" title="Retornar Gasto a Pendiente">Retornar</a>
+                                <div class="card border-secondary p-3 mb-2" id="color-card">                                          
+                                     <h6 id="darkblue" th:text="'Importe: $'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></h6>
+                                    <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(gasto.fecha, 'dd-MM-yyyy')}"></p>
+                                    <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
+                                    <p id="dimgray" th:text="'Camión '+${gasto.camion.dominio}"></p>                         
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-hover table-sm">
+                                            <thead>
+                                                <tr id="darkblue">                                              
+                                                    <td class="col-6 text-center">Concepto</td>
+                                                    <td class="col-2 text-center">Cantidad</td>
+                                                    <td class="col-2 text-center">Precio</td>
+                                                    <td class="col-2 text-center">SubTotal</td> 
+                                                </tr>
+                                            </thead>
+                                                     <tbody th:each="detalle : ${gasto.detalles}">
+                                                <tr id="dimgray">
+                                                    <td class="col-6 text-center" th:text="${detalle.concepto}"></td>
+                                                    <td class="col-2 text-center" th:text="${detalle.cantidad}"></td>
+                                                    <td class="col-2 text-center" th:text="'$'+${#numbers.formatDecimal(detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
+                                                    <td class="col-2 text-center" th:text="'$'+${#numbers.formatDecimal(detalle.total, 0, 'POINT', 0, 'POINT')}"></td>
+                                                </tr>
+                                            </tbody>
+                                            <tr> 
+                                                <td class="col-6"></td>
+                                                <td class="col-2"></td>
+                                                <th class="text-center col-2" id="dimgray">TOTAL</th>
+                                                <th class="text-center col-2" id="dimgray" th:text="'$'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></th>
+                                            </tr>
+                                        </table>
                                     </div>
-                                    <div class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2">
-                                        <a class="btn btn-primary" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
-                                    </div>
+
                                 </div>
+                                <div class="card bg-secondary mb-4 p-3 border-secondary text-center">
+                                    <h6 id="white">¿Seguro desea RETORNAR este Gasto a Pendiente?</h6>
+                                    <p id="white">Retornar el Gasto a Pendiente permitirá al Chofer MODIFICAR/ELIMINAR el Gasto</p>
+                                </div>
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" th:href="@{/gasto/vuelvePendiente/__${gasto.id}__}" title="Retornar Gasto">Retornar</a>
+                                </div>    
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
+                                </div> 
 
 
                             </div>

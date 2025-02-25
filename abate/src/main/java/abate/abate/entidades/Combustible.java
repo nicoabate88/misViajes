@@ -1,4 +1,3 @@
-
 package abate.abate.entidades;
 
 import java.util.Date;
@@ -12,7 +11,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class Combustible {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,18 +27,21 @@ public class Combustible {
     private Double consumoPromedio;
     private String completo;
     private String estado;
-    private String kmCargaS;
     @OneToOne
     private Camion camion;
     @OneToOne
     private Imagen imagen;
     @OneToOne
+    private Usuario chofer;
+    @OneToOne
     private Usuario usuario;
+    @OneToOne
+    private Azul azul;
 
     public Combustible() {
     }
 
-    public Combustible(Long id, Long idCarga, Long idOrg, Date fechaCarga, Double kmCarga, Double kmAnterior, Double kmRecorrido, Double litro, Double consumo, Double consumoPromedio, String completo, String estado, String kmCargaS, Camion camion, Imagen imagen, Usuario usuario) {
+    public Combustible(Long id, Long idCarga, Long idOrg, Date fechaCarga, Double kmCarga, Double kmAnterior, Double kmRecorrido, Double litro, Double consumo, Double consumoPromedio, String completo, String estado, Camion camion, Imagen imagen, Usuario chofer, Usuario usuario, Azul azul) {
         this.id = id;
         this.idCarga = idCarga;
         this.idOrg = idOrg;
@@ -52,10 +54,11 @@ public class Combustible {
         this.consumoPromedio = consumoPromedio;
         this.completo = completo;
         this.estado = estado;
-        this.kmCargaS = kmCargaS;
         this.camion = camion;
         this.imagen = imagen;
+        this.chofer = chofer;
         this.usuario = usuario;
+        this.azul = azul;
     }
 
     public Long getId() {
@@ -154,14 +157,6 @@ public class Combustible {
         this.estado = estado;
     }
 
-    public String getKmCargaS() {
-        return kmCargaS;
-    }
-
-    public void setKmCargaS(String kmCargaS) {
-        this.kmCargaS = kmCargaS;
-    }
-
     public Camion getCamion() {
         return camion;
     }
@@ -178,6 +173,14 @@ public class Combustible {
         this.imagen = imagen;
     }
 
+    public Usuario getChofer() {
+        return chofer;
+    }
+
+    public void setChofer(Usuario chofer) {
+        this.chofer = chofer;
+    }
+
     public Usuario getUsuario() {
         return usuario;
     }
@@ -185,7 +188,13 @@ public class Combustible {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
-    
-    
+
+    public Azul getAzul() {
+        return azul;
+    }
+
+    public void setAzul(Azul azul) {
+        this.azul = azul;
+    }
+
 }

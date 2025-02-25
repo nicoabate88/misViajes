@@ -9,7 +9,7 @@
                         <body>
                             
                             <div class="container">                           
-                                <div class="card-header mb-4">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/flete/mostrar/__${idFlete}__}" type="button">
@@ -24,18 +24,14 @@
                                     </div>
                                 </div>
                                 
-                                <div class="card-body mb-4 text-center" id="mensaje">                        
-                                    <h6 id="white">No puede registrar GASTO</h6>  
-                                    <h6 id="white">El estado del Flete es ACEPTADO</h6> 
+                                <div class="card border-secondary p-3 mb-2 text-center" id="color-card">                        
+                                    <h6 id="dimgray">No puede registrar GASTO</h6>  
+                                    <p id="dimgray">El estado del Viaje es ACEPTADO</p> 
                                 </div>
-                                
-                          
-                                
-                                <div class="row text-center">
-                                    <div  class="col-3 col-md-1"> 
-                                        <a class="btn btn-primary" type="button" th:href="@{/flete/mostrar/__${idFlete}__}">Aceptar</a>
-                                    </div>
-                                </div>
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/mostrar/__${idFlete}__}" title="Cancelar">Aceptar</a>
+                                    </div> 
+
 
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

@@ -1,10 +1,14 @@
 package abate.abate.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -26,16 +30,17 @@ public class Gasto {
     private Date fecha;
     private String nombre;
     private Double importe;
-    private String importeS;
     @OneToOne
     private Camion camion;
     @OneToOne
     private Imagen imagen;
+    @OneToMany(mappedBy = "gasto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Detalle> detalles = new ArrayList<>();
 
     public Gasto() {
     }
 
-    public Gasto(Long id, Long idGasto, Long idOrg, String estado, Usuario chofer, Usuario usuario, Date fecha, String nombre, Double importe, String importeS, Camion camion, Imagen imagen) {
+    public Gasto(Long id, Long idGasto, Long idOrg, String estado, Usuario chofer, Usuario usuario, Date fecha, String nombre, Double importe, Camion camion, Imagen imagen) {
         this.id = id;
         this.idGasto = idGasto;
         this.idOrg = idOrg;
@@ -45,7 +50,6 @@ public class Gasto {
         this.fecha = fecha;
         this.nombre = nombre;
         this.importe = importe;
-        this.importeS = importeS;
         this.camion = camion;
         this.imagen = imagen;
     }
@@ -122,14 +126,6 @@ public class Gasto {
         this.importe = importe;
     }
 
-    public String getImporteS() {
-        return importeS;
-    }
-
-    public void setImporteS(String importeS) {
-        this.importeS = importeS;
-    }
-
     public Camion getCamion() {
         return camion;
     }
@@ -146,6 +142,12 @@ public class Gasto {
         this.imagen = imagen;
     }
 
-    
-    
+    public List<Detalle> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<Detalle> detalles) {
+        this.detalles = detalles;
+    }
+
 }

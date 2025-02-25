@@ -7,12 +7,11 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-                            
-                            <div class="container">                           
-                                <div class="card-header mb-2">
+                            <div class="container mb-2">                           
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" onclick="window.history.back();" type="button">
+                                            <a title="Volver" th:href="@{/flete/mostrar/__${idFlete}__}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -23,76 +22,61 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                  <div class="card mb-4" id="color-card">
+                                <div class="card border-secondary p-3 mb-2" id="color-card">
                                     <div class="row">
                                         <div class="col-9">
-                                            <div class="card-body pb-0">
-                                                <h6 id="darkblue" th:text="'Importe: $'+${importe}"></h6>
-                                                <p class='mb-1' id="dimgray" th:text="'Fecha: '+${gasto.fecha}"></p>
-                                                <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
-                                                <p id="dimgray" th:text="'Camión '+${gasto.camion.dominio}"></p>
-                                            </div>
+                                    <h6 id="darkblue" th:text="'Importe: $'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></h6>
+                                    <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(gasto.fecha, 'dd-MM-yyyy')}"></p>
+                                    <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
+                                    <p id="dimgray" th:text="'Camión '+${gasto.camion.dominio}"></p>     
                                         </div>
-                                        <div class="col-3 text-center card-body pb-0">
-                                             <div>
-                                                    <a title="Ver Imagen de Gasto" th:href="@{/imagen/verGasto/__${flete.id}__}">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
-                                                            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-                                                            <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"/>
-                                                        </svg>    <p id="icono2">Imagen</p>
-                                                    </a>
-                                             </div>
-                                                <div>
-                                                    <a title="Ir a Modificar Gasto" th:href="@{/gasto/modificar/__${flete.id}__}" th:if="${gasto.estado != 'ACEPTADO'}">
-                                                        <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                                        </svg>     <p id="modificar">Modificar</p>
-                                                    </a>
-                                                </div>
-                                           
-                                            </div>
+                                        <div class="col-3 text-center">
+                                            <a title="Ver Imagen de Gasto" th:href="@{/imagen/verGasto/__${idFlete}__}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
+                                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+                                                    <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54L1 12.5v-9a.5.5 0 0 1 .5-.5z"/>
+                                                </svg>    <p id="icono2">Imagen</p>
+                                            </a>
+                                            <a th:if="${gasto.estado != 'ACEPTADO'}" title="Ir a Modificar Gasto" th:href="@{/gasto/modificarDesdeFlete/__${idFlete}__}">
+                                                <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                                </svg>     <p id="modificar">Modificar</p>
+                                            </a>
+                                        </div>
                                     </div>  
-                                       
-                                       <div class="table-responsive">
-                                                    <table class="table table-borderless table-hover table-sm">
-                                                        <thead>
-                                                            <tr id="darkblue">
-                                                                <td class="col-1"></td>
-                                                                <td class="col-5">Concepto</td>
-                                                                <td class="col-1 text-center">Cantidad</td>
-                                                                <td class="col-2 text-center">Precio</td>
-                                                                <td class="col-2 text-center">SubTotal</td> 
-                                                                <td class="col-1"></td>
-                                                           
-                                                            </tr>
-                                                        </thead>
 
-                                                        <tbody th:each="detalle : ${detalles}">
-                                                                            <td></td>
-                                                                            <td th:text="${detalle.concepto}"></td>
-                                                                            <td class="text-center" th:text="${detalle.cantidad}"></td>
-                                                                            <td class="text-center" type="number" step="0.01" th:text="'$'+${detalle.precio}"></td>
-                                                                            <td class="text-center" type="number" step="0.01" th:text="'$'+${detalle.total}"></td>
-                                                                            <th></th>
-                                                                        </tr>
-                                                                   
-                                                                        </tbody>
-                                                                        <tr>
-                                                                            <td></td>
-                                                                            <td></td>
-                                                                            <td></td>
-                                                                            <th class="text-center" id="dimgray">TOTAL</th>
-                                                                            <th class="text-center" id="dimgray" th:text="'$'+${gasto.importe}"></th>
-                                                                            <td></td>
-                                                                        </tr>
-                                                                        </table>
-                                                                        </div>
-                                 
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-hover table-sm">
+                                            <thead>
+                                                <tr id="darkblue">                                              
+                                                    <td class="col-6 text-center">Concepto</td>
+                                                    <td class="col-2 text-center">Cantidad</td>
+                                                    <td class="col-2 text-center">Precio</td>
+                                                    <td class="col-2 text-center">SubTotal</td> 
+                                                </tr>
+                                            </thead>
+                                                     <tbody th:each="detalle : ${gasto.detalles}">
+                                                <tr id="dimgray">
+                                                    <td class="col-6 text-center" th:text="${detalle.concepto}"></td>
+                                                    <td class="col-2 text-center" th:text="${detalle.cantidad}"></td>
+                                                    <td class="col-2 text-center" th:text="'$'+${#numbers.formatDecimal(detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
+                                                    <td class="col-2 text-center" th:text="'$'+${#numbers.formatDecimal(detalle.total, 0, 'POINT', 0, 'POINT')}"></td>
+                                                </tr>
+                                            </tbody>
+                                            <tr> 
+                                                <td class="col-6"></td>
+                                                <td class="col-2"></td>
+                                                <th class="text-center col-2" id="dimgray">TOTAL</th>
+                                                <th class="text-center col-2" id="dimgray" th:text="'$'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></th>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
-                                
                                 <div th:if="${exito != null}" class="card-body mb-4 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
+                                </div>
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/mostrar/__${idFlete}__}">Volver</a>
                                 </div>
 
                             </div>

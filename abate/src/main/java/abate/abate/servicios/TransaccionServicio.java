@@ -15,19 +15,15 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import abate.abate.repositorios.EntregaRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
 import abate.abate.repositorios.GastoRepositorio;
 import abate.abate.repositorios.IngresoRepositorio;
 import abate.abate.util.TransaccionComparador;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Locale;
 
 @Service
 public class TransaccionServicio {
@@ -36,8 +32,6 @@ public class TransaccionServicio {
     private ReciboRepositorio reciboRepositorio;
     @Autowired
     private TransaccionRepositorio transaccionRepositorio;
-    @Autowired
-    private EntregaRepositorio entregaRepositorio;
     @Autowired
     private IngresoRepositorio ingresoRepositorio;
     @Autowired
@@ -50,7 +44,6 @@ public class TransaccionServicio {
     private GastoRepositorio gastoRepositorio;
     @Autowired
     private ChoferServicio choferServicio;
-    
 
     @Transactional
     public void crearTransaccionRecibo(Long idRecibo) {
@@ -163,7 +156,7 @@ public class TransaccionServicio {
         cuentaServicio.eliminarTransaccionCuentaChofer(transaccion);
 
     }
-    
+
     @Transactional
     public void crearTransaccionIngreso(Long idIngreso) {
 
@@ -187,15 +180,15 @@ public class TransaccionServicio {
         cajaServicio.agregarTransaccionCajaChofer(buscarUltimo());
 
     }
-    
+
     @Transactional
     public void modificarTransaccionIngreso(Long idIngreso) {
 
         Ingreso ingreso = ingresoRepositorio.getById(idIngreso);
         Transaccion transaccion = transaccionRepositorio.buscarTransaccionIdIngreso(idIngreso);
-        
+
         boolean flag = false;
-        if(ingreso.getImporte() != transaccion.getImporte()){
+        if (ingreso.getImporte() != transaccion.getImporte()) {
             flag = true;
         }
 
@@ -208,7 +201,7 @@ public class TransaccionServicio {
             cajaServicio.modificarTransaccionCajaChofer(transaccion);
         }
     }
-    
+
     @Transactional
     public void eliminarTransaccionIngreso(Long idIngreso) {
 
@@ -232,7 +225,7 @@ public class TransaccionServicio {
         transaccion.setChofer(flete.getChofer());
         transaccion.setFecha(flete.getFechaFlete());
         transaccion.setConcepto("FLETE");
-        transaccion.setObservacion("FLETE ID" + flete.getIdFlete());
+        transaccion.setObservacion("VIAJE ID" + flete.getIdFlete());
         transaccion.setImporte(flete.getPorcentajeChofer());
         transaccion.setFlete(flete);
 
@@ -256,7 +249,7 @@ public class TransaccionServicio {
         transaccion.setCliente(flete.getCliente());
         transaccion.setFecha(flete.getFechaFlete());
         transaccion.setConcepto("FLETE");
-        transaccion.setObservacion("FLETE ID" + flete.getIdFlete());
+        transaccion.setObservacion("VIAJE ID" + flete.getIdFlete());
         transaccion.setImporte(flete.getTotal());
         transaccion.setFlete(flete);
 
@@ -289,43 +282,39 @@ public class TransaccionServicio {
             }
         }
 
-        if  (flete.getChofer() != tChofer.getChofer()) {   //si lo que se modifico en la transacion es chofer, entra en este if
-            
+        if (flete.getChofer() != tChofer.getChofer()) {   //si lo que se modifico en la transacion es chofer, entra en este if
+
             cuentaServicio.eliminarTransaccionCuentaChofer(tChofer); //elimina transaccion en cuenta chofer modificado
 
             crearTransaccionFleteChofer(idFlete);   //agrega transaccion en cuenta Chofer modificado
-            
-            Transaccion tGasto = new Transaccion();
-            
-            if(flete.getGasto() != null){
 
-            Long idGasto = flete.getGasto().getId();
-            tGasto = transaccionRepositorio.buscarTransaccionIdGasto(idGasto);
-            
+            Transaccion tGasto = new Transaccion();
+
+            if (flete.getGasto() != null) {
+
+                Long idGasto = flete.getGasto().getId();
+                tGasto = transaccionRepositorio.buscarTransaccionIdGasto(idGasto);
+
             }
-            
-            if(tGasto.getGasto() != null && tGasto.getChofer().getCaja().equalsIgnoreCase("SI")){
+
+            if (tGasto.getGasto() != null && tGasto.getChofer().getCaja().equalsIgnoreCase("SI")) {
 
                 crearTransaccionGasto(tGasto.getGasto().getId());
                 cajaServicio.eliminarTransaccionCajaChofer(tGasto);
             }
-            
-            if(tGasto.getGasto() != null && tGasto.getChofer().getCaja().equalsIgnoreCase("NO")){
+
+            if (tGasto.getGasto() != null && tGasto.getChofer().getCaja().equalsIgnoreCase("NO")) {
 
                 crearTransaccionGasto(tGasto.getGasto().getId());
-                cuentaServicio.eliminarTransaccionCuentaChofer(tGasto);           
+                cuentaServicio.eliminarTransaccionCuentaChofer(tGasto);
             }
-        }
-        
-        else if (flete.getCliente() != tCliente.getCliente()) {    //si lo que se modifico en la transacion es cliente, entra en este if
+        } else if (flete.getCliente() != tCliente.getCliente()) {    //si lo que se modifico en la transacion es cliente, entra en este if
 
             cuentaServicio.eliminarTransaccionCuentaCliente(tCliente); //elimina transaccion en cuenta cliente modificado
 
             crearTransaccionFleteCliente(idFlete);   //agrega transaccion en cuenta Chofer modificado
 
-        } 
-        
-        else {
+        } else {
 
             tChofer.setFecha(flete.getFechaFlete());
             tChofer.setImporte(flete.getPorcentajeChofer());
@@ -370,31 +359,31 @@ public class TransaccionServicio {
         if (gto.isPresent()) {
             gasto = gto.get();
         }
-        
+
         Usuario chofer = choferServicio.buscarChofer(gasto.getChofer().getId());
-        
+
         Transaccion transaccion = new Transaccion();
         transaccion.setChofer(gasto.getChofer());
         transaccion.setFecha(gasto.getFecha());
         transaccion.setConcepto("GASTO");
         transaccion.setObservacion(gasto.getNombre());
-      
+
         if (chofer.getCaja().equalsIgnoreCase("NO")) {
             transaccion.setImporte(gasto.getImporte());
             transaccion.setGasto(gasto);
 
             transaccionRepositorio.save(transaccion);
-            
+
             cuentaServicio.agregarTransaccionCuentaChofer(transaccion);
-        
+
         } else {
             transaccion.setImporte(gasto.getImporte() * -1);
             transaccion.setGasto(gasto);
 
             transaccionRepositorio.save(transaccion);
-            
+
             cajaServicio.agregarTransaccionCajaChofer(buscarUltimo());
-        }      
+        }
     }
 
     @Transactional
@@ -405,51 +394,51 @@ public class TransaccionServicio {
         if (gto.isPresent()) {
             gasto = gto.get();
         }
-        
+
         Usuario chofer = choferServicio.buscarChofer(gasto.getChofer().getId());
 
         Transaccion transaccion = transaccionRepositorio.buscarTransaccionIdGasto(idGasto);
 
-        if(chofer.getCaja().equalsIgnoreCase("NO")){
-        
-        transaccion.setImporte(gasto.getImporte());
-        transaccion.setFecha(gasto.getFecha());
+        if (chofer.getCaja().equalsIgnoreCase("NO")) {
 
-        transaccionRepositorio.save(transaccion);
+            transaccion.setImporte(gasto.getImporte());
+            transaccion.setFecha(gasto.getFecha());
 
-        cuentaServicio.modificarTransaccionCuentaChofer(transaccion);
-        
+            transaccionRepositorio.save(transaccion);
+
+            cuentaServicio.modificarTransaccionCuentaChofer(transaccion);
+
         } else {
-            
-        transaccion.setImporte(gasto.getImporte() * -1);
-        transaccion.setFecha(gasto.getFecha());
 
-        transaccionRepositorio.save(transaccion);
+            transaccion.setImporte(gasto.getImporte() * -1);
+            transaccion.setFecha(gasto.getFecha());
 
-        cajaServicio.modificarTransaccionCajaChofer(transaccion);    
-            
+            transaccionRepositorio.save(transaccion);
+
+            cajaServicio.modificarTransaccionCajaChofer(transaccion);
+
         }
     }
 
     @Transactional
     public void eliminarTransaccionGasto(Long idGasto) {
-        
+
         Gasto gasto = new Gasto();
         Optional<Gasto> gto = gastoRepositorio.findById(idGasto);
         if (gto.isPresent()) {
             gasto = gto.get();
         }
-        
+
         Usuario chofer = choferServicio.buscarChofer(gasto.getChofer().getId());
 
         Transaccion transaccion = transaccionRepositorio.buscarTransaccionIdGasto(idGasto);
 
-        if(chofer.getCaja().equalsIgnoreCase("NO")){
-        
-        cuentaServicio.eliminarTransaccionCuentaChofer(transaccion);
-        
+        if (chofer.getCaja().equalsIgnoreCase("NO")) {
+
+            cuentaServicio.eliminarTransaccionCuentaChofer(transaccion);
+
         } else {
-            
+
             cajaServicio.eliminarTransaccionCajaChofer(transaccion);
         }
 
@@ -483,42 +472,37 @@ public class TransaccionServicio {
 
         return lista;
     }
-    
-      public ArrayList<Transaccion> buscarTransaccionIdCuentaFecha(Long idCuenta, String desde, String hasta) throws ParseException {
-        
+
+    public ArrayList<Transaccion> buscarTransaccionIdCuentaFecha(Long idCuenta, String desde, String hasta) throws ParseException {
+
         java.sql.Date fd = (java.sql.Date) convertirStringASqlDate(desde);
         java.sql.Date fh = (java.sql.Date) convertirStringASqlDate(hasta);
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
         Double saldoAcumulado = cuenta.getSaldo();
-        
+
         ArrayList<Transaccion> lista = transaccionRepositorio.buscarTransaccionCuentaPorRangoFechas(idCuenta, fd, fh);
 
         if (!lista.isEmpty()) {
-          Collections.sort(lista, TransaccionComparador.ordenarFechaDesc);  
-          lista.get(0).setSaldoAcumulado(saldoAcumulado);
+            Collections.sort(lista, TransaccionComparador.ordenarFechaDesc);
+            lista.get(0).setSaldoAcumulado(saldoAcumulado);
         }
 
         for (int i = 1; i < lista.size(); i++) {                 //for para obtener el saldo acumulado
-            saldoAcumulado = saldoAcumulado - lista.get(i-1).getImporte(); 
+            saldoAcumulado = saldoAcumulado - lista.get(i - 1).getImporte();
             saldoAcumulado = Math.round(saldoAcumulado * 100.0) / 100.0;  //redondeamos saldoAcumulado solo a 2 decimales
             lista.get(i).setSaldoAcumulado(saldoAcumulado);
         }
-        
-        for(Transaccion t : lista){
-            t.setImporteS(convertirNumeroMiles(t.getImporte()));
-            t.setSaldoAcumuladoS(convertirNumeroMiles(t.getSaldoAcumulado()));
-        }
-        
+
         return lista;
     }
-    
-      public ArrayList<Transaccion> buscarTransaccionIdCuentaFechaFiltro(Long idCuenta, String desde, String hasta) throws ParseException {
-        
+
+    public ArrayList<Transaccion> buscarTransaccionIdCuentaFechaFiltro(Long idCuenta, String desde, String hasta) throws ParseException {
+
         java.sql.Date fd = (java.sql.Date) convertirStringASqlDate(desde);
         java.sql.Date fh = (java.sql.Date) convertirStringASqlDate(hasta);
-        
+
         ArrayList<Transaccion> lista = transaccionRepositorio.buscarTransaccionCuentaPorRangoFechas(idCuenta, fd, fh);
-        
+
         Collections.sort(lista, TransaccionComparador.ordenarFechaAcs);
 
         Double saldoAcumulado = 0.0;
@@ -528,14 +512,9 @@ public class TransaccionServicio {
             saldoAcumulado = Math.round(saldoAcumulado * 100.0) / 100.0;  //redondeamos saldoAcumulado solo a 2 decimales
             t.setSaldoAcumulado(saldoAcumulado);
         }
-        
-        for(Transaccion t : lista){
-            t.setImporteS(convertirNumeroMiles(t.getImporte()));
-            t.setSaldoAcumuladoS(convertirNumeroMiles(t.getSaldoAcumulado()));
-        }
 
         Collections.reverse(lista);
-        
+
         return lista;
     }
 
@@ -559,22 +538,17 @@ public class TransaccionServicio {
             saldoAcumulado = Math.round(saldoAcumulado * 100.0) / 100.0;  //redondeamos saldoAcumulado solo a 2 decimales
             lista.get(i).setSaldoAcumulado(saldoAcumulado);
         }
-        
-        for(Transaccion t : lista){
-            t.setImporteS(convertirNumeroMiles(t.getImporte()));
-            t.setSaldoAcumuladoS(convertirNumeroMiles(t.getSaldoAcumulado()));
-        }
 
         return lista;
     }
-    
-     public ArrayList<Transaccion> buscarTransaccionIdCajaFechaFiltro(Long idCaja, String desde, String hasta) throws ParseException {
-        
+
+    public ArrayList<Transaccion> buscarTransaccionIdCajaFechaFiltro(Long idCaja, String desde, String hasta) throws ParseException {
+
         java.sql.Date fd = (java.sql.Date) convertirStringASqlDate(desde);
         java.sql.Date fh = (java.sql.Date) convertirStringASqlDate(hasta);
-        
+
         ArrayList<Transaccion> lista = transaccionRepositorio.buscarTransaccionCajaPorRangoFechas(idCaja, fd, fh);
-        
+
         Collections.sort(lista, TransaccionComparador.ordenarFechaAcs);
 
         Double saldoAcumulado = 0.0;
@@ -584,17 +558,12 @@ public class TransaccionServicio {
             saldoAcumulado = Math.round(saldoAcumulado * 100.0) / 100.0;  //redondeamos saldoAcumulado solo a 2 decimales
             t.setSaldoAcumulado(saldoAcumulado);
         }
-        
-        for(Transaccion t : lista){
-            t.setImporteS(convertirNumeroMiles(t.getImporte()));
-            t.setSaldoAcumuladoS(convertirNumeroMiles(t.getSaldoAcumulado()));
-        }
 
         Collections.reverse(lista);
-        
+
         return lista;
     }
-    
+
     public Date convertirFecha(String fecha) throws ParseException {
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
         return formato.parse(fecha);
@@ -604,25 +573,10 @@ public class TransaccionServicio {
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date utilDate = formato.parse(fecha);
         return new java.sql.Date(utilDate.getTime()); // Conversión a java.sql.Date
-}
+    }
 
     public ArrayList<Transaccion> buscarTransaccionIdCajaFecha(Long id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    private String convertirNumeroMiles(Double num) {
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
-
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
-    }
-  
-    
-    
 
 }

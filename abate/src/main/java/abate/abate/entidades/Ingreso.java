@@ -1,4 +1,3 @@
-
 package abate.abate.entidades;
 
 import java.util.Date;
@@ -12,7 +11,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class Ingreso {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -93,7 +92,5 @@ public class Ingreso {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-    
-    
-    
+
 }

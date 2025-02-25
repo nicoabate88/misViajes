@@ -10,7 +10,7 @@
                         <body>
                             <div class="container">   
 
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/index}" type="button">
@@ -20,7 +20,7 @@
                                             </a>   
                                         </div>
                                         <div  class="col-7">
-                                            <h4>Camiones</h4>
+                                            <h4>Lista de Camiones</h4>
                                         </div>
                                         <div title="Ir a Registrar Camión" class="col-3 text-center">
                                             <a th:href="@{/camion/registrar}">
@@ -33,22 +33,20 @@
                                 </div>
                                 <div th:if="${!camiones.isEmpty()}">
                                 <div th:each="camion : ${camiones}">
-                                    <div class="card mb-1" id="color-card">
-                                        <div class="row">
+                                    <div class="card border-secondary p-3 mb-1" id="color-card">
+                                        <div class="row mb-3">
                                             <div class="col-8">
-                                                <div class="card-body">
                                                 <h6 th:text="${camion.dominio}"></h6>
                                                 <h6 id="dimgray" th:text="${camion.marca}+' '+${camion.modelo}"></h6>
-                                                </div>
+                                                <p th:if="${camion.azul == 'HABILITADO'}" id="dimgray" th:text="'Carga de Úrea '+${camion.azul}"></p>
+                                                <p th:if="${camion.azul == 'INHABILITADO'}" class="text-danger" th:text="'Carga de Úrea '+${camion.azul}"></p>
                                             </div>
                                             <div title="Ir a Modificar Camión" class="col-4 text-center">
-                                                <div class="card-body">
                                                     <a th:href= "@{/camion/modificar/__${camion.id}__}">
                                                         <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
                                                         </svg>     <p id="modificar">Modificar</p>
                                                     </a>
-                                                </div>
                                             </div>
                                         </div>   
                                         <div class="row text-center">
@@ -80,17 +78,26 @@
                                                     </svg> <p id="icono2">Gastos</p></a>
                                             </div>
                                         </div>
-                                    </div>    
+                                    </div>  
                                 </div>
+                                    <br>
+                                     <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                    </div>
+                                
                                 </div>    
                                 <div th:if="${camiones.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
-                                        <h6 class="mb-4" id="azul">No existen Camiones Registrados</h6>
-                                        <div class=" text-center">    
-                                            <a class="btn btn-primary" type="button" th:href="@{/camion/registrar}">Nuevo Camión</a>
-                                        </div>
+                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                        <h6 id="azul">No existen Camiones Registrados</h6>
+                                     </div>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Camión" th:href="@{/camion/registrar}">Nuevo Camión</a>
                                     </div>
-                                </div>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                    </div>
+                                    </div>
+                            
 
                             </div>
                             </div>

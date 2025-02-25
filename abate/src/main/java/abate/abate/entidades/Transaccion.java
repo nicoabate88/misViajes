@@ -25,8 +25,6 @@ public class Transaccion {
     private String observacion;
     private Double importe;
     private Double saldoAcumulado;
-    private String importeS;
-    private String saldoAcumuladoS;
     @OneToOne
     private Flete flete;
     @OneToOne
@@ -41,7 +39,7 @@ public class Transaccion {
     public Transaccion() {
     }
 
-    public Transaccion(Long id, Cliente cliente, Usuario chofer, Date fecha, String concepto, String observacion, Double importe, Double saldoAcumulado, String importeS, String saldoAcumuladoS, Flete flete, Recibo recibo, Entrega entrega, Gasto gasto, Ingreso ingreso) {
+    public Transaccion(Long id, Cliente cliente, Usuario chofer, Date fecha, String concepto, String observacion, Double importe, Double saldoAcumulado, Flete flete, Recibo recibo, Entrega entrega, Gasto gasto, Ingreso ingreso) {
         this.id = id;
         this.cliente = cliente;
         this.chofer = chofer;
@@ -50,8 +48,6 @@ public class Transaccion {
         this.observacion = observacion;
         this.importe = importe;
         this.saldoAcumulado = saldoAcumulado;
-        this.importeS = importeS;
-        this.saldoAcumuladoS = saldoAcumuladoS;
         this.flete = flete;
         this.recibo = recibo;
         this.entrega = entrega;
@@ -123,22 +119,6 @@ public class Transaccion {
         this.saldoAcumulado = saldoAcumulado;
     }
 
-    public String getImporteS() {
-        return importeS;
-    }
-
-    public void setImporteS(String importeS) {
-        this.importeS = importeS;
-    }
-
-    public String getSaldoAcumuladoS() {
-        return saldoAcumuladoS;
-    }
-
-    public void setSaldoAcumuladoS(String saldoAcumuladoS) {
-        this.saldoAcumuladoS = saldoAcumuladoS;
-    }
-
     public Flete getFlete() {
         return flete;
     }
@@ -179,5 +159,4 @@ public class Transaccion {
         this.ingreso = ingreso;
     }
 
-    
 }

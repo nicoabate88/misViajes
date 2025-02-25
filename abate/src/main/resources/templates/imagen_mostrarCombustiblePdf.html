@@ -9,7 +9,7 @@
                         <body>
 
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/combustible/listarChofer/__${idUsuario}__}" type="button">
@@ -42,6 +42,9 @@
                                                 </svg>  <h6 id="dimgray">Descargar PDF</h6> </a>
                                     </div>                                    
                                 </div>
+                                 <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/combustible/listarChofer/__${idUsuario}__}">Volver</a>
+                                    </div>
                             </div>
 
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

@@ -56,7 +56,7 @@ public class ReciboServicio {
         recibo.setObservacion(obsMayusculas);
         recibo.setImporte(importe);
         recibo.setUsuario(usuario);
-        recibo.setIdRecibo(idRecibo+1);
+        recibo.setIdRecibo(idRecibo + 1);
 
         reciboRepositorio.save(recibo);
 
@@ -112,20 +112,20 @@ public class ReciboServicio {
         transaccionServicio.eliminarTransaccionRecibo(idRecibo);
 
         recibo.setCliente(null);
-        recibo.setImporte(0.0);
-        recibo.setObservacion("ELIMINADO");
         recibo.setUsuario(null);
 
         reciboRepositorio.save(recibo);
 
+        reciboRepositorio.deleteById(idRecibo);
+
     }
 
     public ArrayList<Recibo> buscarRecibosIdCliente(Long id, String desde, String hasta) throws ParseException {
-        
+
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Recibo> lista = reciboRepositorio.findByFechaBetweenAndObservacionNotAndClienteId(d, h, "ELIMINADO", id);
+        ArrayList<Recibo> lista = reciboRepositorio.findByFechaBetweenAndClienteId(d, h, id);
 
         Collections.sort(lista, ReciboComparador.ordenarFechaDesc); //ordena por nombre alfabetico los nombres de clientes
 
@@ -134,34 +134,34 @@ public class ReciboServicio {
     }
 
     public ArrayList<Recibo> buscarRecibos(Long idOrg, String desde, String hasta) throws ParseException {
-        
+
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Recibo> lista = reciboRepositorio.findByFechaBetweenAndObservacionNotAndIdOrg(d, h, "ELIMINADO", idOrg);
+        ArrayList<Recibo> lista = reciboRepositorio.findByFechaBetweenAndIdOrg(d, h, idOrg);
 
         Collections.sort(lista, ReciboComparador.ordenarFechaDesc); //ordena por nombre alfabetico los nombres de clientes
 
         return lista;
 
     }
-    
-      public Long buscarUltimoIdOrg(Long idOrg) {
-        
+
+    public Long buscarUltimoIdOrg(Long idOrg) {
+
         Recibo recibo = new Recibo();
-        Optional<Recibo> rbo = reciboRepositorio.findTopByIdOrgAndObservacionNotOrderByIdDesc(idOrg, "ELIMINADO");
+        Optional<Recibo> rbo = reciboRepositorio.findTopByIdOrgOrderByIdDesc(idOrg);
         if (rbo.isPresent()) {
             recibo = rbo.get();
-            
+
             return recibo.getIdRecibo();
-            
+
         } else {
-            
+
             int ultimo = 0;
             Long primero = Long.valueOf(ultimo);
 
             return primero;
-            
+
         }
 
     }
@@ -169,7 +169,7 @@ public class ReciboServicio {
     public Long buscarUltimo(Long idOrg) {
 
         return reciboRepositorio.ultimoRecibo(idOrg);
-        
+
     }
 
     public Recibo buscarRecibo(Long id) {
@@ -177,7 +177,7 @@ public class ReciboServicio {
         return reciboRepositorio.getById(id);
     }
 
-    public Date convertirFecha(String fecha) throws ParseException { 
+    public Date convertirFecha(String fecha) throws ParseException {
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
         return formato.parse(fecha);
     }

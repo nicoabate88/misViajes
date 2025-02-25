@@ -6,13 +6,10 @@ import abate.abate.entidades.Usuario;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.CuentaServicio;
 import abate.abate.servicios.EntregaServicio;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,10 +49,8 @@ public class EntregaControlador {
     public String registrarEntrega(@PathVariable Long id, ModelMap modelo) {
 
         Cuenta cuenta = cuentaServicio.buscarCuentaChofer(id);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
 
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
 
         return "entrega_registrarId.html";
     }
@@ -82,10 +77,8 @@ public class EntregaControlador {
 
         Long id = entregaServicio.buscarUltimo(logueado.getIdOrg());
         Entrega entrega = entregaServicio.buscarEntrega(id);
-        String total = convertirNumeroMiles(entrega.getImporte());
 
         modelo.put("entrega", entrega);
-        modelo.put("importe", total);
         modelo.put("exito", "Entrega REGISTRADA con éxito");
 
         return "entrega_registrado.html";
@@ -101,14 +94,13 @@ public class EntregaControlador {
         Double total = 0.0;
         for (Entrega e : lista) {
             total = e.getImporte() + total;
-            e.setImporteS(convertirNumeroMiles(e.getImporte()));
         }
 
         modelo.addAttribute("entregas", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("id", logueado.getIdOrg());
-        modelo.put("total", convertirNumeroMiles(total));
+        modelo.put("total", total);
 
         return "entrega_listar.html";
     }
@@ -120,14 +112,13 @@ public class EntregaControlador {
         Double total = 0.0;
         for (Entrega e : lista) {
             total = e.getImporte() + total;
-            e.setImporteS(convertirNumeroMiles(e.getImporte()));
         }
 
         modelo.addAttribute("entregas", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("id", id);
-        modelo.put("total", convertirNumeroMiles(total));
+        modelo.put("total", total);
 
         return "entrega_listar.html";
     }
@@ -143,7 +134,6 @@ public class EntregaControlador {
         Double total = 0.0;
         for (Entrega e : lista) {
             total = e.getImporte() + total;
-            e.setImporteS(convertirNumeroMiles(e.getImporte()));
         }
 
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
@@ -152,7 +142,7 @@ public class EntregaControlador {
             modelo.put("id", id);
             modelo.put("desde", desde);
             modelo.put("hasta", hasta);
-            modelo.put("total", convertirNumeroMiles(total));
+            modelo.put("total", total);
 
             return "entrega_listarIdChofer.html";
 
@@ -163,7 +153,7 @@ public class EntregaControlador {
             modelo.put("id", id);
             modelo.put("desde", desde);
             modelo.put("hasta", hasta);
-            modelo.put("total", convertirNumeroMiles(total));
+            modelo.put("total", total);
 
             return "entrega_listarIdChoferAdmin.html";
 
@@ -179,7 +169,6 @@ public class EntregaControlador {
         Double total = 0.0;
         for (Entrega e : lista) {
             total = e.getImporte() + total;
-            e.setImporteS(convertirNumeroMiles(e.getImporte()));
         }
 
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
@@ -188,7 +177,7 @@ public class EntregaControlador {
             modelo.put("id", id);
             modelo.put("desde", desde);
             modelo.put("hasta", hasta);
-            modelo.put("total", convertirNumeroMiles(total));
+            modelo.put("total", total);
 
             return "entrega_listarIdChofer.html";
 
@@ -199,7 +188,7 @@ public class EntregaControlador {
             modelo.put("id", id);
             modelo.put("desde", desde);
             modelo.put("hasta", hasta);
-            modelo.put("total", convertirNumeroMiles(total));
+            modelo.put("total", total);
 
             return "entrega_listarIdChoferAdmin.html";
 
@@ -238,10 +227,8 @@ public class EntregaControlador {
     public String entregaModificado(@PathVariable Long id, ModelMap modelo) {
 
         Entrega entrega = entregaServicio.buscarEntrega(id);
-        String total = convertirNumeroMiles(entrega.getImporte());
 
         modelo.put("entrega", entrega);
-        modelo.put("importe", total);
         modelo.put("exito", "Entrega MODIFICADA con éxito");
 
         return "entrega_registrado.html";
@@ -274,12 +261,20 @@ public class EntregaControlador {
     public String elimina(@PathVariable Long id, HttpSession session, ModelMap modelo) {
 
         entregaServicio.eliminarEntrega(id);
+
+        return "redirect:/entrega/eliminado";
+        
+    }
+    
+    @GetMapping("/eliminado")
+    public String eliminado(ModelMap modelo, HttpSession session) {
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("id", logueado.getId());
         modelo.put("exito", "Entrega ELIMINADA con éxito");
 
-        return "index_admin.html";
+        return "index_admin.html";    
 
     }
 
@@ -288,35 +283,21 @@ public class EntregaControlador {
     public String imprimir(@PathVariable Long id, ModelMap modelo) {
 
         Entrega entrega = entregaServicio.buscarEntrega(id);
-        String total = convertirNumeroMiles(entrega.getImporte());
 
         modelo.put("entrega", entrega);
-        modelo.put("total", total);
 
         return "entrega_imprimir.html";
     }
 
-        private String convertirNumeroMiles(Double num) {
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
-
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
-    }
-
-    public String obtenerFechaDesde() {
+        public String obtenerFechaDesde() {
 
         LocalDate now = LocalDate.now();
 
-        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+         LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String formattedDate = firstDayOfMonth.format(formatter);
+        String formattedDate = firstDayOfPreviousMonth.format(formatter);
 
         return formattedDate;
 

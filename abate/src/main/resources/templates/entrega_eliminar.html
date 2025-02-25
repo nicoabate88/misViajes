@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/index}" type="button">
@@ -22,30 +22,26 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card mb-4" id="color-card">
-                                            <div class="card-body">
-                                                <h6 th:text="'Importe $'+${entrega.importe}"></h6>
+                                <div class="card border-secondary p-3 mb-2" id="color-card">
+                                                <h6 th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 <h6 id="dimgray" th:text="'Chofer '+${entrega.chofer.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="'Fecha '+${entrega.fecha}+' - ID'+${entrega.idEntrega}"></h6>
+                                                <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
                                                 <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>
-                                            </div>
                                         </div>
 
-                                <div th:if="${error == null}" class="card-header mb-4 text-center">
+                                <div th:if="${error == null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">
                                     <h6 id="white">¿Seguro desea ELIMINAR esta Entrega?</h6>
-                                    <p id="dimgray">Eliminar esta Entrega modificará el Saldo de Cuenta Corriente del Chofer</p>
+                                    <p id="white">Eliminar esta Entrega modificará el Saldo de Cuenta Corriente del Chofer.</p>
                                 </div>
                                 <div th:if="${error != null}" class="card-body mb-4 col-md-6 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${error}"></h6>                                                                             
                                 </div>
-                                <div class="row text-center">
-                                    <div th:if="${error == null}" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-1"> 
-                                        <a class="btn btn-primary" type="button" th:href= "@{/entrega/elimina/__${entrega.id}__}" title="Eliminar Entrega">Eliminar</a>
-                                    </div>
-                                    <div class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2">
-                                        <a class="btn btn-primary" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
-                                    </div>
-                                </div>
+                                <div th:if="${error == null}" class="text-center mb-2">
+                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" th:href="@{/entrega/elimina/__${entrega.id}__}" title="Eliminar Entrega">Eliminar</a>
+                                    </div>    
+                                    <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
+                                    </div> 
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

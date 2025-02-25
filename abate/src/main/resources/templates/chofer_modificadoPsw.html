@@ -10,7 +10,7 @@
                         <body>
                             <div class="container">  
                                 
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/}" type="button">
@@ -25,23 +25,21 @@
                                     </div>
                                 </div>
 
-                                <div class="card mb-4" id="color-card">
-                                            <div class="card-body">
+                                <div class="card border-secondary p-3 mb-2" id="color-card">
                                                 <h6 th:text="${chofer.nombre}"></h6>
                                                 <h6 id="dimgray" th:text="'Nombre de Usuario: '+${chofer.usuario}"></h6>
                                                 <p id="dimgray" th:text="'CUIL '+${chofer.cuil}"></p>
                                                 <p class="mb-0" id="dimgray" th:text="'Porcentaje '+${chofer.porcentaje}+'%'"></p>
-                                                <p id="dimgray" th:text="'Camión '+${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}" th:if="${chofer.camion} != null"></p>
-                                            </div>
+                                        
                                 </div>  
 
                                 <div th:if="${exito != null}" class="card-body mb-4 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
                                 </div>
-
-                                <div class="col-2">
-                                    <a class="btn btn-primary" type="button" th:href="@{/}">Aceptar</a>
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/index}">Aceptar</a>
                                 </div>
+
                             </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

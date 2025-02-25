@@ -9,7 +9,7 @@
                         <body>
                             <div class="container">
 
-                                <div class="card-header mb-4">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" onclick="window.history.back();"  type="button">
@@ -23,20 +23,22 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card p-2 bg-light border-light">
-                                <form class="row g-3" th:action="@{/cliente/registro}" method="POST">
-
+                                <div class="card border-secondary p-2" id="color-card">
+                                <form th:action="@{/cliente/registro}" method="POST">
+                                    <div class="row">
                                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault01" class="form-label text-secondary">Apellido y Nombre</label>
+                                        <label for="validationDefault01" class="form-label text-secondary">Apellido y Nombre*</label>
                                         <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
                                     </div>
                                     <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault02" class="form-label text-secondary">CUIT</label>
+                                        <label for="validationDefault02" class="form-label text-secondary">CUIT*</label>
                                         <input type="number" class="form-control" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIT" name="cuit" th:value="${cuit}" required>
                                         <span id="error-message" style="color: red; display: none;">El CUIT debe tener 11 dígitos.</span>    
                                     </div>
                                     <div class="d-block d-md-none col-6">
                                     </div>
+                                    </div>
+                                    <div class="row">
                                     <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
                                         <label for="validationDefault01" class="form-label text-secondary">Localidad</label>
                                         <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Localidad" name="localidad" th:value="${localidad}">
@@ -45,6 +47,8 @@
                                         <label for="validationDefault01" class="form-label text-secondary">Domicilio</label>
                                         <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Domicilio" name="direccion" th:value="${direccion}">
                                     </div>
+                                    </div>
+                                    <div class="row">
                                     <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                         <label for="validationDefault01" class="form-label text-secondary">Teléfono</label>
                                         <input type="number" class="form-control" id="validationDefault01" placeholder="Ingrese Teléfono" name="telefono" th:value="${telefono}">
@@ -53,19 +57,18 @@
                                         <label for="validationDefault01" class="form-label text-secondary">Email</label>
                                         <input type="email" class="form-control" id="validationDefault01" placeholder="Ingrese Email" name="email" th:value="${email}">
                                     </div>
+                                    </div>
                                     <div class="container">
-                                        <div th:if="${error != null}" class="card-body mb-5 col-md-5 text-center" id="mensaje">                        
+                                        <div th:if="${error != null}" class="card-body mb-5 text-center" id="mensaje">                        
                                             <h6 id="white" th:text="${error}"></h6>                                                                             
                                         </div>
                                     </div>
-                                    <div class="row text-center">
-                                        <div class="col-8 col-md-8">
-                                            <button class="btn btn-primary" type="submit" title="Registrar Cliente">Registrar</button>
-                                        </div>
-                                        <div class="col-4 col-md-4">
-                                            <a class="btn btn-primary" type="button" th:href= "@{/cliente/registrar}"title="Cancelar">Cancelar</a>
-                                        </div>
-                                    </div>
+                                      <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Cliente">Registrar</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/cliente/listar}" title="Cancelar">Cancelar</a>
+                                            </div> 
                                 </form>
                                 </div>
                             </div>

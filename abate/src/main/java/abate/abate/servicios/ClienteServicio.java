@@ -8,6 +8,7 @@ import abate.abate.repositorios.TransaccionRepositorio;
 import abate.abate.util.ClienteComparador;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class ClienteServicio {
             cliente = cte.get();
         }
         validarDatosModificar(cliente, nombre, cuit);
-        
+
         String nombreMayusculas = nombre.toUpperCase();
         String localidadMayusculas = localidad.toUpperCase();
         String direccionMayusculas = direccion.toUpperCase();
@@ -76,9 +77,9 @@ public class ClienteServicio {
 
     @Transactional
     public void eliminarCliente(Long id) throws MiException {
-        
+
         Cliente cliente = clienteRepositorio.getById(id);
-        
+
         Transaccion transaccion = transaccionRepositorio.findTopByClienteOrderByIdDesc(cliente);
 
         if (transaccion == null) {
@@ -89,7 +90,7 @@ public class ClienteServicio {
 
         } else {
 
-            throw new MiException("El Cliente no puede ser eliminado, tiene Flete y/o Recibo asociado");
+            throw new MiException("El Cliente no puede ser eliminado, tiene Viaje y/o Recibo asociado.");
         }
 
     }
@@ -100,7 +101,7 @@ public class ClienteServicio {
     }
 
     public ArrayList<Cliente> buscarClientesNombreAsc(Long idOrg) {
-        
+
         ArrayList<Cliente> lista = clienteRepositorio.buscarClientes(idOrg);
 
         Collections.sort(lista, ClienteComparador.ordenarNombreAsc); //ordena por nombre alfabetico los nombres de clientes
@@ -119,31 +120,36 @@ public class ClienteServicio {
 
         ArrayList<Cliente> lista = clienteRepositorio.buscarClientes(idOrg);
 
-        for (Cliente c : lista) {
-            if (c.getNombre().equalsIgnoreCase(nombre)) {
-                throw new MiException("El NOMBRE de Cliente ya está registrado");
-            }
-            if (c.getCuit().equals(cuit)) {
-                throw new MiException("El CUIT de Cliente ya está registrado");
+        if (lista != null) {
+            for (Cliente c : lista) {
+                if (c.getNombre().equalsIgnoreCase(nombre)) {
+                    throw new MiException("El NOMBRE de Cliente ya está registrado.");
+                }
+                if (Objects.equals(c.getCuit(), cuit)) {
+                    throw new MiException("El CUIT de Cliente ya está registrado.");
+                }
             }
         }
     }
+
     public void validarDatosModificar(Cliente cliente, String nombre, Long cuit) throws MiException {
 
         ArrayList<Cliente> lista = clienteRepositorio.buscarClientes(cliente.getIdOrg());
 
-        if (!cliente.getNombre().equalsIgnoreCase(nombre)) {
-            for (Cliente c : lista) {
-                if (c.getNombre().equalsIgnoreCase(nombre)) {
-                    throw new MiException("El NOMBRE de Cliente ya está registrado");
+        if (lista != null) {
+            if (!cliente.getNombre().equalsIgnoreCase(nombre)) {
+                for (Cliente c : lista) {
+                    if (c.getNombre().equalsIgnoreCase(nombre)) {
+                        throw new MiException("El NOMBRE de Cliente ya está registrado.");
+                    }
                 }
             }
-        }
-        
-        if (!cliente.getCuit().equals(cuit)) {
-            for (Cliente c : lista) {
-                if (c.getCuit().equals(cuit)) {
-                    throw new MiException("El CUIT de Cliente ya está registrado");
+
+            if (!cliente.getCuit().equals(cuit)) {
+                for (Cliente c : lista) {
+                    if (Objects.equals(c.getCuit(), cuit)) {
+                        throw new MiException("El CUIT de Cliente ya está registrado.");
+                    }
                 }
             }
         }

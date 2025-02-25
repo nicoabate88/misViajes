@@ -90,11 +90,11 @@
                 <h5>Detalle de Ingreso</h5>
                 <div class="recibo-datos">
                     <p><strong>N°:</strong> <span th:text="${ingreso.idIngreso}"></span></p>
-                    <p><strong>Fecha:</strong> <span th:text="${ingreso.fecha}"></span></p>
+                    <p><strong>Fecha:</strong> <span th:text="${#dates.format(ingreso.fecha, 'dd-MM-yyyy')}"></span></p>
                 </div>
                 <p class="mb-0"><strong>Chofer: </strong><span th:text="${ingreso.chofer.nombre}"></span></p>
                 <p><strong>CUIL: </strong><span th:text="${ingreso.chofer.cuil}"></span></p>
-                <p class="mb-0"><strong>Importe:</strong> <span th:text="'$'+${total}"></span></p>
+                <p class="mb-0"><strong>Importe:</strong> <span th:text="'$'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></span></p>
                 <div class="d-flex align-items-center">
                     <label for="observacion" class="me-2 fw-bold">Observación:</label>
                     <input id="observacion" name="observacion" class="form-control-plaintext" 

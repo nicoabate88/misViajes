@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href= "@{/index}" type="button">
@@ -18,21 +18,21 @@
                                             </a>   
                                         </div>
                                         <div  class="col-10">
-                                            <h4>Cuentas Clientes</h4>
+                                            <h4>Cuentas de Clientes</h4>
                                         </div>
                                     </div>
                                 </div>
                                 <div th:if="${!cuentas.isEmpty()}">
-                                <div class="card-body">
-                                    <h6 id="dimgray" th:text="'Total Saldo $'+${saldo}"></h6>  
+                                <div class="card-body pb-2">
+                                    <h6 id="dimgray" th:text="'Total Saldo $'+${#numbers.formatDecimal(saldo, 0, 'POINT', 2, 'COMMA')}"></h6>  
                                 </div>
                                 <div th:each="cuenta : ${cuentas}">
-                                    <div class="card mb-1" id="color-card">
+                                    <div class="card border-secondary p-2 mb-1" id="color-card">
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-9">
                                                     <h6 th:text="${cuenta.cliente.nombre}"></h6>
-                                                    <h6 id="dimgray" th:text="'Saldo $'+${cuenta.saldoN}"></h6>
+                                                    <h6 id="dimgray" th:text="'Saldo $'+${#numbers.formatDecimal(cuenta.saldo, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 </div>
                                                 <div class="col-3">
                                                     <div title="Ver Cuenta" class="text-center">
@@ -47,14 +47,21 @@
                                         </div>    
                                     </div>
                                 </div>
+                                    <br>
+                                     <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                    </div>
                                 </div> 
                                 <div th:if="${cuentas.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
-                                        <h6 class="mb-4" id="azul">No existen Clientes Registrados</h6>
-                                        <div class=" text-center">    
-                                            <a class="btn btn-primary" type="button" th:href="@{/cliente/registrar}">Nuevo Cliente</a>
-                                        </div>
+                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                        <h6 id="azul">No existen Clientes Registrados</h6>
+                                        <p id="azul">Cuando registre Cliente, aquí se mostrará su Cuenta</p>
+                                     </div>
+                                         
+                                     <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
                                     </div>
+                                    
                                 </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

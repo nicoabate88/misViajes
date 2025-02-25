@@ -21,9 +21,9 @@
                        </head>
                     <body>
                         <section>
-                            <div>
+                            <div class="container mb-5"> 
 
-                                <div class="card-header">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/flete/listar}" type="button">
@@ -33,10 +33,10 @@
                                             </a>   
                                         </div>
                                         <div  class="col-7">
-                                            <h4>Exportar Fletes</h4>
+                                            <h4>Exportar Viajes</h4>
                                         </div>
                                         <div class="col-3 text-center">
-                                            <form class="row g-3">
+                                            <form>
                                                 <input id="idChofer" hidden th:value="${id}" name="idChofer">
                                                 <input id="desde" hidden th:value="${desde}" name="desde">
                                                 <input id="hasta" hidden th:value="${hasta}" name="hasta">
@@ -59,16 +59,16 @@
                                         Exportando... Por favor, espere.
                                     </div>
                                 </div>
-                                <table class="table">
+                                <table class="table table-responsive border-secondary bg-light table-hover table-sm mb-4" id="dimgray">
                                     <thead>
                                         <tr>
-                                            <th>Fecha Carga</th>
-                                            <th>Fecha Descarga</th>
+                                            <th>FechaCarga</th>
+                                            <th>FechaDescarga</th>
                                             <th>Cliente</th>
-                                            <th>Lugar de Carga</th>
-                                            <th>Destino de Carga</th>
+                                            <th>LugarCarga</th>
+                                            <th>DestinoCarga</th>
                                             <th>Km</th>
-                                            <th>Tipo Carga</th>   
+                                            <th>TipoCarga</th>   
                                             <th>CP</th>
                                             <th>CTG</th>
                                             <th>Tarifa</th>
@@ -79,8 +79,8 @@
                                     </thead>
                                     <tbody>
                                         <tr th:each="flete : ${fletes}">
-                                            <td th:text="${flete.fechaCarga}"></td>
-                                            <td th:text="${flete.fechaFlete}"></td>
+                                            <td th:text="${#dates.format(flete.fechaCarga, 'dd-MM-yyyy')}"></td>
+                                            <td th:text="${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}"></td>
                                             <td th:text="${flete.cliente.nombre}"></td>
                                             <td th:text="${flete.origenFlete}"></td>
                                             <td th:text="${flete.destinoFlete}"></td>
@@ -94,7 +94,9 @@
                                             <td th:text="'$'+${flete.porcentajeChofer}"></td>
                                     </tbody>
                                 </table>
-
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/listar}">Volver</a>
+                                    </div>
                             </div>
                         </section>
                         <script>

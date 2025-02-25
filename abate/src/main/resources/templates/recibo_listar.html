@@ -10,7 +10,7 @@
                         <body>
 
                             <div class="container mb-5">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/recibo/registrar}" type="button">
@@ -20,14 +20,11 @@
                                             </a>   
                                         </div>
                                         <div  class="col-10">
-                                            <h4>Recibos</h4>
+                                            <h4>Lista de Recibos</h4>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body pb-0">
-                                    <h6 id="dimgray" th:text="'Total Recibos $'+${total}"></h6>
-                                </div>
-                                <div class="card-header" id="bgWhite">
+                                <div class="card-header pb-0" id="bgWhite">
                                     <form class="row g-3" th:action="@{/recibo/listarFiltro}" method="POST">
                                         <input hidden th:value="${id}" name="id">  
                                         <div class="row">    
@@ -51,12 +48,15 @@
                                     </form>   
                                 </div>
                                 <div th:if="${!recibos.isEmpty()}">
+                                <div class="card-body p-2">
+                                    <h6 id="dimgray" th:text="'Total Recibos $'+${#numbers.formatDecimal(total, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                </div>
                                 <div th:each="recibo : ${recibos}">
-                                    <div class="card-body mb-1" id="color-card">
+                                    <div class="card border-secondary p-3 mb-1" id="color-card">
                                         <div class="row">
                                             <div class="col-8">
-                                                <h6 th:text="'Importe $'+${recibo.importeS}"></h6>
-                                                <h6 id="dimgray" th:text="'Fecha '+${recibo.fecha}+' - ID'+${recibo.idRecibo}"></h6>
+                                                <h6 th:text="'Importe $'+${#numbers.formatDecimal(recibo.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(recibo.fecha, 'dd-MM-yyyy')}+' - ID'+${recibo.idRecibo}"></h6>
                                             </div>
                                             <div class="col-4 text-center">
                                                 <a th:href= "@{/recibo/modificar/__${recibo.id}__}" >
@@ -82,10 +82,22 @@
                                         </div>
                                     </div>
                                 </div>
+                                    <br>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/recibo/registrar}">Volver</a>
+                                    </div>
+                                
                                 </div>    
                                 <div th:if="${recibos.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
+                                    <br>
+                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
                                         <h6 id="azul">No existen Recibos de Clientes para la fecha seleccionada</h6>
+                                    </div>
+                                        <div class="text-center mb-2">
+                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Recibo" th:href="@{/recibo/registrar}">Nuevo Recibo</a>
+                                    </div>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/recibo/registrar}">Volver</a>
                                     </div>
                                 </div>
                             </div>

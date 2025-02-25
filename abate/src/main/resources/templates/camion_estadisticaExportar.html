@@ -22,9 +22,9 @@
 
                     <body>
                         <section>
-                            <div>
+                            <div class="container mb-5"> 
 
-                                <div class="card-header">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/camion/mostrarEstadistica/__${id}__}" type="button">
@@ -34,10 +34,10 @@
                                             </a>   
                                         </div>
                                         <div  class="col-7">
-                                            <h4>Exportar Estadística</h4>
+                                            <h4>Exportar Estadísticas</h4>
                                         </div>
                                         <div class="col-3 text-center">
-                                            <form class="row g-3">
+                                            <form>
                                                 <input id="idCamion" hidden th:value="${id}" name="idCamion">
                                                 <input id="desde" hidden th:value="${desde}" name="desde">
                                                 <input id="hasta" hidden th:value="${hasta}" name="hasta">
@@ -60,7 +60,7 @@
                                         Exportando... Por favor, espere.
                                     </div>
                                 </div>
-                                <table class="table">
+                                <table class="table table-responsive border-secondary bg-light table-hover table-sm mb-4" id="dimgray">
                                     <thead>
                                         <tr>
                                            <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">Año</th>
@@ -68,7 +68,7 @@
                                            <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Km</th>
                                            <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Diesel</th>
                                            <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Consumo</th>
-                                           <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Fletes</th>
+                                           <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Viajes</th>
                                            <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Neto</th>
                                            <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Neto/Km</th>                                          
                                         </tr>
@@ -77,15 +77,17 @@
                                         <tr th:each="e : ${estadistica}">
                                                <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1" th:text="${e.year}"></td>
                                                 <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${e.month}"></td>
-                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${e.kmRecorrido}"></td>
-                                                <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${e.litro}"></td>
+                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${#numbers.formatDecimal(e.kmRecorrido, 0, 'POINT', 2, 'COMMA')}"></td>
+                                                <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(e.litro, 0, 'POINT', 2, 'COMMA')}"></td>
                                                 <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${e.consumo}"></td>
                                                 <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${e.flete}"></td>
-                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${e.netoS}"></td>
-                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${e.rentabilidad}"></td>
+                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$${#numbers.formatDecimal(e.neto, 0, 'POINT', 2, 'COMMA')}"></td>
+                                                <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${#numbers.formatDecimal(e.rentabilidad, 0, 'POINT', 2, 'COMMA')}"></td>
                                     </tbody>
                                 </table>
-
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/camion/mostrarEstadistica/__${id}__}">Volver</a>
+                                    </div>
                             </div>
                         </section>
                         <script>

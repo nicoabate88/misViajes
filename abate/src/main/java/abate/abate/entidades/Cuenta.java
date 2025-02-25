@@ -20,20 +20,20 @@ public class Cuenta {
     @OneToOne
     private Usuario chofer;
     private Double saldo;
-    private String saldoN;
+    private String estado;
     @OneToMany
     private List<Transaccion> transaccion;
 
     public Cuenta() {
     }
 
-    public Cuenta(Long id, Long idOrg, Cliente cliente, Usuario chofer, Double saldo, String saldoN, List<Transaccion> transaccion) {
+    public Cuenta(Long id, Long idOrg, Cliente cliente, Usuario chofer, Double saldo, String estado, List<Transaccion> transaccion) {
         this.id = id;
         this.idOrg = idOrg;
         this.cliente = cliente;
         this.chofer = chofer;
         this.saldo = saldo;
-        this.saldoN = saldoN;
+        this.estado = estado;
         this.transaccion = transaccion;
     }
 
@@ -77,12 +77,12 @@ public class Cuenta {
         this.saldo = saldo;
     }
 
-    public String getSaldoN() {
-        return saldoN;
+    public String getEstado() {
+        return estado;
     }
 
-    public void setSaldoN(String saldoN) {
-        this.saldoN = saldoN;
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public List<Transaccion> getTransaccion() {
@@ -93,6 +93,5 @@ public class Cuenta {
         this.transaccion = transaccion;
     }
 
-   
-
+    
 }

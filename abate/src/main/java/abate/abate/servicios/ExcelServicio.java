@@ -21,7 +21,7 @@ public class ExcelServicio {
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("MisFletes");
+        Sheet sheet = workbook.createSheet("Viajes");
 
         int rowIndex = 0;
 
@@ -57,20 +57,20 @@ public class ExcelServicio {
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=MisFletes.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=Viajes.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
     }
-    
+
     public void exportHtmlToExcelCombustible(String htmlContent, HttpServletResponse response, Double consumo) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Combustible");
-        
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -82,7 +82,7 @@ public class ExcelServicio {
         // Escribir el título
         Row titleRow = sheet.createRow(rowIndex++);
         Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue("Consumo "+consumo+" L / 100 Km");
+        titleCell.setCellValue("Consumo " + consumo + " L / 100 Km");
         titleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -123,14 +123,14 @@ public class ExcelServicio {
         workbook.close();
         outputStream.close();
     }
-    
-      public void exportHtmlToExcelEstadistica(String htmlContent, HttpServletResponse response, Camion camion) throws IOException {
+
+    public void exportHtmlToExcelEstadistica(String htmlContent, HttpServletResponse response, Camion camion) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Estadistica");
-        
+        Sheet sheet = workbook.createSheet("Estadisticas");
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -142,7 +142,7 @@ public class ExcelServicio {
         // Escribir el título
         Row titleRow = sheet.createRow(rowIndex++);
         Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue(camion.getDominio()+' '+camion.getMarca()+' '+camion.getModelo());
+        titleCell.setCellValue(camion.getDominio() + ' ' + camion.getMarca() + ' ' + camion.getModelo());
         titleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -177,20 +177,20 @@ public class ExcelServicio {
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=Estadistica.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=Estadisticas.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
     }
-      
-        public void exportHtmlToExcelGasto(String htmlContent, HttpServletResponse response, Camion camion) throws IOException {
+
+    public void exportHtmlToExcelGasto(String htmlContent, HttpServletResponse response, Camion camion) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Gasto");
-        
+        Sheet sheet = workbook.createSheet("Gastos");
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -202,7 +202,7 @@ public class ExcelServicio {
         // Escribir el título
         Row titleRow = sheet.createRow(rowIndex++);
         Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue(camion.getDominio()+' '+camion.getMarca()+' '+camion.getModelo());
+        titleCell.setCellValue(camion.getDominio() + ' ' + camion.getMarca() + ' ' + camion.getModelo());
         titleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -237,20 +237,20 @@ public class ExcelServicio {
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=Gasto.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=Gastos.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    }  
-      
+    }
+
     public void exportHtmlToExcelCuenta(String htmlContent, HttpServletResponse response, String nombre, Double saldo) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Cuenta");
-        
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -264,10 +264,10 @@ public class ExcelServicio {
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue(nombre);
         titleCell.setCellStyle(titleStyle);
-        
+
         Row subtitleRow = sheet.createRow(rowIndex++);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("Saldo: "+saldo);
+        subtitleCell.setCellValue("Saldo: " + saldo);
         subtitleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -307,15 +307,15 @@ public class ExcelServicio {
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    }  
-    
+    }
+
     public void exportHtmlToExcelCaja(String htmlContent, HttpServletResponse response, String nombre, Double saldo) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Caja");
-        
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -329,10 +329,10 @@ public class ExcelServicio {
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue(nombre);
         titleCell.setCellStyle(titleStyle);
-        
+
         Row subtitleRow = sheet.createRow(rowIndex++);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("Saldo: "+saldo);
+        subtitleCell.setCellValue("Saldo: " + saldo);
         subtitleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -372,15 +372,15 @@ public class ExcelServicio {
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    } 
-    
-        public void exportHtmlToExcelCuentaMovimiento(String htmlContent, HttpServletResponse response, String nombre, String desde, String hasta) throws IOException {
+    }
+
+    public void exportHtmlToExcelCuentaMovimiento(String htmlContent, HttpServletResponse response, String nombre, String desde, String hasta) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("MovimientoCuenta");
-        
+        Sheet sheet = workbook.createSheet("MovimientosCuenta");
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -394,10 +394,10 @@ public class ExcelServicio {
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue(nombre);
         titleCell.setCellStyle(titleStyle);
-        
+
         Row subtitleRow = sheet.createRow(rowIndex++);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("Movimientos entre: "+desde+" y "+hasta);
+        subtitleCell.setCellValue("Movimientos entre: " + desde + " y " + hasta);
         subtitleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -432,20 +432,20 @@ public class ExcelServicio {
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=MovimientoCuenta.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=MovimientosCuenta.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    } 
-        
-        public void exportHtmlToExcelCajaMovimiento(String htmlContent, HttpServletResponse response, String nombre, String desde, String hasta) throws IOException {
+    }
+
+    public void exportHtmlToExcelCajaMovimiento(String htmlContent, HttpServletResponse response, String nombre, String desde, String hasta) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("MovimientoCaja");
-        
+        Sheet sheet = workbook.createSheet("MovimientosCaja");
+
         // Crear estilos para el título y el subtítulo
         CellStyle titleStyle = workbook.createCellStyle();
         Font titleFont = workbook.createFont();
@@ -459,10 +459,10 @@ public class ExcelServicio {
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue(nombre);
         titleCell.setCellStyle(titleStyle);
-        
+
         Row subtitleRow = sheet.createRow(rowIndex++);
         Cell subtitleCell = subtitleRow.createCell(0);
-        subtitleCell.setCellValue("Movimientos entre: "+desde+" y "+hasta);
+        subtitleCell.setCellValue("Movimientos entre: " + desde + " y " + hasta);
         subtitleCell.setCellStyle(titleStyle);
 
         sheet.createRow(rowIndex++);
@@ -497,13 +497,93 @@ public class ExcelServicio {
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=Caja.xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=MovimientosCaja.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
-    }     
-      
+    }
+
+    public void exportHtmlToExcelEstadisticaCamiones(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("EstadisticasCamiones");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=EstadisticasCamiones.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelEstadisticaChoferes(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("EstadisticasChoferes");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=EstadisticasChoferes.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
 }
    
 

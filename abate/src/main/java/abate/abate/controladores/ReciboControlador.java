@@ -6,13 +6,10 @@ import abate.abate.entidades.Usuario;
 import abate.abate.servicios.ClienteServicio;
 import abate.abate.servicios.CuentaServicio;
 import abate.abate.servicios.ReciboServicio;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Locale;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,10 +47,8 @@ public class ReciboControlador {
     public String registrarReciboId(@PathVariable Long id, ModelMap modelo) {
 
         Cuenta cuenta = cuentaServicio.buscarCuentaCliente(id);
-        String saldo = convertirNumeroMiles(cuenta.getSaldo());
 
         modelo.put("cuenta", cuenta);
-        modelo.put("saldo", saldo);
 
         return "recibo_registrarId.html";
     }
@@ -78,10 +73,8 @@ public class ReciboControlador {
 
         Long id = reciboServicio.buscarUltimo(logueado.getIdOrg());
         Recibo recibo = reciboServicio.buscarRecibo(id);
-        String total = convertirNumeroMiles(recibo.getImporte());
 
         modelo.put("recibo", recibo);
-        modelo.put("importe", total);
         modelo.put("exito", "Recibo REGISTRADO con éxito");
 
         return "recibo_registrado.html";
@@ -98,14 +91,13 @@ public class ReciboControlador {
         Double total = 0.0;
         for (Recibo r : lista) {
             total = r.getImporte() + total;
-            r.setImporteS(convertirNumeroMiles(r.getImporte()));
         }
 
         modelo.addAttribute("recibos", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("id", logueado.getIdOrg());
-        modelo.put("total", convertirNumeroMiles(total));
+        modelo.put("total", total);
 
         return "recibo_listar.html";
     }
@@ -118,14 +110,13 @@ public class ReciboControlador {
         Double total = 0.0;
         for (Recibo r : lista) {
             total = r.getImporte() + total;
-            r.setImporteS(convertirNumeroMiles(r.getImporte()));
         }
 
         modelo.addAttribute("recibos", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("id", logueado.getIdOrg());
-        modelo.put("total", convertirNumeroMiles(total));
+        modelo.put("total", total);
 
         return "recibo_listar.html";
     }
@@ -139,14 +130,13 @@ public class ReciboControlador {
         Double total = 0.0;
         for (Recibo r : lista) {
             total = r.getImporte() + total;
-            r.setImporteS(convertirNumeroMiles(r.getImporte()));
         }
 
         modelo.addAttribute("recibos", lista);
         modelo.put("cliente", clienteServicio.buscarCliente(id));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
-        modelo.put("total", convertirNumeroMiles(total));
+        modelo.put("total", total);
 
         return "recibo_listarCliente.html";
     }
@@ -158,14 +148,13 @@ public class ReciboControlador {
         Double total = 0.0;
         for (Recibo r : lista) {
             total = r.getImporte() + total;
-            r.setImporteS(convertirNumeroMiles(r.getImporte()));
         }
 
         modelo.addAttribute("recibos", lista);
         modelo.put("cliente", clienteServicio.buscarCliente(id));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
-        modelo.put("total", convertirNumeroMiles(total));
+        modelo.put("total", total);
 
         return "recibo_listarCliente.html";
     }
@@ -198,10 +187,8 @@ public class ReciboControlador {
     public String reciboModificado(@PathVariable Long id, ModelMap modelo) {
 
         Recibo recibo = reciboServicio.buscarRecibo(id);
-        String total = convertirNumeroMiles(recibo.getImporte());
 
         modelo.put("recibo", recibo);
-        modelo.put("importe", total);
         modelo.put("exito", "Recibo MODIFICADO con éxito");
 
         return "recibo_registrado.html";
@@ -232,12 +219,19 @@ public class ReciboControlador {
 
         reciboServicio.eliminarRecibo(id);
 
+        return "redirect:/recibo/eliminado";
+
+    }
+    
+    @GetMapping("/eliminado")
+    public String eliminado(ModelMap modelo, HttpSession session) {
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("id", logueado.getId());
         modelo.put("exito", "Recibo ELIMINADO con éxito");
 
-        return "index_admin.html";
+        return "index_admin.html";      
 
     }
 
@@ -245,35 +239,21 @@ public class ReciboControlador {
     public String imprimir(@PathVariable Long id, ModelMap modelo) {
 
         Recibo recibo = reciboServicio.buscarRecibo(id);
-        String total = convertirNumeroMiles(recibo.getImporte());
 
         modelo.put("recibo", recibo);
-        modelo.put("total", total);
 
         return "recibo_imprimir.html";
     }
 
-    private String convertirNumeroMiles(Double num) {
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
-
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
-    }
-
-    public String obtenerFechaDesde() {
+        public String obtenerFechaDesde() {
 
         LocalDate now = LocalDate.now();
 
-        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+         LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String formattedDate = firstDayOfMonth.format(formatter);
+        String formattedDate = firstDayOfPreviousMonth.format(formatter);
 
         return formattedDate;
 

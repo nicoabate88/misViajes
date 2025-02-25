@@ -9,7 +9,7 @@
                             window.onload = function () {
                                 var fechaActual = new Date();
                                 var dia = String(fechaActual.getDate()).padStart(2, '0');
-                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); 
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
                                 var anio = fechaActual.getFullYear();
                                 var fechaFormateada = anio + '-' + mes + '-' + dia;
 
@@ -20,7 +20,7 @@
                         <body>
 
                             <div class="container">
-                                <div class="card-header mb-4">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/combustible/listarAdmin/__${camion.id}__}" type="button">
@@ -34,100 +34,163 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card p-2 bg-light border-light">
-                                <form id="form" class="row g-3" th:action="@{/combustible/registroAdmin}" method="POST">
+                                <div class="card border-secondary p-2" id="color-card">
+                                    <form id="form" th:action="@{/combustible/registroAdmin}" method="POST">
 
-                                    <input hidden th:value="${camion.id}" name="idCamion"> 
-                                        <input hidden th:value="${kmAnterior}" name="kmAnterior">
-                                            <input type="date" id="fechaAnterior" hidden th:value="${fechaAnterior}"> 
-
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                <label for="camion" class="form-floting text-secondary">Camión</label>
-                                                <input type="text" class="form-control" id="camion" th:value="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" disabled readonly>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                <label for="kmAnterior" class="form-floting text-secondary">KM Carga Anterior</label>
-                                                <input type="text" class="form-control" id="kmAnterior" th:value="${kmAnterior}" disabled readonly>
-                                            </div>
-                                            <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                <label for="fecha" class="form-label text-secondary">Fecha</label>
-                                                <input type="date" class="form-control" id="fecha" name="fecha" required>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                <label for="km" class="form-label text-secondary">KM Carga Actual</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">KM</span>
-                                                    <input type="number" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
-                                                </div>    
-                                            </div>
-                                            <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                <label for="litro" class="form-label text-secondary">Litros Carga</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">Lts</span>
-                                                    <input type="number" class="form-control" id="litro" placeholder="Ingrese Litros" name="litro" required>
-                                                </div>    
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
-                                                <label for="completo" class="form-floting text-secondary">Tanque Completo</label>
-                                                <select class="form-control" id="completo" name="completo" required>
-                                                    <option selected disabled value="">Seleccione</option>
-                                                    <option value="SI">SI</option>
-                                                    <option value="NO">NO</option>
+                                        <input hidden th:value="${camion.id}" name="idCamion"> 
+                                            <input hidden id="kmAnterior" th:value="${kmAnterior}" name="kmAnterior">
+                                                <input type="date" id="fechaAnterior" hidden th:value="${fechaAnterior}"> 
+                                                    <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                        <label for="camion" class="form-floting text-secondary">Camión</label>
+                                                        <input type="text" class="form-control" id="camion" th:value="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" disabled readonly>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                        <label for="anterior" class="form-floting text-secondary">KM Carga Anterior</label>
+                                                        <input type="text" class="form-control" id="anterior" th:value="${#numbers.formatDecimal(kmAnterior, 0, 'POINT', 1, 'COMMA')}" disabled readonly>
+                                                    </div>
+                                                    <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                    </div>
+                                                    </div>
+                                                    <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                        <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                        <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                                    </div>
+                                                     <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                <label for="chofer" class="form-floting text-secondary">Chofer*</label>
+                                                <select class="form-control text-secondary" id="chofer" name="idChofer" required>
+                                                    <option selected disabled value="">Seleccione Chofer</option>
+                                                    <option th:each="chofer : ${choferes}"
+                                                            th:value="${chofer.id}"
+                                                            th:text="${chofer.nombre}"/>
                                                 </select>
+                                            </div>   
+                                                    </div>
+                                                    <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                        <label for="km" class="form-label text-secondary">KM Carga Actual*</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">KM</span>
+                                                            <input type="number" class="form-control" id="km" placeholder="Ingrese KM" name="km" required oninput="calcularTotalKm(); calcularConsumo()">
+                                                        </div>    
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                        <label for="kmTotal" class="form-label text-secondary">Total KM</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">km</span>
+                                                            <input type="number" step="0.01" class="form-control" id="kmTotal" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                    </div>
+                                                    </div>
+                                                    <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                        <label for="litros" class="form-label text-secondary">Litros Carga*</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">Lts</span>
+                                                            <input type="number" class="form-control" id="litros" placeholder="Ingrese Litros" name="litro" required oninput="calcularConsumo()">
+                                                        </div>    
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                        <label for="consumo" class="form-label text-secondary">Consumo</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">Lts</span>
+                                                            <input type="number" step="0.01" class="form-control" id="consumo" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                    </div> 
+                                                    </div>
+                                                    <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
+                                                        <label for="completo" class="form-floting text-secondary">Tanque Completo*</label>
+                                                        <select class="form-control" id="completo" name="completo" required>
+                                                            <option selected disabled value="">Seleccione</option>
+                                                            <option value="SI">SI</option>
+                                                            <option value="NO">NO</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                                    </div>
+                                                    </div>
+                                                     <div th:if="${camion.azul == 'HABILITADO'}" class='row'>
+                                                        <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
+                                                            <label for="azul" class="form-label text-primary">Urea</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text bg-primary">Lts</span>
+                                                                <input type="number" class="form-control" id="azul" placeholder="Ingrese Litros" name="azul">
+                                                            </div>    
+                                                        </div>
+                                                    </div>
+                                                     <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Diesel">Registrar</button>
                                             </div>
-                                            <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/combustible/listarAdmin/__${camion.id}__}" title="Cancelar">Cancelar</a>
                                             </div>
+                                                    </form>
+                                                    </div>
+                                                    </div>
+                                                    <script>
+                                                        document.getElementById('form').addEventListener('submit', function (event) {
+                                                            var fechaAnterior = new Date(document.getElementById('fechaAnterior').value);
+                                                            var fechaActual = new Date(document.getElementById('fecha').value);
+                                                            const kmAnterior = parseInt(document.getElementById('kmAnterior').value);
+                                                            const kmActual = parseInt(document.getElementById('km').value);
+                                                            const litros = parseInt(document.getElementById('litros').value);
 
-                                            <div class="row text-center">
-                                                <div class="col-8 col-md-8">
-                                                    <button class="btn btn-primary" type="submit" title="Registrar Carga de Diesel">Aceptar</button>
-                                                </div>
-                                                <div class="col-4 col-md-4">
-                                                    <a class="btn btn-primary" type="button" th:href= "@{/combustible/registrarAdmin/__${camion.id}__}" title="Cancelar">Cancelar</a>
-                                                </div>
-                                            </div>
-                                            </form>
-                                </div>
-                                            </div>
-                                            <script>
-                                                document.getElementById('form').addEventListener('submit', function(event) {
-                                                var fechaAnterior = new Date(document.getElementById('fechaAnterior').value);
-                                                        var fechaActual = new Date(document.getElementById('fecha').value);
-                                                        const kmAnterior = parseInt(document.getElementById('kmAnterior').value);
-                                                        const kmActual = parseInt(document.getElementById('km').value);
-                                                        if (fechaActual < fechaAnterior) {
-                                                alert('Fecha Seleccionada debe ser mayor a ' + formatearFecha(fechaAnterior));
-                                                        event.preventDefault();
-                                                        return;
-                                                }
+                                                            if (fechaActual < fechaAnterior) {
+                                                                alert('Fecha Seleccionada debe ser mayor a ' + formatearFecha(fechaAnterior));
+                                                                event.preventDefault();
+                                                                return;
+                                                            }
 
-                                                if (kmActual <= kmAnterior) {
-                                                alert('KM Carga Actual debe ser mayor que KM Carga Anterior: ' + kmAnterior);
-                                                        event.preventDefault();
-                                                        return;
-                                                }
+                                                            if (kmActual <= kmAnterior) {
+                                                                alert('KM Carga Actual debe ser mayor que KM Carga Anterior: ' + kmAnterior);
+                                                                event.preventDefault();
+                                                                return;
+                                                            }
+                                                            
+                                                            if (litros <= 0) {
+                                                                alert('Litros debe ser mayor que 0');
+                                                                event.preventDefault();
+                                                                return;
+                                                            }
 
-                                                const litros = parseInt(document.getElementById('litro').value);
-                                                        if (litros <= 0) {
-                                                alert('Litros debe ser mayor que 0');
-                                                        event.preventDefault();
-                                                        return;
-                                                }
+                                                            function formatearFecha(fecha) {
+                                                                var dia = String(fecha.getDate()).padStart(2, '0');
+                                                                var mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
+                                                                var anio = fecha.getFullYear();
+                                                                return dia + '-' + mes + '-' + anio;
+                                                            }
 
-                                                function formatearFecha(fecha) {
-                                                var dia = String(fecha.getDate()).padStart(2, '0');
-                                                        var mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
-                                                        var anio = fecha.getFullYear();
-                                                        return dia + '-' + mes + '-' + anio;
+                                                        });
+                                                        function calcularTotalKm() {
+                                                            const kmInicial = parseFloat(document.getElementById('kmAnterior').value) || 0;
+                                                            const kmFinal = parseFloat(document.getElementById('km').value) || 0;
+                                                            const kmTotal = kmFinal - kmInicial;
+
+                                                            document.getElementById('kmTotal').value = kmTotal >= 0 ? kmTotal.toFixed(1) : '';
                                                         }
 
-                                                });
-                                                </script>
-                                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                            </body>
-                                            </html>
+                                                        function calcularConsumo() {
+                                                            const litros = parseFloat(document.getElementById('litros').value) || 0;
+                                                            const kmTotal = parseFloat(document.getElementById('kmTotal').value) || 0;
+
+                                                            if (litros > 0 && kmTotal > 0) {
+
+                                                                const consumoPromedio = (100 * litros) / kmTotal;
+
+                                                                document.getElementById('consumo').value = consumoPromedio.toFixed(2);
+                                                            } else {
+
+                                                                document.getElementById('consumo').value = '';
+                                                            }
+                                                        }
+                                                    </script>
+                                                    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                    </body>
+                                                    </html>

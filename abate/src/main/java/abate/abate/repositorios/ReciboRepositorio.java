@@ -14,17 +14,17 @@ public interface ReciboRepositorio extends JpaRepository<Recibo, Long> {
 
     @Query("SELECT MAX(id) FROM Recibo WHERE idOrg = :id")
     public Long ultimoRecibo(@Param("id") Long id);
-    
-    Optional<Recibo> findTopByIdOrgAndObservacionNotOrderByIdDesc(Long idOrg, String estado);
 
-    @Query("SELECT r FROM Recibo r WHERE cliente_id = :id AND r.observacion != 'ELIMINADO'")
+    Optional<Recibo> findTopByIdOrgOrderByIdDesc(Long idOrg);
+
+    @Query("SELECT r FROM Recibo r WHERE cliente_id = :id")
     public ArrayList<Recibo> buscarRecibosIdCliente(@Param("id") Long id);
 
-    @Query("SELECT r FROM Recibo r WHERE r.observacion != 'ELIMINADO' AND r.idOrg = :id")
+    @Query("SELECT r FROM Recibo r WHERE r.idOrg = :id")
     public ArrayList<Recibo> buscarRecibos(@Param("id") Long id);
-    
-    ArrayList<Recibo> findByFechaBetweenAndObservacionNotAndIdOrg(Date desde, Date hasta, String observacion, Long idOrg); 
-    
-    ArrayList<Recibo> findByFechaBetweenAndObservacionNotAndClienteId(Date desde, Date hasta, String observacion, Long idCliente); 
+
+    ArrayList<Recibo> findByFechaBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
+
+    ArrayList<Recibo> findByFechaBetweenAndClienteId(Date desde, Date hasta, Long idCliente);
 
 }

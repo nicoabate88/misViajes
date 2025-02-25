@@ -1,9 +1,7 @@
-
 package abate.abate.entidades;
 
-
 public class CamionEstadistica {
-    
+
     private int year;
     private int month;
     private int flete;
@@ -11,7 +9,7 @@ public class CamionEstadistica {
     private double kmRecorrido;
     private double litro;
     private double consumo;
-    private String netoS;
+    private double gasto;
     private double rentabilidad;
 
     public CamionEstadistica() {
@@ -29,6 +27,12 @@ public class CamionEstadistica {
         this.month = month;
         this.kmRecorrido = kmRecorrido;
         this.litro = litro;
+    }
+
+    public CamionEstadistica(int year, int month, double gasto) {
+        this.year = year;
+        this.month = month;
+        this.gasto = gasto;
     }
 
     public int getYear() {
@@ -87,12 +91,12 @@ public class CamionEstadistica {
         this.consumo = consumo;
     }
 
-    public String getNetoS() {
-        return netoS;
+    public double getGasto() {
+        return gasto;
     }
 
-    public void setNetoS(String netoS) {
-        this.netoS = netoS;
+    public void setGasto(double gasto) {
+        this.gasto = gasto;
     }
 
     public double getRentabilidad() {
@@ -103,8 +107,4 @@ public class CamionEstadistica {
         this.rentabilidad = rentabilidad;
     }
 
-    
-   
-    
-    
 }

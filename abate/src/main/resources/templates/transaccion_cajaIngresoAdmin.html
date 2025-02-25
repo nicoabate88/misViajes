@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/caja/mostrarAdmin/__${ingreso.chofer.id}__}" type="button">
@@ -22,11 +22,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body mb-4" id="color-card">
+                                <div class="card border-secondary p-4 mb-3" id="color-card">
                                     <div class="row">
                                         <div class="col-8">                                 
-                                            <h6 th:text="'Importe $'+${importe}"></h6>
-                                            <h6 id="dimgray" th:text="'Fecha '+${ingreso.fecha}+' - ID'+${ingreso.idIngreso}"></h6>
+                                            <h6 th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                            <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(ingreso.fecha, 'dd-MM-yyyy')}+' - ID'+${ingreso.idIngreso}"></h6>
                                         </div>
                                         <div class="col-4 text-center">
                                             <a th:href= "@{/ingreso/modificar/__${ingreso.id}__}" >
@@ -51,6 +51,9 @@
                                             </a>
                                         </div>
                                     </div>    
+                                </div>
+                                <div class="text-center mb-2">
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/caja/mostrarAdmin/__${ingreso.chofer.id}__}">Volver</a>
                                 </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

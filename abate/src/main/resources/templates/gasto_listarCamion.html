@@ -8,7 +8,7 @@
                         </head>
                         <body>
                             <div class="container mb-5">  
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/camion/listar}" type="button">
@@ -21,7 +21,7 @@
                                             <h4>Lista de Gastos</h4>
                                         </div>
                                         <div title="Exportar a Excel" class="col-3 text-center" th:if="${flag == true}">
-                                            <form class="row g-3" th:action="@{/gasto/exportar}" method="POST">   
+                                            <form th:action="@{/gasto/exportar}" method="POST">   
                                                 <input hidden th:value="${camion.id}" name="idCamion"> 
                                                        <input hidden th:value="${desde}" name="desde">  
                                                        <input hidden th:value="${hasta}" name="hasta"> 
@@ -32,11 +32,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-body pb-0">
-                                    <h6 th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h6>
-                                    <h6 id="dimgray" th:text="'Total Gasto $'+${total}"></h6>
-                                </div>
-                                <div class="card-header" id="bgWhite">
+                                <div class="card-header pb-0" id="bgWhite">
                                     <form class="row g-3" th:action="@{/gasto/listarCamionFiltro}" method="POST">
                                         <input hidden th:value="${camion.id}" name="idCamion">  
                                             <div class="row">    
@@ -60,12 +56,16 @@
                                     </form>   
                                 </div>
                                 <div th:if="${!gastos.isEmpty()}">
+                                <div class="card-body p-2">
+                                    <h6 th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h6>
+                                    <h6 id="dimgray" th:text="'Total Gasto $'+${#numbers.formatDecimal(total, 0, 'POINT', 0, 'POINT')}"></h6>
+                                </div>
                                     <div th:each="gasto : ${gastos}">
-                                        <div class="card-body mb-1 pb-0" id="color-card">
-                                            <h6 id="darkblue" th:text="'Importe: $'+${gasto.importeS}"></h6>
+                                        <div class="card border-secondary p-3 mb-1" id="color-card">
+                                            <h6 id="darkblue" th:text="'Importe: $'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></h6>
                                             <div class="row">
                                                 <div class="col-9">
-                                                 <p class='mb-1' id="dimgray" th:text="'Fecha: '+${gasto.fecha}"></p>
+                                                 <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(gasto.fecha, 'dd-MM-yyyy')}"></p>
                                                  <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
                                                  <p id="dimgray" th:text="'Chofer '+${gasto.chofer.nombre}"></p>
                                                 </div>
@@ -79,11 +79,20 @@
                                             </div>
                                         </div>
                                     </div>  
+                                    <br>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
+                                    </div>
                                 </div>
                                     <div th:if="${gastos.isEmpty()}">
-                                        <div class="card-body mb-1 text-center" id="color-card">
+                                        <br>
+                                        <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
                                             <h6 id="azul">No existen Gastos para la fecha seleccionada</h6>
                                         </div>
+                                           
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
+                                    </div>
                                     </div>
                                 
                                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

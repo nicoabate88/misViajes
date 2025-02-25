@@ -1,8 +1,10 @@
 package abate.abate.servicios;
 
+import abate.abate.entidades.Azul;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Combustible;
 import abate.abate.entidades.Usuario;
+import abate.abate.repositorios.AzulRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
@@ -26,6 +28,10 @@ public class CombustibleServicio {
     private CombustibleRepositorio combustibleRepositorio;
     @Autowired
     private CamionRepositorio camionRepositorio;
+    @Autowired
+    private AzulServicio azulServicio;
+    @Autowired
+    private AzulRepositorio azulRepositorio;
 
     @Transactional
     public void crearPrimerCarga(Long idOrg, String fecha, Double km, Long idCamion, Usuario usuario) throws ParseException {
@@ -56,7 +62,7 @@ public class CombustibleServicio {
     }
 
     @Transactional
-    public void crearCarga(Long idOrg, Long idCamion, String fecha, Double kmAnterior, Double kmCarga, Double litros, String completo, Usuario usuario) throws ParseException {
+    public void crearCarga(Long idOrg, Long idCamion, String fecha, Double kmAnterior, Double kmCarga, Double litros, String completo, Double azul, Usuario usuario) throws ParseException {
 
         Camion camion = new Camion();
         Optional<Camion> cam = camionRepositorio.findById(idCamion);
@@ -71,10 +77,17 @@ public class CombustibleServicio {
 
         Combustible carga = new Combustible();
 
+        if (azul != null && azul != 0) {
+            azulServicio.crearCarga(idCamion, fecha, azul, usuario);
+            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul();
+            carga.setAzul(ultimoAzul);
+        }
+
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
         carga.setLitro(litros);
         carga.setUsuario(usuario);
+        carga.setChofer(usuario);
         carga.setKmCarga(kmCarga);
         carga.setKmAnterior(kmAnterior);
         carga.setKmRecorrido(kmRecorrido);
@@ -94,14 +107,20 @@ public class CombustibleServicio {
         combustibleRepositorio.save(carga);
 
     }
-    
+
     @Transactional
-    public void crearCargaAdmin(Long idOrg, Long idCamion, String fecha, Double kmAnterior, Double kmCarga, Double litros, String completo, Usuario usuario) throws ParseException {
+    public void crearCargaAdmin(Long idOrg, Long idCamion, String fecha, Long idChofer, Double kmAnterior, Double kmCarga, Double litros, String completo, Double azul, Usuario usuario) throws ParseException {
 
         Camion camion = new Camion();
         Optional<Camion> cam = camionRepositorio.findById(idCamion);
         if (cam.isPresent()) {
             camion = cam.get();
+        }
+
+        Usuario chofer = new Usuario();
+        Optional<Usuario> user = usuarioRepositorio.findById(idChofer);
+        if (user.isPresent()) {
+            chofer = user.get();
         }
 
         Date f = convertirFecha(fecha);
@@ -111,10 +130,17 @@ public class CombustibleServicio {
 
         Combustible carga = new Combustible();
 
+        if (azul != null && azul != 0) {
+            azulServicio.crearCargaAdmin(idCamion, fecha, azul, usuario);
+            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul();
+            carga.setAzul(ultimoAzul);
+        }
+
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
         carga.setLitro(litros);
         carga.setUsuario(usuario);
+        carga.setChofer(chofer);
         carga.setKmCarga(kmCarga);
         carga.setKmAnterior(kmAnterior);
         carga.setKmRecorrido(kmRecorrido);
@@ -134,9 +160,9 @@ public class CombustibleServicio {
         combustibleRepositorio.save(carga);
 
     }
-    
+
     @Transactional
-    public void aceptarCarga(Long idCarga) {
+    public void aceptarCarga(Long idCarga, Usuario usuario) {
 
         Combustible carga = new Combustible();
         Optional<Combustible> comb = combustibleRepositorio.findById(idCarga);
@@ -145,13 +171,14 @@ public class CombustibleServicio {
         }
 
         carga.setEstado("ACEPTADO");
+        carga.setUsuario(usuario);
 
         combustibleRepositorio.save(carga);
 
     }
-    
+
     @Transactional
-    public void volverPendiente(Long idCarga) {
+    public void volverPendiente(Long idCarga, Usuario usaurio) {
 
         Combustible carga = new Combustible();
         Optional<Combustible> comb = combustibleRepositorio.findById(idCarga);
@@ -160,21 +187,22 @@ public class CombustibleServicio {
         }
 
         carga.setEstado("PENDIENTE");
+        carga.setUsuario(usaurio);
 
         combustibleRepositorio.save(carga);
 
     }
-    
-    public Long buscaridCamion(Long idCarga){
-        
+
+    public Long buscaridCamion(Long idCarga) {
+
         Camion camion = combustibleRepositorio.findCamionByCargaId(idCarga);
-        
+
         Long idCamion = camion.getId();
-        
+
         return idCamion;
-        
+
     }
-    
+
     @Transactional
     public void modificarPrimerCarga(Long id, String fecha, Double kmCarga) throws ParseException {
 
@@ -194,12 +222,17 @@ public class CombustibleServicio {
     }
 
     @Transactional
-    public void modificarCarga(Long id, String fecha, Double kmCarga, Double litros, String completo) throws ParseException {
+    public void modificarCarga(Long id, String fecha, Double kmCarga, Double litros, String completo, Double azul, Usuario logueado) throws ParseException {
 
         Combustible carga = new Combustible();
         Optional<Combustible> cga = combustibleRepositorio.findById(id);
         if (cga.isPresent()) {
             carga = cga.get();
+        }
+
+        boolean modificakm = false;
+        if (carga.getKmCarga() != kmCarga) {
+            modificakm = true;
         }
 
         Date f = convertirFecha(fecha);
@@ -222,7 +255,54 @@ public class CombustibleServicio {
             carga.setConsumoPromedio(consumoPromedio);
         }
 
+        if (carga.getAzul() == null && azul != null && azul != 0) {
+            azulServicio.crearCarga(carga.getCamion().getId(), fecha, azul, logueado);
+            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul();
+            carga.setAzul(ultimoAzul);
+        }
+
+        Long idAzul = null;
+
+        if (carga.getAzul() != null && (azul == null || azul == 0)) {
+            idAzul = carga.getAzul().getId();
+            carga.setAzul(null);
+        }
+
         combustibleRepositorio.save(carga);
+
+        if (carga.getAzul() != null && (azul != null || azul != 0)) {
+            azulServicio.modificarCarga(carga.getAzul().getId(), fecha, carga.getCamion().getId(), azul, logueado);
+        }
+
+        if (idAzul != null) {
+
+            azulServicio.eliminarCarga(idAzul);
+        }
+
+        //Si modificó km y no es última Carga, busca carga posterior para modificar km y consumo
+        Combustible ultimaCarga = combustibleRepositorio.findTopByCamionOrderByIdDesc(carga.getCamion());
+        if (ultimaCarga.getId() != carga.getId() && modificakm == true) {
+
+            Combustible posterior = new Combustible();
+            Optional<Combustible> comb = combustibleRepositorio.findFirstByIdGreaterThanAndCamionIdOrderByIdAsc(carga.getId(), carga.getCamion().getId());
+            if (comb.isPresent()) {
+                posterior = comb.get();
+            }
+            if (posterior != null) {
+                posterior.setKmAnterior(carga.getKmCarga());
+                Double kmRecorridoP = posterior.getKmCarga() - carga.getKmCarga();
+                posterior.setKmRecorrido(kmRecorridoP);
+                Double consumoP = ((100.0 * posterior.getLitro()) / kmRecorridoP);
+                Double consumoRedP = Math.round(consumoP * 100.0) / 100.0;
+                posterior.setConsumo(consumoRedP);
+                if (posterior.getCompleto().equalsIgnoreCase("SI")) {
+                    Double consumoPromedioP = consumoPromedioTanqueModifica(consumoRedP, kmRecorridoP, posterior.getLitro(), posterior.getCamion(), posterior.getCamion().getId());
+                    posterior.setConsumoPromedio(consumoPromedioP);
+                }
+
+                combustibleRepositorio.save(posterior);
+            }
+        }
 
     }
 
@@ -235,12 +315,24 @@ public class CombustibleServicio {
             carga = cga.get();
         }
 
+        Long idAzul = null;
+
+        if (carga.getAzul() != null) {
+            idAzul = carga.getAzul().getId();
+            carga.setAzul(null);
+        }
+
         carga.setImagen(null);
         carga.setUsuario(null);
+        carga.setChofer(null);
 
         combustibleRepositorio.save(carga);
 
         combustibleRepositorio.deleteById(id);
+
+        if (idAzul != null) {
+            azulServicio.eliminarCarga(idAzul);
+        }
 
     }
 
@@ -269,11 +361,6 @@ public class CombustibleServicio {
 
         Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
 
-        if (!lista.isEmpty()) {
-            Combustible carga = lista.get(0);
-            carga.setKmAnterior(99.99);
-        }
-
         return lista;
     }
 
@@ -287,24 +374,10 @@ public class CombustibleServicio {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
-        Boolean flag = false;
 
-        ArrayList<Combustible> lista = combustibleRepositorio.findByFechaCargaBetweenAndUsuario(d, h, chofer);
+        ArrayList<Combustible> lista = combustibleRepositorio.findByFechaCargaBetweenAndChofer(d, h, chofer);
 
         Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
-
-        if (!lista.isEmpty()) {
-            Combustible carga = lista.get(0);
-            Combustible ultimaCarga = combustibleRepositorio.findTopByCamionOrderByIdDesc(carga.getCamion());
-            if (carga.getId() == ultimaCarga.getId()) {
-                flag = true;
-            }
-        }
-
-        if (!lista.isEmpty() && flag == true) {
-            Combustible carga = lista.get(0);
-            carga.setKmAnterior(99.99);
-        }
 
         return lista;
     }
@@ -440,15 +513,33 @@ public class CombustibleServicio {
         return combustibleRepositorio.findTopByCamionOrderByIdDesc(camion);
 
     }
-    
+
+    public Combustible cargaAnteriorPorId(Long idCarga, Long idCamion) {
+
+        return combustibleRepositorio.findFirstByIdLessThanAndCamionIdOrderByIdDesc(idCarga, idCamion);
+
+    }
+
+    public Boolean ultimaCarga(Camion camion, Long idCarga) {
+
+        Boolean flag = false;
+
+        Combustible combustible = combustibleRepositorio.findTopByCamionOrderByIdDesc(camion);
+        if (combustible.getId() == idCarga) {
+            flag = true;
+        }
+
+        return flag;
+    }
+
     public Combustible cargaAnteultimo(Camion camion) {
 
         ArrayList<Combustible> ultimosRegistros = combustibleRepositorio.findTop2ByCamionOrderByIdDesc(camion);
 
         if (ultimosRegistros.size() >= 2) {
-            return ultimosRegistros.get(1); 
+            return ultimosRegistros.get(1);
         } else {
-            return ultimosRegistros.get(0); 
+            return ultimosRegistros.get(0);
         }
     }
 

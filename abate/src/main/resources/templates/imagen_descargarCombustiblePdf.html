@@ -9,7 +9,7 @@
                         <body>
 
                             <div class="container">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
                                             <a title="Volver" th:href="@{/index}" type="button">
@@ -24,15 +24,16 @@
                                     </div>
                                 </div>
                                 <div id="imagenes-container" class="mb-2">
-                                   <div class="card-body">
+                                   <div class="card border-secondary p-4 text-center" id="color-card">
                                         <h6 id="dimgray" th:text="'ARCHIVO PDF DESCARGADO '+${imagenNombre}"></h6>
                                     </div>
                                     <iframe th:src="@{${imagenUrl}}" th:alt="${imagenNombre}" width="0" height="0"></iframe>
                                     
                                 </div>
-                                <div class="col-2">
-                                                <a class="btn btn-primary" type="button" th:href="@{/index}">Aceptar</a>
-                                </div>
+                                <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Aceptar</a>
+                                    </div>
+                              
                             </div>
 
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

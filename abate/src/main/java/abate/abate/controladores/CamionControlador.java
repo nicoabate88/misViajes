@@ -2,20 +2,19 @@ package abate.abate.controladores;
 
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.CamionEstadistica;
+import abate.abate.entidades.CamionesEstadistica;
 import abate.abate.entidades.Usuario;
 import abate.abate.excepciones.MiException;
 import abate.abate.servicios.CamionServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.util.CamionEstadisticaComparador;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Locale;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,13 +45,13 @@ public class CamionControlador {
     }
 
     @PostMapping("/registro")
-    public String registro(@RequestParam String marca, @RequestParam String modelo, @RequestParam String dominio, ModelMap model, HttpSession session) {
+    public String registro(@RequestParam String dominio, @RequestParam String marca, @RequestParam String modelo, @RequestParam String azul, ModelMap model, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            camionServicio.crearCamion(logueado.getIdOrg(), marca, modelo, dominio);
+            camionServicio.crearCamion(logueado.getIdOrg(), marca, modelo, dominio, azul);
 
             return "redirect:/camion/registrado";
 
@@ -77,7 +76,7 @@ public class CamionControlador {
         modelo.put("camion", camionServicio.buscarCamion(id));
         modelo.put("exito", "Camión REGISTRADO con éxito");
 
-        return "camion_mostrar.html";
+        return "camion_registrado.html";
     }
 
     @GetMapping("/listar")
@@ -96,17 +95,21 @@ public class CamionControlador {
 
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
+
         ArrayList<CamionEstadistica> lista = camionServicio.estadisticaCamion(desde, hasta, id);
+        Boolean flag = true;
+        if (lista.isEmpty()) {
+            flag = false;
+        }
 
         for (CamionEstadistica e : lista) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+            
             if (e.getKmRecorrido() != 0.0) {
+                e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
                 e.setRentabilidad(0.0);
             }
-            String neto = convertirNumeroMiles(e.getNeto());
-            e.setNetoS(neto);
         }
 
         Collections.sort(lista, CamionEstadisticaComparador.ordenarMes);
@@ -115,6 +118,36 @@ public class CamionControlador {
         modelo.addAttribute("estadistica", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadistica.html";
+    }
+
+    @PostMapping("/mostrarEstadisticaFiltro")
+    public String buscarEstadisticaFiltro(@RequestParam Long idCamion, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+
+        ArrayList<CamionEstadistica> lista = camionServicio.estadisticaCamion(desde, hasta, idCamion);
+        Boolean flag = true;
+        if (lista.isEmpty()) {
+            flag = false;
+        }
+
+        for (CamionEstadistica e : lista) {
+            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+            if (e.getKmRecorrido() != 0.0) {
+                e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
+            } else {
+                e.setRentabilidad(0.0);
+            }
+        }
+
+        Collections.sort(lista, CamionEstadisticaComparador.ordenarMes);
+
+        modelo.put("camion", camionServicio.buscarCamion(idCamion));
+        modelo.addAttribute("estadistica", lista);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
 
         return "camion_estadistica.html";
     }
@@ -128,16 +161,77 @@ public class CamionControlador {
 
     }
 
+    @GetMapping("/mostrarEstadisticaCamiones")
+    public String buscarEstadisticaCamiones(ModelMap modelo, HttpSession session) throws ParseException {
+
+        String desde = obtenerPrimerDiaMes();
+        String hasta = obtenerFechaHasta();
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.isEmpty()) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+
+        }
+
+        modelo.addAttribute("estadistica", estadisticasPorCamion);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+    }
+
+    @PostMapping("/mostrarEstadisticaCamionesFiltro")
+    public String buscarEstadisticaCamionesFiltro(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.isEmpty()) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        modelo.addAttribute("estadistica", estadisticasPorCamion);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+    }
+
     @PostMapping("/modifica")
-    public String modifica(@RequestParam Long id, @RequestParam String marca, @RequestParam String modelo, @RequestParam String dominio, ModelMap model) {
+    public String modifica(@RequestParam Long id, @RequestParam String dominio, @RequestParam String marca, @RequestParam String modelo, @RequestParam String azul, ModelMap model) {
 
         try {
-            camionServicio.modificarCamion(id, marca, modelo, dominio);
 
-            model.put("camion", camionServicio.buscarCamion(id));
-            model.put("exito", "Camión MODIFICADO con éxito");
+            camionServicio.modificarCamion(id, marca, modelo, dominio, azul);
 
-            return "camion_mostrar.html";
+            return "redirect:/camion/modificado/" + id;
 
         } catch (MiException ex) {
 
@@ -146,6 +240,16 @@ public class CamionControlador {
 
             return "camion_modificar.html";
         }
+
+    }
+
+    @GetMapping("/modificado/{id}")
+    public String modificado(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("camion", camionServicio.buscarCamion(id));
+        modelo.put("exito", "Camión MODIFICADO con éxito");
+
+        return "camion_registrado.html";
 
     }
 
@@ -158,18 +262,13 @@ public class CamionControlador {
     }
 
     @GetMapping("/elimina/{id}")
-    public String elimina(@PathVariable Long id, HttpSession session, ModelMap modelo) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    public String elimina(@PathVariable Long id, ModelMap modelo) {
 
         try {
 
             camionServicio.eliminarCamion(id);
 
-            modelo.put("id", logueado.getId());
-            modelo.put("exito", "Camión ELIMINADO con éxito");
-
-            return "index_admin.html";
+            return "redirect:/camion/eliminado";
 
         } catch (MiException ex) {
 
@@ -180,15 +279,27 @@ public class CamionControlador {
         }
     }
 
+    @GetMapping("/eliminado")
+    public String eliminado(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.put("id", logueado.getId());
+        modelo.put("exito", "Camión ELIMINADO con éxito");
+
+        return "index_admin.html";
+
+    }
+
     public String obtenerFechaDesde() {
 
         LocalDate now = LocalDate.now();
 
-        LocalDate firstDayOfYear = now.withDayOfYear(1);
+        LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        String formattedDate = firstDayOfYear.format(formatter);
+        String formattedDate = firstDayOfPreviousMonth.format(formatter);
 
         return formattedDate;
 
@@ -206,6 +317,20 @@ public class CamionControlador {
 
     }
 
+    public String obtenerPrimerDiaMes() {
+
+        LocalDate now = LocalDate.now();
+
+        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String formattedDate = firstDayOfMonth.format(formatter);
+
+        return formattedDate;
+
+    }
+
     @PostMapping("/estadisticaExportar")
     public String estadisticaExportar(@RequestParam String desde, @RequestParam String hasta, @RequestParam Long id, ModelMap modelo) throws ParseException {
 
@@ -218,8 +343,6 @@ public class CamionControlador {
             } else {
                 e.setRentabilidad(0.0);
             }
-            String neto = convertirNumeroMiles(e.getNeto());
-            e.setNetoS(neto);
         }
 
         Collections.sort(lista, CamionEstadisticaComparador.ordenarMes);
@@ -254,6 +377,53 @@ public class CamionControlador {
 
     }
 
+    @PostMapping("/exportarEstadisticaCamiones")
+    public String exportarEstadisticaCamiones(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        modelo.addAttribute("estadistica", estadisticasPorCamion);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+
+        return "camion_estadisticaExportarTodos.html";
+
+    }
+
+    @PostMapping("/exportaEstadisticaCamiones")
+    public void exportaEstadisticaCamiones(@RequestParam String desde, @RequestParam String hasta, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Camion, CamionesEstadistica> estadisticas = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        for (CamionesEstadistica estadistica : estadisticas.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+
+        }
+        String htmlContent = generateHtmlFromEstadisticaCamiones(estadisticas);
+        excelServicio.exportHtmlToExcelEstadisticaCamiones(htmlContent, response);
+    }
+
     private String generateHtmlFromObjects(ArrayList<CamionEstadistica> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
@@ -263,7 +433,7 @@ public class CamionControlador {
                 + "<th>Km</th>"
                 + "<th>Litros</th>"
                 + "<th>Consumo</th>"
-                + "<th>Fletes</th>"
+                + "<th>Viajes</th>"
                 + "<th>Neto</th>"
                 + "<th>Rentabilidad</th>"
                 + "</tr></thead>");
@@ -282,17 +452,38 @@ public class CamionControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
-    private String convertirNumeroMiles(Double num) {
 
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
-        symbols.setGroupingSeparator('.');
-        symbols.setDecimalSeparator(',');
+    private String generateHtmlFromEstadisticaCamiones(Map<Camion, CamionesEstadistica> estadisticas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table>");
+        sb.append("<thead><tr>")
+                .append("<th>Camión</th>")
+                .append("<th>KM</th>")
+                .append("<th>Diesel</th>")
+                .append("<th>Consumo</th>")
+                .append("<th>Gastos</th>")
+                .append("<th>Viajes</th>")
+                .append("<th>Neto</th>")
+                .append("<th>Neto/KM</th>");
+        sb.append("</tr></thead>");
 
-        DecimalFormat formato = new DecimalFormat("#,##0.00", symbols);
-        String numeroFormateado = formato.format(num);
-
-        return numeroFormateado;
+        sb.append("<tbody>");
+        for (Map.Entry<Camion, CamionesEstadistica> entry : estadisticas.entrySet()) {
+            Camion camion = entry.getKey();
+            CamionesEstadistica estadistica = entry.getValue();
+            sb.append("<tr>")
+                    .append("<td>").append(camion.getDominio()).append("</td>")
+                    .append("<td>").append(estadistica.getKmRecorrido()).append("</td>")
+                    .append("<td>").append(estadistica.getLitro()).append("</td>")
+                    .append("<td>").append(estadistica.getConsumo()).append("</td>")
+                    .append("<td>").append(estadistica.getGasto()).append("</td>")
+                    .append("<td>").append(estadistica.getFlete()).append("</td>")
+                    .append("<td>").append(estadistica.getNeto()).append("</td>")
+                    .append("<td>").append(estadistica.getRentabilidad()).append("</td>");
+            sb.append("</tr>");
+        }
+        sb.append("</tbody></table>");
+        return sb.toString();
     }
 
 }

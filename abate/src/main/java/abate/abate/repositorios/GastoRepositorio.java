@@ -17,21 +17,23 @@ public interface GastoRepositorio extends JpaRepository<Gasto, Long> {
     @Query("SELECT g FROM Gasto g WHERE chofer_id = :id")
     public ArrayList<Gasto> buscarGastoIdChofer(@Param("id") Long id);
 
+    @Query("SELECT MAX(g) FROM Gasto g WHERE g.idOrg = :id")
+    public Gasto buscarUltimoGasto(@Param("id") Long id);
+
     @Query("SELECT g FROM Gasto g WHERE imagen_id = :id")
     public Gasto buscarGastoIdImagen(@Param("id") Long id);
 
     @Query("SELECT MAX(id) FROM Gasto g WHERE g.idOrg = :id")
     public Long ultimoGasto(@Param("id") Long id);
-    
-    Optional<Gasto> findTopByIdOrgAndNombreNotOrderByIdGastoDesc(Long idOrg, String estado);
-    
-    Gasto findTopByCamionAndEstadoNotOrderByIdDesc(Camion camion, String estado); //devuelve ultimo Gasto registrado de camion especifico
-    
-    Gasto findTopByChoferAndEstadoNotOrderByIdDesc(Usuario chofer, String estado); //devuelve ultimo Gasto registrado de chofer especifico
-    
-    ArrayList<Gasto> findByFechaBetweenAndEstadoNotAndCamionId(Date desde, Date hasta, String estado, Long idCamion);  
 
-    
-    
+    Optional<Gasto> findTopByIdOrgOrderByIdGastoDesc(Long idOrg);
+
+    Gasto findTopByCamionOrderByIdDesc(Camion camion); //devuelve ultimo Gasto registrado de camion especifico
+
+    Gasto findTopByChoferOrderByIdDesc(Usuario chofer); //devuelve ultimo Gasto registrado de chofer especifico
+
+    ArrayList<Gasto> findByFechaBetweenAndCamionId(Date desde, Date hasta, Long idCamion);
+
+    ArrayList<Gasto> findByFechaBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
 
 }

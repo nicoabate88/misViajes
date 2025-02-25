@@ -1,4 +1,3 @@
-
 package abate.abate.servicios;
 
 import abate.abate.entidades.Ingreso;
@@ -18,14 +17,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class IngresoServicio {
-    
+
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
     @Autowired
     private TransaccionServicio transaccionServicio;
     @Autowired
     private IngresoRepositorio ingresoRepositorio;
-    
+
     @Transactional
     public void crearIngreso(Long idOrg, Long idChofer, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
 
@@ -46,23 +45,23 @@ public class IngresoServicio {
         Long idIngreso = buscarUltimoIdOrg(idOrg);
 
         Ingreso ingreso = new Ingreso();
-        
+
         ingreso.setIdOrg(idOrg);
         ingreso.setChofer(chofer);
         ingreso.setFecha(f);
         ingreso.setObservacion(obsMayusculas);
         ingreso.setImporte(importe);
         ingreso.setUsuario(usuario);
-        ingreso.setIdIngreso(idIngreso+1);
+        ingreso.setIdIngreso(idIngreso + 1);
 
         ingresoRepositorio.save(ingreso);
 
         transaccionServicio.crearTransaccionIngreso(buscarUltimo(idOrg));
 
     }
-    
+
     @Transactional
-    public void modificarIngreso(Long idIngreso, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException { 
+    public void modificarIngreso(Long idIngreso, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
 
         Ingreso ingreso = new Ingreso();
         Optional<Ingreso> ing = ingresoRepositorio.findById(idIngreso);
@@ -85,11 +84,11 @@ public class IngresoServicio {
         ingreso.setUsuario(usuario);
 
         ingresoRepositorio.save(ingreso);
-            
+
         transaccionServicio.modificarTransaccionIngreso(idIngreso);
 
     }
-    
+
     @Transactional
     public void eliminarIngreso(Long idIngreso) {
 
@@ -102,45 +101,45 @@ public class IngresoServicio {
         transaccionServicio.eliminarTransaccionIngreso(idIngreso);
 
         ingreso.setChofer(null);
-        ingreso.setImporte(0.0);
-        ingreso.setObservacion("ELIMINADO");
         ingreso.setUsuario(null);
 
         ingresoRepositorio.save(ingreso);
 
+        ingresoRepositorio.deleteById(idIngreso);
+
     }
-    
+
     public Long buscarUltimoIdOrg(Long idOrg) {
-        
+
         Ingreso ingreso = new Ingreso();
-        Optional<Ingreso> ing = ingresoRepositorio.findTopByIdOrgAndObservacionNotOrderByIdDesc(idOrg, "ELIMINADO");
+        Optional<Ingreso> ing = ingresoRepositorio.findTopByIdOrgOrderByIdDesc(idOrg);
         if (ing.isPresent()) {
             ingreso = ing.get();
-            
+
             return ingreso.getIdIngreso();
-            
+
         } else {
-            
+
             int ultimo = 0;
             Long primero = Long.valueOf(ultimo);
 
             return primero;
-            
+
         }
 
     }
-    
+
     public Long buscarUltimo(Long idOrg) {
 
         return ingresoRepositorio.ultimoIngreso(idOrg);
     }
-    
+
     public Ingreso buscarIngreso(Long id) {
 
         return ingresoRepositorio.getById(id);
     }
-    
-     public ArrayList<Ingreso> buscarIngresos(Long id) {
+
+    public ArrayList<Ingreso> buscarIngresos(Long id) {
 
         ArrayList<Ingreso> lista = ingresoRepositorio.buscarIngresosIdChofer(id);
 
@@ -150,11 +149,9 @@ public class IngresoServicio {
 
     }
 
-    
-    
-    public Date convertirFecha(String fecha) throws ParseException { 
+    public Date convertirFecha(String fecha) throws ParseException {
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
         return formato.parse(fecha);
     }
-    
+
 }

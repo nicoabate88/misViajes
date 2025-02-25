@@ -90,11 +90,11 @@
                 <h5>Detalle del Recibo</h5>
                 <div class="recibo-datos">
                     <p><strong>N°:</strong> <span th:text="${recibo.idRecibo}"></span></p>
-                    <p><strong>Fecha:</strong> <span th:text="${recibo.fecha}"></span></p>
+                    <p><strong>Fecha:</strong> <span th:text="${#dates.format(recibo.fecha, 'dd-MM-yyyy')}"></span></p>
                 </div>
                 <p class="mb-0"><strong>Cliente: </strong><span th:text="${recibo.cliente.nombre}"></span></p>
                 <p><strong>CUIT:</strong> <span th:text="${recibo.cliente.cuit}"></span></p>
-                <p class="mb-0"><strong>Importe:</strong> <span th:text="'$'+${total}"></span></p>
+                <p class="mb-0"><strong>Importe:</strong> <span th:text="'$'+${#numbers.formatDecimal(recibo.importe, 0, 'POINT', 2, 'COMMA')}"></span></p>
                 <div class="d-flex align-items-center">
                     <label for="observacion" class="me-2 fw-bold">Observación:</label>
                     <input id="observacion" name="observacion" class="form-control-plaintext" 

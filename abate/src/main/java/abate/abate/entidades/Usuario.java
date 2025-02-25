@@ -20,6 +20,7 @@ public class Usuario {
     private Long cuil;
     private Double porcentaje;
     private String caja;
+    private String cuenta;
     private String empresa;
     private String direccion;
     private String localidad;
@@ -30,7 +31,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String empresa, String direccion, String localidad, String telefono, Camion camion) {
+    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String empresa, String direccion, String localidad, String telefono, Camion camion) {
         this.id = id;
         this.idOrg = idOrg;
         this.nombre = nombre;
@@ -40,6 +41,7 @@ public class Usuario {
         this.cuil = cuil;
         this.porcentaje = porcentaje;
         this.caja = caja;
+        this.cuenta = cuenta;
         this.empresa = empresa;
         this.direccion = direccion;
         this.localidad = localidad;
@@ -118,6 +120,14 @@ public class Usuario {
     public void setCaja(String caja) {
         this.caja = caja;
     }
+    
+    public String getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(String cuenta) {
+        this.cuenta = cuenta;
+    }
 
     public String getEmpresa() {
         return empresa;
@@ -159,5 +169,4 @@ public class Usuario {
         this.camion = camion;
     }
 
-    
 }

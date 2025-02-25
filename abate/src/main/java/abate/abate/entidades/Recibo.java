@@ -23,14 +23,13 @@ public class Recibo {
     private Date fecha;
     private Double importe;
     private String observacion;
-    private String importeS;
     @OneToOne
     private Usuario usuario;
 
     public Recibo() {
     }
 
-    public Recibo(Long id, Long idRecibo, Long idOrg, Cliente cliente, Date fecha, Double importe, String observacion, String importeS, Usuario usuario) {
+    public Recibo(Long id, Long idRecibo, Long idOrg, Cliente cliente, Date fecha, Double importe, String observacion, Usuario usuario) {
         this.id = id;
         this.idRecibo = idRecibo;
         this.idOrg = idOrg;
@@ -38,7 +37,6 @@ public class Recibo {
         this.fecha = fecha;
         this.importe = importe;
         this.observacion = observacion;
-        this.importeS = importeS;
         this.usuario = usuario;
     }
 
@@ -98,14 +96,6 @@ public class Recibo {
         this.observacion = observacion;
     }
 
-    public String getImporteS() {
-        return importeS;
-    }
-
-    public void setImporteS(String importeS) {
-        this.importeS = importeS;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -114,5 +104,4 @@ public class Recibo {
         this.usuario = usuario;
     }
 
-    
 }

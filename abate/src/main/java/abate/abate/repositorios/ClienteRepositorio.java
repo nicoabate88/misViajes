@@ -12,7 +12,7 @@ public interface ClienteRepositorio extends JpaRepository<Cliente, Long> {
 
     @Query("SELECT MAX(id) FROM Cliente c WHERE c.idOrg = :id")
     public Long ultimoCliente(@Param("id") Long id);
-    
+
     @Query("SELECT c FROM Cliente c WHERE c.idOrg = :id")
     public ArrayList<Cliente> buscarClientes(@Param("id") Long id);
 

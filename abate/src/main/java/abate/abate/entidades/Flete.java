@@ -46,13 +46,6 @@ public class Flete {
     private Double comisionTpteValor;
     private String comisionTpteChofer;
     private String estado;
-    private String kgFleteS;
-    private String tarifaS;
-    private String comisionS;
-    private String netoS;
-    private String ivaS;
-    private String totalS;
-    private String gananciaChofer;
     @OneToOne
     private Gasto gasto;
     @OneToOne
@@ -63,7 +56,7 @@ public class Flete {
     public Flete() {
     }
 
-    public Flete(Long id, Long idFlete, Long idOrg, Date fechaCarga, Cliente cliente, String origenFlete, Date fechaFlete, String destinoFlete, Double kmFlete, String tipoCereal, Double tarifa, String cartaPorte, String ctg, Double kgFlete, Usuario chofer, Camion camion, Usuario usuario, Double neto, Double iva, Double total, Double porcientoChofer, Double porcentajeChofer, Double comisionTpte, Double comisionTpteValor, String comisionTpteChofer, String estado, String kgFleteS, String tarifaS, String comisionS, String netoS, String ivaS, String totalS, String gananciaChofer, Gasto gasto, Imagen imagenCP, Imagen imagenDescarga) {
+    public Flete(Long id, Long idFlete, Long idOrg, Date fechaCarga, Cliente cliente, String origenFlete, Date fechaFlete, String destinoFlete, Double kmFlete, String tipoCereal, Double tarifa, String cartaPorte, String ctg, Double kgFlete, Usuario chofer, Camion camion, Usuario usuario, Double neto, Double iva, Double total, Double porcientoChofer, Double porcentajeChofer, Double comisionTpte, Double comisionTpteValor, String comisionTpteChofer, String estado, Gasto gasto, Imagen imagenCP, Imagen imagenDescarga) {
         this.id = id;
         this.idFlete = idFlete;
         this.idOrg = idOrg;
@@ -90,13 +83,6 @@ public class Flete {
         this.comisionTpteValor = comisionTpteValor;
         this.comisionTpteChofer = comisionTpteChofer;
         this.estado = estado;
-        this.kgFleteS = kgFleteS;
-        this.tarifaS = tarifaS;
-        this.comisionS = comisionS;
-        this.netoS = netoS;
-        this.ivaS = ivaS;
-        this.totalS = totalS;
-        this.gananciaChofer = gananciaChofer;
         this.gasto = gasto;
         this.imagenCP = imagenCP;
         this.imagenDescarga = imagenDescarga;
@@ -310,62 +296,6 @@ public class Flete {
         this.estado = estado;
     }
 
-    public String getKgFleteS() {
-        return kgFleteS;
-    }
-
-    public void setKgFleteS(String kgFleteS) {
-        this.kgFleteS = kgFleteS;
-    }
-
-    public String getTarifaS() {
-        return tarifaS;
-    }
-
-    public void setTarifaS(String tarifaS) {
-        this.tarifaS = tarifaS;
-    }
-
-    public String getComisionS() {
-        return comisionS;
-    }
-
-    public void setComisionS(String comisionS) {
-        this.comisionS = comisionS;
-    }
-
-    public String getNetoS() {
-        return netoS;
-    }
-
-    public void setNetoS(String netoS) {
-        this.netoS = netoS;
-    }
-
-    public String getIvaS() {
-        return ivaS;
-    }
-
-    public void setIvaS(String ivaS) {
-        this.ivaS = ivaS;
-    }
-
-    public String getTotalS() {
-        return totalS;
-    }
-
-    public void setTotalS(String totalS) {
-        this.totalS = totalS;
-    }
-
-    public String getGananciaChofer() {
-        return gananciaChofer;
-    }
-
-    public void setGananciaChofer(String gananciaChofer) {
-        this.gananciaChofer = gananciaChofer;
-    }
-
     public Gasto getGasto() {
         return gasto;
     }
@@ -390,5 +320,4 @@ public class Flete {
         this.imagenDescarga = imagenDescarga;
     }
 
-    
 }

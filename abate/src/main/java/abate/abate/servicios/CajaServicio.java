@@ -1,4 +1,3 @@
-
 package abate.abate.servicios;
 
 import abate.abate.entidades.Caja;
@@ -15,15 +14,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CajaServicio {
-    
+
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
     @Autowired
     private CajaRepositorio cajaRepositorio;
     @Autowired
     private TransaccionRepositorio transaccionRepositorio;
-    
-    
+
     @Transactional
     public void crearCajaChofer(Long idChofer) {
 
@@ -38,34 +36,38 @@ public class CajaServicio {
         caja.setIdOrg(chofer.getIdOrg());
         caja.setChofer(chofer);
         caja.setSaldo(0.0);
+        if(chofer.getCaja().equalsIgnoreCase("SI")){
+        caja.setEstado("HABILITADA");
+        } else {
+            caja.setEstado("INHABILITADA");
+        }
+
+        cajaRepositorio.save(caja);
+
+    }
+
+    @Transactional
+    public void habilitarCaja(Long idUsuario) {
+
+        Caja caja = cajaRepositorio.buscarCajaIdChofer(idUsuario);
+
+        caja.setEstado("HABILITADA");
+
+        cajaRepositorio.save(caja);
+
+    }
+
+    @Transactional
+    public void inhabilitarCaja(Long idUsuario) {
+
+        Caja caja = cajaRepositorio.buscarCajaIdChofer(idUsuario);
+
         caja.setEstado("INHABILITADA");
 
         cajaRepositorio.save(caja);
 
     }
-    
-    @Transactional
-    public void habilitarCaja(Long idUsuario){
-        
-        Caja caja = cajaRepositorio.buscarCajaIdChofer(idUsuario);
-        
-        caja.setEstado("HABILITADA");
-        
-        cajaRepositorio.save(caja);        
-        
-    }
-    
-    @Transactional
-    public void inhabilitarCaja(Long idUsuario){
-        
-        Caja caja = cajaRepositorio.buscarCajaIdChofer(idUsuario);
-        
-        caja.setEstado("INHABILITADA");
-        
-        cajaRepositorio.save(caja);        
-        
-    }
-    
+
     @Transactional
     public void agregarTransaccionCajaChofer(Long idTransaccion) {
 
@@ -95,7 +97,7 @@ public class CajaServicio {
         cajaRepositorio.save(caja);
 
     }
-    
+
     @Transactional
     public void modificarTransaccionCajaChofer(Transaccion transaccion) {
 
@@ -123,21 +125,20 @@ public class CajaServicio {
         cajaRepositorio.save(caja);
 
     }
-    
+
     @Transactional
     public void eliminarTransaccionCajaChofer(Transaccion transaccion) {
 
         Double saldo = 0.0;
         Long idChofer = transaccion.getChofer().getId();
 
-        transaccion.setConcepto("ELIMINADO");
-        transaccion.setImporte(0.0);
         transaccion.setChofer(null);
         transaccion.setGasto(null);
         transaccion.setIngreso(null);
         transaccionRepositorio.save(transaccion);
 
         Caja caja = cajaRepositorio.buscarCajaIdChofer(idChofer);
+        caja.getTransaccion().remove(transaccion);
 
         List<Transaccion> transacciones = caja.getTransaccion();
 
@@ -151,19 +152,20 @@ public class CajaServicio {
 
         cajaRepositorio.save(caja);
 
+        transaccionRepositorio.deleteById(transaccion.getId());
+
     }
-    
-    
-     public Caja buscarCajaChofer(Long idChofer) {
+
+    public Caja buscarCajaChofer(Long idChofer) {
 
         return cajaRepositorio.buscarCajaIdChofer(idChofer);
 
     }
-     
-     public Caja buscarCaja(Long idCaja) {
+
+    public Caja buscarCaja(Long idCaja) {
 
         return cajaRepositorio.getById(idCaja);
 
     }
-    
+
 }

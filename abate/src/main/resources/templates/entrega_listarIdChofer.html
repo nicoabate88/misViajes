@@ -8,10 +8,10 @@
                         </head>
                         <body>
                             <div class="container mb-5">                           
-                                <div class="card-header mb-2">
+                                <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" onclick="window.history.back();"  type="button">
+                                            <a title="Volver" th:href="@{/cuenta/mostrarIdChofer/__${id}__}"  type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -22,10 +22,7 @@
                                         </div>
                                     </div>
                                 </div> 
-                                <div class="card-body pb-0">
-                                    <h6 id="dimgray" th:text="'Total Entregas $'+${total}"></h6>
-                                </div>
-                                <div class="card-header" id="bgWhite">
+                                <div class="card-header pb-0" id="bgWhite">
                                     <form class="row g-3" th:action="@{/entrega/listarIdChoferFiltro}" method="POST">
                                         <input hidden th:value="${id}" name="id">  
                                         <div class="row">    
@@ -49,20 +46,30 @@
                                     </form>   
                                 </div>
                                 <div th:if="${!entregas.isEmpty()}">
+                                <div class="card-body p-2">
+                                    <h6 id="dimgray" th:text="'Total Entregas $'+${#numbers.formatDecimal(total, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                </div>
                                 <div th:each="entrega : ${entregas}">
-                                    <div class="card mb-1" id="color-card">
-                                                <div class="card-body">
-                                                    <h6 id="darkblue" th:text="'Importe $'+${entrega.importeS}"></h6>
-                                                    <h6 id="dimgray" th:text="'Fecha '+${entrega.fecha}+' - ID'+${entrega.idEntrega}"></h6>
-                                                    <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>
-                                                </div> 
+                                    <div class="card border-secondary p-3 mb-1" id="color-card">
+                                                    <h6 id="darkblue" th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                    <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                                    <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>      
                                     </div>
                                 </div>
+                                    <br>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/cuenta/mostrarIdChofer/__${id}__}">Volver</a>
+                                    </div>
                                 </div> 
                                 <div th:if="${entregas.isEmpty()}">
-                                     <div class="card-body mb-1 text-center" id="color-card">
+                                    <br>
+                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
                                         <h6 id="azul">No existen Entregas para la fecha seleccionada</h6>
                                     </div>
+                                         <div class="text-center mb-2">
+                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/cuenta/mostrarIdChofer/__${id}__}">Volver</a>
+                                    </div>
+
                                 </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
