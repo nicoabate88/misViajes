@@ -27,7 +27,7 @@
 
                                 <div class="card border-secondary p-2" id="color-card">
                                     <h6 th:text="'Flete ID'+${flete.idFlete}"></h6>
-                                    <p class="card-text" id="dimgray" th:text="${flete.tipoCereal}+' '+${flete.kgFlete}+' KG'"></p>
+                                    <p class="card-text" id="dimgray" th:text="${flete.producto.nombre}+' '+${flete.kgFlete}+' KG'"></p>
 
                                     <form th:action="@{/imagen/cargaDescargaDesdeFlete}" method="POST" enctype="multipart/form-data" onsubmit="mostrarCargando()">
                                         <input hidden th:value="${flete.id}" name="id"> 

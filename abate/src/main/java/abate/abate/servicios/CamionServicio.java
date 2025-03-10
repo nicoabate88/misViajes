@@ -143,6 +143,12 @@ public class CamionServicio {
 
         // Paso 1: Procesar los fletes
         Map<String, CamionEstadistica> resumenMap = new HashMap<>();
+        
+        int totalFletes = 0;
+    int totalKm = 0;
+    double totalLitros = 0;
+    int totalGastos = 0;
+    int totalNeto = 0;
 
         for (Flete flete : fletes) {
             Calendar calendar = Calendar.getInstance();
@@ -160,6 +166,9 @@ public class CamionServicio {
                 CamionEstadistica nuevoResumen = new CamionEstadistica(year, month, 1, flete.getNeto());
                 resumenMap.put(key, nuevoResumen);
             }
+            
+            totalFletes++;
+            totalNeto += flete.getNeto();
         }
 
         // Paso 2: Procesar los combustibles y actualizar ResumenFletesMensual
@@ -182,6 +191,8 @@ public class CamionServicio {
                 nuevoResumen.setLitro(combustible.getLitro());
                 resumenMap.put(key, nuevoResumen);
             }
+                    totalKm += combustible.getKmRecorrido();
+        totalLitros += combustible.getLitro();
         }
         // Paso 3: Procesar los gastos y actualizar ResumenFletesMensual
         for (Gasto gasto : gastos) {
@@ -201,9 +212,25 @@ public class CamionServicio {
                 nuevoResumen.setGasto(gasto.getImporte());
                 resumenMap.put(key, nuevoResumen);
             }
+            totalGastos += gasto.getImporte();
         }
 
-        return new ArrayList<>(resumenMap.values());
+            ArrayList<CamionEstadistica> resultado = new ArrayList<>(resumenMap.values());
+
+    // Agregar fila de totales generales
+    CamionEstadistica totalGeneral = new CamionEstadistica(0, 0, totalFletes);
+    totalGeneral.setFlete(totalFletes);
+    totalGeneral.setKmRecorrido(totalKm);
+    totalGeneral.setLitro(totalLitros);
+    totalGeneral.setGasto(totalGastos);
+    totalGeneral.setNeto(totalNeto);
+    if(totalKm > 0){
+    totalGeneral.setRentabilidad(totalNeto / totalKm);
+    }
+    
+    resultado.add(totalGeneral);
+
+    return resultado;
 
     }
 
@@ -218,7 +245,7 @@ public class CamionServicio {
 
         // Mapa para almacenar estadísticas por camión
         Map<Camion, CamionesEstadistica> estadisticasPorCamion = new HashMap<>();
-
+        CamionesEstadistica totalGeneral = new CamionesEstadistica();
         // Procesar los fletes
         for (Flete flete : fletes) {
             Camion camion = flete.getCamion();
@@ -226,6 +253,8 @@ public class CamionServicio {
             CamionesEstadistica resumen = estadisticasPorCamion.get(camion);
             resumen.setFlete(resumen.getFlete() + 1);
             resumen.setNeto(resumen.getNeto() + flete.getNeto());
+            totalGeneral.setFlete(totalGeneral.getFlete() + 1);
+            totalGeneral.setNeto(totalGeneral.getNeto() + flete.getNeto());
         }
 
         // Procesar los combustibles
@@ -235,6 +264,8 @@ public class CamionServicio {
             CamionesEstadistica resumen = estadisticasPorCamion.get(camion);
             resumen.setKmRecorrido(resumen.getKmRecorrido() + combustible.getKmRecorrido());
             resumen.setLitro(resumen.getLitro() + combustible.getLitro());
+            totalGeneral.setKmRecorrido(totalGeneral.getKmRecorrido() + combustible.getKmRecorrido());
+            totalGeneral.setLitro(totalGeneral.getLitro() + combustible.getLitro());
 
         }
 
@@ -244,7 +275,16 @@ public class CamionServicio {
             estadisticasPorCamion.putIfAbsent(camion, new CamionesEstadistica());
             CamionesEstadistica resumen = estadisticasPorCamion.get(camion);
             resumen.setGasto(resumen.getGasto() + gasto.getImporte());
+            totalGeneral.setGasto(totalGeneral.getGasto() + gasto.getImporte());
         }
+        
+        if(totalGeneral.getKmRecorrido() > 0){
+        totalGeneral.setRentabilidad(totalGeneral.getNeto() / totalGeneral.getKmRecorrido());
+        }
+        
+        Camion totalKey = new Camion();
+        totalKey.setDominio("TOTAL");
+        estadisticasPorCamion.put(totalKey, totalGeneral);
         // Ordenar el mapa por el dominio del camión
         return estadisticasPorCamion.entrySet()
                 .stream()

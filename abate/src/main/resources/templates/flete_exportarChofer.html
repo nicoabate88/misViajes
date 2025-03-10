@@ -68,7 +68,7 @@
                                             <th>LugarCarga</th>
                                             <th>DestinoCarga</th>
                                             <th>Km</th>
-                                            <th>TipoCarga</th>   
+                                            <th>Producto</th>   
                                             <th>CP</th>
                                             <th>CTG</th>
                                             <th>Tarifa</th>
@@ -85,7 +85,7 @@
                                             <td th:text="${flete.origenFlete}"></td>
                                             <td th:text="${flete.destinoFlete}"></td>
                                             <td th:text="${flete.kmFlete}"></td>
-                                            <td th:text="${flete.tipoCereal}"></td>
+                                            <td th:text="${flete.producto.nombre}"></td>
                                             <td th:text="${flete.cartaPorte}"></td>
                                             <td th:text="${flete.ctg}"></td>
                                             <td th:text="'$'+${flete.tarifa}"></td>

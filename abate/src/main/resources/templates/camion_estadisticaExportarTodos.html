@@ -59,35 +59,37 @@
                                                                     Exportando... Por favor, espere.
                                                                 </div>
                                                             </div>
-                                                            <table class="table table-responsive border-secondary bg-light table-hover mb-4" id="dimgray">
+                                                            <table class="table border-secondary bg-light table-hover mb-4" id="dimgray">
                                                                 <thead>
                                                                     <tr>
                                                                         <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Camión</th>
+                                                                        <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Viajes</th>
                                                                         <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">KM</th>
                                                                         <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Diesel</th>
                                                                         <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Consumo</th>
                                                                         <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Gastos</th>
-                                                                        <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Viajes</th>
                                                                         <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Neto</th>
                                                                         <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Neto/Km</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    <tr th:each="entry : ${estadistica}">
-                                                                        <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="${entry.key.dominio}">Dominio</td>
+                                                                    <tr th:each="entry : ${estadistica}" th:classappend="${entry.key.dominio == 'TOTAL' ? 'total-general' : ''}">
+                                                                        <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center"><b><a id="dimgray" th:href="@{/camion/mostrarEstadistica/__${entry.key.id}__}" th:text="${entry.key.dominio}"></a></b></td>
                                                                         <td colspan="7">
                                                                             <table class="table table-borderless table-sm" id="dimgray">
-                                                                                <tr th:each="estadistica : ${entry.value}">
-                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(estadistica.kmRecorrido, 0, 'POINT', 1, 'COMMA')}"></td>
-                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(estadistica.litro, 0, 'POINT', 1, 'COMMA')}"></td>
-                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${estadistica.consumo}"></td>
-                                                                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(estadistica.gasto, 0, 'POINT', 1, 'COMMA')}"></td>
-                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${estadistica.flete}"></td>
-                                                                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(estadistica.neto, 0, 'POINT', 1, 'COMMA')}"></td>
-                                                                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(estadistica.rentabilidad, 0, 'POINT', 1, 'COMMA')}"></td>
+                                                                                <tr th:each="estadistica : ${entry.value}" th:classappend="${entry.key.dominio == 'TOTAL' ? 'total-general' : ''}">
+                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(estadistica.flete, 0, 'POINT', 0, 'POINT')}" th:style="${estadistica.flete}"></td>
+                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(estadistica.kmRecorrido, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(estadistica.litro, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(estadistica.consumo, 0, 'POINT', 0, 'COMMA')}"></td>
+                                                                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(estadistica.gasto, 0, 'POINT', 0, 'COMMA')}"></td>
+                                                                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(estadistica.neto, 0, 'POINT', 0, 'COMMA')}"></td>
+                                                                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(estadistica.rentabilidad, 0, 'POINT', 0, 'COMMA')}"></td>
                                                                                 </tr>
                                                                             </table>
-                                                                            </tbody>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
                                                             </table>
                                     <div class="text-center mb-2">
                                         <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/camion/mostrarEstadisticaCamiones}">Volver</a>

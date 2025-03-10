@@ -94,9 +94,13 @@
                                             </div>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cereal" class="form-floting text-secondary">Tipo de Carga*</label>
-                                            <select class="form-control" id="cereal" name="tipoCereal" required>
-                                                <option selected disabled value="">Tipo de Carga</option>
+                                            <label for="producto" class="form-floting text-secondary">Producto*</label>
+                                            <select class="form-control" id="producto" name="idProducto" required>
+                                                <option selected disabled value="">Seleccione Producto</option>
+                                                <option th:each="producto : ${productos}"
+                                                        th:value="${producto.id}"
+                                                        th:text="${producto.nombre}"/>
+                                                <!--
                                                 <option value="SOJA">SOJA</option>
                                                 <option value="MAIZ">MAIZ</option>
                                                 <option value="TRIGO">TRIGO</option>
@@ -124,6 +128,7 @@
                                                 <option value="SORGO">SORGO</option>
                                                 <option value="VERDURA">VERDURA</option>
                                                 <option value="OTRO">OTRO</option>
+                                                -->
                                             </select>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">

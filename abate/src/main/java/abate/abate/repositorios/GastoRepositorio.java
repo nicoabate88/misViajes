@@ -33,6 +33,8 @@ public interface GastoRepositorio extends JpaRepository<Gasto, Long> {
     Gasto findTopByChoferOrderByIdDesc(Usuario chofer); //devuelve ultimo Gasto registrado de chofer especifico
 
     ArrayList<Gasto> findByFechaBetweenAndCamionId(Date desde, Date hasta, Long idCamion);
+    
+    ArrayList<Gasto> findByFechaBetweenAndChoferId(Date desde, Date hasta, Long idChofer);
 
     ArrayList<Gasto> findByFechaBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
 

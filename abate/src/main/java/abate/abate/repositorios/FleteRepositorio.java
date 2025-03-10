@@ -3,6 +3,7 @@ package abate.abate.repositorios;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Flete;
+import abate.abate.entidades.Producto;
 import abate.abate.entidades.Usuario;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +50,8 @@ public interface FleteRepositorio extends JpaRepository<Flete, Long> {
     ArrayList<Flete> findByFechaFleteBetweenAndChoferAndCliente(Date desde, Date hasta, Usuario chofer, Cliente cliente);
 
     Flete findTopByCamionOrderByIdDesc(Camion camion);
+    
+    Flete findTopByProductoOrderByIdDesc(Producto producto);
 
     Flete findTopByChoferOrderByIdDesc(Usuario chofer);
 

@@ -7,6 +7,7 @@ import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.ClienteServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.FleteServicio;
+import abate.abate.servicios.ProductoServicio;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -34,6 +35,8 @@ public class FleteControlador {
     @Autowired
     private ClienteServicio clienteServicio;
     @Autowired
+    private ProductoServicio productoServicio;
+    @Autowired
     private ChoferServicio choferServicio;
     @Autowired
     private ExcelServicio excelServicio;
@@ -49,6 +52,7 @@ public class FleteControlador {
             modelo.put("chofer", logueado);
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarChofer.html";
 
@@ -57,6 +61,7 @@ public class FleteControlador {
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarAdmin.html";
         }
@@ -64,13 +69,13 @@ public class FleteControlador {
 
     @PostMapping("/registroChofer")
     public String registroFlete(@RequestParam Long idCliente, @RequestParam Long idCamion, @RequestParam String fechaCarga, @RequestParam String fechaFlete,
-            @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam String tipoCereal,
+            @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
             @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg,
             ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        fleteServicio.crearFleteChofer(logueado.getIdOrg(), fechaCarga, idCliente, idCamion, origen, fechaFlete, destino, km, tipoCereal, tarifa, cPorte, ctg, kg, logueado.getId());
+        fleteServicio.crearFleteChofer(logueado.getIdOrg(), fechaCarga, idCliente, idCamion, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg, logueado.getId());
 
         return "redirect:/flete/registradoChofer";
 
@@ -93,13 +98,13 @@ public class FleteControlador {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/registroAdmin")
     public String registroFleteAdmin(@RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete,
-            @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam String tipoCereal, @RequestParam String cPorte,
+            @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte,
             @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam String comisionTpteChofer,
             @RequestParam String iva, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        fleteServicio.crearFleteAdmin(logueado.getIdOrg(), idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, tipoCereal, tarifa, cPorte, ctg, kg, comisionTpte, comisionTpteChofer, iva, logueado.getId());
+        fleteServicio.crearFleteAdmin(logueado.getIdOrg(), idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg, comisionTpte, comisionTpteChofer, iva, logueado.getId());
 
         return "redirect:/flete/registradoAdmin";
 
@@ -561,6 +566,7 @@ public class FleteControlador {
             modelo.put("flete", fleteServicio.buscarFlete(id));
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_modificarChofer.html";
 
@@ -570,6 +576,7 @@ public class FleteControlador {
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_modificarAdmin.html";
         }
@@ -577,10 +584,10 @@ public class FleteControlador {
 
     @PostMapping("/modificaChofer/{id}")
     public String modificaChofer(@RequestParam Long id, @RequestParam Long idCamion, @RequestParam Long idCliente, @RequestParam String fechaCarga,
-            @RequestParam String fechaFlete, @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam String tipoCereal,
+            @RequestParam String fechaFlete, @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
             @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, ModelMap modelo) throws ParseException {
 
-        fleteServicio.modificarFleteChofer(id, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, tipoCereal, tarifa, cPorte, ctg, kg);
+        fleteServicio.modificarFleteChofer(id, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg);
 
         return "redirect:/flete/modificado/" + id;
 
@@ -598,7 +605,7 @@ public class FleteControlador {
 
     @PostMapping("/modificaAdmin/{id}")
     public String modificaAdmin(@RequestParam Long id, @RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam Long idCliente, @RequestParam String fechaCarga,
-            @RequestParam String fechaFlete, @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam String tipoCereal,
+            @RequestParam String fechaFlete, @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
             @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte,
             @RequestParam String comisionTpteChofer, @RequestParam Double iva, @RequestParam Double porcentaje, @RequestParam Double porcentajeChofer,
             ModelMap modelo, HttpSession session) throws ParseException {
@@ -608,14 +615,14 @@ public class FleteControlador {
 
         if (flete.getEstado().equalsIgnoreCase("PENDIENTE")) {
 
-            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, tipoCereal, tarifa, cPorte, ctg,
+            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
             kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, logueado.getId());
 
             return "redirect:/flete/modificadoPendiente/" + id;
 
         } else {
 
-            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, tipoCereal, tarifa, cPorte, ctg,
+            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
                     kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, logueado.getId());
 
             return "redirect:/flete/modificadoAdmin/" + id;
@@ -892,7 +899,7 @@ public class FleteControlador {
                 + "<th>Porcentaje</th>"
                 + "<th>Camión</th>"
                 + "<th>KM</th>"
-                + "<th>Tipo Carga</th>"
+                + "<th>Producto</th>"
                 + "<th>CP</th>"
                 + "<th>CTG</th>"
                 + "<th>Tarifa</th>"
@@ -913,7 +920,7 @@ public class FleteControlador {
                     + "<td>").append(flete.getPorcentajeChofer()).append("</td>"
                     + "<td>").append(flete.getCamion().getDominio()).append("</td>"
                     + "<td>").append(flete.getKmFlete()).append("</td>"
-                    + "<td>").append(flete.getTipoCereal()).append("</td>"
+                    + "<td>").append(flete.getProducto().getNombre()).append("</td>"
                     + "<td>").append(flete.getCartaPorte()).append("</td>"
                     + "<td>").append(flete.getCtg()).append("</td>"
                     + "<td>").append(flete.getTarifa()).append("</td>"
@@ -938,7 +945,7 @@ public class FleteControlador {
                 + "<th>Lugar de Carga</th>"
                 + "<th>Destino de Carga</th>"
                 + "<th>KM</th>"
-                + "<th>Tipo Carga</th>"
+                + "<th>Producto</th>"
                 + "<th>CP</th>"
                 + "<th>CTG</th>"
                 + "<th>Tarifa</th>"
@@ -955,7 +962,7 @@ public class FleteControlador {
                     + "<td>").append(flete.getOrigenFlete()).append("</td>"
                     + "<td>").append(flete.getDestinoFlete()).append("</td>"
                     + "<td>").append(flete.getKmFlete()).append("</td>"
-                    + "<td>").append(flete.getTipoCereal()).append("</td>"
+                    + "<td>").append(flete.getProducto().getNombre()).append("</td>"
                     + "<td>").append(flete.getCartaPorte()).append("</td>"
                     + "<td>").append(flete.getCtg()).append("</td>"
                     + "<td>").append(flete.getTarifa()).append("</td>"

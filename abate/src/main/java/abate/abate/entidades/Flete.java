@@ -27,6 +27,8 @@ public class Flete {
     private String destinoFlete;
     private Double kmFlete;
     private String tipoCereal;
+    @OneToOne
+    private Producto producto;
     private Double tarifa;
     private String cartaPorte;
     private String ctg;
@@ -56,7 +58,7 @@ public class Flete {
     public Flete() {
     }
 
-    public Flete(Long id, Long idFlete, Long idOrg, Date fechaCarga, Cliente cliente, String origenFlete, Date fechaFlete, String destinoFlete, Double kmFlete, String tipoCereal, Double tarifa, String cartaPorte, String ctg, Double kgFlete, Usuario chofer, Camion camion, Usuario usuario, Double neto, Double iva, Double total, Double porcientoChofer, Double porcentajeChofer, Double comisionTpte, Double comisionTpteValor, String comisionTpteChofer, String estado, Gasto gasto, Imagen imagenCP, Imagen imagenDescarga) {
+    public Flete(Long id, Long idFlete, Long idOrg, Date fechaCarga, Cliente cliente, String origenFlete, Date fechaFlete, String destinoFlete, Double kmFlete, String tipoCereal, Producto producto, Double tarifa, String cartaPorte, String ctg, Double kgFlete, Usuario chofer, Camion camion, Usuario usuario, Double neto, Double iva, Double total, Double porcientoChofer, Double porcentajeChofer, Double comisionTpte, Double comisionTpteValor, String comisionTpteChofer, String estado, Gasto gasto, Imagen imagenCP, Imagen imagenDescarga) {
         this.id = id;
         this.idFlete = idFlete;
         this.idOrg = idOrg;
@@ -67,6 +69,7 @@ public class Flete {
         this.destinoFlete = destinoFlete;
         this.kmFlete = kmFlete;
         this.tipoCereal = tipoCereal;
+        this.producto = producto;
         this.tarifa = tarifa;
         this.cartaPorte = cartaPorte;
         this.ctg = ctg;
@@ -166,6 +169,14 @@ public class Flete {
 
     public void setTipoCereal(String tipoCereal) {
         this.tipoCereal = tipoCereal;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 
     public Double getTarifa() {
@@ -320,4 +331,5 @@ public class Flete {
         this.imagenDescarga = imagenDescarga;
     }
 
+    
 }

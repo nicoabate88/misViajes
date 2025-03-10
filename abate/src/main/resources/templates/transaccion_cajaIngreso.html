@@ -23,7 +23,7 @@
                                     </div>
                                 </div>
                                 <div class="card border-secondary p-3 mb-3" id="color-card">
-                                    <h6 th:text="'Importe $'+${ingreso.importe}"></h6>
+                                    <h6 th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                     <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(ingreso.fecha, 'dd-MM-yyyy')}"></h6>
                                     <p class="mb-0" id="dimgray" th:text="${ingreso.observacion}"></p>
                                 </div>

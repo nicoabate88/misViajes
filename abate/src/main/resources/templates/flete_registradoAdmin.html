@@ -31,7 +31,7 @@
                                                 <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
                                                 <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
                                                 <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="${flete.tipoCereal}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                <h6 id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 <h6 id="dimgray" th:text="'Neto $' +${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}+' + IVA $' +${#numbers.formatDecimal(flete.iva, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 <h6 id="dimgray" th:text="'TOTAL $' +${#numbers.formatDecimal(flete.total, 0, 'POINT', 2, 'COMMA')}"></h6>

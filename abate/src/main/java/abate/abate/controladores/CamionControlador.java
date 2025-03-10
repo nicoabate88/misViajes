@@ -93,12 +93,12 @@ public class CamionControlador {
     @GetMapping("/mostrarEstadistica/{id}")
     public String buscarEstadistica(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
-        String desde = obtenerFechaDesde();
+        String desde = obtenerFechaDesdeAño();
         String hasta = obtenerFechaHasta();
 
         ArrayList<CamionEstadistica> lista = camionServicio.estadisticaCamion(desde, hasta, id);
         Boolean flag = true;
-        if (lista.isEmpty()) {
+        if (lista.size() <= 1) {
             flag = false;
         }
 
@@ -108,6 +108,7 @@ public class CamionControlador {
                 e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
+                e.setConsumo(0.0);
                 e.setRentabilidad(0.0);
             }
         }
@@ -128,15 +129,16 @@ public class CamionControlador {
 
         ArrayList<CamionEstadistica> lista = camionServicio.estadisticaCamion(desde, hasta, idCamion);
         Boolean flag = true;
-        if (lista.isEmpty()) {
+        if (lista.size() <= 1) {
             flag = false;
         }
 
         for (CamionEstadistica e : lista) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
             if (e.getKmRecorrido() != 0.0) {
+            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
+                e.setConsumo(0.0);
                 e.setRentabilidad(0.0);
             }
         }
@@ -170,7 +172,7 @@ public class CamionControlador {
 
         Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
         Boolean flag = true;
-        if (estadisticasPorCamion.isEmpty()) {
+        if (estadisticasPorCamion.size() <= 1) {
             flag = false;
         }
 
@@ -201,7 +203,7 @@ public class CamionControlador {
 
         Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
         Boolean flag = true;
-        if (estadisticasPorCamion.isEmpty()) {
+        if (estadisticasPorCamion.size() <= 1) {
             flag = false;
         }
 
@@ -304,6 +306,20 @@ public class CamionControlador {
         return formattedDate;
 
     }
+    
+    public String obtenerFechaDesdeAño() {
+
+        LocalDate now = LocalDate.now();
+
+        LocalDate firstDayOfYear = now.withDayOfYear(1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        String formattedDate = firstDayOfYear.format(formatter);
+
+        return formattedDate;
+
+    }
 
     public String obtenerFechaHasta() {
 
@@ -337,10 +353,11 @@ public class CamionControlador {
         ArrayList<CamionEstadistica> lista = camionServicio.estadisticaCamion(desde, hasta, id);
 
         for (CamionEstadistica e : lista) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
             if (e.getKmRecorrido() != 0.0) {
-                e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
+            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+            e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
+                e.setConsumo(0.0);
                 e.setRentabilidad(0.0);
             }
         }
@@ -362,10 +379,11 @@ public class CamionControlador {
         Camion camion = camionServicio.buscarCamion(id);
         ArrayList<CamionEstadistica> myObjects = camionServicio.estadisticaCamion(desde, hasta, id);
         for (CamionEstadistica e : myObjects) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
             if (e.getKmRecorrido() != 0.0) {
+            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
+                e.setConsumo(0.0);
                 e.setRentabilidad(0.0);
             }
         }
@@ -430,10 +448,11 @@ public class CamionControlador {
         sb.append("<thead><tr>"
                 + "<th>Año</th>"
                 + "<th>Mes</th>"
+                + "<th>Viajes</th>"
                 + "<th>Km</th>"
                 + "<th>Litros</th>"
                 + "<th>Consumo</th>"
-                + "<th>Viajes</th>"
+                + "<th>Gastos</th>"
                 + "<th>Neto</th>"
                 + "<th>Rentabilidad</th>"
                 + "</tr></thead>");
@@ -441,10 +460,11 @@ public class CamionControlador {
         for (CamionEstadistica e : objects) {
             sb.append("<tr><td>").append(e.getYear()).append("</td>"
                     + "<td>").append(e.getMonth()).append("</td>"
+                    + "<td>").append(e.getFlete()).append("</td>"
                     + "<td>").append(e.getKmRecorrido()).append("</td>"
                     + "<td>").append(e.getLitro()).append("</td>"
                     + "<td>").append(e.getConsumo()).append("</td>"
-                    + "<td>").append(e.getFlete()).append("</td>"
+                    + "<td>").append(e.getGasto()).append("</td>"
                     + "<td>").append(e.getNeto()).append("</td>"
                     + "<td>").append(e.getRentabilidad()).append("</td>"
                     + "</tr>");
@@ -458,11 +478,11 @@ public class CamionControlador {
         sb.append("<table>");
         sb.append("<thead><tr>")
                 .append("<th>Camión</th>")
+                .append("<th>Viajes</th>")
                 .append("<th>KM</th>")
                 .append("<th>Diesel</th>")
                 .append("<th>Consumo</th>")
                 .append("<th>Gastos</th>")
-                .append("<th>Viajes</th>")
                 .append("<th>Neto</th>")
                 .append("<th>Neto/KM</th>");
         sb.append("</tr></thead>");
@@ -473,11 +493,11 @@ public class CamionControlador {
             CamionesEstadistica estadistica = entry.getValue();
             sb.append("<tr>")
                     .append("<td>").append(camion.getDominio()).append("</td>")
+                    .append("<td>").append(estadistica.getFlete()).append("</td>")
                     .append("<td>").append(estadistica.getKmRecorrido()).append("</td>")
                     .append("<td>").append(estadistica.getLitro()).append("</td>")
                     .append("<td>").append(estadistica.getConsumo()).append("</td>")
                     .append("<td>").append(estadistica.getGasto()).append("</td>")
-                    .append("<td>").append(estadistica.getFlete()).append("</td>")
                     .append("<td>").append(estadistica.getNeto()).append("</td>")
                     .append("<td>").append(estadistica.getRentabilidad()).append("</td>");
             sb.append("</tr>");

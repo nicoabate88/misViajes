@@ -44,7 +44,6 @@ public class GastoServicio {
     @Autowired
     private ImagenServicio imagenServicio;
 
-    //nuevo
     @Transactional
     public void registrarGastoFlete(List<Detalle> detalles, Long idFlete, Usuario logueado) {
 
@@ -91,7 +90,6 @@ public class GastoServicio {
 
     }
 
-    //nuevo
     public Gasto buscarUltimoGasto(Long idOrg) {
 
         return gastoRepositorio.buscarUltimoGasto(idOrg);

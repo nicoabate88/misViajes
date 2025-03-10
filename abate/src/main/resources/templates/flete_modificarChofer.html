@@ -106,36 +106,12 @@
                                         </div>
                                           
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cereal" class="form-floting text-secondary">Tipo de Carga*</label>
-                                            <select class="form-control" id="cereal" name="tipoCereal" required>
-                                                <option selected th:text="${flete.tipoCereal}" th:value="${flete.tipoCereal}"></option>
-                                                <option value="SOJA">SOJA</option>
-                                                <option value="MAIZ">MAIZ</option>
-                                                <option value="TRIGO">TRIGO</option>
-                                                <option value="AGROQUIMICO">AGROQUIMICO</option>
-                                                <option value="ALGODON">ALGODON</option>
-                                                <option value="ARENA">ARENA</option>
-                                                <option value="ARROZ">ARROZ</option>
-                                                <option value="CEBADA">CEBADA</option>
-                                                <option value="CEBOLLA">CEBOLLA</option>
-                                                <option value="CEMENTO">CEMENTO</option>
-                                                <option value="CENTENO">CENTENO</option>
-                                                <option value="EXPELLER">EXPELLER</option>
-                                                <option value="FERTILIZANTE">FERTILIZANTE</option>
-                                                <option value="FRUTA">FRUTA</option>
-                                                <option value="GIRASOL">GIRASOL</option>
-                                                <option value="HARINA">HARINA</option>
-                                                <option value="HIERRO">HIERRO</option>
-                                                <option value="LADRILLO">LADRILLO</option>
-                                                <option value="MADERA">MADERA</option>
-                                                <option value="PAPA">PAPA</option>
-                                                <option value="PIEDRA">PIEDRA</option>
-                                                <option value="ROLLOS">ROLLOS</option>
-                                                <option value="SEMILLA">SEMILLA</option>
-                                                <option value="SILOBOLSA">SILOBOLSA</option>
-                                                <option value="SORGO">SORGO</option>
-                                                <option value="VERDURA">VERDURA</option>
-                                                <option value="OTRO">OTRO</option>
+                                            <label for="producto" class="form-floting text-secondary">Producto*</label>
+                                            <select class="form-control" id="producto" name="idProducto" required>
+                                                <option selected th:text="${flete.producto.nombre}" th:value="${flete.producto.id}"></option>
+                                                <option th:each="producto : ${productos}"
+                                                        th:value="${producto.id}"
+                                                        th:text="${producto.nombre}"/>
                                             </select>
                                         </div>
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">

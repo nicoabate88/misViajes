@@ -102,7 +102,7 @@
                                             <div class="col-9 col-md-9">
                                                 <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
                                                 <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
-                                                <h6 th:if="${flete.estado == 'ACEPTADO'}" class="mb-0" id="dimgray" th:text="${flete.tipoCereal}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG'"></h6>
+                                                <h6 th:if="${flete.estado == 'ACEPTADO'}" class="mb-0" id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG'"></h6>
                                             </div>
                                             <div class="col-3 col-md-3 text-center">
                                                 <a th:href="@{/flete/mostrarFiltrado/__${flete.id}__}" >

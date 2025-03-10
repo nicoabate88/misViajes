@@ -1,6 +1,7 @@
 package abate.abate.servicios;
 
 import abate.abate.entidades.Camion;
+import abate.abate.entidades.Usuario;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
@@ -238,6 +239,66 @@ public class ExcelServicio {
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=Gastos.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+    
+        public void exportHtmlToExcelChofer(String htmlContent, HttpServletResponse response, Usuario chofer) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("EstadisticaChofer");
+
+        // Crear estilos para el título y el subtítulo
+        CellStyle titleStyle = workbook.createCellStyle();
+        Font titleFont = workbook.createFont();
+        titleFont.setFontHeightInPoints((short) 11);
+        titleStyle.setFont(titleFont);
+
+        int rowIndex = 0;
+
+        // Escribir el título
+        Row titleRow = sheet.createRow(rowIndex++);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue(chofer.getNombre());
+        titleCell.setCellStyle(titleStyle);
+
+        sheet.createRow(rowIndex++);
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        // Intenta convertir el texto en un número
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        // Si no es un número, se guarda como texto
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = 0;
+        if (sheet.getRow(3) != null) {
+            columnCount = sheet.getRow(3).getPhysicalNumberOfCells();
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=EstadisticaChofer.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();

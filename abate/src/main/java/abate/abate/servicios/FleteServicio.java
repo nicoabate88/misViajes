@@ -3,10 +3,12 @@ package abate.abate.servicios;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Flete;
+import abate.abate.entidades.Producto;
 import abate.abate.entidades.Usuario;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.ClienteRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
+import abate.abate.repositorios.ProductoRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
 import abate.abate.util.FleteComparador;
 import java.text.ParseException;
@@ -35,11 +37,13 @@ public class FleteServicio {
     @Autowired
     private CamionRepositorio camionRepositorio;
     @Autowired
+    private ProductoRepositorio productoRepositorio;
+    @Autowired
     private ImagenServicio imagenServicio;
 
     @Transactional
     public void crearFleteChofer(Long idOrg, String fechaCarga, Long idCliente, Long idCamion, String origen, String fechaViaje, String destino, Double km,
-            String tipoCereal, Double tarifa, String cPorte, String ctg, Double kg, Long idChofer) throws ParseException {
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Long idChofer) throws ParseException {
 
         Flete flete = new Flete();
 
@@ -60,6 +64,8 @@ public class FleteServicio {
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        
+        Producto producto = productoRepositorio.getById(idProducto);
 
         Long ifFlete = buscarUltimoIdOrg(idOrg);
         String origenM = origen.toUpperCase();
@@ -83,7 +89,7 @@ public class FleteServicio {
         flete.setFechaFlete(viaje);
         flete.setDestinoFlete(destinoM);
         flete.setKmFlete(km);
-        flete.setTipoCereal(tipoCereal);
+        flete.setProducto(producto);
         flete.setTarifa(tarifa);
         flete.setCartaPorte(cPorte);
         flete.setCtg(ctg);
@@ -108,7 +114,7 @@ public class FleteServicio {
 
     @Transactional
     public void crearFleteAdmin(Long idOrg, Long idChofer, Long idCamion, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
-            String tipoCereal, Double tarifa, String cPorte, String ctg, Double kg, Double comisionTpte, String comisionTpteChofer, String ivaN, Long idUsuario) throws ParseException {
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Double comisionTpte, String comisionTpteChofer, String ivaN, Long idUsuario) throws ParseException {
 
         Flete flete = new Flete();
 
@@ -135,6 +141,7 @@ public class FleteServicio {
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        Producto producto = productoRepositorio.getById(idProducto);
 
         Long ifFlete = buscarUltimoIdOrg(idOrg);
         String origenM = origen.toUpperCase();
@@ -200,7 +207,7 @@ public class FleteServicio {
         flete.setFechaFlete(viaje);
         flete.setDestinoFlete(destinoM);
         flete.setKmFlete(km);
-        flete.setTipoCereal(tipoCereal);
+        flete.setProducto(producto);
         flete.setTarifa(tarifa);
         flete.setCartaPorte(cPorte);
         flete.setCtg(ctg);
@@ -470,7 +477,7 @@ public class FleteServicio {
 
     @Transactional
     public void modificarFleteChofer(Long idFlete, Long idCamion, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
-            String tipoCereal, Double tarifa, String cPorte, String ctg, Double kg) throws ParseException {
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg) throws ParseException {
 
         Flete flete = new Flete();
         Optional<Flete> fte = fleteRepositorio.findById(idFlete);
@@ -489,6 +496,8 @@ public class FleteServicio {
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        
+        Producto producto = productoRepositorio.getById(idProducto);
 
         String origenM = origen.toUpperCase();
         String destinoM = destino.toUpperCase();
@@ -512,7 +521,7 @@ public class FleteServicio {
         flete.setFechaFlete(viaje);
         flete.setDestinoFlete(destinoM);
         flete.setKmFlete(km);
-        flete.setTipoCereal(tipoCereal);
+        flete.setProducto(producto);
         flete.setTarifa(tarifa);
         flete.setCartaPorte(cPorte);
         flete.setCtg(ctg);
@@ -529,7 +538,7 @@ public class FleteServicio {
 
     @Transactional
     public void modificarFleteAdmin(Long idFlete, Long idChofer, Long idCamion, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
-            String tipoCereal, Double tarifa, String cPorte, String ctg, Double kg, Double ivaM, Double porciento, Double porcentajeChofer,
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Double ivaM, Double porciento, Double porcentajeChofer,
             Double comisionTpte, String comisionTpteChofer, Long idUsuario) throws ParseException {
 
         Flete flete = new Flete();
@@ -560,6 +569,8 @@ public class FleteServicio {
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        
+        Producto producto = productoRepositorio.getById(idProducto);
 
         String origenM = origen.toUpperCase();
         String destinoM = destino.toUpperCase();
@@ -615,7 +626,7 @@ public class FleteServicio {
         flete.setFechaFlete(viaje);
         flete.setDestinoFlete(destinoM);
         flete.setKmFlete(km);
-        flete.setTipoCereal(tipoCereal);
+        flete.setProducto(producto);
         flete.setTarifa(tarifa);
         flete.setCartaPorte(cPorte);
         flete.setCtg(ctg);
@@ -671,6 +682,7 @@ public class FleteServicio {
         flete.setCliente(null);
         flete.setUsuario(null);
         flete.setCamion(null);
+        flete.setProducto(null);
 
         fleteRepositorio.save(flete);
 

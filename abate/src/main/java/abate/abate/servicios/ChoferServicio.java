@@ -2,6 +2,7 @@ package abate.abate.servicios;
 
 import abate.abate.entidades.Caja;
 import abate.abate.entidades.Camion;
+import abate.abate.entidades.ChoferEstadistica;
 import abate.abate.entidades.ChoferesEstadistica;
 import abate.abate.entidades.Combustible;
 import abate.abate.entidades.Entrega;
@@ -22,6 +23,7 @@ import abate.abate.util.ChoferComparador;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -272,6 +274,106 @@ public class ChoferServicio {
 
         return usuarioRepositorio.ultimoUsuario(idOrg);
     }
+    
+    public ArrayList<ChoferEstadistica> estadisticaChofer(String desde, String hasta, Long idChofer) throws ParseException {
+
+        Usuario chofer = usuarioRepositorio.getById(idChofer);
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> fletes = fleteRepositorio.findByFechaFleteBetweenAndChofer(d, h, chofer);
+        ArrayList<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndChofer(d, h, chofer);
+        ArrayList<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndChoferId(d, h, chofer.getId());
+
+        Map<String, ChoferEstadistica> resumenMap = new HashMap<>();
+        
+        int totalFletes = 0;
+    int totalKm = 0;
+    double totalLitros = 0;
+    int totalGastos = 0;
+    int totalNeto = 0;
+
+        for (Flete flete : fletes) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(flete.getFechaFlete());
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+
+            String key = year + "-" + month;
+
+            if (resumenMap.containsKey(key)) {
+                ChoferEstadistica resumen = resumenMap.get(key);
+                resumen.setFlete(resumen.getFlete() + 1);
+                resumen.setNeto(resumen.getNeto() + flete.getNeto());
+            } else {
+                ChoferEstadistica nuevoResumen = new ChoferEstadistica(year, month, 1, flete.getNeto());
+                resumenMap.put(key, nuevoResumen);
+            }
+            
+            totalFletes++;
+            totalNeto += flete.getNeto();
+        }
+
+        for (Combustible combustible : cargas) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(combustible.getFechaCarga());
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+
+            String key = year + "-" + month;
+
+            if (resumenMap.containsKey(key)) {
+                ChoferEstadistica resumen = resumenMap.get(key);
+                resumen.setKmRecorrido(resumen.getKmRecorrido() + combustible.getKmRecorrido());
+                resumen.setLitro(resumen.getLitro() + combustible.getLitro());
+            } else {
+
+                ChoferEstadistica nuevoResumen = new ChoferEstadistica(year, month, 0, 0.0);
+                nuevoResumen.setKmRecorrido(combustible.getKmRecorrido());
+                nuevoResumen.setLitro(combustible.getLitro());
+                resumenMap.put(key, nuevoResumen);
+            }
+                    totalKm += combustible.getKmRecorrido();
+        totalLitros += combustible.getLitro();
+        }
+
+        for (Gasto gasto : gastos) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(gasto.getFecha());
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+
+            String key = year + "-" + month;
+
+            if (resumenMap.containsKey(key)) {
+                ChoferEstadistica resumen = resumenMap.get(key);
+                resumen.setGasto(resumen.getGasto() + gasto.getImporte());
+            } else {
+
+                ChoferEstadistica nuevoResumen = new ChoferEstadistica(year, month, 0.0);
+                nuevoResumen.setGasto(gasto.getImporte());
+                resumenMap.put(key, nuevoResumen);
+            }
+            totalGastos += gasto.getImporte();
+        }
+
+            ArrayList<ChoferEstadistica> resultado = new ArrayList<>(resumenMap.values());
+
+    ChoferEstadistica totalGeneral = new ChoferEstadistica(0, 0, totalFletes);
+    totalGeneral.setFlete(totalFletes);
+    totalGeneral.setKmRecorrido(totalKm);
+    totalGeneral.setLitro(totalLitros);
+    totalGeneral.setGasto(totalGastos);
+    totalGeneral.setNeto(totalNeto);
+    if(totalKm > 0){
+    totalGeneral.setRentabilidad(totalNeto / totalKm);
+    }
+    
+    resultado.add(totalGeneral);
+
+    return resultado;
+
+    }
 
     public Map<Usuario, ChoferesEstadistica> estadisticaChoferes(String desde, String hasta, Long idOrg) throws ParseException {
 
@@ -282,19 +384,20 @@ public class ChoferServicio {
         List<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, idOrg);
         List<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndIdOrg(d, h, idOrg);
 
-        // Mapa para almacenar estadísticas por camión
-        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = new HashMap<>();
 
-        // Procesar los fletes
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = new HashMap<>();
+        ChoferesEstadistica totalGeneral = new ChoferesEstadistica();
+
         for (Flete flete : fletes) {
             Usuario chofer = flete.getChofer();
             estadisticasPorChofer.putIfAbsent(chofer, new ChoferesEstadistica());
             ChoferesEstadistica resumen = estadisticasPorChofer.get(chofer);
             resumen.setFlete(resumen.getFlete() + 1);
             resumen.setNeto(resumen.getNeto() + flete.getNeto());
+            totalGeneral.setFlete(totalGeneral.getFlete() + 1);
+            totalGeneral.setNeto(totalGeneral.getNeto() + flete.getNeto());
         }
 
-        // Procesar los combustibles
         for (Combustible combustible : cargas) {
             if(combustible.getChofer() != null){
             Usuario chofer = combustible.getChofer();
@@ -302,18 +405,26 @@ public class ChoferServicio {
             ChoferesEstadistica resumen = estadisticasPorChofer.get(chofer);
             resumen.setKmRecorrido(resumen.getKmRecorrido() + combustible.getKmRecorrido());
             resumen.setLitro(resumen.getLitro() + combustible.getLitro());
+            totalGeneral.setKmRecorrido(totalGeneral.getKmRecorrido() + combustible.getKmRecorrido());
+            totalGeneral.setLitro(totalGeneral.getLitro() + combustible.getLitro());
         }
         }
 
-        // Procesar los gastos
         for (Gasto gasto : gastos) {
             Usuario chofer = gasto.getChofer();
             estadisticasPorChofer.putIfAbsent(chofer, new ChoferesEstadistica());
             ChoferesEstadistica resumen = estadisticasPorChofer.get(chofer);
             resumen.setGasto(resumen.getGasto() + gasto.getImporte());
+            totalGeneral.setGasto(totalGeneral.getGasto() + gasto.getImporte());
         }
-        // Ordenar el mapa por el dominio del camión
+        if(totalGeneral.getKmRecorrido() > 0){
+        totalGeneral.setRentabilidad(totalGeneral.getNeto() / totalGeneral.getKmRecorrido());
+        }
         
+        Usuario totalKey = new Usuario();
+        totalKey.setNombre("TOTAL");
+        estadisticasPorChofer.put(totalKey, totalGeneral);
+        // Ordenar el mapa por el dominio del camión
         return estadisticasPorChofer.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey(Comparator.comparing(Usuario::getNombre)))
@@ -323,6 +434,7 @@ public class ChoferServicio {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+
     }
 
     public void validarDatos(Long idOrg, String nombre, String nombreUsuario, Long cuil, String password, String password2) throws MiException {

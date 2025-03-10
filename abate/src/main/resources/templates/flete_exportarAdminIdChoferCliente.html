@@ -71,7 +71,7 @@
                                             <th>Chofer</th>
                                             <th>Camión</th>
                                             <th>Km</th>
-                                            <th>TipoCarga</th>   
+                                            <th>Producto</th>   
                                             <th>CP</th>
                                             <th>CTG</th>
                                             <th>Tarifa</th>
@@ -91,7 +91,7 @@
                                             <td th:text="${flete.chofer.nombre}"></td>
                                             <td th:text="${flete.camion.dominio}"></td>
                                             <td th:text="${flete.kmFlete}"></td>
-                                            <td th:text="${flete.tipoCereal}"></td>
+                                            <td th:text="${flete.producto.nombre}"></td>
                                             <td th:text="${flete.cartaPorte}"></td>
                                             <td th:text="${flete.ctg}"></td>
                                             <td th:text="'$'+${flete.tarifa}"></td>
