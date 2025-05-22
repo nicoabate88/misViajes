@@ -1,11 +1,14 @@
 package abate.abate.controladores;
 
 import abate.abate.entidades.Combustible;
+import abate.abate.entidades.Documentacion;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Imagen;
+import abate.abate.entidades.TipoDocumentacion;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.CombustibleServicio;
+import abate.abate.servicios.DocumentacionServicio;
 import abate.abate.servicios.FleteServicio;
 import abate.abate.servicios.GastoServicio;
 import abate.abate.servicios.ImagenServicio;
@@ -42,6 +45,8 @@ public class ImagenControlador {
     private FleteServicio fleteServicio;
     @Autowired
     private CombustibleServicio combustibleServicio;
+    @Autowired
+    private DocumentacionServicio documentacionServicio;
 
     @GetMapping("/cargarGasto/{id}") //llega id de Flete
     public String registrar(@PathVariable Long id, ModelMap modelo) {
@@ -79,18 +84,119 @@ public class ImagenControlador {
         }
 
     }
+    
+    @PostMapping("/cargaGastoPendiente")
+    public String crearImagenPendiente(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Gasto VJE ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenGasto(id, imagen);
+
+            return "redirect:/imagen/cargadoGastoPendiente/" + id;
+
+        } catch (Exception e) {
+            modelo.addAttribute("flete", flete);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_gastoCargarPendiente.html";
+        }
+
+    }
+    
+    @GetMapping("/cargadoGastoPendiente/{id}")
+    public String cargadoGastoPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+        modelo.put("idFlete", id);
+        modelo.put("exito", "Imagen de Gasto CARGADA con éxito");
+
+        return "gasto_mostrarPendiente.html";
+
+    }
 
     @GetMapping("/cargadoGasto/{id}")
     public String cargadoGasto(@PathVariable Long id, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFlete(id);
 
-        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
-        modelo.put("id", id);
-
+        modelo.put("gasto", flete.getGasto());
+        modelo.put("idFlete", id);
         modelo.put("exito", "Imagen de Gasto CARGADA con éxito");
 
-        return "gasto_registradoImg.html";
+        return "gasto_mostrarChofer.html";
+
+    }
+    
+    @PostMapping("/cargaGastoAdmin")
+    public String crearImagenAdmin(@RequestParam Long id,  @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, 
+           @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Gasto VJE ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenGasto(id, imagen);
+
+            return "redirect:/imagen/cargadoGastoAdmin?id=" + id +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("flete", flete);
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
+            modelo.put("idChofer", idChofer);
+            modelo.put("idCamion", idCamion);
+            modelo.put("idCliente", idCliente);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_gastoCargarAdmin.html";
+        }
+
+    }
+    
+    @GetMapping("/cargadoGastoAdmin")
+    public String cargadoGastoAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+        
+        modelo.put("idFlete", id);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+        modelo.put("exito", "Imagen de Gasto CARGADA con éxito");
+
+        return "gasto_mostrarAdmin.html";
 
     }
 
@@ -149,7 +255,58 @@ public class ImagenControlador {
         modelo.put("gasto", gastoServicio.buscarGasto(id));
         modelo.put("exito", "Imagen de Gasto CARGADA con éxito");
 
-        return "gasto_registradoImg.html";
+        return "gasto_mostrarChoferCaja.html";
+
+    }
+    
+    @PostMapping("/cargaGastoCajaAdmin")
+    public String crearImagenCajaAdmin(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Gasto gasto = gastoServicio.buscarGasto(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Gasto ID" + gasto.getIdGasto());
+            imagen.setTipo(file.getContentType());
+
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            if (!gasto.getNombre().startsWith("GASTO VJE")) {
+
+                imagenServicio.crearImagenGastoCaja(id, imagen);
+
+            } else {
+
+                Long idFlete = fleteServicio.buscarIdFleteIdGasto(id);
+                Flete flete = fleteServicio.buscarFlete(idFlete);
+                imagen.setNombre("Gasto VJE ID" + flete.getIdFlete());
+                imagenServicio.crearImagenGasto(idFlete, imagen);
+
+            }
+
+            return "redirect:/imagen/cargadoCajaAdmin/" + id;
+
+        } catch (Exception e) {
+            modelo.addAttribute("gasto", gasto);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_gastoCargarCajaAdmin.html";
+        }
+
+    }
+    
+    @GetMapping("/cargadoCajaAdmin/{id}")
+    public String cargadoCajaAdmin(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("gasto", gastoServicio.buscarGasto(id));
+        modelo.put("exito", "Imagen de Gasto CARGADA con éxito");
+
+        return "gasto_mostrarAdminCaja.html";
 
     }
 
@@ -159,6 +316,57 @@ public class ImagenControlador {
         modelo.put("carga", combustibleServicio.buscarCombustible(id));
 
         return "imagen_combustibleCargar.html";
+    }
+    
+    @PostMapping("/cargaCombustibleAdmin")
+    public String cargarImagenCombustibleADmin(@RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idCamion,  
+            @RequestParam(required = false) Long idChofer, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Combustible carga = combustibleServicio.buscarCombustible(idCarga);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Carga de Diesel " + carga.getFechaCarga());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenCombustible(idCarga, imagen);
+
+            return "redirect:/imagen/cargadoCombustibleAdmin?idCarga=" + idCarga +"&desde=" + desde + "&hasta=" + hasta +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idChofer != null ? "&idChofer=" + idChofer : "");
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("carga", carga);
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
+            modelo.put("idChofer", idChofer);
+            modelo.put("idCamion", idCamion);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+           
+            return "imagen_combustibleCargarAdmin.html";
+        }
+    }
+    
+    @GetMapping("/cargadoCombustibleAdmin")
+    public String cargadoCombustible(@RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idCamion,  
+            @RequestParam(required = false) Long idChofer, ModelMap modelo) {
+
+        modelo.put("carga", combustibleServicio.buscarCombustible(idCarga));
+        modelo.put("exito", "Imagen de Combustible CARGADA con éxito");
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+
+        return "combustible_mostrarAdmin.html";
+
     }
 
     @PostMapping("/cargaCombustible")
@@ -194,10 +402,9 @@ public class ImagenControlador {
         Combustible carga = combustibleServicio.buscarCombustible(id);
 
         modelo.put("carga", carga);
-        modelo.put("fecha", carga.getFechaCarga());
-        modelo.put("exito", "Imagen de Diesel CARGADA con éxito");
+        modelo.put("exito", "Imagen de Combustible CARGADA con éxito");
 
-        return "combustible_registrado.html";
+        return "combustible_mostrar.html";
 
     }
 
@@ -249,7 +456,7 @@ public class ImagenControlador {
     }
 
     @PostMapping("/cargaCP")
-    public String cargarImagenCP(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
+    public String cargarImagenCP(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
         Flete flete = fleteServicio.buscarFlete(id);
 
@@ -266,23 +473,99 @@ public class ImagenControlador {
 
             imagenServicio.crearImagenCP(id, imagen);
 
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
-
                 return "redirect:/imagen/cargadoCPChofer/" + id;
-
-            } else {
-
-                return "redirect:/imagen/cargadoCPAdmin/" + id;
-
-            }
 
         } catch (Exception e) {
             modelo.addAttribute("flete", flete);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
             return "imagen_CPcargar.html";
         }
+
+    }
+    
+    @PostMapping("/cargaCPPendiente")
+    public String cargarCPPendiente(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("CP Viaje ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenCP(id, imagen);
+
+            return "redirect:/imagen/cargadoCPPendiente/" + id;
+
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("flete", flete);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_CPcargarPendiente.html";
+        }
+
+    }
+    
+    @PostMapping("/cargaCPAdmin")
+    public String cargarImagenCPAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, 
+           @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("CP Viaje ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenCP(id, imagen);
+
+            return "redirect:/imagen/cargadoCP?id=" + id +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+        } catch (Exception e) {
+            modelo.addAttribute("flete", flete);
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
+            modelo.put("idChofer", idChofer);
+            modelo.put("idCamion", idCamion);
+            modelo.put("idCliente", idCliente);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_CPcargarAdmin.html";
+        }
+
+    }
+    
+    @GetMapping("/cargadoCP")
+    public String cargadoCP(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idChofer,  @RequestParam(required = false) Long idCamion, 
+            @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "CP CARGADA con éxito");
+
+        return "flete_mostrarAdmin.html";
 
     }
 
@@ -292,10 +575,9 @@ public class ImagenControlador {
         Flete flete = fleteServicio.buscarFlete(id);
 
         modelo.put("flete", flete);
-        modelo.put("fecha", flete.getFechaFlete());
         modelo.put("exito", "CP CARGADA con éxito");
 
-        return "flete_modificadoChofer.html";
+        return "flete_mostrarChofer.html";
 
     }
 
@@ -305,15 +587,27 @@ public class ImagenControlador {
         Flete flete = fleteServicio.buscarFlete(id);
 
         modelo.put("flete", flete);
-        modelo.put("fecha", flete.getFechaFlete());
         modelo.put("exito", "CP CARGADA con éxito");
 
-        return "flete_modificadoAdmin.html";
+        return "flete_mostrarPendiente.html";
+
+    }
+    
+    @GetMapping("/cargadoCPPendiente/{id}")
+    public String cargadoCPPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        modelo.put("flete", flete);
+        modelo.put("exito", "CP CARGADA con éxito");
+
+        return "flete_mostrarPendiente.html";
 
     }
 
     @PostMapping("/cargaDescarga")
-    public String cargarImagenDescarga(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
+    public String cargarImagenDescarga(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+        
         Flete flete = fleteServicio.buscarFlete(id);
 
         try {
@@ -329,17 +623,7 @@ public class ImagenControlador {
 
             imagenServicio.crearImagenDescarga(id, imagen);
 
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
-
                 return "redirect:/imagen/cargadoDescargaChofer/" + id;
-
-            } else {
-
-                return "redirect:/imagen/cargadoDescargaAdmin/" + id;
-
-            }
 
         } catch (Exception e) {
             modelo.addAttribute("flete", flete);
@@ -354,10 +638,9 @@ public class ImagenControlador {
         Flete flete = fleteServicio.buscarFlete(id);
 
         modelo.put("flete", flete);
-        modelo.put("fecha", flete.getFechaFlete());
         modelo.put("exito", "Ticket de Descarga CARGADO con éxito");
 
-        return "flete_modificadoChofer.html";
+        return "flete_mostrarChofer.html";
 
     }
 
@@ -373,9 +656,65 @@ public class ImagenControlador {
         return "flete_modificadoAdmin.html";
 
     }
+    
+    @PostMapping("/cargaDescargaAdmin")
+    public String cargarImagenDescargaAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, 
+           @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+        
+        Flete flete = fleteServicio.buscarFlete(id);
 
-    @PostMapping("/cargaDescargaDesdeFlete")
-    public String cargarImagenDescargaDesdeFlete(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Descarga Viaje ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenDescarga(id, imagen);
+
+                return "redirect:/imagen/cargadoDescarga?id=" + id +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("flete", flete);
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
+            modelo.put("idChofer", idChofer);
+            modelo.put("idCamion", idCamion);
+            modelo.put("idCliente", idCliente);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_descargaCargarAdmin.html";
+        }
+    }
+    
+    @GetMapping("/cargadoDescarga")
+    public String cargadoDescarga(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idChofer,  @RequestParam(required = false) Long idCamion, 
+            @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+        
+        modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "Ticket de Descarga CARGADO con éxito");
+
+        return "flete_mostrarAdmin.html";
+
+    }
+
+    @PostMapping("/cargaDescargaPendiente")
+    public String cargarImagenDescargaPendiente(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
         Flete flete = fleteServicio.buscarFlete(id);
 
@@ -392,25 +731,27 @@ public class ImagenControlador {
 
             imagenServicio.crearImagenDescarga(id, imagen);
 
-            return "redirect:/imagen/cargadoDesDesdeFlete/" + id;
+            return "redirect:/imagen/cargadoDescargaPendiente/" + id;
 
         } catch (Exception e) {
+            
             modelo.addAttribute("flete", flete);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
-            return "imagen_descargaCargarDesdeFlete.html";
+            
+            return "imagen_descargaCargarPendiente.html";
         }
 
     }
 
-    @GetMapping("/cargadoDesDesdeFlete/{id}")
-    public String gastoRegistrado(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/cargadoDescargaPendiente/{id}")
+    public String descargaPendiente(@PathVariable Long id, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFlete(id);
 
         modelo.put("flete", flete);
-        modelo.put("exito", "CP y Ticket de Descarga CARGADO con éxito");
+        modelo.put("exito", "Ticket de Descarga CARGADO con éxito");
 
-        return "flete_agregarGasto.html";
+        return "flete_mostrarPendiente.html";
 
     }
 
@@ -418,14 +759,15 @@ public class ImagenControlador {
     public String verGasto(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
         Flete flete = fleteServicio.buscarFlete(id);
-        Gasto gasto = gastoServicio.buscarGasto(flete.getGasto().getId());
+        Gasto gasto = flete.getGasto();
+        modelo.put("idGasto", gasto.getId());
+        modelo.put("flete", flete);
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         if (gasto.getImagen() != null) {
 
             Long idImagen = gasto.getImagen().getId();
             Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
-            
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
             
             if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
                 
@@ -442,7 +784,7 @@ public class ImagenControlador {
                 modelo.addAttribute("imagenNombre", imagen.getNombre());
                 modelo.addAttribute("id", idImagen);
 
-                return "imagen_mostrarGastoAdmin.html";
+                return "imagen_mostrarGastoPendiente.html";
             
                 
             } else if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
@@ -458,19 +800,67 @@ public class ImagenControlador {
                 modelo.addAttribute("imagenNombre", imagen.getNombre());
                 modelo.addAttribute("id", idImagen);
 
+                return "imagen_mostrarGastoPdfPendiente.html";
+                
+            }
+
+        } else {
+            
+            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+
+            return "imagen_gastoCargar.html";
+            
+            } else {
+                
+            return "imagen_gastoCargarPendiente.html";
+                
+            }
+
+        }
+    }
+
+    @GetMapping("/verGastoAdmin")
+    public String verGastoAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        Gasto gasto = gastoServicio.buscarGasto(id);
+        
+        modelo.put("flete", fleteServicio.buscarFlete(idFlete));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+        if (gasto.getImagen() != null) {
+
+            Long idImagen = gasto.getImagen().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+            
+                
+            if (!imagen.getTipo().equalsIgnoreCase("application/pdf")) {
+                
+                modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+                modelo.addAttribute("imagenNombre", imagen.getNombre());
+                modelo.addAttribute("id", idImagen);
+
+                return "imagen_mostrarGastoAdmin.html";
+                
+            }  else {
+                
+                modelo.addAttribute("imagenNombre", imagen.getNombre());
+                modelo.addAttribute("id", idImagen);
+
                 return "imagen_mostrarGastoPdfAdmin.html";
                 
             }
 
         } else {
 
-            modelo.put("flete", flete);
-
-            return "imagen_gastoCargar.html";
+            return "imagen_gastoCargarAdmin.html";
 
         }
     }
-
 
     @GetMapping("/verGastoDesdeCamion/{id}")
     public String verGastoDesdeCamion(@PathVariable Long id, ModelMap modelo) {
@@ -512,84 +902,148 @@ public class ImagenControlador {
     @GetMapping("/verGastoCaja/{id}")
     public String verGastoCaja(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Gasto gasto = gastoServicio.buscarGasto(id);
+        modelo.put("gasto", gasto);
 
         if (gasto.getImagen() != null) {
 
             Long idImagen = gasto.getImagen().getId();
             Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+            modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+            modelo.addAttribute("imagenNombre", imagen.getNombre());
+            modelo.addAttribute("id", idImagen);
+            modelo.addAttribute("estado", gasto.getEstado());
             
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            
             
             if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
-                
-                modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
-                modelo.addAttribute("imagenNombre", imagen.getNombre());
-                modelo.addAttribute("id", idImagen);
-                modelo.addAttribute("estado", gasto.getEstado());
 
                 return "imagen_mostrarGastoCaja.html";
                 
             } else if ((logueado.getRol().equalsIgnoreCase("ADMIN")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {    
-                
-                modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
-                modelo.addAttribute("imagenNombre", imagen.getNombre());
-                modelo.addAttribute("id", idImagen);
 
                 return "imagen_mostrarGastoCajaAdmin.html";
             
                 
            } else if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
 
-                modelo.addAttribute("imagenNombre", imagen.getNombre());
-                modelo.addAttribute("id", idImagen);
-                modelo.addAttribute("estado", gasto.getEstado());
-
                 return "imagen_mostrarGastoPdfCaja.html";
 
             } else {
-               
-               modelo.addAttribute("imagenNombre", imagen.getNombre());
-               modelo.addAttribute("id", idImagen);
 
                return "imagen_mostrarGastoPdfCajaAdmin.html";
 
             }
 
         } else {
+            
+            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
-            modelo.put("gasto", gastoServicio.buscarGasto(id));
 
             return "imagen_gastoCargarCaja.html";
+            
+            } else {
+
+            return "imagen_gastoCargarCajaAdmin.html";    
+            }
+                
 
         }
     }
-
-    @GetMapping("/descargarGastoPdf/{id}")
-    public String descargarGastoPdf(@PathVariable Long id, ModelMap modelo) {
+    
+    @GetMapping("/descargarGastoPdfAdmin")
+    public String descargarGastoPdfAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
         modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
         modelo.addAttribute("imagenNombre", imagen.getNombre());
         modelo.addAttribute("id", id);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+        return "imagen_descargarGastoPdfAdmin.html";
+    }
+    
+    @GetMapping("/descargarGastoPdfPendiente")
+    public String descargarGastoPdfPendiente(@RequestParam Long id, @RequestParam Long idFlete, ModelMap modelo) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.put("idFlete", idFlete);
+
+        return "imagen_descargarGastoPdfPendiente.html";
+    }
+
+    @GetMapping("/descargarGastoPdf")
+    public String descargarGastoPdf(@RequestParam Long id, @RequestParam Long idFlete, ModelMap modelo) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.addAttribute("idFlete", idFlete);
 
         return "imagen_descargarGastoPdf.html";
     }
+    
+    @GetMapping("/descargarGastoPdfCaja")
+    public String descargarGastoPdfCaja(@RequestParam Long id, @RequestParam Long idGasto, ModelMap modelo) {
 
-    @GetMapping("/modificarGasto/{id}") //llega id de Imagen
-    public String modificarGasto(@PathVariable Long id, ModelMap modelo) {
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.addAttribute("idGasto", idGasto);
+
+        return "imagen_descargarGastoPdfCaja.html";
+    }
+    
+    @GetMapping("/descargarGastoPdfCajaAdmin")
+    public String descargarGastoPdfCajaAdmin(@RequestParam Long id, @RequestParam Long idGasto, ModelMap modelo) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.addAttribute("idGasto", idGasto);
+
+        return "imagen_descargarGastoPdfCajaAdmin.html";
+    }
+    
+    @GetMapping("/modificarGastoAdmin") //llega id de Imagen
+    public String modificarGastoAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
 
         modelo.put("id", id);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
 
-        return "imagen_gastoModificar.html";
+        return "imagen_gastoModificarAdmin.html";
     }
+    
+    @PostMapping("/modificaGastoAdmin")
+    public String modificaGastoAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, 
+           @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
-    @PostMapping("/modificaGasto")
-    public String modificaGasto(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
-
-        Gasto gasto = gastoServicio.buscarGastoIdImagen(id);
-        Flete flete = fleteServicio.buscarFleteIdGasto(gasto.getId());
+        Flete flete = fleteServicio.buscarFlete(idFlete);
 
         try {
 
@@ -604,38 +1058,160 @@ public class ImagenControlador {
 
             imagenServicio.modificarImagen(id, imagen);
 
-            return "redirect:/imagen/modificadoGasto/" + id;
+            return "redirect:/imagen/modificadoGastoAdmin?idFlete=" + idFlete +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+        } catch (Exception e) {
+            
+        modelo.addAttribute("id", id);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_gastoModificarAdmin.html";
+        }
+    }
+    
+    @GetMapping("/modificadoGastoAdmin")
+    public String modificadoGastoAdmin(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, 
+           @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+        modelo.put("exito", "Imagen de Gasto MODIFICADA con éxito");
+
+        return "gasto_mostrarAdmin.html";
+
+    }
+    
+    @GetMapping("/modificarGastoPendiente") //llega id de Imagen
+    public String modificarGastoPendiente(@RequestParam Long id, @RequestParam Long idFlete, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("idFlete", idFlete);
+
+        return "imagen_gastoModificarPendiente.html";
+    }
+    
+    @PostMapping("/modificaGastoPendiente")
+    public String modificaGastoPendiente(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Gasto VJE ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+
+            return "redirect:/imagen/modificadoGastoPendiente/" + idFlete;
 
         } catch (Exception e) {
             modelo.addAttribute("id", id);
+            modelo.put("flete", fleteServicio.buscarFleteIdGasto(id));
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_gastoModificarPendiente.html";
+        }
+
+    }
+    
+    @GetMapping("/modificadoGastoPendiente/{id}")
+    public String modificadoGastoPendiente(@PathVariable Long id, ModelMap modelo) {
+        
+        Flete flete = fleteServicio.buscarFlete(id);
+        modelo.put("gasto", flete.getGasto());
+        modelo.put("idFlete", id);
+        modelo.put("exito", "Imagen de Gasto MODIFICADO con éxito");
+
+        return "gasto_mostrarPendiente.html";
+
+    }
+    
+    @GetMapping("/modificarGasto") //llega id de Imagen
+    public String modificarGasto(@RequestParam Long id, @RequestParam Long idFlete, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("idFlete", idFlete);
+
+        return "imagen_gastoModificar.html";
+    }
+
+    @PostMapping("/modificaGasto")
+    public String modificaGasto(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Gasto VJE ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+
+            return "redirect:/imagen/modificadoGasto/" + idFlete;
+
+        } catch (Exception e) {
+            modelo.addAttribute("id", id);
+            modelo.put("idFlete", idFlete);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
             return "imagen_gastoModificar.html";
         }
 
     }
 
-    @GetMapping("/modificadoGasto/{id}")
-    public String modificadoGasto(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificadoGasto/{idFlete}")
+    public String modificadoGasto(@PathVariable Long idFlete, ModelMap modelo) {
 
-        modelo.put("gasto", gastoServicio.buscarGastoIdImagen(id));
-        modelo.put("exito", "Imagen de Gasto MODIFICADO con éxito");
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+        
+        modelo.put("idFlete", idFlete);
+        modelo.put("gasto", flete.getGasto());
+        modelo.put("exito", "Imagen de Gasto MODIFICADA con éxito");
 
-        return "gasto_registradoImg.html";
+        return "gasto_mostrarChofer.html";
 
     }
 
-    @GetMapping("/modificarGastoCaja/{id}") //llega id de Imagen
-    public String modificarGastoCaja(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificarGastoCaja") //llega id de Imagen
+    public String modificarGastoCaja(@RequestParam Long id, @RequestParam Long idGasto, ModelMap modelo) {
 
         modelo.put("id", id);
+        modelo.put("idGasto", idGasto);
 
         return "imagen_gastoModificarCaja.html";
     }
 
     @PostMapping("/modificaGastoCaja")
-    public String modificaGastoCaja(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+    public String modificaGastoCaja(@RequestParam Long id, @RequestParam Long idGasto, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
-        Gasto gasto = gastoServicio.buscarGastoIdImagen(id);
+        Gasto gasto = gastoServicio.buscarGasto(idGasto);
 
         try {
 
@@ -650,64 +1226,249 @@ public class ImagenControlador {
             imagen.setNombre("GASTO ID" + gasto.getIdGasto());
             imagenServicio.modificarImagen(id, imagen);
 
-            return "redirect:/imagen/modificadoGastoCaja/" + id;
+            return "redirect:/imagen/modificadoGastoCaja/" + idGasto;
 
         } catch (Exception e) {
             modelo.addAttribute("id", id);
+            modelo.put("idGasto", idGasto);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
-            return "imagen_gastoModificar.html";
+            return "imagen_gastoModificarCaja.html";
         }
 
     }
 
-    @GetMapping("/modificadoGastoCaja/{id}")
-    public String modificadoGastoCaja(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificadoGastoCaja/{idGasto}")
+    public String modificadoGastoCaja(@PathVariable Long idGasto, ModelMap modelo) {
 
-        modelo.put("gasto", gastoServicio.buscarGastoIdImagen(id));
+        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
         modelo.put("exito", "Imagen de Gasto MODIFICADO con éxito");
 
-        return "gasto_registradoImg.html";
+        return "gasto_mostrarChoferCaja.html";
+
+    }
+    
+    @GetMapping("/modificarGastoCajaAdmin") //llega id de Imagen
+    public String modificarGastoCajaAdmin(@RequestParam Long id, @RequestParam Long idGasto, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("idGasto", idGasto);
+
+        return "imagen_gastoModificarCajaAdmin.html";
+    }
+
+    @PostMapping("/modificaGastoCajaAdmin")
+    public String modificaGastoCajaAdmin(@RequestParam Long id, @RequestParam Long idGasto, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Gasto gasto = gastoServicio.buscarGasto(idGasto);
+
+        try {
+
+            Imagen imagen = new Imagen();
+
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+            imagen.setNombre("GASTO ID" + gasto.getIdGasto());
+            imagenServicio.modificarImagen(id, imagen);
+
+            return "redirect:/imagen/modificadoGastoCajaAdmin/" + idGasto;
+
+        } catch (Exception e) {
+            modelo.addAttribute("id", id);
+            modelo.put("idGasto", idGasto);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_gastoModificarCajaAdmin.html";
+        }
 
     }
 
-    @GetMapping("/eliminarGasto/{id}")
-    public String eliminarGasto(@PathVariable Long id, ModelMap model) {
+    @GetMapping("/modificadoGastoCajaAdmin/{idGasto}")
+    public String modificadoGastoCajaAdmin(@PathVariable Long idGasto, ModelMap modelo) {
+
+        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
+        modelo.put("exito", "Imagen de Gasto MODIFICADO con éxito");
+
+        return "gasto_mostrarAdminCaja.html";
+
+    }
+    
+    @GetMapping("/eliminarGastoAdmin")
+    public String eliminarGastoAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap model) {
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
         model.addAttribute("imagenNombre", imagen.getNombre());
         model.addAttribute("id", id);
+        model.put("idFlete", idFlete);
+        model.put("desde", desde);
+        model.put("hasta", hasta);
+        model.put("idChofer", idChofer);
+        model.put("idCamion", idCamion);
+        model.put("idCliente", idCliente);
 
-        return "imagen_eliminarGasto.html";
+        return "imagen_eliminarGastoAdmin.html";
     }
-
-    @GetMapping("/eliminaGasto/{id}")
-    public String eliminaGasto(@PathVariable Long id, HttpSession session, ModelMap modelo) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    
+    @GetMapping("/eliminaGastoAdmin")
+    public String eliminaGastoAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
 
         imagenServicio.eliminarImagenGasto(id);
 
-        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+        return "redirect:/imagen/eliminadoGasto?idFlete=" + idFlete +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
 
-            return "redirect:/imagen/eliminadoGasto";
-
-        } else {
-
-            return "redirect:/imagen/eliminadoGastoAdmin";
-
-        }
     }
-
+    
     @GetMapping("/eliminadoGasto")
-    public String eliminado(ModelMap modelo, HttpSession session) {
+    public String eliminadoGasto(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+           @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, 
+           @RequestParam(required = false) Long idCliente,ModelMap modelo) {
 
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.put("chofer", logueado);
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
         modelo.put("exito", "Imagen de Gasto ELIMINADA con éxito");
 
-        return "index_chofer.html";
+        return "gasto_mostrarAdmin.html";
+
+    }
+    
+    @GetMapping("/eliminarGastoPendiente")
+    public String eliminarGastoPendiente(@RequestParam Long id, @RequestParam Long idFlete, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.addAttribute("idFlete", idFlete);
+
+        return "imagen_eliminarGastoPendiente.html";
+    }
+    
+    @GetMapping("/eliminaGastoPendiente")
+    public String eliminaGastoPendiente(@RequestParam Long id,@RequestParam Long idFlete, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenGasto(id);
+
+        return "redirect:/imagen/eliminadoGastoPendiente/" +idFlete;
+
+    }
+
+    @GetMapping("/eliminarGasto")
+    public String eliminarGasto(@RequestParam Long id, @RequestParam Long idFlete, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.put("idFlete", idFlete);
+
+        return "imagen_eliminarGasto.html";
+    }
+    
+    @GetMapping("/eliminarGastoCaja")
+    public String eliminarGastoCaja(@RequestParam Long id, @RequestParam Long idGasto, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.put("idGasto", idGasto);
+
+        return "imagen_eliminarGastoCaja.html";
+    }
+    
+    @GetMapping("/eliminaGastoCaja")
+    public String eliminaGastoCaja(@RequestParam Long id, @RequestParam Long idGasto, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenGasto(id);
+
+            return "redirect:/imagen/eliminadoGastoCaja/" +idGasto;
+    }
+    
+    @GetMapping("/eliminadoGastoCaja/{idGasto}")
+    public String eliminadoGastoCaja(@PathVariable Long idGasto, ModelMap modelo, HttpSession session) {
+        
+        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
+        modelo.put("exito", "Imagen de Gasto ELIMINADA con éxito");
+
+        return "gasto_mostrarChoferCaja.html";
+
+    }
+    
+    @GetMapping("/eliminarGastoCajaAdmin")
+    public String eliminarGastoCajaAdmin(@RequestParam Long id, @RequestParam Long idGasto, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.put("idGasto", idGasto);
+
+        return "imagen_eliminarGastoCajaAdmin.html";
+    }
+    
+    @GetMapping("/eliminaGastoCajaAdmin")
+    public String eliminaGastoCajaAdmin(@RequestParam Long id, @RequestParam Long idGasto, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenGasto(id);
+
+            return "redirect:/imagen/eliminadoGastoCajaAdmin/" +idGasto;
+    }
+    
+    @GetMapping("/eliminadoGastoCajaAdmin/{idGasto}")
+    public String eliminadoGastoCajaAdmin(@PathVariable Long idGasto, ModelMap modelo, HttpSession session) {
+        
+        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
+        modelo.put("exito", "Imagen de Gasto ELIMINADA con éxito");
+
+        return "gasto_mostrarChoferCaja.html";
+
+    }
+    
+    @GetMapping("/eliminadoGastoPendiente/{id}")
+    public String eliminadoGastoPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+        modelo.put("gasto", flete.getGasto());
+        modelo.put("idFlete", id);
+        modelo.put("exito", "Imagen de Gasto ELIMINADA con éxito");
+
+        return "gasto_mostrarPendiente.html";
+        
+
+    }
+
+    @GetMapping("/eliminaGasto")
+    public String eliminaGasto(@RequestParam Long id, @RequestParam Long idFlete, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenGasto(id);
+
+            return "redirect:/imagen/eliminadoGastoChofer/" +idFlete;
+    }
+
+    @GetMapping("/eliminadoGastoChofer/{idFlete}")
+    public String eliminadoGastoChofer(@PathVariable Long idFlete, ModelMap modelo, HttpSession session) {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+        
+        modelo.put("idFlete", idFlete);
+        modelo.put("gasto", flete.getGasto());
+        modelo.put("exito", "Imagen de Gasto ELIMINADA con éxito");
+
+        return "gasto_mostrarChofer.html";
 
     }
 
@@ -724,18 +1485,17 @@ public class ImagenControlador {
     }
 
     @GetMapping("/verCP/{id}")
-    public String verCP(@PathVariable Long id, Model model, HttpSession session) {
+    public String verCP(@PathVariable Long id, Model model) {
 
         Flete flete = fleteServicio.buscarFlete(id);
+        model.addAttribute("flete", flete);
 
         if (flete.getImagenCP() != null) {
 
             Long idImagen = flete.getImagenCP().getId();
             Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
-            
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
+            if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
 
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
@@ -743,14 +1503,7 @@ public class ImagenControlador {
 
                 return "imagen_mostrarCPpdf.html";
 
-            } else if ((logueado.getRol().equalsIgnoreCase("ADMIN")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
-
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-
-                return "imagen_mostrarCPpdfPendiente.html";
-                
-            } else if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
+            } else {
 
                 model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
                 model.addAttribute("imagenNombre", imagen.getNombre());
@@ -758,6 +1511,40 @@ public class ImagenControlador {
                 model.addAttribute("estado", flete.getEstado());
 
                 return "imagen_mostrarCP.html";
+
+            }
+
+        } else {
+
+            return "imagen_CPcargar.html";
+
+        }
+    }
+    
+    @GetMapping("/verCPAdmin")
+    public String verCPAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+    @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, Model model) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+        
+        model.addAttribute("flete", flete);
+        model.addAttribute("desde", desde);
+        model.addAttribute("hasta", hasta);
+        model.addAttribute("idChofer", idChofer);
+        model.addAttribute("idCamion", idCamion);
+        model.addAttribute("idCliente", idCliente);
+
+        if (flete.getImagenCP() != null) {
+
+            Long idImagen = flete.getImagenCP().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+
+         if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
+
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+
+                return "imagen_mostrarCPpdfAdmin.html";
 
         } else {
                 
@@ -770,10 +1557,8 @@ public class ImagenControlador {
             }
         
     } else {
-            
-            model.addAttribute("flete", flete);
 
-            return "imagen_CPcargar.html";
+            return "imagen_CPcargarAdmin.html";
             
         }
     }
@@ -782,6 +1567,8 @@ public class ImagenControlador {
     public String verCPdesdePendiente(@PathVariable Long id, Model model) {
 
         Flete flete = fleteServicio.buscarFlete(id);
+        
+        model.addAttribute("idFlete", id);
 
         if (flete.getImagenCP() != null) {
 
@@ -801,14 +1588,14 @@ public class ImagenControlador {
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
 
-                return "imagen_mostrarCPAdmin.html";
+                return "imagen_mostrarCPpendiente.html";
             }
 
         } else {
 
             model.addAttribute("flete", flete);
 
-            return "imagen_CPcargar.html";
+            return "imagen_CPcargarPendiente.html";
 
         }
     }
@@ -917,6 +1704,25 @@ public class ImagenControlador {
 
         }
     }
+    
+    @GetMapping("/descargarCPpdfAdmin")
+    public String descargarCPpdfAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.addAttribute("idFlete", idFlete);
+        modelo.addAttribute("desde", desde);
+        modelo.addAttribute("hasta", hasta);
+        modelo.addAttribute("idChofer", idChofer);
+        modelo.addAttribute("idCamion", idCamion);
+        modelo.addAttribute("idCliente", idCliente);
+
+        return "imagen_descargarCPpdfAdmin.html";
+    }
 
     @GetMapping("/descargarCPpdf/{id}")
     public String descargarCPpdf(@PathVariable Long id, ModelMap modelo) {
@@ -926,6 +1732,7 @@ public class ImagenControlador {
         modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
         modelo.addAttribute("imagenNombre", imagen.getNombre());
         modelo.addAttribute("id", id);
+        modelo.put("flete", fleteServicio.buscarFleteIdImagenCP(id));
 
         return "imagen_descargarCPpdf.html";
     }
@@ -983,11 +1790,22 @@ public class ImagenControlador {
     }
 
     @GetMapping("/modificarCP/{id}") //llega id de Imagen
-    public String modificarCP(@PathVariable Long id, ModelMap modelo) {
+    public String modificarCP(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
         modelo.put("id", id);
+        modelo.addAttribute("flete", fleteServicio.buscarFleteIdImagenCP(id));
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
         return "imagen_CPmodificar.html";
+        
+            } else {
+                
+        return "imagen_CPmodificarPendiente.html";
+                
+            }
     }
 
     @PostMapping("/modificaCP")
@@ -1012,7 +1830,7 @@ public class ImagenControlador {
 
             if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
-                return "redirect:/imagen/modificadoCP/" + id;
+                return "redirect:/imagen/modificadoCPChofer/" + id;
 
             } else {
 
@@ -1028,15 +1846,15 @@ public class ImagenControlador {
 
     }
 
-    @GetMapping("/modificadoCP/{id}")
-    public String modificadoCP(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificadoCPChofer/{id}")
+    public String modificadoCPChofer(@PathVariable Long id, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFleteIdImagenCP(id);
 
         modelo.put("flete", flete);
         modelo.put("exito", "CP MODIFICADA con éxito");
 
-        return "flete_modificadoChofer.html";
+        return "flete_mostrarChofer.html";
 
     }
 
@@ -1048,75 +1866,206 @@ public class ImagenControlador {
         modelo.put("flete", flete);
         modelo.put("exito", "CP MODIFICADA con éxito");
 
-        return "flete_modificadoAdmin.html";
+        return "flete_mostrarPendiente.html";
+
+    }
+    
+    @GetMapping("/modificarCPAdmin") //llega id de Imagen
+    public String modificarCPAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+        return "imagen_CPmodificarAdmin.html";
+    }
+    
+    @PostMapping("/modificaCPAdmin")
+    public String modificaCPAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, 
+    @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("CP Viaje ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+
+                return "redirect:/imagen/modificadoCP?idFlete=" + idFlete +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+        } catch (Exception e) {
+            
+        modelo.addAttribute("id", id);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+        return "imagen_CPmodificarAdmin.html";
+        
+        }
+
+    }
+    
+    @GetMapping("/modificadoCP")
+    public String modificadoCP(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("flete", fleteServicio.buscarFlete(idFlete));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "CP MODIFICADA con éxito");
+
+        return "flete_mostrarAdmin.html";
 
     }
 
     @GetMapping("/eliminarCP/{id}")
-    public String eliminarCP(@PathVariable Long id, ModelMap model) {
+    public String eliminarCP(@PathVariable Long id, ModelMap model, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
         model.addAttribute("imagenNombre", imagen.getNombre());
         model.addAttribute("id", id);
+        model.addAttribute("flete", fleteServicio.buscarFleteIdImagenCP(id));
+
+        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
         return "imagen_eliminarCP.html";
+        
+        } else {
+            
+        return "imagen_eliminarCPPendiente.html";
+            
+        }
     }
 
     @GetMapping("/eliminaCP/{id}")
     public String eliminaCP(@PathVariable Long id, HttpSession session, ModelMap modelo) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        Flete flete = fleteServicio.buscarFleteIdImagenCP(id);
 
         imagenServicio.eliminarImagenCP(id);
 
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
-            return "redirect:/imagen/eliminadoCP";
+            return "redirect:/imagen/eliminadoCPChofer/" +flete.getId();
 
         } else {
 
-            return "redirect:/imagen/elimiadoCPAdmin";
+            return "redirect:/imagen/eliminadoCPAdmin/" + flete.getId();
 
         }
     }
 
-    @GetMapping("/eliminadoCP")
-    public String eliminadoCP(ModelMap modelo, HttpSession session) {
+    @GetMapping("/eliminadoCPChofer/{id}")
+    public String eliminadoCPChofer(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        modelo.put("exito", "CP ELIMINADA con éxito");
+        modelo.put("flete", fleteServicio.buscarFlete(id));
 
-        modelo.put("chofer", logueado);
-        modelo.put("exito", "Carta de Porte ELIMINADA con éxito");
-
-        return "index_chofer.html";
-
+        return "flete_mostrarChofer.html";
+        
     }
 
-    @GetMapping("/eliminadoCPAdmin")
-    public String eliminadoCPAdmin(ModelMap modelo, HttpSession session) {
+    @GetMapping("/eliminadoCPAdmin/{id}")
+    public String eliminadoCPAdmin(@PathVariable Long id, ModelMap modelo) {
 
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Flete flete = fleteServicio.buscarFlete(id);
 
-        modelo.put("id", logueado.getId());
-        modelo.put("exito", "Carta de Porte ELIMINADA con éxito");
+        modelo.put("flete", flete);
+        modelo.put("exito", "CP ELIMINADA con éxito");
 
-        return "index_admin.html";
+        return "flete_mostrarPendiente.html";
+
+    }
+    
+    @GetMapping("/eliminarCPAdmin")
+    public String eliminarCPAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.put("idFlete", idFlete);
+        model.put("desde", desde);
+        model.put("hasta", hasta);
+        model.put("idChofer", idChofer);
+        model.put("idCamion", idCamion);
+        model.put("idCliente", idCliente);
+
+        return "imagen_eliminarCPAdmin.html";
+    }
+    
+    @GetMapping("/eliminaCPAdmin")
+    public String eliminaCPAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenCP(id);
+
+            return "redirect:/imagen/eliminadoCP?idFlete=" + idFlete +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+    }
+    
+    @GetMapping("/eliminadoCP")
+    public String eliminadoCP(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, 
+    @RequestParam(required = false) Long idCliente,ModelMap modelo) {
+
+        modelo.put("flete", fleteServicio.buscarFlete(idFlete));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "CP ELIMINADA con éxito");
+
+        return "flete_mostrarAdmin.html";
 
     }
 
     @GetMapping("/verDescarga/{id}")
-    public String verDescarga(@PathVariable Long id, Model model, HttpSession session) {
+    public String verDescarga(@PathVariable Long id, Model model) {
 
         Flete flete = fleteServicio.buscarFlete(id);
+        model.addAttribute("flete", flete);
 
         if (flete.getImagenDescarga() != null) {
 
             Long idImagen = flete.getImagenDescarga().getId();
             Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
             
-            if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
+            if (!imagen.getTipo().equalsIgnoreCase("application/pdf")) {
             
                 model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
                 model.addAttribute("imagenNombre", imagen.getNombre());
@@ -1124,44 +2073,35 @@ public class ImagenControlador {
                 model.addAttribute("estado", flete.getEstado());
 
                 return "imagen_mostrarDescarga.html";
-            
-            } else if ((logueado.getRol().equalsIgnoreCase("ADMIN")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
                 
-                model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-
-                return "imagen_mostrarDescargaAdmin.html";
-                
-            } else if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
+            } else {
                 
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
                 model.addAttribute("estado", flete.getEstado());
                 
                 return "imagen_mostrarDescargaPdf.html";
-                
-            } else {
             
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-                
-                return "imagen_mostrarDescargaPdfPendiente.html";
-            
-           } 
+        }
             
         } else {
-
-            model.addAttribute("flete", flete);
 
             return "imagen_descargaCargar.html";
         }
     }
-
-    @GetMapping("/verDescargaPendiente/{id}")
-    public String verDescargaPendiente(@PathVariable Long id, Model model) {
+    
+    @GetMapping("/verDescargaAdmin")
+    public String verDescargaAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+    @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, Model model) {
 
         Flete flete = fleteServicio.buscarFlete(id);
+        
+        model.addAttribute("flete", flete);
+        model.addAttribute("desde", desde);
+        model.addAttribute("hasta", hasta);
+        model.addAttribute("idChofer", idChofer);
+        model.addAttribute("idCamion", idCamion);
+        model.addAttribute("idCliente", idCliente);
 
         if (flete.getImagenDescarga() != null) {
 
@@ -1173,7 +2113,7 @@ public class ImagenControlador {
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
 
-                return "imagen_mostrarDescargaPdfPendiente.html";
+                return "imagen_mostrarDescargaPdfAdmin.html";
 
             } else {
 
@@ -1187,9 +2127,45 @@ public class ImagenControlador {
 
         } else {
 
+            return "imagen_descargaCargarAdmin.html";
+        }
+    }
+
+    @GetMapping("/verDescargaPendiente/{id}")
+    public String verDescargaPendiente(@PathVariable Long id, Model model) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+        
+
+        if (flete.getImagenDescarga() != null) {
+
+            Long idImagen = flete.getImagenDescarga().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+
+            if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
+
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+                model.addAttribute("idFlete", flete.getId());
+
+                return "imagen_mostrarDescargaPdfPendiente.html";
+
+            } else {
+
+                model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+                model.addAttribute("idFlete", flete.getId());
+
+                return "imagen_mostrarDescargaPendiente.html";
+
+            }
+
+        } else {
+
             model.addAttribute("flete", flete);
 
-            return "imagen_descargaCargar.html";
+            return "imagen_descargaCargarPendiente.html";
         }
     }
 
@@ -1306,8 +2282,29 @@ public class ImagenControlador {
         modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
         modelo.addAttribute("imagenNombre", imagen.getNombre());
         modelo.addAttribute("id", id);
+        modelo.addAttribute("flete", fleteServicio.buscarFleteIdImagenDescarga(id));
 
         return "imagen_descargarDescargaPdf.html";
+    }
+    
+    @GetMapping("/descargarDescargaPdfAdmin")
+    public String descargarDescargaPdfAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, 
+            @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.addAttribute("idFlete", idFlete);
+        modelo.addAttribute("desde", desde);
+        modelo.addAttribute("hasta", hasta);
+        modelo.addAttribute("idChofer", idChofer);
+        modelo.addAttribute("idCamion", idCamion);
+        modelo.addAttribute("idCliente", idCliente);
+
+        return "imagen_descargarDescargaPdfAdmin.html";
     }
 
     @GetMapping("/descargarDescargaPdfPendiente/{id}")
@@ -1362,16 +2359,55 @@ public class ImagenControlador {
         return "imagen_descargarDescargaPdfFiltrado.html";
     }
 
-    @GetMapping("/modificarDescarga/{id}") //llega id de Imagen
-    public String modificarDescarga(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificarDescarga") //llega id de Imagen
+    public String modificarDescarga(@RequestParam Long id, @RequestParam Long idFlete, ModelMap modelo) {
 
         modelo.put("id", id);
+        modelo.put("idFlete", idFlete);
 
         return "imagen_descargaModificar.html";
     }
 
     @PostMapping("/modificaDescarga")
-    public String modificaDescarga(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
+    public String modificaDescarga(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Descarga Viaje ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+
+                return "redirect:/imagen/modificadoDescargaChofer/" + idFlete;
+
+        } catch (Exception e) {
+            modelo.addAttribute("id", id);
+            modelo.put("idFlete", idFlete);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_descargaModificar.html";
+        }
+
+    }
+    
+    @GetMapping("/modificarDescargaPendiente/{id}") //llega id de Imagen
+    public String modificarDescargaPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("flete", fleteServicio.buscarFleteIdImagenDescarga(id));
+
+        return "imagen_descargaModificarPendiente.html";
+    }
+    
+    @PostMapping("/modificaDescargaPendiente")
+    public String modificaDescargaPendiente(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
         Flete flete = fleteServicio.buscarFleteIdImagenDescarga(id);
 
@@ -1388,35 +2424,37 @@ public class ImagenControlador {
 
             imagenServicio.modificarImagen(id, imagen);
 
-            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
-
-                return "redirect:/imagen/modificadoDescarga/" + id;
-
-            } else {
-
-                return "redirect:/imagen/modificadoDescargaAdmin/" + id;
-
-            }
+            return "redirect:/imagen/modificadoDescargaPendiente/" + id;
 
         } catch (Exception e) {
             modelo.addAttribute("id", id);
+            modelo.addAttribute("flete", flete);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
-            return "imagen_descargaModificar.html";
+            
+            return "imagen_descargaModificarPendiente.html";
         }
 
     }
-
-    @GetMapping("/modificadoDescarga/{id}")
-    public String modificadoDescarga(@PathVariable Long id, ModelMap modelo) {
+    
+    @GetMapping("/modificadoDescargaPendiente/{id}")
+    public String modificadoDescargaPendiente(@PathVariable Long id, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFleteIdImagenDescarga(id);
 
         modelo.put("flete", flete);
         modelo.put("exito", "Ticket de Descarga MODIFICADO con éxito");
 
-        return "flete_modificadoChofer.html";
+        return "flete_mostrarPendiente.html";
+
+    }
+
+    @GetMapping("/modificadoDescargaChofer/{id}")
+    public String modificadoDescargaChofer(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("exito", "Ticket de Descarga MODIFICADO con éxito");
+
+        return "flete_mostrarChofer.html";
 
     }
 
@@ -1430,47 +2468,107 @@ public class ImagenControlador {
 
         return "flete_modificadoAdmin.html";
         
+    }
+    
+    @GetMapping("/modificarDescargaAdmin") //llega id de Imagen
+    public String modificarDescargaAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+        return "imagen_descargaModificarAdmin.html";
+    }
+    
+    @PostMapping("/modificaDescargaAdmin")
+    public String modificaDescargaAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente,
+    @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Descarga Viaje ID" + flete.getIdFlete());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+
+                return "redirect:/imagen/modificadoDescarga?idFlete=" + idFlete +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("id", id);
+            modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_descargaModificarAdmin.html";
+        }
 
     }
+    
+    @GetMapping("/modificadoDescarga")
+    public String modificadoDescarga(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
 
-    @GetMapping("/eliminarDescarga/{id}")
-    public String eliminarDescarga(@PathVariable Long id, ModelMap model) {
+        modelo.put("flete", fleteServicio.buscarFlete(idFlete));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "Ticket de Descarga MODIFICADO con éxito");
+
+        return "flete_mostrarAdmin.html";
+        
+    }
+
+    @GetMapping("/eliminarDescarga")
+    public String eliminarDescarga(@RequestParam Long id, @RequestParam Long idFlete, ModelMap model) {
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
         model.addAttribute("imagenNombre", imagen.getNombre());
         model.addAttribute("id", id);
+        model.put("idFlete", idFlete);
 
         return "imagen_eliminarDescarga.html";
     }
 
-    @GetMapping("/eliminaDescarga/{id}")
-    public String eliminaDescarga(@PathVariable Long id, HttpSession session, ModelMap modelo) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    @GetMapping("/eliminaDescarga")
+    public String eliminaDescarga(@RequestParam Long id,@RequestParam Long idFlete, ModelMap modelo) {
 
         imagenServicio.eliminarImagenDescarga(id);
 
-        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
-
-            return "redirect:/imagen/eliminadoDescarga";
-
-        } else {
-
-            return "redirect:/imagen/eliminadoDescargaAdmin";
-
-        }
+            return "redirect:/imagen/eliminadoDescargaChofer/" +idFlete;
     }
 
-    @GetMapping("/eliminadoDescarga")
-    public String eliminadoDescarga(ModelMap modelo, HttpSession session) {
+    @GetMapping("/eliminadoDescargaChofer/{idFlete}")
+    public String eliminadoDescargaChofer(@PathVariable Long idFlete, ModelMap modelo, HttpSession session) {
 
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        modelo.put("flete", fleteServicio.buscarFlete(idFlete));
+        modelo.put("exito", "Ticket de Descarga ELIMINADO con éxito");
 
-        modelo.put("chofer", logueado);
-        modelo.put("exito", "Ticket de Descarga ELIMINADA con éxito");
-
-        return "index_chofer.html";
+        return "flete_mostrarChofer.html";
 
     }
 
@@ -1485,89 +2583,203 @@ public class ImagenControlador {
         return "index_admin.html";
 
     }
+    
+    @GetMapping("/eliminarDescargaPendiente/{id}")
+    public String eliminarDescargaPendiente(@PathVariable Long id, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.addAttribute("flete", fleteServicio.buscarFleteIdImagenDescarga(id));
+
+        return "imagen_eliminarDescargaPendiente.html";
+    }
+    
+    @GetMapping("/eliminaDescargaPendiente/{id}")
+    public String eliminaDescargaPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFleteIdImagenDescarga(id);
+        
+        imagenServicio.eliminarImagenDescarga(id);
+
+
+        return "redirect:/imagen/eliminadoDescargaPendiente/" + flete.getId();
+
+    }
+    
+    @GetMapping("/eliminadoDescargaPendiente/{id}")
+    public String eliminadoDescargaPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("exito", "Ticket de Descarga ELIMINADO con éxito");
+
+        return "flete_mostrarPendiente.html";
+
+    }
+    
+    @GetMapping("/eliminarDescargaAdmin")
+    public String eliminarDescargaAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+        
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("imagenNombre", imagen.getNombre());
+        modelo.put("id", id);
+
+        return "imagen_eliminarDescargaAdmin.html";
+    }
+    
+    @GetMapping("/eliminaDescargaAdmin")
+    public String eliminaDescargaAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenDescarga(id);
+
+            return "redirect:/imagen/eliminadoDescarga?idFlete=" + idFlete +"&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+    }
+    
+    
+    @GetMapping("/eliminadoDescarga")
+    public String eliminadoDescarga(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+    @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("flete", fleteServicio.buscarFlete(idFlete));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "Ticket de Descarga ELIMINADO con éxito");
+
+        return "flete_mostrarAdmin.html";
+
+    }
 
     @GetMapping("/verCombustible/{id}")
-    public String verCombustible(@PathVariable Long id, Model model, HttpSession session) {
+    public String verCombustible(@PathVariable Long id, Model model) {
 
         Combustible carga = combustibleServicio.buscarCombustible(id);
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        model.addAttribute("carga", carga);
 
         if (carga.getImagen() != null) {
 
             Long idImagen = carga.getImagen().getId();
             Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+            model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+            model.addAttribute("imagenNombre", imagen.getNombre());
+            model.addAttribute("id", idImagen);
 
-            if ((logueado.getRol().equalsIgnoreCase("CHOFER")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
-
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-                model.addAttribute("idUsuario", carga.getChofer().getId());
+            if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
 
                 return "imagen_mostrarCombustiblePdf.html";
 
-            }
-            if ((logueado.getRol().equalsIgnoreCase("ADMIN")) && (imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
-
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-                model.addAttribute("idCamion", carga.getCamion().getId());
-
-                return "imagen_mostrarCombustiblePdfAdmin.html";
-
-            }
-
-            if ((logueado.getRol().equalsIgnoreCase("ADMIN")) && (!imagen.getTipo().equalsIgnoreCase("application/pdf"))) {
-
-                model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-                model.addAttribute("idCamion", carga.getCamion().getId());
-
-                return "imagen_mostrarCombustibleAdmin.html";
-
             } else {
-
-                model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
-                model.addAttribute("imagenNombre", imagen.getNombre());
-                model.addAttribute("id", idImagen);
-                model.addAttribute("idUsuario", carga.getChofer().getId());
-                model.addAttribute("estado", carga.getEstado());
 
                 return "imagen_mostrarCombustible.html";
             }
 
         } else {
 
-            model.addAttribute("carga", combustibleServicio.buscarCombustible(id));
-
             return "imagen_combustibleCargar.html";
 
         }
     }
+    
+    @GetMapping("/verCombustibleAdmin")
+    public String verCombustibleAdmin(@RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idCamion,
+            @RequestParam(required = false) Long idChofer, ModelMap model) {
 
-    @GetMapping("/descargarCombustiblePdf/{id}")
-    public String descargarCombustiblePdf(@PathVariable Long id, ModelMap modelo) {
+        Combustible carga = combustibleServicio.buscarCombustible(idCarga);
+        model.addAttribute("carga", carga);
+        model.put("desde", desde);
+        model.put("hasta", hasta);
+        model.put("idChofer", idChofer);
+        model.put("idCamion", idCamion);
+
+        if (carga.getImagen() != null) {
+
+            Long idImagen = carga.getImagen().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+            model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+            model.addAttribute("imagenNombre", imagen.getNombre());
+            model.addAttribute("id", idImagen);
+
+            if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
+
+                return "imagen_mostrarCombustiblePdfAdmin.html";
+
+            } else {
+
+                return "imagen_mostrarCombustibleAdmin.html";
+
+        }
+        } else {
+                
+            return "imagen_combustibleCargarAdmin.html";
+                
+            }
+    
+    }
+
+    @GetMapping("/descargarCombustiblePdf")
+    public String descargarCombustiblePdf(@RequestParam Long id, @RequestParam Long idCarga, ModelMap modelo) {
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
         modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
         modelo.addAttribute("imagenNombre", imagen.getNombre());
         modelo.addAttribute("id", id);
+        modelo.put("idCarga", idCarga);
 
         return "imagen_descargarCombustiblePdf.html";
     }
+    
+    @GetMapping("/descargarCombustiblePdfAdmin")
+    public String descargarCombustiblePdfAdmin(@RequestParam Long id, @RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
 
-    @GetMapping("/modificarCombustible/{id}") //llega id de Imagen
-    public String modificarCombustible(@PathVariable Long id, ModelMap modelo) {
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+        modelo.put("idCarga", idCarga);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+
+        return "imagen_descargarCombustiblePdfAdmin.html";
+    }
+    
+    @GetMapping("/modificarCombustibleAdmin") //llega id de Imagen
+    public String modificarCombustibleAdmin(@RequestParam Long id, @RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
 
         modelo.put("id", id);
+        modelo.put("idCarga", idCarga);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
 
-        return "imagen_combustibleModificar.html";
+        return "imagen_combustibleModificarAdmin.html";
     }
-
-    @PostMapping("/modificaCombustible")
-    public String modificaCombustible(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+    
+    @PostMapping("/modificaCombustibleAdmin")
+    public String modificaCombustibleAdmin(@RequestParam Long id, @RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
         Combustible carga = combustibleServicio.buscarCombustibleIdImagen(id);
 
@@ -1584,80 +2796,431 @@ public class ImagenControlador {
 
             imagenServicio.modificarImagen(id, imagen);
 
-            return "redirect:/imagen/modificadoCombustible/" + id;
+            return "redirect:/imagen/modificadoCombustibleAdmin?idCarga=" + idCarga +"&desde=" + desde + "&hasta=" + hasta +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idChofer != null ? "&idChofer=" + idChofer : "");
 
         } catch (Exception e) {
             modelo.addAttribute("id", id);
+            modelo.put("idCarga", idCarga);
+            modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_combustibleModificarAdmin.html";
+        }
+
+    }
+    
+    @GetMapping("/modificadoCombustibleAdmin")
+    public String modificadoCombustibleAdmin(@RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
+
+        modelo.put("carga", combustibleServicio.buscarCombustible(idCarga));
+        modelo.put("exito", "Imagen de Combustible MODIFICADA con éxito");
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+
+        return "combustible_mostrarAdmin.html";
+
+    }
+    
+    @GetMapping("/eliminarCombustibleAdmin")
+    public String eliminarCombustibleAdmin(@RequestParam Long id, @RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, ModelMap model) {
+
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.put("idCarga", idCarga);
+        model.put("desde", desde);
+        model.put("hasta", hasta);
+        model.put("idChofer", idChofer);
+        model.put("idCamion", idCamion);
+
+        return "imagen_eliminarCombustibleAdmin.html";
+    }
+
+    @GetMapping("/eliminaCombustibleAdmin")
+    public String eliminaCombustible(@RequestParam Long id, @RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
+
+        imagenServicio.eliminarImagenCombustible(id);
+
+            return "redirect:/imagen/eliminadoCombustibleAdmin?idCarga=" + idCarga +"&desde=" + desde + "&hasta=" + hasta +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idChofer != null ? "&idChofer=" + idChofer : "");
+    }
+
+    @GetMapping("/eliminadoCombustibleAdmin")
+    public String eliminadoCombustibleAdmin(@RequestParam Long idCarga, @RequestParam String desde, @RequestParam String hasta, 
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
+
+        modelo.put("carga", combustibleServicio.buscarCombustible(idCarga));
+        modelo.put("exito", "Imagen de Combustible ELIMINADA con éxito");
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+
+        return "combustible_mostrarAdmin.html";
+
+    }
+
+    @GetMapping("/modificarCombustible") //llega id de Imagen
+    public String modificarCombustible(@RequestParam Long id, @RequestParam Long idCarga, ModelMap modelo) {
+
+        modelo.put("id", id);
+        modelo.put("idCarga", idCarga);
+
+        return "imagen_combustibleModificar.html";
+    }
+
+    @PostMapping("/modificaCombustible")
+    public String modificaCombustible(@RequestParam Long id, @RequestParam Long idCarga, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Combustible carga = combustibleServicio.buscarCombustibleIdImagen(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Carga de Diesel " + carga.getFechaCarga());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+
+            return "redirect:/imagen/modificadoCombustible/" + idCarga;
+
+        } catch (Exception e) {
+            modelo.addAttribute("id", id);
+            modelo.put("idCarga", idCarga);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
             return "imagen_combustibleModificar.html";
         }
 
     }
 
-    @GetMapping("/modificadoCombustible/{id}")
-    public String modificadoCombustible(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificadoCombustible/{idCarga}")
+    public String modificadoCombustible(@PathVariable Long idCarga, ModelMap modelo) {
 
-        Combustible carga = combustibleServicio.buscarCombustibleIdImagen(id);
+        modelo.put("carga", combustibleServicio.buscarCombustible(idCarga));
+        modelo.put("exito", "Imagen de Combustible MODIFICADO con éxito");
 
-        modelo.put("carga", carga);
-        modelo.put("fecha", carga.getFechaCarga());
-        modelo.put("exito", "Imagen de Diesel MODIFICADO con éxito");
-
-        return "combustible_modificado.html";
+        return "combustible_mostrar.html";
 
     }
 
-    @GetMapping("/eliminarCombustible/{id}")
-    public String eliminarCombustible(@PathVariable Long id, ModelMap model) {
+    @GetMapping("/eliminarCombustible")
+    public String eliminarCombustible(@RequestParam Long id, @RequestParam Long idCarga, ModelMap model) {
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
         model.addAttribute("imagenNombre", imagen.getNombre());
         model.addAttribute("id", id);
-        model.put("carga", combustibleServicio.buscarCombustibleIdImagen(id));
+        model.put("idCarga", idCarga);
 
         return "imagen_eliminarCombustible.html";
     }
 
-    @GetMapping("/eliminaCombustible/{id}")
-    public String eliminaCombustible(@PathVariable Long id, HttpSession session, ModelMap modelo) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    @GetMapping("/eliminaCombustible")
+    public String eliminaCombustible(@RequestParam Long id, @RequestParam Long idCarga, ModelMap modelo) {
 
         imagenServicio.eliminarImagenCombustible(id);
 
-        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+            return "redirect:/imagen/eliminadoCombustible/" +idCarga;
+    }
 
-            return "redirect:/imagen/eliminadoCombustible";
+    @GetMapping("/eliminadoCombustible/{idCarga}")
+    public String eliminadoCombustible(@PathVariable Long idCarga, ModelMap modelo) {
 
+        modelo.put("carga", combustibleServicio.buscarCombustible(idCarga));
+        modelo.put("exito", "Imagen de Combustible ELIMINADA con éxito");
+
+        return "combustible_mostrar.html";
+
+    }
+
+    
+    @GetMapping("/documentacionChofer/{id}")
+    public String documentacionChofer(@PathVariable Long id, Model model, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+        Boolean flag = false;
+        
+        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+            if(logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getCamion() != null ) {
+                if(logueado.getCamion().getDominio().equalsIgnoreCase(documentacion.getCamion().getDominio())){
+            flag = true;
+                }
+            }
+        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+            if(logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getAcoplado() != null ) {
+                if(logueado.getAcoplado().getDominio().equalsIgnoreCase(documentacion.getAcoplado().getDominio())){
+            flag = true;
+                }
+            }
         } else {
+            if(logueado.getDocumentacion().equalsIgnoreCase("SI")) {
+            flag = true;
+            }
+        }
+        
+        if (documentacion.getImagen() != null) {
 
-            return "redirect:/imagen/eliminadoCombustibleAdmin";
+            Long idImagen = documentacion.getImagen().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+
+            if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
+
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+                model.addAttribute("flag", flag);
+
+                return "imagen_mostrarDocumentacionPdf.html";
+
+            } else {
+
+                model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+                model.addAttribute("flag", flag);
+
+                return "imagen_mostrarDocumentacion.html";
+                
+            }
+            
+    } else {
+            
+            if(flag == true){
+
+            model.addAttribute("documentacion", documentacion);
+
+            return "imagen_documentacionCargar.html";
+            
+            } else {
+                
+            return "imagen_documentacionMensaje.html";
+                
+            }
 
         }
     }
+    
+    @GetMapping("/verDocumentacion/{id}")
+    public String verDocumentacion(@PathVariable Long id, Model model) {
 
-    @GetMapping("/eliminadoCombustible")
-    public String eliminadoCombustible(ModelMap modelo, HttpSession session) {
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
 
+        if (documentacion.getImagen() != null) {
+
+            Long idImagen = documentacion.getImagen().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idImagen);
+
+            if (imagen.getTipo().equalsIgnoreCase("application/pdf")) {
+
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+                model.addAttribute("flag", true);
+
+                return "imagen_mostrarDocumentacionPdf.html";
+
+            } else {
+
+                model.addAttribute("imagenUrl", "/imagen/img/bytes/" + idImagen);
+                model.addAttribute("imagenNombre", imagen.getNombre());
+                model.addAttribute("id", idImagen);
+                model.addAttribute("flag", true);
+
+                return "imagen_mostrarDocumentacion.html";
+            }
+
+        } else {
+
+            model.addAttribute("documentacion", documentacion);
+
+            return "imagen_documentacionCargar.html";
+
+        }
+    }
+    
+    @PostMapping("/cargaDocumentacion")
+    public String cargaDocumentacion(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
+
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+
+        try {
+            Imagen imagen = new Imagen();
+            
+            imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
+            imagen.setTipo(file.getContentType());
+            
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.crearImagenDocumentacion(id, imagen);
+            
+            return "redirect:/imagen/cargadoDocumentacion/" + id;
+
+        } catch (Exception e) {
+            modelo.addAttribute("documentacion", documentacion);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_documentacionCargar.html";
+        }
+    }
+    
+    @GetMapping("/cargadoDocumentacion/{id}")
+    public String cargadoDocumentacion(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            
+            if(logueado.getRol().equalsIgnoreCase("CHOFER")){
+                
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Imagen de Documentacion CARGADA con éxito");
+            
+            return "documentacion_mostrarChofer.html";
+                
+                
+            } else {
+            
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Imagen de Documentación CARGADA con éxito");
+            
+            return "documentacion_mostrar.html"; 
+            
+            }
 
-        modelo.put("chofer", logueado);
-        modelo.put("exito", "Imagen de Combustible ELIMINADA con éxito");
+    }
+    
+    @GetMapping("/descargarDocumentacionPdf/{id}")
+    public String descargarDocumentacionPdf(@PathVariable Long id, ModelMap modelo) {
 
-        return "index_chofer.html";
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+
+        modelo.addAttribute("imagenUrl", "/imagen/pdf/" + id);
+        modelo.addAttribute("imagenNombre", imagen.getNombre());
+        modelo.addAttribute("id", id);
+
+        return "imagen_descargarDocumentacionPdf.html";
+        
+    }
+    
+    @GetMapping("/modificarDocumentacion/{id}") //llega id de Imagen
+    public String modificarDocumentacion(@PathVariable Long id, ModelMap modelo) {
+        
+        modelo.put("id", id);
+
+        return "imagen_documentacionModificar.html";
+    }
+
+    @PostMapping("/modificaDocumentacion")
+    public String modificaDocumentacion(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+
+        Documentacion documentacion = documentacionServicio.buscarDocumentacionIdImagen(id);
+
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
+            imagen.setTipo(file.getContentType());
+            if (file.getContentType().equals("application/pdf")) {
+                imagen.setDatos(file.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(file));
+            }
+
+            imagenServicio.modificarImagen(id, imagen);
+            
+            return "redirect:/imagen/modificadoDocumentacion/" + documentacion.getId(); 
+
+        } catch (Exception e) {
+            modelo.addAttribute("id", id);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            return "imagen_documentacionModificar.html";
+        }
+
+    }
+    
+    @GetMapping("/modificadoDocumentacion/{id}")
+    public String modificadoDocumentacion(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+
+            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            
+            if(logueado.getRol().equalsIgnoreCase("CHOFER")){
+                
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Imagen de Documentacion MODIFICADA con éxito");
+            
+            return "documentacion_mostrarChofer.html";
+                
+                
+            } else {
+        
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Imagen de Documentacion MODIFICADA con éxito");
+            
+            return "documentacion_mostrar.html";
+            
+            }
+
+    }
+    
+    @GetMapping("/eliminarDocumentacion/{id}")
+    public String eliminarDocumentacion(@PathVariable Long id, ModelMap model) {
+        
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id); 
+           
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+
+        return "imagen_eliminarDocumentacion.html";
 
     }
 
-    @GetMapping("/eliminadoCombustibleAdmin")
-    public String eliminadoCombustibleAdmin(ModelMap modelo, HttpSession session) {
+    @GetMapping("/eliminaDocumentacion/{id}")
+    public String eliminaDocumentacion(@PathVariable Long id, ModelMap modelo) {
 
+        Documentacion documentacion = documentacionServicio.buscarDocumentacionIdImagen(id);
+        
+        imagenServicio.eliminarImagenDocumentacion(id, documentacion.getId());
+        
+        return "redirect:/imagen/eliminadoDocumentacion/" +documentacion.getId(); 
+        
+    }
+    
+    @GetMapping("/eliminadoDocumentacion/{id}")
+    public String eliminadoDocumentacion(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            
+            if(logueado.getRol().equalsIgnoreCase("CHOFER")){
+                
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Imagen de Documentacion ELIMINADA con éxito");
+            
+            return "documentacion_mostrarChofer.html";
+                
+            } else {
 
-        modelo.put("id", logueado.getId());
-        modelo.put("exito", "Imagen de Combustible ELIMINADA con éxito");
-
-        return "index_admin.html";
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Imagen de Documentacion ELIMINADA con éxito");
+            
+            return "documentacion_mostrar.html";
+            
+            }
 
     }
 

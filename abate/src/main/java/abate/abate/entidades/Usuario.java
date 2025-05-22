@@ -21,17 +21,21 @@ public class Usuario {
     private Double porcentaje;
     private String caja;
     private String cuenta;
+    private String documentacion;
+    private String mantenimiento;
     private String empresa;
     private String direccion;
     private String localidad;
     private String telefono;
     @OneToOne
     private Camion camion;
+    @OneToOne
+    private Acoplado acoplado;
 
     public Usuario() {
     }
 
-    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String empresa, String direccion, String localidad, String telefono, Camion camion) {
+    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String documentacion, String mantenimiento, String empresa, String direccion, String localidad, String telefono, Camion camion, Acoplado acoplado) {
         this.id = id;
         this.idOrg = idOrg;
         this.nombre = nombre;
@@ -42,11 +46,14 @@ public class Usuario {
         this.porcentaje = porcentaje;
         this.caja = caja;
         this.cuenta = cuenta;
+        this.documentacion = documentacion;
+        this.mantenimiento = mantenimiento;
         this.empresa = empresa;
         this.direccion = direccion;
         this.localidad = localidad;
         this.telefono = telefono;
         this.camion = camion;
+        this.acoplado = acoplado;
     }
 
     public Long getId() {
@@ -120,13 +127,29 @@ public class Usuario {
     public void setCaja(String caja) {
         this.caja = caja;
     }
-    
+
     public String getCuenta() {
         return cuenta;
     }
 
     public void setCuenta(String cuenta) {
         this.cuenta = cuenta;
+    }
+
+    public String getDocumentacion() {
+        return documentacion;
+    }
+
+    public void setDocumentacion(String documentacion) {
+        this.documentacion = documentacion;
+    }
+
+    public String getMantenimiento() {
+        return mantenimiento;
+    }
+
+    public void setMantenimiento(String mantenimiento) {
+        this.mantenimiento = mantenimiento;
     }
 
     public String getEmpresa() {
@@ -169,4 +192,14 @@ public class Usuario {
         this.camion = camion;
     }
 
+    public Acoplado getAcoplado() {
+        return acoplado;
+    }
+
+    public void setAcoplado(Acoplado acoplado) {
+        this.acoplado = acoplado;
+    }
+
+    
+    
 }

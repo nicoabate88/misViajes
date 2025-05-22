@@ -76,9 +76,9 @@ public class AzulServicio {
 
     }
 
-    public Long buscarUltimo() {
+    public Long buscarUltimo(Long idOrg) {
 
-        return azulRepositorio.ultimaCarga();
+        return azulRepositorio.ultimaCarga(idOrg);
 
     }
 

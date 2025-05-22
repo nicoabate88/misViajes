@@ -12,12 +12,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AzulRepositorio extends JpaRepository<Azul, Long> {
+    
+    @Query("SELECT MAX(id) FROM Azul a WHERE a.idOrg = :id")
+    public Long ultimaCarga(@Param("id") Long id);
 
-    @Query("SELECT MAX(id) FROM Azul")
-    public Long ultimaCarga();
-
-    @Query("SELECT MAX(a) FROM Azul a")
-    public Azul ultimaCargaAzul();
+    @Query("SELECT MAX(a) FROM Azul a WHERE a.idOrg = :id")
+    public Azul ultimaCargaAzul(@Param("id") Long id);
 
     ArrayList<Azul> findByFechaBetweenAndCamion(Date desde, Date hasta, Camion camion);
 

@@ -1,9 +1,11 @@
 package abate.abate.servicios;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Azul;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Combustible;
 import abate.abate.entidades.Usuario;
+import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.AzulRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
@@ -28,6 +30,8 @@ public class CombustibleServicio {
     private CombustibleRepositorio combustibleRepositorio;
     @Autowired
     private CamionRepositorio camionRepositorio;
+    @Autowired
+    private AcopladoRepositorio acopladoRepositorio;
     @Autowired
     private AzulServicio azulServicio;
     @Autowired
@@ -56,13 +60,14 @@ public class CombustibleServicio {
         carga.setConsumoPromedio(0.0);
         carga.setCamion(camion);
         carga.setUsuario(usuario);
+        carga.setChofer(usuario);
 
         combustibleRepositorio.save(carga);
 
     }
 
     @Transactional
-    public void crearCarga(Long idOrg, Long idCamion, String fecha, Double kmAnterior, Double kmCarga, Double litros, String completo, Double azul, Usuario usuario) throws ParseException {
+    public void crearCarga(Long idOrg, Long idCamion, Long idAcoplado, String fecha, Double kmAnterior, Double kmCarga, Double litros, String completo, Double azul, Usuario usuario) throws ParseException {
 
         Camion camion = new Camion();
         Optional<Camion> cam = camionRepositorio.findById(idCamion);
@@ -79,9 +84,13 @@ public class CombustibleServicio {
 
         if (azul != null && azul != 0) {
             azulServicio.crearCarga(idCamion, fecha, azul, usuario);
-            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul();
+            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul(idOrg);
             carga.setAzul(ultimoAzul);
         }
+        if (idAcoplado != null){
+            Acoplado acoplado = acopladoRepositorio.getById(idAcoplado);
+            carga.setAcoplado(acoplado);
+        } 
 
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
@@ -109,7 +118,7 @@ public class CombustibleServicio {
     }
 
     @Transactional
-    public void crearCargaAdmin(Long idOrg, Long idCamion, String fecha, Long idChofer, Double kmAnterior, Double kmCarga, Double litros, String completo, Double azul, Usuario usuario) throws ParseException {
+    public void crearCargaAdmin(Long idOrg, Long idCamion, String fecha, Long idChofer, Long idAcoplado, Double kmAnterior, Double kmCarga, Double litros, String completo, Double azul, Usuario usuario) throws ParseException {
 
         Camion camion = new Camion();
         Optional<Camion> cam = camionRepositorio.findById(idCamion);
@@ -132,9 +141,13 @@ public class CombustibleServicio {
 
         if (azul != null && azul != 0) {
             azulServicio.crearCargaAdmin(idCamion, fecha, azul, usuario);
-            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul();
+            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul(idOrg);
             carga.setAzul(ultimoAzul);
         }
+        if (idAcoplado != null){
+            Acoplado acoplado = acopladoRepositorio.getById(idAcoplado);
+            carga.setAcoplado(acoplado);
+        } 
 
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
@@ -222,7 +235,7 @@ public class CombustibleServicio {
     }
 
     @Transactional
-    public void modificarCarga(Long id, String fecha, Double kmCarga, Double litros, String completo, Double azul, Usuario logueado) throws ParseException {
+    public void modificarCarga(Long id, Long idAcoplado, String fecha, Double kmCarga, Double litros, String completo, Double azul, Usuario logueado) throws ParseException {
 
         Combustible carga = new Combustible();
         Optional<Combustible> cga = combustibleRepositorio.findById(id);
@@ -239,6 +252,13 @@ public class CombustibleServicio {
         Double kmRecorrido = kmCarga - carga.getKmAnterior();
         Double consumo = ((100 * litros) / kmRecorrido);
         Double consumoRed = Math.round(consumo * 100.0) / 100.0;
+        
+        if (idAcoplado != null){
+            Acoplado acoplado = acopladoRepositorio.getById(idAcoplado);
+            carga.setAcoplado(acoplado);
+        } else {
+            carga.setAcoplado(null);
+        }
 
         carga.setFechaCarga(f);
         carga.setKmCarga(kmCarga);
@@ -257,7 +277,7 @@ public class CombustibleServicio {
 
         if (carga.getAzul() == null && azul != null && azul != 0) {
             azulServicio.crearCarga(carga.getCamion().getId(), fecha, azul, logueado);
-            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul();
+            Azul ultimoAzul = azulRepositorio.ultimaCargaAzul(logueado.getIdOrg());
             carga.setAzul(ultimoAzul);
         }
 
@@ -348,36 +368,96 @@ public class CombustibleServicio {
 
     public ArrayList<Combustible> buscarCargasIdCamion(Long id, String desde, String hasta) throws ParseException {
 
-        Camion camion = new Camion();
-        Optional<Camion> cam = camionRepositorio.findById(id);
-        if (cam.isPresent()) {
-            camion = cam.get();
-        }
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Combustible> lista = combustibleRepositorio.buscarCombustibleIdCamion(d, h, id);
+
+        Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Combustible> buscarCargasIdCamionFechaAsc(Long id, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Combustible> lista = combustibleRepositorio.findByFechaCargaBetweenAndCamion(d, h, camion);
+        ArrayList<Combustible> lista = combustibleRepositorio.buscarCombustibleIdCamion(d, h, id);
 
-        Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
+        Collections.sort(lista, CombustibleComparador.ordenarFechaAsc);
 
         return lista;
     }
 
     public ArrayList<Combustible> buscarCargasIdChofer(Long id, String desde, String hasta) throws ParseException {
 
-        Usuario chofer = new Usuario();
-        Optional<Usuario> chf = usuarioRepositorio.findById(id);
-        if (chf.isPresent()) {
-            chofer = chf.get();
-        }
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Combustible> lista = combustibleRepositorio.buscarCombustibleIdChofer(d, h, id);
+
+        Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Combustible> buscarCargasIdChoferFechaAsc(Long id, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Combustible> lista = combustibleRepositorio.findByFechaCargaBetweenAndChofer(d, h, chofer);
+        ArrayList<Combustible> lista = combustibleRepositorio.buscarCombustibleIdChofer(d, h, id);
+
+        Collections.sort(lista, CombustibleComparador.ordenarFechaAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Combustible> buscarCargas(Long id, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Combustible> lista = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, id);
 
         Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Combustible> buscarCargasFechaAsc(Long id, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Combustible> lista = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, id);
+
+        Collections.sort(lista, CombustibleComparador.ordenarFechaAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Combustible> buscarCargasCamionChofer(Long idCamion, Long idChofer, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Combustible> lista = combustibleRepositorio.buscarCombustibleIdCamionIdChofer(d, h, idCamion, idChofer);
+
+        Collections.sort(lista, CombustibleComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Combustible> buscarCargasCamionChoferFechaAsc(Long idCamion, Long idChofer, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Combustible> lista = combustibleRepositorio.buscarCombustibleIdCamionIdChofer(d, h, idCamion, idChofer);
+
+        Collections.sort(lista, CombustibleComparador.ordenarFechaAsc);
 
         return lista;
     }
@@ -491,16 +571,27 @@ public class CombustibleServicio {
 
         return consumo;
     }
-
+/*
     public Long buscarUltimo(Long idOrg) {
 
         return combustibleRepositorio.ultimaCarga(idOrg);
+
+    }
+    */
+    public Combustible buscarUltimo(Long idOrg) {
+
+        return combustibleRepositorio.findTopByIdOrgOrderByIdDesc(idOrg);
 
     }
 
     public Combustible buscarCombustibleIdImagen(Long id) {
 
         return combustibleRepositorio.buscarCombustibleIdImagen(id);
+    }
+    
+    public Combustible buscarCombustibleIdAzul(Long id) {
+
+        return combustibleRepositorio.buscarCombustibleIdAzul(id);
     }
 
     public Combustible buscarCombustible(Long id) {
@@ -531,6 +622,24 @@ public class CombustibleServicio {
 
         return flag;
     }
+    
+    public int kmUltimaCarga(Camion camion) {
+
+        Combustible carga = combustibleRepositorio.findTopByCamionOrderByIdDesc(camion);
+        
+        if(carga != null){
+            
+        Double km = carga.getKmCarga();
+        
+        return km.intValue();
+        
+        } else {
+            
+            return 0;
+            
+        }
+
+    }
 
     public Combustible cargaAnteultimo(Camion camion) {
 
@@ -560,6 +669,27 @@ public class CombustibleServicio {
 
         }
 
+    }
+    
+    public int kmAcoplado(Acoplado acoplado, Date fechaDesde){
+        
+        Date fechaActual = new Date();
+        
+        ArrayList<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndAcoplado(fechaDesde, fechaActual, acoplado);
+        
+        Double km = 0.0;
+        
+        if(!cargas.isEmpty()){
+            
+            for(Combustible carga : cargas){
+            
+                km = km + carga.getKmRecorrido();
+                
+        }
+        }
+        
+        return km.intValue();
+        
     }
 
     public Date convertirFecha(String fecha) throws ParseException {

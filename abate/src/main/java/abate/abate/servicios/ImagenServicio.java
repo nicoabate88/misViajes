@@ -1,10 +1,12 @@
 package abate.abate.servicios;
 
 import abate.abate.entidades.Combustible;
+import abate.abate.entidades.Documentacion;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Imagen;
 import abate.abate.repositorios.CombustibleRepositorio;
+import abate.abate.repositorios.DocumentacionRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
 import abate.abate.repositorios.GastoRepositorio;
 import abate.abate.repositorios.ImagenRepositorio;
@@ -24,6 +26,8 @@ public class ImagenServicio {
     private GastoRepositorio gastoRepositorio;
     @Autowired
     private CombustibleRepositorio combustibleRepositorio;
+    @Autowired
+    private DocumentacionRepositorio documentacionRepositorio;
 
     @Transactional
     public void crearImagenGasto(Long id, Imagen imagen) {
@@ -125,6 +129,22 @@ public class ImagenServicio {
         combustibleRepositorio.save(carga);
 
     }
+    
+    @Transactional
+    public void crearImagenDocumentacion(Long id, Imagen imagen) {
+        
+        Documentacion documentacion = documentacionRepositorio.getById(id);
+
+        imagenRepositorio.save(imagen);
+        Long idImg = buscarUltimo();
+
+        Imagen img = imagenRepositorio.getById(idImg);
+
+        documentacion.setImagen(img);
+
+        documentacionRepositorio.save(documentacion);
+
+    }
 
     @Transactional
     public void modificarImagen(Long id, Imagen imagen) {
@@ -189,6 +209,19 @@ public class ImagenServicio {
 
         imagenRepositorio.deleteById(id);
 
+    }
+    
+    @Transactional
+    public void eliminarImagenDocumentacion(Long id, Long idDocumentacion){
+        
+        Documentacion documentacion = documentacionRepositorio.getById(idDocumentacion);
+        
+        documentacion.setImagen(null);
+        
+        documentacionRepositorio.save(documentacion);
+        
+        imagenRepositorio.deleteById(id);
+        
     }
 
     public Imagen obtenerImagenPorId(Long id) {

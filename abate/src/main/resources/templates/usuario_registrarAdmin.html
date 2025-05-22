@@ -6,33 +6,29 @@
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         </head>
-
                         <body>
-
                             <section>
-                                <div class="container">
-
-                                    <div class="card-header mb-2" style="height: 70px;">
-                                        <div class="row">
-                                            <div class="col-2">   
-                                                <a th:href= "@{/index}" type="button">
-                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                    </svg> 
-                                                </a>   
-                                            </div>
-                                            <div  class="col-10">
-                                                <h4>Registrar Usuario</h4>
-                                            </div>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a th:href= "@{/index}" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-8 text-center">
+                                            <h4>Registrar Usuario</h4>
                                         </div>
                                     </div>
-
+                                </div>
+                                <div class="container mb-2">   
                                     <form class="row g-3" th:action="@{/usuario/registroAdmin}" method="POST">
                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                             <label for="nombre" class="form-label">Apellido y Nombre</label>
                                             <input type="text" class="form-control" id="nombre" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
                                         </div>
-                                         <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                             <label for="cuil" class="form-label">CUIL</label>
                                             <input type="number" class="form-control" id="cuil" placeholder="Ingrese CUIL" name="cuil" th:value="${cuil}" required>
                                         </div>
@@ -68,14 +64,14 @@
                                             <label for="contrase" class="form-label">Contraseña</label>
                                             <input type="password" class="form-control" id="contrase" placeholder="Repita Contraseña" name="password2" required>
                                         </div>
-                                        
+
                                         <div class="container">
-                                        <div th:if="${error != null}" class="card-body mb-5 col-md-5 text-center" id="mensaje">                        
-                                            <h6 id="white" th:text="${error}"></h6>                                                                             
+                                             <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
+                                                                    <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                                </div>
                                         </div>
-                                        </div>
-                                        
-                                         <div class="row text-center">
+
+                                        <div class="row text-center">
                                             <div class="col-8 col-md-8">
                                                 <button class="btn btn-primary" type="submit">Aceptar</button>
                                             </div>
@@ -84,7 +80,6 @@
                                             </div>
                                         </div>
                                     </form>
-
                                 </div>
                             </section>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

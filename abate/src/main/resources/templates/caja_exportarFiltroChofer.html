@@ -6,7 +6,7 @@
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                    <link rel="stylesheet" href="/css/medidas_container.css"> 
                         <style>
-                            .spinner svg {
+                             .spinner svg {
                                 animation: spin 1s linear infinite;
                             }
                             @keyframes spin {
@@ -17,13 +17,21 @@
                                     transform: rotate(360deg);
                                 }
                             }
+                             @media (max-width: 991.98px) {
+                                .table {
+                                    font-size: 14px;
+                                }
+                            }
+
+                            @media (max-width: 767.98px) {
+                                .table {
+                                    font-size: 12px;
+                                }
+                            }
                         </style>   
                     </head>
-
                     <body>
                         <section>
-                            <div class="container mb-5"> 
-
                                 <div class="card-header" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
@@ -33,10 +41,10 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-7">
+                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
                                             <h4>Exportar Caja</h4>
                                         </div>
-                                        <div class="col-3 text-center">
+                                        <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
                                             <form>
                                                 <input id="idCaja" hidden th:value="${caja.id}" name="id">
                                                 <input id="desde" hidden th:value="${desde}" name="desde">
@@ -48,7 +56,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+                                <div class="container mb-2">  
                                 <div class="card-body">
                                         <h6 th:text="${caja.chofer.nombre}"></h6>
                                         <h6 id="dimgray" th:text="'Movimientos entre '+${desde}+' y '+${hasta}"></h6>
@@ -65,24 +73,27 @@
                                         Exportando... Por favor, espere.
                                     </div>
                                 </div>
-                                <table class="table border-secondary bg-light table-hover table-sm mb-4" id="dimgray">
+                                <div class="table-responsive border border-secondary rounded">
+                                <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
                                     <thead>
                                         <tr>
-                                            <th>Fecha</th>
-                                            <th>Concepto</th>
-                                            <th>Importe</th>
-                                            <th>Saldo</th>                                         
+                                            <th class="text-center">Fecha</th>
+                                            <th class="text-center">Concepto</th>
+                                            <th class="text-center">Importe</th>
+                                            <th class="text-center">Saldo</th>                                         
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="transaccion : ${transacciones}">
-                                            <td th:text="${#dates.format(transaccion.fecha, 'dd-MM-yyyy')}"></td>
-                                            <td th:text="${transaccion.observacion}"></td>
-                                            <td th:text="${#numbers.formatDecimal(transaccion.importe, 0, 'POINT', 1, 'COMMA')}"></td>
-                                            <td th:text="${#numbers.formatDecimal(transaccion.saldoAcumulado, 0, 'POINT', 1, 'COMMA')}"></td>
+                                            <td class="text-center" th:text="${#dates.format(transaccion.fecha, 'dd-MM-yyyy')}"></td>
+                                            <td class="text-center" th:text="${transaccion.observacion}"></td>
+                                            <td class="text-center" th:text="${#numbers.formatDecimal(transaccion.importe, 1, 'POINT', 1, 'COMMA')}"></td>
+                                            <td class="text-center" th:text="${#numbers.formatDecimal(transaccion.saldoAcumulado, 1, 'POINT', 1, 'COMMA')}"></td>
                                         </tr>
                                     </tbody>
                                 </table>
+                                </div>
+                                    <br>
                                 <div class="text-center mb-2">
                                         <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/caja/mostrarChofer/__${caja.chofer.id}__}">Volver</a>
                                     </div>

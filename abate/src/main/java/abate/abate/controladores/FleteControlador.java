@@ -1,7 +1,9 @@
 package abate.abate.controladores;
 
+import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Usuario;
+import abate.abate.servicios.AcopladoServicio;
 import abate.abate.servicios.CamionServicio;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.ClienteServicio;
@@ -13,6 +15,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,8 @@ public class FleteControlador {
     private ExcelServicio excelServicio;
     @Autowired
     private CamionServicio camionServicio;
+    @Autowired
+    private AcopladoServicio acopladoServicio;
 
     @GetMapping("/registrar")
     public String registrarFlete(ModelMap modelo, HttpSession session) {
@@ -52,6 +57,7 @@ public class FleteControlador {
             modelo.put("chofer", logueado);
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarChofer.html";
@@ -61,6 +67,7 @@ public class FleteControlador {
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarAdmin.html";
@@ -68,14 +75,16 @@ public class FleteControlador {
     }
 
     @PostMapping("/registroChofer")
-    public String registroFlete(@RequestParam Long idCliente, @RequestParam Long idCamion, @RequestParam String fechaCarga, @RequestParam String fechaFlete,
+    public String registroFlete(@RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam Long idCliente,
+            @RequestParam String fechaCarga, @RequestParam String fechaFlete,
             @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
             @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg,
-            ModelMap modelo, HttpSession session) throws ParseException {
+            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        fleteServicio.crearFleteChofer(logueado.getIdOrg(), fechaCarga, idCliente, idCamion, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg, logueado.getId());
+        fleteServicio.crearFleteChofer(logueado.getIdOrg(), fechaCarga, idCliente, idCamion, idAcoplado, origen, fechaFlete, destino, km, 
+                idProducto, tarifa, cPorte, ctg, kg, observacion, logueado.getId());
 
         return "redirect:/flete/registradoChofer";
 
@@ -91,20 +100,22 @@ public class FleteControlador {
         modelo.put("flete", fleteServicio.buscarFlete(id));
         modelo.put("exito", "Viaje REGISTRADO con éxito");
 
-        return "flete_registradoChofer.html";
+        return "flete_mostrarChofer.html";
 
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/registroAdmin")
-    public String registroFleteAdmin(@RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete,
+    public String registroFleteAdmin(@RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, 
+            @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete,
             @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte,
             @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam String comisionTpteChofer,
-            @RequestParam String iva, ModelMap modelo, HttpSession session) throws ParseException {
+            @RequestParam String iva, @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        fleteServicio.crearFleteAdmin(logueado.getIdOrg(), idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg, comisionTpte, comisionTpteChofer, iva, logueado.getId());
+        fleteServicio.crearFleteAdmin(logueado.getIdOrg(), idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, 
+                km, idProducto, tarifa, cPorte, ctg, kg, comisionTpte, comisionTpteChofer, iva, observacion, logueado.getId());
 
         return "redirect:/flete/registradoAdmin";
 
@@ -120,8 +131,13 @@ public class FleteControlador {
 
         modelo.put("flete", fleteServicio.buscarFlete(id));
         modelo.put("exito", "Viaje REGISTRADO con éxito");
+        modelo.put("desde", obtenerFechaDesde());
+        modelo.put("hasta", obtenerFechaHasta());
+        modelo.put("idChofer", null);
+        modelo.put("idCamion", null);
+        modelo.put("idCliente", null);
 
-        return "flete_registradoAdmin.html";
+        return "flete_mostrarAdmin.html";
 
     }
 
@@ -142,7 +158,7 @@ public class FleteControlador {
 
             modelo.addAttribute("fletes", fletes);
             modelo.put("flag", flag);
-            modelo.put("chofer", choferServicio.buscarChofer(logueado.getId()));
+            modelo.put("chofer", logueado);
             modelo.put("desde", desde);
             modelo.put("hasta", hasta);
 
@@ -150,9 +166,21 @@ public class FleteControlador {
 
         } else {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesPendiente(logueado.getIdOrg()));
+            List<Flete> fletes = fleteServicio.buscarFletesPendiente(logueado.getIdOrg());
+            
+            if(!fletes.isEmpty()){
+            
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("cantidad", fletes.size());
 
             return "flete_listarPendiente.html";
+            
+            } else {
+                
+                return "redirect:/flete/listarTodo";
+                
+            }
+            
         }
     }
 
@@ -178,6 +206,7 @@ public class FleteControlador {
     @GetMapping("/listarIdCliente/{id}")
     public String listarIdCliente(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
+        Cliente cliente = clienteServicio.buscarCliente(id);
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
         ArrayList<Flete> fletes = fleteServicio.buscarFletesIdClienteFecha(id, desde, hasta);
@@ -185,53 +214,28 @@ public class FleteControlador {
         if (fletes.isEmpty()) {
             flag = false;
         }
-        
-        Double neto = 0.0;
-        
-        for(Flete f : fletes){
-            neto = neto + f.getNeto();
-        }
 
         modelo.addAttribute("fletes", fletes);
         modelo.put("flag", flag);
+        modelo.put("idCliente", id);
+        modelo.put("chofer", null);
+        modelo.put("camion", null);
+        modelo.put("cliente", cliente);
         modelo.put("cliente", clienteServicio.buscarCliente(id));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(cliente.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(cliente.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(cliente.getIdOrg()));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("cantidad", fletes.size());
-        modelo.put("neto", neto);
 
-        return "flete_listarIdCliente";
-    }
-
-    @PostMapping("/listarIdClienteFiltro")
-    public String listarIdClienteFiltro(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
-
-        ArrayList<Flete> fletes = fleteServicio.buscarFletesIdClienteFecha(id, desde, hasta);
-        Boolean flag = true;
-        if (fletes.isEmpty()) {
-            flag = false;
-        }
-        
-        Double neto = 0.0;
-        
-        for(Flete f : fletes){
-            neto = neto + f.getNeto();
-        }
-
-        modelo.addAttribute("fletes", fletes);
-        modelo.put("flag", flag);
-        modelo.put("cliente", clienteServicio.buscarCliente(id));
-        modelo.put("desde", desde);
-        modelo.put("hasta", hasta);
-        modelo.put("cantidad", fletes.size());
-        modelo.put("neto", neto);
-
-        return "flete_listarIdCliente";
+        return "flete_listarTodoFiltrado.html";
     }
 
     @GetMapping("/listarIdChofer/{id}")
     public String listarIdChofer(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
+        Usuario chofer = choferServicio.buscarChofer(id);
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
         ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferFecha(id, desde, hasta);
@@ -240,55 +244,20 @@ public class FleteControlador {
             flag = false;
         }
         
-        Double neto = 0.0;
-        Double ganancia = 0.0;
-        
-        for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            ganancia = ganancia + f.getPorcentajeChofer();
-        }
-        
         modelo.addAttribute("fletes", fletes);
         modelo.put("flag", flag);
-        modelo.put("chofer", choferServicio.buscarChofer(id));
+        modelo.put("idChofer", id);
+        modelo.put("chofer", chofer);
+        modelo.put("camion", null);
+        modelo.put("cliente", null);
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(chofer.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(chofer.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(chofer.getIdOrg()));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("cantidad", fletes.size());
-        modelo.put("neto", neto);
-        modelo.put("ganancia", ganancia);
 
-        return "flete_listarIdChofer";
-    }
-
-    @PostMapping("/listarIdChoferFiltro")
-    public String listarIdChoferFiltro(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta,
-            ModelMap modelo) throws ParseException {
-
-        ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferFecha(id, desde, hasta);
-        Boolean flag = true;
-        if (fletes.isEmpty()) {
-            flag = false;
-        }
-        
-        Double neto = 0.0;
-        Double ganancia = 0.0;
-        
-        
-        for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            ganancia = ganancia + f.getPorcentajeChofer();
-        }
-
-        modelo.addAttribute("fletes", fletes);
-        modelo.put("flag", flag);
-        modelo.put("chofer", choferServicio.buscarChofer(id));
-        modelo.put("desde", desde);
-        modelo.put("hasta", hasta);
-        modelo.put("cantidad", fletes.size());
-        modelo.put("neto", neto);
-        modelo.put("ganancia", ganancia);
-
-        return "flete_listarIdChofer";
+        return "flete_listarTodoFiltrado.html";
     }
 
     @GetMapping("/listarTodo")
@@ -302,163 +271,165 @@ public class FleteControlador {
         if (fletes.isEmpty()) {
             flag = false;
         }
-        
-        Double neto = 0.0;
-        Double ganancia = 0.0;
-        
-        for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            ganancia = ganancia + f.getPorcentajeChofer();
-        }
 
         modelo.addAttribute("fletes", fletes);
         modelo.put("flag", flag);
         modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
         modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("cantidad", fletes.size());
-        modelo.put("neto", neto);
-        modelo.put("ganancia", ganancia);
 
-        return "flete_listarTodo";
+        return "flete_listarTodo.html";
     }
 
-    @PostMapping("/listarXfechaAdmin")
-    public String listarXfechaAdmin(@RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
-            @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) throws ParseException {
+    @PostMapping("/listarTodoFiltrado")
+    public String listarTodoFiltrado(@RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        if (idChofer == null && idCliente == null) {
+        if (idChofer == null && idCliente == null && idCamion == null) {
 
             ArrayList<Flete> fletes = fleteServicio.buscarFletesRangoFecha(logueado.getIdOrg(), desde, hasta);
             Boolean flag = true;
             if (fletes.isEmpty()) {
                 flag = false;
             }
-            
-            Double neto = 0.0;
-            Double ganancia = 0.0;
-        
-            for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            ganancia = ganancia + f.getPorcentajeChofer();
-            }
 
             modelo.addAttribute("fletes", fletes);
             modelo.put("flag", flag);
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.put("desde", desde);
-            modelo.put("hasta", hasta);
             modelo.put("cantidad", fletes.size());
-            modelo.put("neto", neto);
-            modelo.put("ganancia", ganancia);
+            modelo.put("chofer", null);
+            modelo.put("camion", null);
+            modelo.put("cliente", null);
 
-            return "flete_listarTodoFiltrado";
-
-        } else if (idChofer != null && idCliente == null) {
+        } else if (idChofer != null && idCliente == null && idCamion == null) {
 
             ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferFecha(idChofer, desde, hasta);
             Boolean flag = true;
             if (fletes.isEmpty()) {
                 flag = false;
             }
-            
-            Double neto = 0.0;
-            Double ganancia = 0.0;
-        
-            for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            ganancia = ganancia + f.getPorcentajeChofer();
-            }
 
             modelo.addAttribute("fletes", fletes);
             modelo.put("flag", flag);
             modelo.put("chofer", choferServicio.buscarChofer(idChofer));
-            modelo.put("desde", desde);
-            modelo.put("hasta", hasta);
+            modelo.put("camion", null);
+            modelo.put("cliente", null);
             modelo.put("cantidad", fletes.size());
-            modelo.put("neto", neto);
-            modelo.put("ganancia", ganancia);
 
-            return "flete_listarTodoIdChofer.html";
-
-        } else if (idChofer == null && idCliente != null) {
+        } else if (idChofer == null && idCliente != null && idCamion == null) {
             
             ArrayList<Flete> fletes = fleteServicio.buscarFletesIdClienteFecha(idCliente, desde, hasta);
             Boolean flag = true;
             if (fletes.isEmpty()) {
                 flag = false;
             }
-            
-            Double neto = 0.0;
-            
-            for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            }
 
             modelo.addAttribute("fletes", fletes);
             modelo.put("flag", flag);
             modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
-            modelo.put("desde", desde);
-            modelo.put("hasta", hasta);
+            modelo.put("camion", null);
+            modelo.put("chofer", null);
             modelo.put("cantidad", fletes.size());
-            modelo.put("neto", neto);
-
-            return "flete_listarTodoIdCliente.html";
             
-        } else {
+        } else if (idChofer == null && idCliente == null && idCamion != null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdCamionFecha(idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", null);
+            modelo.put("chofer", null);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+        
+        }  else if (idChofer != null && idCliente != null && idCamion == null) {
             
             ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferClienteFecha(idChofer, idCliente, desde, hasta);
             Boolean flag = true;
             if (fletes.isEmpty()) {
                 flag = false;
             }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("camion", null);
+            modelo.put("cantidad", fletes.size());
             
-            Double neto = 0.0;
-            Double ganancia = 0.0;
-        
-            for(Flete f : fletes){
-            neto = neto + f.getNeto();
-            ganancia = ganancia + f.getPorcentajeChofer();
+        } else if (idChofer != null && idCliente == null && idCamion != null) {
             
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferCamionFecha(idChofer, idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", null);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+            
+        } else if (idChofer == null && idCliente != null && idCamion != null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdClienteCamionFecha(idCliente, idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            modelo.put("chofer", null);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+            
+        } else {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferClienteCamionFecha(idChofer, idCliente, idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
             }
 
             modelo.addAttribute("fletes", fletes);
             modelo.put("flag", flag);
             modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
             modelo.put("chofer", choferServicio.buscarChofer(idChofer));
-            modelo.put("desde", desde);
-            modelo.put("hasta", hasta);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
             modelo.put("cantidad", fletes.size());
-            modelo.put("neto", neto);
-            modelo.put("ganancia", ganancia);
-
-            return "flete_listarTodoIdChoferCliente.html";
             
         }
+        
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCliente", idCliente);
+        modelo.put("idCamion", idCamion);
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        
+        return "flete_listarTodoFiltrado.html";
     }
 
-    @GetMapping("/mostrar/{id}")
-    public String mostrar(@PathVariable Long id, ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+    @GetMapping("/mostrarChofer/{id}")
+    public String mostrarChofer(@PathVariable Long id, ModelMap modelo) {
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
-            modelo.put("idUsuario", logueado.getId());
 
             return "flete_mostrarChofer.html";
-
-        } else {
-
-            modelo.put("flete", fleteServicio.buscarFlete(id));
-
-            return "flete_mostrarAdmin.html";
-        }
 
     }
 
@@ -467,7 +438,7 @@ public class FleteControlador {
 
         modelo.put("flete", fleteServicio.buscarFlete(id));
 
-        return "flete_mostrarPendienteAdmin.html";
+        return "flete_mostrarPendiente.html";
     }
 
     @GetMapping("/mostrarDesdeCtaChofer/{id}")
@@ -488,15 +459,41 @@ public class FleteControlador {
 
     }
 
-    @GetMapping("/mostrarFiltrado/{id}")
-    public String mostrarFiltrado(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+    @GetMapping("/mostrarAdmin")
+    public String mostrarAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, @RequestParam(required = false) String gasto,
+           ModelMap modelo, HttpSession session) {
 
         modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        if(gasto != null){
+            modelo.put("exito", "Gasto ELIMINADO con éxito");
+        }
 
-        return "flete_mostrarFiltrado.html";
+        return "flete_mostrarAdmin.html";
 
     }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/aceptarAdmin")
+    public String aceptarAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) {
 
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        fleteServicio.aceptarFlete(id, logueado);
+
+        return "redirect:/flete/listarTodoFiltradoGet?&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+
+    }
+    
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/aceptar/{id}")
     public String aceptarFlete(@PathVariable Long id, ModelMap modelo, HttpSession session) {
@@ -515,7 +512,10 @@ public class FleteControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        modelo.addAttribute("fletes", fleteServicio.buscarFletesPendiente(logueado.getIdOrg()));
+        List<Flete> fletes = fleteServicio.buscarFletesPendiente(logueado.getIdOrg());
+        
+        modelo.addAttribute("fletes", fletes);
+        modelo.put("cantidad", fletes.size());
         modelo.put("exito", "Viaje CONFIRMADO con éxito");
 
         return "flete_listarPendiente.html";
@@ -523,38 +523,35 @@ public class FleteControlador {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/volverPendiente/{id}")
-    public String volverPendiente(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/volverPendiente")
+    public String volverPendiente(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
 
         modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
 
         return "flete_volverPendiente.html";
 
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/pendiente/{id}")
-    public String pendienteFlete(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+    @GetMapping("/pendiente")
+    public String pendienteFlete(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         fleteServicio.pendienteFlete(id, logueado);
 
-        return "redirect:/flete/fletePendiente";
-
-    }
-
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @GetMapping("/fletePendiente")
-    public String fletePendiente(HttpSession session, ModelMap modelo) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.put("id", logueado.getId());
-        modelo.put("exito", "Viaje RETORNADO a Pendiente");
-
-        return "index_admin.html";
-
+        return "redirect:/flete/listarTodoFiltradoGet?desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "") +
+            "&pendiente=" + "si";
     }
 
     @GetMapping("/modificar/{id}")
@@ -566,6 +563,7 @@ public class FleteControlador {
             modelo.put("flete", fleteServicio.buscarFlete(id));
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_modificarChofer.html";
@@ -576,6 +574,7 @@ public class FleteControlador {
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_modificarAdmin.html";
@@ -583,47 +582,49 @@ public class FleteControlador {
     }
 
     @PostMapping("/modificaChofer/{id}")
-    public String modificaChofer(@RequestParam Long id, @RequestParam Long idCamion, @RequestParam Long idCliente, @RequestParam String fechaCarga,
-            @RequestParam String fechaFlete, @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
-            @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, ModelMap modelo) throws ParseException {
+    public String modificaChofer(@RequestParam Long id, @RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, 
+            @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete, @RequestParam String origen, 
+            @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte, @RequestParam String ctg, 
+            @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam(required = false) String observacion, ModelMap modelo) throws ParseException {
 
-        fleteServicio.modificarFleteChofer(id, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg);
+        fleteServicio.modificarFleteChofer(id, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg, kg, observacion);
 
-        return "redirect:/flete/modificado/" + id;
+        return "redirect:/flete/modificadoChofer/" + id;
 
     }
     
-    @GetMapping("/modificado/{id}")
-    public String modificado(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificadoChofer/{id}")
+    public String modificadoChofer(@PathVariable Long id, ModelMap modelo) {
 
         modelo.put("flete", fleteServicio.buscarFlete(id));
         modelo.put("exito", "Viaje MODIFICADO con éxito");
 
-        return "flete_modificadoChofer.html";      
+        return "flete_mostrarChofer.html";      
 
     }
 
     @PostMapping("/modificaAdmin/{id}")
-    public String modificaAdmin(@RequestParam Long id, @RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam Long idCliente, @RequestParam String fechaCarga,
-            @RequestParam String fechaFlete, @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
+    public String modificaAdmin(@RequestParam Long id, @RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, 
+            @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete, @RequestParam String origen, 
+            @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
             @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte,
             @RequestParam String comisionTpteChofer, @RequestParam Double iva, @RequestParam Double porcentaje, @RequestParam Double porcentajeChofer,
-            ModelMap modelo, HttpSession session) throws ParseException {
+            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Flete flete = fleteServicio.buscarFlete(id);
 
         if (flete.getEstado().equalsIgnoreCase("PENDIENTE")) {
 
-            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
-            kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, logueado.getId());
+            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
+            kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, observacion, logueado.getId());
 
             return "redirect:/flete/modificadoPendiente/" + id;
 
         } else {
-
-            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
-                    kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, logueado.getId());
+            
+            fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
+                    kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, observacion, logueado.getId());
 
             return "redirect:/flete/modificadoAdmin/" + id;
 
@@ -636,7 +637,7 @@ public class FleteControlador {
             modelo.put("flete", fleteServicio.buscarFlete(id));
             modelo.put("exito", "Viaje MODIFICADO con éxito");
 
-            return "flete_modificadoAdminPendiente.html";        
+            return "flete_mostrarPendiente.html";        
 
     }
     
@@ -644,9 +645,68 @@ public class FleteControlador {
     public String modificadoAdmin(@PathVariable Long id, ModelMap modelo) {
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
-            modelo.put("exito", "Flete MODIFICADO con éxito");
+            modelo.put("exito", "Viaje MODIFICADO con éxito");
 
             return "flete_modificadoAdmin.html";        
+
+    }
+    
+    @GetMapping("/modificarAdmin")
+    public String modificarAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+            modelo.put("flete", fleteServicio.buscarFlete(id));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
+            modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+            return "flete_modificar.html";
+            
+    }
+    
+    @PostMapping("/modifica")
+    public String modifica(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long chofer,
+           @RequestParam(required = false) Long camion, @RequestParam(required = false) Long cliente, @RequestParam Long idChofer, @RequestParam Long idCamion, 
+           @RequestParam(required = false) Long idAcoplado, @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete, 
+           @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte, 
+           @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam String comisionTpteChofer, 
+            @RequestParam Double iva, @RequestParam Double porcentaje, @RequestParam Double porcentajeChofer,
+            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
+                    kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, observacion, logueado.getId());
+
+        return "redirect:/flete/modificado?id=" + id +"&desde=" + desde + "&hasta=" + hasta +
+           (chofer != null ? "&chofer=" + chofer : "") +
+           (camion != null ? "&camion=" + camion : "") +
+           (cliente != null ? "&cliente=" + cliente : "");
+
+    }
+    
+    @GetMapping("/modificado")
+    public String modificado(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long chofer,
+           @RequestParam(required = false) Long camion, @RequestParam(required = false) Long cliente, ModelMap modelo) {
+        
+        modelo.put("flete", fleteServicio.buscarFlete(id));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", chofer);
+        modelo.put("idCamion", camion);
+        modelo.put("idCliente", cliente);
+         modelo.put("exito", "Viaje MODIFICADO con éxito");
+
+        return "flete_mostrarAdmin.html";   
 
     }
 
@@ -657,11 +717,13 @@ public class FleteControlador {
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
+            
             return "flete_eliminarChofer.html";
 
         } else {
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
+            
             return "flete_eliminarAdmin.html";
         }
     }
@@ -670,6 +732,7 @@ public class FleteControlador {
     public String elimina(@PathVariable Long id, HttpSession session, ModelMap modelo) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
         fleteServicio.eliminarFlete(id);
 
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
@@ -685,14 +748,26 @@ public class FleteControlador {
     }
     
     @GetMapping("/eliminado")
-    public String eliminado(ModelMap modelo, HttpSession session) {
+    public String eliminado(ModelMap modelo, HttpSession session) throws ParseException {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
+            String desde = obtenerFechaDesde();
+            String hasta = obtenerFechaHasta();
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferFecha(logueado.getId(), desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
             modelo.put("chofer", logueado);
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
             modelo.put("exito", "Viaje ELIMINADO con éxito");
 
-            return "index_chofer.html";      
+            return "flete_listarChofer.html";     
 
     }
     
@@ -706,6 +781,35 @@ public class FleteControlador {
 
             return "index_admin.html";    
 
+    }
+    
+    
+    @GetMapping("/eliminarAdmin")
+    public String eliminarAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+            modelo.put("flete", fleteServicio.buscarFlete(id));
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
+            modelo.put("idChofer", idChofer);
+            modelo.put("idCamion", idCamion);
+            modelo.put("idCliente", idCliente);
+            
+            return "flete_eliminar.html";
+
+    }
+    
+    @GetMapping("/eliminaAdmin")
+    public String eliminaAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, HttpSession session, ModelMap modelo) {
+
+        fleteServicio.eliminarFlete(id);
+
+            return "redirect:/flete/listarTodoFiltradoGet?&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "") +
+                    "&elimina=" + "si";
     }
 
     public String obtenerFechaDesde() {
@@ -800,23 +904,96 @@ public class FleteControlador {
     }
 
     @PostMapping("/exportarAdminTodos")
-    public String exportarTodos(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+    public String exportarTodos(@RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+         if (idChofer == null && idCliente == null && idCamion == null) {
 
-        modelo.addAttribute("fletes", fleteServicio.buscarFletesRangoFechaAsc(logueado.getIdOrg(), desde, hasta));
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesRangoFechaAsc(logueado.getIdOrg(), desde, hasta));
+
+        } else if (idChofer != null && idCliente == null && idCamion == null) {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta));
+
+        } else if (idChofer == null && idCliente != null && idCamion == null) {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta));
+            
+        } else if (idChofer == null && idCliente == null && idCamion != null) {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdCamionFechaAsc(idCamion, desde, hasta));
+        
+        }  else if (idChofer != null && idCliente != null && idCamion == null) {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferClienteFechaAsc(idChofer, idCliente, desde, hasta));
+            
+        } else if (idChofer != null && idCliente == null && idCamion != null) {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferCamionFechaAsc(idChofer, idCamion, desde, hasta));
+            
+        } else if (idChofer == null && idCliente != null && idCamion != null) {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdClienteCamionFechaAsc(idCliente, idCamion, desde, hasta));
+            
+        } else {
+
+            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferClienteCamionFechaAsc(idChofer, idCliente, idCamion, desde, hasta));
+            
+        }
+        
+        modelo.put("idOrg", logueado.getIdOrg());
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
-        modelo.put("id", logueado.getIdOrg());
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCliente", idCliente);
+        modelo.put("idCamion", idCamion);
 
         return "flete_exportarAdminTodos.html";
 
     }
 
     @PostMapping("/exportaAdminTodos")
-    public void exportaTodos(@RequestParam Long idOrg, @RequestParam String desde, @RequestParam String hasta, HttpServletResponse response) throws IOException, ParseException {
+    public void exportaTodos(@RequestParam(required = false) Long idOrg, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, HttpServletResponse response) throws IOException, ParseException {
 
-        ArrayList<Flete> myObjects = fleteServicio.buscarFletesRangoFechaAsc(idOrg, desde, hasta);
+        ArrayList<Flete> myObjects = new ArrayList();
+        
+        if (idChofer == null && idCliente == null && idCamion == null) {
+
+            myObjects = fleteServicio.buscarFletesRangoFechaAsc(idOrg, desde, hasta);
+
+        } else if (idChofer != null && idCliente == null && idCamion == null) {
+
+            myObjects = fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta);
+
+        } else if (idChofer == null && idCliente != null && idCamion == null) {
+
+            myObjects = fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta);
+            
+        } else if (idChofer == null && idCliente == null && idCamion != null) {
+
+            myObjects = fleteServicio.buscarFletesIdCamionFechaAsc(idCamion, desde, hasta);
+        
+        }  else if (idChofer != null && idCliente != null && idCamion == null) {
+
+            myObjects = fleteServicio.buscarFletesIdChoferClienteFechaAsc(idChofer, idCliente, desde, hasta);
+            
+        } else if (idChofer != null && idCliente == null && idCamion != null) {
+
+            myObjects = fleteServicio.buscarFletesIdChoferCamionFechaAsc(idChofer, idCamion, desde, hasta);
+            
+        } else if (idChofer == null && idCliente != null && idCamion != null) {
+
+            myObjects = fleteServicio.buscarFletesIdClienteCamionFechaAsc(idCliente, idCamion, desde, hasta);
+            
+        } else {
+
+            myObjects = fleteServicio.buscarFletesIdChoferClienteCamionFechaAsc(idChofer, idCliente, idCamion, desde, hasta);
+            
+        }
+        
         String htmlContent = generateHtmlFromObjects(myObjects);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
@@ -898,6 +1075,7 @@ public class FleteControlador {
                 + "<th>Chofer</th>"
                 + "<th>Porcentaje</th>"
                 + "<th>Camión</th>"
+                + "<th>Acoplado</th>"
                 + "<th>KM</th>"
                 + "<th>Producto</th>"
                 + "<th>CP</th>"
@@ -919,6 +1097,7 @@ public class FleteControlador {
                     + "<td>").append(flete.getChofer().getNombre()).append("</td>"
                     + "<td>").append(flete.getPorcentajeChofer()).append("</td>"
                     + "<td>").append(flete.getCamion().getDominio()).append("</td>"
+                    + "<td>").append(flete.getAcoplado() != null ? flete.getAcoplado().getDominio() : "-").append("</td>"
                     + "<td>").append(flete.getKmFlete()).append("</td>"
                     + "<td>").append(flete.getProducto().getNombre()).append("</td>"
                     + "<td>").append(flete.getCartaPorte()).append("</td>"
@@ -973,6 +1152,153 @@ public class FleteControlador {
         }
         sb.append("</tbody></table>");
         return sb.toString();
+    }
+    
+        @GetMapping("/listarTodoFiltradoGet")
+    public String listarTodoFiltradoGet(@RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, @RequestParam(required = false) String elimina,
+           @RequestParam(required = false) String pendiente, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        if (idChofer == null && idCliente == null && idCamion == null) {
+
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesRangoFecha(logueado.getIdOrg(), desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cantidad", fletes.size());
+            modelo.put("chofer", null);
+            modelo.put("camion", null);
+            modelo.put("cliente", null);
+
+        } else if (idChofer != null && idCliente == null && idCamion == null) {
+
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferFecha(idChofer, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("camion", null);
+            modelo.put("cliente", null);
+            modelo.put("cantidad", fletes.size());
+
+        } else if (idChofer == null && idCliente != null && idCamion == null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdClienteFecha(idCliente, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            modelo.put("camion", null);
+            modelo.put("chofer", null);
+            modelo.put("cantidad", fletes.size());
+            
+        } else if (idChofer == null && idCliente == null && idCamion != null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdCamionFecha(idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", null);
+            modelo.put("chofer", null);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+        
+        }  else if (idChofer != null && idCliente != null && idCamion == null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferClienteFecha(idChofer, idCliente, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("camion", null);
+            modelo.put("cantidad", fletes.size());
+            
+        } else if (idChofer != null && idCliente == null && idCamion != null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferCamionFecha(idChofer, idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", null);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+            
+        } else if (idChofer == null && idCliente != null && idCamion != null) {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdClienteCamionFecha(idCliente, idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            modelo.put("chofer", null);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+            
+        } else {
+            
+            ArrayList<Flete> fletes = fleteServicio.buscarFletesIdChoferClienteCamionFecha(idChofer, idCliente, idCamion, desde, hasta);
+            Boolean flag = true;
+            if (fletes.isEmpty()) {
+                flag = false;
+            }
+
+            modelo.addAttribute("fletes", fletes);
+            modelo.put("flag", flag);
+            modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("cantidad", fletes.size());
+            
+        }
+        
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCliente", idCliente);
+        modelo.put("idCamion", idCamion);
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        if(elimina != null){
+        modelo.put("exito", "Viaje ELIMINADO con éxito");
+        }
+        if(pendiente != null){
+        modelo.put("exito", "Viaje RETORNADO A PENDIENTE con éxito");
+        }
+        
+        return "flete_listarTodoFiltrado.html";
     }
 
 }

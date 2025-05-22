@@ -9,7 +9,7 @@
                             window.onload = function () {
                                 var fechaActual = new Date();
                                 var dia = String(fechaActual.getDate()).padStart(2, '0');
-                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); 
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
                                 var anio = fechaActual.getFullYear();
                                 var fechaFormateada = anio + '-' + mes + '-' + dia;
 
@@ -18,219 +18,202 @@
                             };
                         </script>
                         </head>
-
                         <body>
-                                <div class="container">
-
-                                    <div class="card-header mb-2" style="height: 70px;">
-                                        <div class="row">
-                                            <div class="col-2">   
-                                                <a title="Volver" onclick="window.history.back();"  type="button">
-                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                    </svg> 
-                                                </a>   
-                                            </div>
-                                            <div  class="col-10">
-                                                <h4>Registrar Viaje</h4>
-                                            </div>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" onclick="window.history.back();"  type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
                                     </div>
-                                    <div class="card border-secondary p-2" id="color-card">
-                                    <form id="form" th:action="@{/flete/registroChofer}" method="POST">
-                                        <div class="row">
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="chofer" class="form-floting text-secondary">Chofer</label>
-                                            <input type="text" class="form-control" id="chofer" th:value="${chofer.nombre}" disabled readonly>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cliente" class="form-floting text-secondary">Camión*</label>
-                                            <select class="form-control" id="cliente" name="idCamion" required>
-                                                <option th:if="${chofer.camion} != null" selected th:text="${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}" th:value="${chofer.camion.id}"></option>
-                                                <option th:each="camion : ${camiones}"
-                                                        th:value="${camion.id}"
-                                                        th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
-                                            </select>
-                                        </div>
-                                         <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-                                            <label for="cliente" class="form-floting text-secondary">Cliente*</label>
-                                            <select class="form-control" id="cliente" name="idCliente" required>
-                                                <option value="" selected disabled>Seleccione Cliente</option>
-                                                <option th:each="cliente : ${clientes}"
-                                                        th:value="${cliente.id}"
-                                                        th:text="${cliente.nombre}"/>
-                                            </select>
-                                        </div>
-                                        </div>
-                                        <div class="row">
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="fc" class="form-label text-secondary">Fecha de Carga*</label>
-                                            <input type="date" class="form-control" id="fc" name="fechaCarga" required>
-                                        </div>
-                                       
-                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="ff" class="form-label text-secondary">Fecha de Viaje*</label>
-                                            <input type="date" class="form-control" id="ff" name="fechaFlete" required>
-                                        </div>
-                                        <div class="d-none d-sm-block col-md-6 col-lg-6 col-xl-6">
-                                        </div>
-                                        </div>
-                                        <div class="row">
-                                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-                                            <label for="origen" class="form-label text-secondary">Origen de Carga*</label>
-                                            <input type="text" class="form-control" id="origen" placeholder="Ingrese Origen de Carga" name="origen" required minlength="1" maxlength="120" size="120">
-                                        </div>
-                                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
-                                            <label for="destino" class="form-label text-secondary">Destino de Carga*</label>
-                                            <input type="text" class="form-control" id="destino" placeholder="Ingrese Destino de Carga" name="destino" required minlength="1" maxlength="120" size="120">
-                                        </div>
-                                        </div>
-                                        <div class="row">
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="km" class="form-label text-secondary">KM de Viaje*</label>
-                                            <div class="input-group">
-                                            <span class="input-group-text">km</span>
-                                            <input type="number" step="0.01" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="producto" class="form-floting text-secondary">Producto*</label>
-                                            <select class="form-control" id="producto" name="idProducto" required>
-                                                <option selected disabled value="">Seleccione Producto</option>
-                                                <option th:each="producto : ${productos}"
-                                                        th:value="${producto.id}"
-                                                        th:text="${producto.nombre}"/>
-                                                <!--
-                                                <option value="SOJA">SOJA</option>
-                                                <option value="MAIZ">MAIZ</option>
-                                                <option value="TRIGO">TRIGO</option>
-                                                <option value="AGROQUIMICO">AGROQUIMICO</option>
-                                                <option value="ALGODON">ALGODON</option>
-                                                <option value="ARENA">ARENA</option>
-                                                <option value="ARROZ">ARROZ</option>
-                                                <option value="CEBADA">CEBADA</option>
-                                                <option value="CEBOLLA">CEBOLLA</option>
-                                                <option value="CEMENTO">CEMENTO</option>
-                                                <option value="CENTENO">CENTENO</option>
-                                                <option value="EXPELLER">EXPELLER</option>
-                                                <option value="FERTILIZANTE">FERTILIZANTE</option>
-                                                <option value="FRUTA">FRUTA</option>
-                                                <option value="GIRASOL">GIRASOL</option>
-                                                <option value="HARINA">HARINA</option>
-                                                <option value="HIERRO">HIERRO</option>
-                                                <option value="LADRILLO">LADRILLO</option>
-                                                <option value="MADERA">MADERA</option>
-                                                <option value="PAPA">PAPA</option>
-                                                <option value="PIEDRA">PIEDRA</option>
-                                                <option value="ROLLOS">ROLLOS</option>
-                                                <option value="SEMILLA">SEMILLA</option>
-                                                <option value="SILOBOLSA">SILOBOLSA</option>
-                                                <option value="SORGO">SORGO</option>
-                                                <option value="VERDURA">VERDURA</option>
-                                                <option value="OTRO">OTRO</option>
-                                                -->
-                                            </select>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="cp" class="form-label text-secondary">Carta de Porte*</label>
-                                            <input type="text" class="form-control" id="cp" placeholder="Ingrese CP" name="cPorte" required minlength="1" maxlength="40" size="40">
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="ctg" class="form-label text-secondary">CTG*</label>
-                                            <input type="text" class="form-control" id="ctg" placeholder="Ingrese CTG" name="ctg" required minlength="1" maxlength="40" size="40">
-                                        </div>
-                                        </div>
-                                        <div class="row">
-                                         <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                            <label for="tarifa" class="form-label text-secondary">Tarifa de Viaje*</label>
-                                            <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" step="0.01" class="form-control" id="tarifa" placeholder="Ingrese Tarifa" name="tarifa" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-5">
-                                            <label for="kg" class="form-label text-secondary">KG de Viaje*</label>
-                                            <div class="input-group">
-                                            <span class="input-group-text">kg</span>
-                                            <input type="number" step="0.01" class="form-control" id="kg" placeholder="Ingrese KG" name="kg" required>
-                                            </div>
-                                        </div>
-                                         <div class="col-lg-6 col-xl-6">
-                                            </div>
-                                        </div>
-                                             <div class="text-center mb-2">
-                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Viaje">Registrar</button>
-                                            </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
-                                            </div> 
-                                    </form>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Viaje</h4>
                                     </div>
                                 </div>
-                             <script>
-                                                document.getElementById('form').addEventListener('submit', function (event) {
-                                                    
-                                                    const km = parseInt(document.getElementById('km').value);
-                                                    const tarifa = parseInt(document.getElementById('tarifa').value);
-                                                    const kg = parseInt(document.getElementById('kg').value);
-                                                    var fechaCarga = new Date(document.getElementById('fc').value);
-                                                    var fechaFlete = new Date(document.getElementById('ff').value);
+                            </div>
+                            <div class="container mb-2">   
+                                <div class="card border-secondary p-2" id="color-card">
+                                    <form id="form" th:action="@{/flete/registroChofer}" method="POST">
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="cliente" class="form-floting text-secondary">Camión*</label>
+                                                <select class="form-control" id="cliente" name="idCamion" required>
+                                                    <option th:if="${chofer.camion} == null" selected value="">Seleccione Camión</option>
+                                                    <option th:if="${chofer.camion} != null" selected th:text="${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}" th:value="${chofer.camion.id}"></option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="acoplado" class="form-floting text-secondary">Acoplado*</label>
+                                                <select class="form-control" id="acoplado" name="idAcoplado" required>
+                                                    <option th:if="${chofer.acoplado} == null" selected value="">Seleccione Acoplado</option>
+                                                    <option th:if="${chofer.acoplado} != null" selected 
+                                                            th:text="${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}" 
+                                                            th:value="${chofer.acoplado.id}"></option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                    <option value="">Sin Acoplado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
+                                                <label for="cliente" class="form-floting text-secondary">Cliente*</label>
+                                                <select class="form-control" id="cliente" name="idCliente" required>
+                                                    <option value="" selected disabled>Seleccione Cliente</option>
+                                                    <option th:each="cliente : ${clientes}"
+                                                            th:value="${cliente.id}"
+                                                            th:text="${cliente.nombre}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="fc" class="form-label text-secondary">Fecha de Carga*</label>
+                                                <input type="date" class="form-control" id="fc" name="fechaCarga" required>
+                                            </div>
 
-                                                    if (fechaFlete < fechaCarga) {
-                                                    alert('Fecha de Flete debe ser igual o mayor que Fecha de Carga');
-                                                    event.preventDefault(); 
-                                                    return;
-                                                }
-                                                    if (km <= 0) {
-                                                    alert('KM de Flete debe ser mayor que 0');
-                                                    event.preventDefault();
-                                                    return;
-                                                }
-                                                 if (tarifa <= 0) {
-                                                    alert('Tarifa debe ser mayor que 0');
-                                                    event.preventDefault(); 
-                                                    return;
-                                                }
-                                                if (kg <= 0) {
-                                                    alert('KG debe ser mayor que 0');
-                                                    event.preventDefault(); 
-                                                    return;
-                                                }
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="ff" class="form-label text-secondary">Fecha de Viaje*</label>
+                                                <input type="date" class="form-control" id="ff" name="fechaFlete" required>
+                                            </div>
+                                            <div class="d-none d-sm-block col-md-6 col-lg-6 col-xl-6">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
+                                                <label for="origen" class="form-label text-secondary">Origen de Carga*</label>
+                                                <input type="text" class="form-control" id="origen" placeholder="Ingrese Origen de Carga" name="origen" required minlength="1" maxlength="120" size="120">
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
+                                                <label for="destino" class="form-label text-secondary">Destino de Carga*</label>
+                                                <input type="text" class="form-control" id="destino" placeholder="Ingrese Destino de Carga" name="destino" required minlength="1" maxlength="120" size="120">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="km" class="form-label text-secondary">KM de Viaje*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">km</span>
+                                                    <input type="number" step="0.01" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="producto" class="form-floting text-secondary">Producto*</label>
+                                                <select class="form-control" id="producto" name="idProducto" required>
+                                                    <option selected disabled value="">Seleccione Producto</option>
+                                                    <option th:each="producto : ${productos}"
+                                                            th:value="${producto.id}"
+                                                            th:text="${producto.nombre}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="cp" class="form-label text-secondary">Carta de Porte*</label>
+                                                <input type="text" class="form-control" id="cp" placeholder="Ingrese CP" name="cPorte" required minlength="1" maxlength="40" size="40">
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="ctg" class="form-label text-secondary">CTG*</label>
+                                                <input type="text" class="form-control" id="ctg" placeholder="Ingrese CTG" name="ctg" required minlength="1" maxlength="40" size="40">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="tarifa" class="form-label text-secondary">Tarifa de Viaje*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" step="0.01" class="form-control" id="tarifa" placeholder="Ingrese Tarifa" name="tarifa" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="kg" class="form-label text-secondary">KG de Viaje*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">kg</span>
+                                                    <input type="number" step="0.01" class="form-control" id="kg" placeholder="Ingrese KG" name="kg" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 col-xl-6">
+                                            </div>
+                                        </div>
+                                        <div class="mb-5">
+                                            <label for="obs" class="form-label text-secondary">Observación</label>
+                                            <textarea class="form-control text-secondary" id="obs" name="observacion" rows="2" placeholder="Ingrese Observación..." maxlength="150" size="150"></textarea>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Viaje">Registrar</button>
+                                        </div>
+                                        <div class="text-center">
+                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
+                                        </div> 
+                                    </form>
+                                </div>
+                            </div>
+                            <script>
+                                document.getElementById('form').addEventListener('submit', function (event) {
 
-                                                });
-                                                const conceptoInput = document.getElementById('origen');
-                                                const maxLength = 120;
+                                    const km = parseInt(document.getElementById('km').value);
+                                    const tarifa = parseInt(document.getElementById('tarifa').value);
+                                    const kg = parseInt(document.getElementById('kg').value);
+                                    var fechaCarga = new Date(document.getElementById('fc').value);
+                                    var fechaFlete = new Date(document.getElementById('ff').value);
 
-                                                conceptoInput.addEventListener('input', function () {
-                                                if (conceptoInput.value.length > maxLength) {
-                                                conceptoInput.value = conceptoInput.value.slice(0, maxLength); 
-                                                }
-                                                });
-                                                const conceptoInput = document.getElementById('destino');
-                                                const maxLength = 120;
+                                    if (fechaFlete < fechaCarga) {
+                                        alert('Fecha de Flete debe ser igual o mayor que Fecha de Carga');
+                                        event.preventDefault();
+                                        return;
+                                    }
+                                    if (km <= 0) {
+                                        alert('KM de Flete debe ser mayor que 0');
+                                        event.preventDefault();
+                                        return;
+                                    }
+                                    if (tarifa <= 0) {
+                                        alert('Tarifa debe ser mayor que 0');
+                                        event.preventDefault();
+                                        return;
+                                    }
+                                    if (kg <= 0) {
+                                        alert('KG debe ser mayor que 0');
+                                        event.preventDefault();
+                                        return;
+                                    }
 
-                                                conceptoInput.addEventListener('input', function () {
-                                                if (conceptoInput.value.length > maxLength) {
-                                                conceptoInput.value = conceptoInput.value.slice(0, maxLength); 
-                                                }
-                                                });
-                                                const conceptoInput = document.getElementById('cp');
-                                                const maxLength = 40;
+                                });
+                                const conceptoInput = document.getElementById('origen');
+                                const maxLength = 120;
 
-                                                conceptoInput.addEventListener('input', function () {
-                                                if (conceptoInput.value.length > maxLength) {
-                                                conceptoInput.value = conceptoInput.value.slice(0, maxLength); 
-                                                }
-                                                });
-                                                const conceptoInput = document.getElementById('ctg');
-                                                const maxLength = 40;
+                                conceptoInput.addEventListener('input', function () {
+                                    if (conceptoInput.value.length > maxLength) {
+                                        conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                    }
+                                });
+                                const conceptoInput = document.getElementById('destino');
+                                const maxLength = 120;
 
-                                                conceptoInput.addEventListener('input', function () {
-                                                if (conceptoInput.value.length > maxLength) {
-                                                conceptoInput.value = conceptoInput.value.slice(0, maxLength); 
-                                                }
-                                                });
-                                            </script>
+                                conceptoInput.addEventListener('input', function () {
+                                    if (conceptoInput.value.length > maxLength) {
+                                        conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                    }
+                                });
+                                const conceptoInput = document.getElementById('cp');
+                                const maxLength = 40;
+
+                                conceptoInput.addEventListener('input', function () {
+                                    if (conceptoInput.value.length > maxLength) {
+                                        conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                    }
+                                });
+                                const conceptoInput = document.getElementById('ctg');
+                                const maxLength = 40;
+
+                                conceptoInput.addEventListener('input', function () {
+                                    if (conceptoInput.value.length > maxLength) {
+                                        conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                    }
+                                });
+                            </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                         </body>

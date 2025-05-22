@@ -23,246 +23,251 @@
                         </script>
                         </head>
                         <body>
-
-                            <div class="container">
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/combustible/listarAdmin/__${carga.camion.id}__}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7">
-                                            <h4>Modificar Carga Diesel</h4>
-                                        </div>
-                                        <div title="Ir a Eliminar Diesel" class="col-3 text-center">
-                                            <a th:if="${flag == true}" th:href="@{/combustible/eliminarAdmin/__${carga.id}__}">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                                                    </svg><h6 id="icono">Eliminar</h6> </a>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" type="button" th:href="@{/combustible/listarAdminFiltroGet(desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                        <h4>Modificar Carga</h4>
+                                    </div>
+                                    <div title="Ir a Eliminar Diesel" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                        <a th:if="${flag == true}" th:href="@{/combustible/eliminarAdmin(idCarga=${carga.id}, desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                            </svg><h6 id="icono">Eliminar</h6> </a>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card">
-                                    <form id="form" th:action="@{/combustible/modificaAdmin/__${carga.id}__}" method="POST">
-
+                                    <form id="form" th:action="@{/combustible/modificaAdmin}" method="POST">
                                         <input hidden th:value="${carga.id}" name="id">
-                                            <input type="date" id="fechaAnterior" hidden th:value="${fechaAnterior}"> 
-                                                <input hidden id="kmAnterior" th:value="${carga.kmAnterior}">
-                                         
-                                                <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="chofer" class="form-floting text-secondary">Camión</label>
-                                                    <input type="text" class="form-control" id="chofer" th:value="${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}" disabled readonly>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="kmAnterior" class="form-floting text-secondary">KM Carga Anterior</label>
-                                                    <input type="text" class="form-control" id="kmAnterior" th:value="${#numbers.formatDecimal(carga.kmAnterior, 0, 'POINT', 1, 'COMMA')}" disabled readonly>
-                                                </div>
-                                                <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                                </div>
-                                                </div>
-                                                    <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
-                                                    <input type="date" class="form-control" id="fecha" th:value="${carga.fechaCarga}" name="fecha" required>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                        <label for="chofer" class="form-floting text-secondary">Chofer*</label>
-                                                        <select class="form-control text-secondary" id="chofer" name="idChofer" required>
-                                                            <option selected th:text="${carga.chofer.nombre}" 
-                                                                    th:value="${carga.chofer.id}"></option>
-                                                            <option th:each="chofer : ${choferes}"
-                                                                    th:value="${chofer.id}"
-                                                                    th:text="${chofer.nombre}"/>
-                                                        </select>  
-                                                    </div>  
-                                                    </div>
-                                                <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="km" class="form-label text-secondary">KM Carga Actual*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">KM</span>
-                                                        <input type="number" class="form-control" id="km" th:value="${carga.kmCarga}" name="km" required oninput="calcularTotalKm(); calcularConsumo()">
-                                                    </div>    
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
-                                                    <label for="kmTotal" class="form-label text-secondary">Total KM</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">km</span>
-                                                        <input type="number" step="0.01" class="form-control" id="kmTotal" th:value="${carga.kmRecorrido}" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                                </div>
-                                                </div>
-                                                <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="litros" class="form-label text-secondary">Litros*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Lts</span>
-                                                        <input type="number" class="form-control" id="litros" th:value="${carga.litro}" name="litro" required oninput="calcularConsumo()">
-                                                    </div>    
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
-                                                    <label for="consumo" class="form-label text-secondary">Consumo</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">Lts</span>
-                                                        <input type="number" step="0.01" class="form-control" id="consumo" th:value="${carga.consumo}" readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                                </div>
-                                                  </div>
-                                                <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-3">
-                                                    <label for="completo" class="form-floting text-secondary">Tanque Completo*</label>
-                                                    <select class="form-control" id="cereal" name="completo" required>
-                                                        <option selected th:text="${carga.completo}" th:value="${carga.completo}">Seleccione</option>
-                                                        <option value="SI">SI</option>
-                                                        <option value="NO">NO</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                                                </div>
-                                                </div>
-                                                <div th:if="${carga.azul != null}" class="row">
-                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-3">
-                                                        <label for="azul" class="form-label text-primary">Urea</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text bg-primary">Lts</span>
-                                                            <input type="number" class="form-control" id="azul" th:value="${carga.azul.litro}" name="azul">
-                                                        </div>    
-                                                    </div>                                                   
-                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                                                    </div>
-                                                </div>
-                                                <div th:if="${carga.azul == null}">
-                                                    <div th:if="${carga.camion.azul == 'HABILITADO'}" class="row">
-                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-3">
-                                                        <label for="azul2" class="form-label text-primary">Urea</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text bg-primary">Lts</span>
-                                                            <input type="number" class="form-control" id="azul2" placeholder="Ingrese Litros" name="azul">
-                                                        </div>    
-                                                    </div>
-                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                <div class="row col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-5" th:if="${carga.estado == 'ACEPTADO'}">
-                                                    <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"  name="options" value="option1" checked >
-                                                                <label class="form-check-label text-secondary" for="option1">
-                                                                    <h6 id="darkgray">CONFIRMADO</h6>
-                                                                </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="options" value="option2">
-                                                                <label class="form-check-label text-secondary" for="option2">
-                                                                    <h6 id="dimgray">PENDIENTE</h6>
-                                                                </label>
-                                                        </div>
-                                                    </div>
-                                                    <div title="Ir a Pendiente" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-                                                        <a id="myButton" type="button" th:href="@{/combustible/volverPendiente/__${carga.id}__}">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check-square-fill" viewBox="0 0 16 16">
-                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
-                                                            </svg>
-                                                        </a>
-                                                    </div>
-                                                </div>  
-                                                </div>
-                                                <div class="d-none d-sm-block col-sm-6 col-md-6 col-lg-9 col-xl-9" th:if="${carga.estado == 'ACEPTADO'}">
-                                                </div>  
-                                                     <div class="text-center mb-2">
-                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Disel">Modificar</button>
-                                            </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/combustible/listarAdmin/__${carga.camion.id}__}" title="Cancelar">Cancelar</a>
-                                            </div> 
-                                                </form>
-                                                </div>
-                                                </div>
-                                                <script>
-                                                    document.getElementById('form').addEventListener('submit', function (event) {
-                                                        var fechaAnterior = new Date(document.getElementById('fechaAnterior').value);
-                                                        var fechaActual = new Date(document.getElementById('fecha').value);
-                                                        const kmAnterior = parseInt(document.getElementById('kmAnterior').value);
-                                                        const kmActual = parseInt(document.getElementById('km').value);
-                                                        const litros = parseInt(document.getElementById('litros').value);
-                                                        
-                                                        if (fechaActual < fechaAnterior) {
-                                                            alert('Fecha Seleccionada debe ser mayor a ' + formatearFecha(fechaAnterior));
-                                                            event.preventDefault();
-                                                            return;
-                                                        }
+                                            <input hidden th:value="${desde}" name="desde"> 
+                                                <input hidden th:value="${hasta}" name="hasta"> 
+                                                    <input hidden th:value="${idCamion}" name="idCamion"> 
+                                                        <input hidden th:value="${idChofer}" name="idChofer"> 
+                                                            <input hidden th:value="${carga.id}" name="idCarga">
+                                                                <input type="date" id="fechaAnterior" hidden th:value="${fechaAnterior}"> 
 
-                                                        if (kmActual <= kmAnterior) {
-                                                            alert('KM Carga Actual debe ser mayor que KM Carga Anterior: ' + kmAnterior);
-                                                            event.preventDefault();
-                                                            return;
-                                                        }
+                                                                    <input hidden id="kmAnterior" th:value="${carga.kmAnterior}">
 
-                                                        if (litros <= 0) {
-                                                            alert('Litros debe ser mayor que 0');
-                                                            event.preventDefault();
-                                                            return;
-                                                        }
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="chofer" class="form-floting text-secondary">Camión</label>
+                                                                                <input type="text" class="form-control" id="chofer" th:value="${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}" disabled readonly>
+                                                                            </div>
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="kmAnterior" class="form-floting text-secondary">KM Carga Anterior</label>
+                                                                                <input type="text" class="form-control" id="kmAnterior" th:value="${#numbers.formatDecimal(carga.kmAnterior, 0, 'POINT', 1, 'COMMA')}" disabled readonly>
+                                                                            </div>
+                                                                            <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                                                <input type="date" class="form-control" id="fecha" th:value="${carga.fechaCarga}" name="fecha" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="chofer" class="form-floting text-secondary">Chofer*</label>
+                                                                                <select class="form-control text-secondary" id="chofer" name="idChofer" required>
+                                                                                    <option selected th:text="${carga.chofer.nombre}" 
+                                                                                            th:value="${carga.chofer.id}"></option>
+                                                                                    <option th:each="chofer : ${choferes}"
+                                                                                            th:value="${chofer.id}"
+                                                                                            th:text="${chofer.nombre}"/>
+                                                                                </select>  
+                                                                            </div>  
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
+                                                                                <select class="form-control" id="idAcoplado" name="idAcoplado">
+                                                                                    <option th:if="${carga.acoplado != null}" th:text="${carga.acoplado.dominio}+' - '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}" th:value="${carga.acoplado.id}"></option>
+                                                                                    <option th:if="${carga.acoplado == null}" th:value="${carga.acoplado}">Sin Acoplado</option>                                                          
+                                                                                    <option th:each="acoplado : ${acoplados}"
+                                                                                            th:value="${acoplado.id}"
+                                                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                                                    <option th:if="${carga.acoplado != null}" th:value=null>Sin Acoplado</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="km" class="form-label text-secondary">KM Carga Actual*</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text">KM</span>
+                                                                                    <input type="number" class="form-control" id="km" th:value="${carga.kmCarga}" name="km" required oninput="calcularTotalKm(); calcularConsumo()">
+                                                                                </div>    
+                                                                            </div>
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                                                <label for="kmTotal" class="form-label text-secondary">Total KM</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text">km</span>
+                                                                                    <input type="number" step="0.01" class="form-control" id="kmTotal" th:value="${carga.kmRecorrido}" readonly>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="litros" class="form-label text-secondary">Litros*</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text">Lts</span>
+                                                                                    <input type="number" class="form-control" id="litros" th:value="${carga.litro}" name="litro" required oninput="calcularConsumo()">
+                                                                                </div>    
+                                                                            </div>
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+                                                                                <label for="consumo" class="form-label text-secondary">Consumo</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text">Lts</span>
+                                                                                    <input type="number" step="0.01" class="form-control" id="consumo" th:value="${carga.consumo}" readonly>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-3">
+                                                                                <label for="completo" class="form-floting text-secondary">Tanque Completo*</label>
+                                                                                <select class="form-control" id="cereal" name="completo" required>
+                                                                                    <option selected th:text="${carga.completo}" th:value="${carga.completo}">Seleccione</option>
+                                                                                    <option value="SI">SI</option>
+                                                                                    <option value="NO">NO</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div th:if="${carga.azul != null}" class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-3">
+                                                                                <label for="azul" class="form-label text-primary">Urea</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text bg-primary">Lts</span>
+                                                                                    <input type="number" class="form-control" id="azul" th:value="${carga.azul.litro}" name="azul">
+                                                                                </div>    
+                                                                            </div>                                                   
+                                                                            <div th:if="${carga.camion.azul == 'HABILITADO' && carga.azul == null}" class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-3">
+                                                                                <label for="azul2" class="form-label text-primary">Urea</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text bg-primary">Lts</span>
+                                                                                    <input type="number" class="form-control" id="azul2" placeholder="Ingrese Litros" name="azul">
+                                                                                </div>    
+                                                                            </div>                                                           
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="row col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-5" th:if="${carga.estado == 'ACEPTADO'}">
+                                                                                <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10">
+                                                                                    <div class="form-check">
+                                                                                        <input class="form-check-input" type="radio"  name="options" value="option1" checked >
+                                                                                            <label class="form-check-label text-secondary" for="option1">
+                                                                                                <h6 id="darkgray">CONFIRMADO</h6>
+                                                                                            </label>
+                                                                                    </div>
+                                                                                    <div class="form-check">
+                                                                                        <input class="form-check-input" type="radio" name="options" value="option2">
+                                                                                            <label class="form-check-label text-secondary" for="option2">
+                                                                                                <h6 id="dimgray">PENDIENTE</h6>
+                                                                                            </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div title="Ir a Pendiente" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                                                                                    <a id="myButton" type="button" th:href="@{/combustible/volverPendiente(idCarga=${carga.id}, desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check-square-fill" viewBox="0 0 16 16">
+                                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                                                                                        </svg>
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>  
+                                                                        </div>
+                                                                        <div class="d-none d-sm-block col-sm-6 col-md-6 col-lg-9 col-xl-9" th:if="${carga.estado == 'ACEPTADO'}">
+                                                                        </div>  
+                                                                        <div class="text-center mb-2">
+                                                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Disel">Modificar</button>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" th:href="@{/combustible/listarAdminFiltroGet(desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">Cancelar</a>
+                                                                        </div> 
+                                                                        </form>
+                                                                        </div>
+                                                                        </div>
+                                                                        <script>
+                                                                            document.getElementById('form').addEventListener('submit', function (event) {
+                                                                                var fechaAnterior = new Date(document.getElementById('fechaAnterior').value);
+                                                                                var fechaActual = new Date(document.getElementById('fecha').value);
+                                                                                const kmAnterior = parseInt(document.getElementById('kmAnterior').value);
+                                                                                const kmActual = parseInt(document.getElementById('km').value);
+                                                                                const litros = parseInt(document.getElementById('litros').value);
 
-                                                        function formatearFecha(fecha) {
-                                                            var dia = String(fecha.getDate()).padStart(2, '0');
-                                                            var mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
-                                                            var anio = fecha.getFullYear();
-                                                            return dia + '-' + mes + '-' + anio;
-                                                        }
+                                                                                if (fechaActual < fechaAnterior) {
+                                                                                    alert('Fecha Seleccionada debe ser mayor a ' + formatearFecha(fechaAnterior));
+                                                                                    event.preventDefault();
+                                                                                    return;
+                                                                                }
 
-                                                    });
-                                                    function calcularTotalKm() {
-                                                        const kmInicial = parseFloat(document.getElementById('kmAnterior').value) || 0;
-                                                        const kmFinal = parseFloat(document.getElementById('km').value) || 0;
-                                                        const kmTotal = kmFinal - kmInicial;
+                                                                                if (kmActual <= kmAnterior) {
+                                                                                    alert('KM Carga Actual debe ser mayor que KM Carga Anterior: ' + kmAnterior);
+                                                                                    event.preventDefault();
+                                                                                    return;
+                                                                                }
 
-                                                        document.getElementById('kmTotal').value = kmTotal >= 0 ? kmTotal.toFixed(2) : '';
-                                                    }
+                                                                                if (litros <= 0) {
+                                                                                    alert('Litros debe ser mayor que 0');
+                                                                                    event.preventDefault();
+                                                                                    return;
+                                                                                }
 
-                                                    function calcularConsumo() {
-                                                        const litros = parseFloat(document.getElementById('litros').value) || 0;
-                                                        const kmTotal = parseFloat(document.getElementById('kmTotal').value) || 0;
+                                                                                function formatearFecha(fecha) {
+                                                                                    var dia = String(fecha.getDate()).padStart(2, '0');
+                                                                                    var mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
+                                                                                    var anio = fecha.getFullYear();
+                                                                                    return dia + '-' + mes + '-' + anio;
+                                                                                }
 
-                                                        if (litros > 0 && kmTotal > 0) {
+                                                                            });
+                                                                            function calcularTotalKm() {
+                                                                                const kmInicial = parseFloat(document.getElementById('kmAnterior').value) || 0;
+                                                                                const kmFinal = parseFloat(document.getElementById('km').value) || 0;
+                                                                                const kmTotal = kmFinal - kmInicial;
 
-                                                            const consumoPromedio = (100 * litros) / kmTotal;
+                                                                                document.getElementById('kmTotal').value = kmTotal >= 0 ? kmTotal.toFixed(2) : '';
+                                                                            }
 
-                                                            document.getElementById('consumo').value = consumoPromedio.toFixed(1);
-                                                        } else {
+                                                                            function calcularConsumo() {
+                                                                                const litros = parseFloat(document.getElementById('litros').value) || 0;
+                                                                                const kmTotal = parseFloat(document.getElementById('kmTotal').value) || 0;
 
-                                                            document.getElementById('consumo').value = '';
-                                                        }
-                                                    }
-                                                    const option1 = document.querySelector('input[name="options"][value="option1"]');
-                                                    const option2 = document.querySelector('input[name="options"][value="option2"]');
-                                                    const myButton = document.getElementById('myButton');
+                                                                                if (litros > 0 && kmTotal > 0) {
 
-                                                    // Añadir evento para detectar el cambio en los inputs de radio
-                                                    option1.addEventListener('change', function () {
-                                                        if (option1.checked) {
-                                                            myButton.style.display = 'none'; // Ocultar el botón si Opción 1 está seleccionada
-                                                        }
-                                                    });
+                                                                                    const consumoPromedio = (100 * litros) / kmTotal;
 
-                                                    option2.addEventListener('change', function () {
-                                                        if (option2.checked) {
-                                                            myButton.style.display = 'block'; // Mostrar el botón si Opción 2 está seleccionada
-                                                        }
-                                                    });
-                                                </script>
-                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                </body>
-                                                </html>
+                                                                                    document.getElementById('consumo').value = consumoPromedio.toFixed(1);
+                                                                                } else {
+
+                                                                                    document.getElementById('consumo').value = '';
+                                                                                }
+                                                                            }
+                                                                            const option1 = document.querySelector('input[name="options"][value="option1"]');
+                                                                            const option2 = document.querySelector('input[name="options"][value="option2"]');
+                                                                            const myButton = document.getElementById('myButton');
+
+                                                                            // Añadir evento para detectar el cambio en los inputs de radio
+                                                                            option1.addEventListener('change', function () {
+                                                                                if (option1.checked) {
+                                                                                    myButton.style.display = 'none'; // Ocultar el botón si Opción 1 está seleccionada
+                                                                                }
+                                                                            });
+
+                                                                            option2.addEventListener('change', function () {
+                                                                                if (option2.checked) {
+                                                                                    myButton.style.display = 'block'; // Mostrar el botón si Opción 2 está seleccionada
+                                                                                }
+                                                                            });
+                                                                        </script>
+                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                        </body>
+                                                                        </html>

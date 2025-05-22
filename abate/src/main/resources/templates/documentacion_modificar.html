@@ -1,0 +1,148 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Documentacion Registrar</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css">  
+                        <script>
+                            window.onload = function () {
+                                var fechaActual = new Date();
+                                var dia = String(fechaActual.getDate()).padStart(2, '0');
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                                var anio = fechaActual.getFullYear();
+                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+
+                                document.getElementById('fechaVencimiento').min = fechaFormateada;
+                            };
+                        </script>
+                        </head>
+                        <body>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a title="Volver" onclick="window.history.back();" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                            <h4>Modificar Documentación</h4>
+                                        </div>
+                                        <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                            <a th:href="@{/documentacion/eliminar/__${documentacion.id}__}">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                                </svg> <h6 id="icono">Eliminar</h6> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="container mb-2">  
+                                <div class="card border-secondary p-2" id="color-card">
+                                    <form id="formulario" th:action="@{/documentacion/modifica}" method="POST">
+
+                                        <input hidden id="idDocumentacion" th:value="${documentacion.id}" name="id">
+                                            <div class="row">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
+                                                    <select class="form-control text-secondary" id="aplicaA" name="aplicaA" required onchange="enviarDatosModifica()">
+                                                        <option selected th:text="${documentacion.aplicaA}" th:value="${documentacion.aplicaA}"></option>
+                                                        <option th:each="valor : ${aplicaA}" th:value="${valor}" th:text="${valor}"/>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">   
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary">Tipo de Documentación*</label>
+                                                    <select class="form-control text-secondary" id="tipo" name="idTipo" required>
+                                                        <option selected th:text="${documentacion.tipoDocumentacion.nombre}" th:value="${documentacion.tipoDocumentacion.id}"></option>
+                                                        <option th:each="tipo : ${tipos}"
+                                                                th:value="${tipo.id}"
+                                                                th:text="${tipo.nombre}"/>
+                                                    </select>
+                                                </div>
+                                                <div th:if="${choferes != null}" class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary">Chofer*</label>
+                                                    <select class="form-control text-secondary" id="tipo" name="idEntidad" required>
+                                                        <option selected th:text="${documentacion.chofer.nombre}" th:value="${documentacion.chofer.id}"></option>
+                                                        <option th:each="chofer : ${choferes}"
+                                                                th:value="${chofer.id}"
+                                                                th:text="${chofer.nombre}"/>
+                                                    </select>
+                                                </div>                                  
+                                                <div th:if="${camiones != null}" class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary">Camión*</label>
+                                                    <select class="form-control text-secondary" id="tipo" name="idEntidad" required>
+                                                        <option selected th:text="${documentacion.camion.dominio}+' '+${documentacion.camion.marca}+' '+${documentacion.camion.modelo}" 
+                                                                th:value="${documentacion.camion.id}"></option>
+                                                        <option th:each="camion : ${camiones}"
+                                                                th:value="${camion.id}"
+                                                                th:text="${camion.dominio}+' '+${camion.marca}+' '+${camion.modelo}"/>
+                                                    </select>
+                                                </div>
+                                                <div th:if="${acoplados != null}" class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary">Acoplado*</label>
+                                                    <select class="form-control text-secondary" id="tipo" name="idEntidad" required>
+                                                        <option selected th:text="${documentacion.acoplado.dominio}+' '+${documentacion.acoplado.marca}+' '+${documentacion.acoplado.modelo}" 
+                                                                th:value="${documentacion.acoplado.id}"></option>
+                                                        <option th:each="acoplado : ${acoplados}"
+                                                                th:value="${acoplado.id}"
+                                                                th:text="${acoplado.dominio}+' '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="fechaAlta" class="form-label text-secondary">Fecha Vigencia Desde*</label>
+                                                    <input type="date" class="form-control text-secondary" id="fechaAlta" th:value="${documentacion.fechaAlta}" name="fechaAlta" required>
+                                                </div>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="fechaVencimiento" class="form-label text-secondary">Fecha de Vencimiento*</label>
+                                                    <input type="date" class="form-control text-secondary" id="fechaVencimiento" th:value="${documentacion.fechaVencimiento}" name="fechaVencimiento" required>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-sm-12 col-md-12 col-lg-10 col-xl-10 mb-5">
+                                                    <label for="obs" class="form-label text-secondary">Observación</label>
+                                                    <textarea class="form-control text-secondary" id="obs" name="observacion" rows="2" th:text="${documentacion.observacion}" placeholder="Ingrese Observación..." maxlength="150" size="150"></textarea>
+                                                </div>  
+                                            </div>
+                                            <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                                <h6 id="white" th:text="${error}"></h6>                                                                             
+                                            </div>
+                                            <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Documentación">Modificar</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
+                                            </div> 
+                                    </form>
+                                </div>
+                            </div>
+                            <script>
+                                function enviarDatosModifica() {
+                                    let id = document.getElementById("idDocumentacion").value;
+                                    let aplicaA = document.getElementById("aplicaA").value;
+
+                                    window.location.href = `/documentacion/modificar1?id=${id}&aplicaA=${aplicaA}`;
+                                }
+
+                                document.getElementById('formulario').addEventListener('submit', function (event) {
+
+                                    var fechaAlta = new Date(document.getElementById('fechaAlta').value);
+                                    var fechaVencimiento = new Date(document.getElementById('fechaVencimiento').value);
+
+                                    if (fechaVencimiento <= fechaAlta) {
+                                        alert('Fecha de Vencimiento debe ser mayor que Fecha Vigencia Desde');
+                                        event.preventDefault();
+                                        return;
+                                    }
+
+                                });
+                            </script>
+                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                        </body>
+                        </html>

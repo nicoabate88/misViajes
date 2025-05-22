@@ -7,92 +7,93 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-                            <div class="container mb-5">  
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/entrega/registrar}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-10">
-                                            <h4>Lista de Entregas</h4>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/entrega/registrar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Lista de Entregas</h4>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="container mb-2">   
                                 <div class="card-header pb-0" id="bgWhite">
                                     <form class="row g-3" th:action="@{/entrega/listarFiltro}" method="POST">
                                         <input hidden th:value="${id}" name="id">  
-                                        <div class="row">    
-                                            <div class="col-5">
-                                                <label for="desde" class="form-label">Desde</label>
-                                                <input type="date" class="form-control" id="desde" th:value="${desde}" name="desde" required>
-                                            </div>
-                                            <div class="col-5">
-                                                <label for="hasta" class="form-label">Hasta</label>
-                                                <input type="date" class="form-control" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <label for="ver" class="form-label">Ver</label>
+                                            <div class="row">    
+                                                <div class="col-5">
+                                                    <label for="desde" class="form-label">Desde</label>
+                                                    <input type="date" class="form-control border-secondary" id="desde" th:value="${desde}" name="desde" required>
+                                                </div>
+                                                <div class="col-5">
+                                                    <label for="hasta" class="form-label">Hasta</label>
+                                                    <input type="date" class="form-control border-secondary" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
+                                                </div>
+                                                <div class="col-2 text-center">
+                                                    <label for="ver" class="form-label">Ver</label>
                                                     <button id="ver" class="btn btn-primary" type="submit">
                                                         <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                                                         </svg>
                                                     </button>
+                                                </div>
                                             </div>
-                                        </div>
                                     </form>   
                                 </div>
                                 <div th:if="${!entregas.isEmpty()}">
-                                <div class="card-body p-2">
-                                    <h6 id="dimgray" th:text="'Total Entregas $'+${#numbers.formatDecimal(total, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                </div>    
-                                <div th:each="entrega : ${entregas}">
-                                    <div class="card border-secondary p-3 mb-1" id="color-card">
-                                        <div class="row">
-                                            <div class="col-8">
-                                                <h6 th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                    <div class="card-body p-2">
+                                        <h6 id="dimgray" th:text="'Total Entregas $'+${#numbers.formatDecimal(total, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                    </div>    
+                                    <div th:each="entrega : ${entregas}">
+                                        <div class="card border-secondary p-3 mb-1" id="color-card">
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <h6 th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                    <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                                </div>
+                                                <div class="col-4 text-center">
+                                                    <a th:href= "@{/entrega/modificar/__${entrega.id}__}" >
+                                                        <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                                        </svg>     <p id="modificar">Modificar</p>
+                                                    </a>
+                                                </div>
                                             </div>
-                                            <div class="col-4 text-center">
-                                                <a th:href= "@{/entrega/modificar/__${entrega.id}__}" >
-                                                    <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                                    </svg>     <p id="modificar">Modificar</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-8">
-                                            <p id="dimgray" class="mb-1" th:text="${entrega.chofer.nombre}"></p>
-                                            <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>
-                                            </div>
-                                            <div class="col-4 text-center">
-                                                <a title="Ir a Imprimir Recibo" target="_blank" th:href= "@{/entrega/imprimir/__${entrega.id}__}" >
-                                                    <svg id="imprimir" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-                                                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
-                                                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
-                                                    </svg>     <p id="imprimir">Imprimir</p>
-                                                </a>
+                                            <div class="row">
+                                                <div class="col-8">
+                                                    <p id="dimgray" class="mb-1" th:text="${entrega.chofer.nombre}"></p>
+                                                    <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>
+                                                </div>
+                                                <div class="col-4 text-center">
+                                                    <a title="Ir a Imprimir Recibo" target="_blank" th:href= "@{/entrega/imprimir/__${entrega.id}__}" >
+                                                        <svg id="imprimir" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                            <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                            <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                                        </svg>     <p id="imprimir">Imprimir</p>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                                     <br>
-                                         <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/entrega/registrar}">Volver</a>
-                                    </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/entrega/registrar}">Volver</a>
+                                        </div>
                                 </div>    
                                 <div th:if="${entregas.isEmpty()}">
-                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                    <br>
+                                    <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
                                         <h6 id="azul">No existen Entregas a Choferes para la fecha seleccionada</h6>
                                     </div>
-                                        <div class="text-center mb-2">
+                                    <div class="text-center mb-2">
                                         <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Entrega" th:href="@{/entrega/registrar}">Nueva Entrega</a>
                                     </div>
-                                         <div class="text-center mb-2">
+                                    <div class="text-center mb-2">
                                         <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/entrega/registrar}">Volver</a>
                                     </div>
                                 </div>

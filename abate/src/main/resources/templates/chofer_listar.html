@@ -6,115 +6,102 @@
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
-
-                        <body>
-                            <div class="container">   
-
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/index}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7">
-                                            <h4>Lista de Choferes</h4>
-                                        </div>
-                                        <div title="Ir a Registrar Chofer" class="col-3 text-center">
-                                            <a th:href="@{/chofer/registrar}">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
-                                                    <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
-                                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                                                </svg> <h6 id="icono">Nuevo</h6> </a>
-                                        </div>
+                        <body>   
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/index}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                        <h4>Lista de Choferes</h4>
+                                    </div>
+                                    <div title="Ir a Registrar Chofer" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                        <a th:href="@{/chofer/registrar}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                                                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                            </svg> <h6 id="icono">Nuevo</h6> </a>
                                     </div>
                                 </div>
-                                
+                            </div>
+                            <div class="container mb-2"> 
                                 <div th:if="${!choferes.isEmpty()}">
-                                <div th:each="chofer : ${choferes}">
-                                    <div class="card border-secondary p-3 mb-1" id="color-card">
-                                        <div class="row">
-                                            <div class="col-8">
-                                                <h6 th:text="${chofer.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="'Nombre de Usuario: '+${chofer.usuario}" ></h6>
+                                    <div th:each="chofer : ${choferes}">
+                                        <div class="card border-secondary p-3 mb-1" id="color-card">
+                                            <h6 class="mb-1" th:text="${chofer.nombre}"></h6>
+                                                    <p class='mb-1' id="dimgray" th:text="'CUIL '+${chofer.cuil}"></p>
+                                                    <h6 class="mb-1" id="dimgray" th:text="'Nombre de Usuario: '+${chofer.usuario}" ></h6>
+                                            <div class="mb-4">                          
+                                                <p class="mb-0" id="dimgray" th:text="'Porcentaje '+${chofer.porcentaje}+'%'"></p>
+                                                <p class="mb-0" th:if="${chofer.caja != 'SI'}" th:text="'Caja de Gastos INHABILITADA'"></p>
+                                                <p class="mb-0" th:if="${chofer.cuenta != 'SI'}" th:text="'Mostrar Cuenta a Chofer INHABILITADA'"></p>
+                                                <span th:if="${chofer.camion} != null" class="mb-0" id="dimgray" th:text="'Camión '+${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}"></span>
+                                                <span th:if="${chofer.camion} == null" class="mb-0" id="dimgray" th:text="'Camión NO ASOCIADO'"></span>
+                                                <span th:if="${chofer.acoplado} != null" id="dimgray" th:text="' / Acoplado '+${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}"></span>
+                                                <span th:if="${chofer.acoplado} == null" id="dimgray" th:text="' / Acoplado NO ASOCIADO'"></span>
                                             </div>
-                                            <div title="Ir a Modificar Chofer" class="col-4 text-center">
-                                                <a th:href= "@{/chofer/modificar/__${chofer.id}__}">
-                                                    <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                                    </svg>     <p id="modificar">Modificar</p>
-                                                </a>
-                                            </div>
-                                        </div> 
-                                        <div class="mb-2">
-                                            <p class='mb-0' id="dimgray" th:text="'CUIL '+${chofer.cuil}"></p>
-                                            <p class="mb-0" id="dimgray" th:text="'Porcentaje '+${chofer.porcentaje}+'%'"></p>
-                                            <p class="mb-0" th:if="${chofer.caja != 'SI'}" th:text="'Caja de Gastos INHABILITADA'"></p>
-                                            <p class="mb-0" th:if="${chofer.cuenta != 'SI'}" th:text="'Mostrar Cuenta a Chofer INHABILITADA'"></p>
-                                            <p id="dimgray" th:text="'Camión '+${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}" th:if="${chofer.camion} != null"></p>
-                                            <p th:text="'Camión NO TIENE ASOCIADO'" th:if="${chofer.camion} == null"></p>
-                                        </div>
-                                        <div class="row text-center">
-                                            <div class="col-3">
-                                                <a th:href= "@{/entrega/registrarId/__${chofer.id}__}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
-                                                        <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"/>
-                                                        <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
-                                                        <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z"/>
-                                                        <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567"/>
-                                                    </svg><p id="icono2">Entrega</p></a>
-                                            </div>
-                                            <div class="col-3">
+                                            <div class="row text-center">
+                                                <div class="col-3">
                                                 <a th:href= "@{/flete/listarIdChofer/__${chofer.id}__}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
                                                         <path d="M4 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4m8-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4M.115 3.18A.5.5 0 0 1 .5 3h15a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 14 12H2a.5.5 0 0 1-.491-.408l-1.5-8a.5.5 0 0 1 .106-.411zm.987.82 1.313 7h11.17l1.313-7z"/>
                                                         <path fill-rule="evenodd" d="M6 1a2.498 2.498 0 0 1 4 0c.818 0 1.545.394 2 1 .67 0 1.552.57 2 1h-2c-.314 0-.611-.15-.8-.4-.274-.365-.71-.6-1.2-.6-.314 0-.611-.15-.8-.4a1.497 1.497 0 0 0-2.4 0c-.189.25-.486.4-.8.4-.507 0-.955.251-1.228.638q-.136.194-.308.362H3c.13-.147.401-.432.562-.545a1.6 1.6 0 0 0 .393-.393A2.5 2.5 0 0 1 6 1"/>
                                                     </svg><p id="icono2">Viajes</p></a>
-                                            </div>
-                                            <div class="col-3">
-                                                <a th:href= "@{/cuenta/mostrarIdChoferAdmin/__${chofer.id}__}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
-                                                        <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
-                                                        <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/>
-                                                    </svg><p id="icono2">Cuenta</p></a>
-                                            </div>
-                                            <div class="col-3" th:if="${chofer.caja == 'SI'}">
-                                                <a th:href= "@{/caja/mostrarAdmin/__${chofer.id}__}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
-                                                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
-                                                    </svg><p id="icono2">Caja</p></a>
-                                            </div>
-                                            <div class="col-3" th:if="${chofer.caja == 'NO'}">
-                                                
+                                                </div>
+                                                <div class="col-3">
+                                                    <a th:href= "@{/cuenta/mostrarIdChoferAdmin/__${chofer.id}__}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
+                                                            <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
+                                                            <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/>
+                                                        </svg><p id="icono2">Cuenta</p></a>
+                                                </div>
+                                                <div class="col-3" th:if="${chofer.caja == 'SI'}">
+                                                    <a th:href= "@{/caja/mostrarAdmin/__${chofer.id}__}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+                                                            <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+                                                        </svg><p id="icono2">Caja</p></a>
+                                                </div>
+                                                <div class="col-3" th:if="${chofer.caja == 'NO'}">
+
                                                     <svg id="darkgray" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                                         <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
                                                     </svg><p id="cajaInha">Caja</p>
+                                                </div>
+                                                <div title="Ir a Modificar Chofer" class="col-3 text-center">
+                                                    <a th:href= "@{/chofer/modificar/__${chofer.id}__}">
+                                                        <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                                        </svg>     <p id="modificar">Modificar</p>
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>    
-                                </div>
+                                        </div>    
+                                    </div>
                                     <br>
                                         <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo Chofer</a>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                        </div>
+                                </div>
+                                <div th:if="${choferes.isEmpty()}">
+                                    <br>
+                                    <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                        <h6 id="azul">No existen Choferes Registrados</h6>
+                                    </div>
+                                    <div class="text-center mb-2">
                                         <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo Chofer</a>
                                     </div>
+
                                     <div class="text-center mb-2">
                                         <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
                                     </div>
-                                </div>
-                                <div th:if="${choferes.isEmpty()}">
-                                     <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
-                                        <h6 id="azul">No existen Choferes Registrados</h6>
-                                     </div>
-                                         <div class="text-center mb-2">
-                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo Chofer</a>
-                                    </div>
-                                        
-                                         <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
-                                    </div>
-                                    
+
                                 </div>
                             </div>
                             </div>

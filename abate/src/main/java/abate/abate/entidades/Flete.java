@@ -26,7 +26,6 @@ public class Flete {
     private Date fechaFlete;
     private String destinoFlete;
     private Double kmFlete;
-    private String tipoCereal;
     @OneToOne
     private Producto producto;
     private Double tarifa;
@@ -38,6 +37,8 @@ public class Flete {
     @OneToOne
     private Camion camion;
     @OneToOne
+    private Acoplado acoplado;
+    @OneToOne
     private Usuario usuario;
     private Double neto;
     private Double iva;
@@ -48,6 +49,7 @@ public class Flete {
     private Double comisionTpteValor;
     private String comisionTpteChofer;
     private String estado;
+    private String observacion;
     @OneToOne
     private Gasto gasto;
     @OneToOne
@@ -58,7 +60,7 @@ public class Flete {
     public Flete() {
     }
 
-    public Flete(Long id, Long idFlete, Long idOrg, Date fechaCarga, Cliente cliente, String origenFlete, Date fechaFlete, String destinoFlete, Double kmFlete, String tipoCereal, Producto producto, Double tarifa, String cartaPorte, String ctg, Double kgFlete, Usuario chofer, Camion camion, Usuario usuario, Double neto, Double iva, Double total, Double porcientoChofer, Double porcentajeChofer, Double comisionTpte, Double comisionTpteValor, String comisionTpteChofer, String estado, Gasto gasto, Imagen imagenCP, Imagen imagenDescarga) {
+    public Flete(Long id, Long idFlete, Long idOrg, Date fechaCarga, Cliente cliente, String origenFlete, Date fechaFlete, String destinoFlete, Double kmFlete, Producto producto, Double tarifa, String cartaPorte, String ctg, Double kgFlete, Usuario chofer, Camion camion, Acoplado acoplado, Usuario usuario, Double neto, Double iva, Double total, Double porcientoChofer, Double porcentajeChofer, Double comisionTpte, Double comisionTpteValor, String comisionTpteChofer, String estado, String observacion, Gasto gasto, Imagen imagenCP, Imagen imagenDescarga) {
         this.id = id;
         this.idFlete = idFlete;
         this.idOrg = idOrg;
@@ -68,7 +70,6 @@ public class Flete {
         this.fechaFlete = fechaFlete;
         this.destinoFlete = destinoFlete;
         this.kmFlete = kmFlete;
-        this.tipoCereal = tipoCereal;
         this.producto = producto;
         this.tarifa = tarifa;
         this.cartaPorte = cartaPorte;
@@ -76,6 +77,7 @@ public class Flete {
         this.kgFlete = kgFlete;
         this.chofer = chofer;
         this.camion = camion;
+        this.acoplado = acoplado;
         this.usuario = usuario;
         this.neto = neto;
         this.iva = iva;
@@ -86,6 +88,7 @@ public class Flete {
         this.comisionTpteValor = comisionTpteValor;
         this.comisionTpteChofer = comisionTpteChofer;
         this.estado = estado;
+        this.observacion = observacion;
         this.gasto = gasto;
         this.imagenCP = imagenCP;
         this.imagenDescarga = imagenDescarga;
@@ -163,14 +166,6 @@ public class Flete {
         this.kmFlete = kmFlete;
     }
 
-    public String getTipoCereal() {
-        return tipoCereal;
-    }
-
-    public void setTipoCereal(String tipoCereal) {
-        this.tipoCereal = tipoCereal;
-    }
-
     public Producto getProducto() {
         return producto;
     }
@@ -225,6 +220,14 @@ public class Flete {
 
     public void setCamion(Camion camion) {
         this.camion = camion;
+    }
+
+    public Acoplado getAcoplado() {
+        return acoplado;
+    }
+
+    public void setAcoplado(Acoplado acoplado) {
+        this.acoplado = acoplado;
     }
 
     public Usuario getUsuario() {
@@ -305,6 +308,14 @@ public class Flete {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getObservacion() {
+        return observacion;
+    }
+
+    public void setObservacion(String observacion) {
+        this.observacion = observacion;
     }
 
     public Gasto getGasto() {

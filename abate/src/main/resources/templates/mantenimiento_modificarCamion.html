@@ -1,0 +1,192 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Mantenimiento Modificar</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <script>
+                            window.onload = function () {
+                                var fechaActual = new Date();
+                                var dia = String(fechaActual.getDate()).padStart(2, '0');
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                                var anio = fechaActual.getFullYear();
+                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+                                document.getElementById('fecha').max = fechaFormateada;
+                            };
+                        </script>
+                        </head>
+                        <body>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a title="Volver" onclick="window.history.back();" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                            <h4>Modificar Mantenimiento</h4>
+                                        </div>
+                                        <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                            <a th:href="@{/mantenimiento/eliminar/__${mantenimiento.id}__}">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                                </svg> <h6 id="icono">Eliminar</h6> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <div class="container mb-2">  
+                                <div class="card border-secondary p-2" id="color-card">
+                                    <form id="formulario" th:action="@{/mantenimiento/modifica}" method="POST">
+                                        <input hidden id="km" th:value="${mantenimiento.km}">
+                                        <input hidden id="idMantenimiento" th:value="${mantenimiento.id}" name="id">
+                                            <div class="row">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
+                                                    <select class="form-control text-secondary" id="aplicaA" required>
+                                                        <option selected th:text="${mantenimiento.aplicaA}" th:value="${mantenimiento.aplicaA}"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row"> 
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary">Camión*</label>
+                                                    <select class="form-control text-secondary" id="tipo" required>
+                                                        <option selected th:text="${mantenimiento.camion.dominio}+' - '+${mantenimiento.camion.marca}+' '+${mantenimiento.camion.modelo}" 
+                                                                th:value="${mantenimiento.camion.id}"></option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary">Tipo*</label>
+                                                    <select class="form-control text-secondary" id="tipo" required>
+                                                        <option selected th:text="${mantenimiento.tipoMantenimiento.nombre}" 
+                                                                th:value="${mantenimiento.tipoMantenimiento.id}"></option>
+                                                    </select>
+                                                </div>                                 
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-sm-12 col-md-12 col-lg-10 col-xl-10 mb-2">
+                                                    <label for="obs" class="form-label text-secondary">Observación</label>
+                                                    <textarea class="form-control text-secondary" id="obs" name="observacion" rows="2" th:text="${mantenimiento.observacion}" placeholder="Ingrese Observación..." maxlength="150" size="150"></textarea>
+                                                </div>  
+                                            </div>
+                                            <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                <input type="date" class="form-control text-secondary" id="fecha" th:value="${mantenimiento.fecha}"  name="fecha" required>
+                                            </div>
+                                            </div>
+                                            <div class="row mb-5">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
+                                                <label for="kmInicial" class="form-label text-secondary">KM Mantenimiento*</label> 
+                                                <div class="input-group"> 
+                                                    <span class="input-group-text text-secondary">km</span> 
+                                                    <input type="number" class="form-control text-secondary" id="kmInicial" th:value="${mantenimiento.km}" name="km" required oninput="calcularKm()"> 
+                                                </div> 
+                                            </div> 
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
+                                                <label for="kmProximo" class="form-label text-secondary">KM Próximo*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text text-secondary">km</span>
+                                                    <input type="number" class="form-control text-secondary" id="kmProximo" th:value="${mantenimiento.kmProximo}"
+                                                           name="kmProximo" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                                <label for="kmAlarma" class="form-label text-secondary">Km Alarma*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light text-danger">km</span>
+                                                    <input type="number" class="form-control bg-light text-danger" id="kmAlarma" th:value="${mantenimiento.kmAlarma}"
+                                                           name="kmAlarma" required>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                                <h6 id="white" th:text="${error}"></h6>                                                                             
+                                            </div>
+                                            <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Mantenimiento">Modificar</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
+                                            </div> 
+                                    </form>
+                                </div>
+                            </div>
+                            <script>
+                                document.getElementById('kmInicial').addEventListener('keydown', function (event) {
+                                    if (event.key === '.' || event.key === ',') {
+                                        event.preventDefault();
+                                    }
+                                });
+                                document.getElementById('kmInicial').addEventListener('input', function () {
+                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                });
+
+                                document.getElementById('kmProximo').addEventListener('keydown', function (event) {
+                                    if (event.key === '.' || event.key === ',') {
+                                        event.preventDefault();
+                                    }
+                                });
+
+                                document.getElementById('kmProximo').addEventListener('input', function () {
+                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                });
+                                document.getElementById('kmAlarma').addEventListener('keydown', function (event) {
+                                    if (event.key === '.' || event.key === ',') {
+                                        event.preventDefault();
+                                    }
+                                });
+                                document.getElementById('kmAlarma').addEventListener('input', function () {
+                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                });
+                                
+                                function calcularKm() {
+                                    const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
+                                    const kmProximo = kmInicial + 10000;
+                                    const kmAlarma = kmInicial + 9000;
+
+                                    document.getElementById('kmProximo').value = kmProximo >= 0 ? kmProximo : '';
+                                    document.getElementById('kmAlarma').value = kmAlarma >= 0 ? kmAlarma : '';
+                                }
+                                
+                                document.getElementById('formulario').addEventListener('submit', function (event) {
+
+                                        const km = parseInt(document.getElementById('km').value);
+                                        const kmInicial = parseInt(document.getElementById('kmInicial').value);
+                                        const kmProximo = parseInt(document.getElementById('kmProximo').value);
+                                        const kmAlarma = parseInt(document.getElementById('kmAlarma').value);
+                                        /*
+                                if (km > kmInicial) {
+                                alert('Km Actual debe ser mayor o igual a ' + km);
+                                        event.preventDefault();
+                                        return;
+                                }
+                                           */
+                                if (kmInicial >= kmProximo) {
+                                alert('KM Próximo Mantenimiento debe ser mayor que KM Actual');
+                                        event.preventDefault();
+                                        return;
+                                }
+
+                                if (kmProximo < kmAlarma) {
+                                alert('KM Alarma debe ser menor que KM Próximo Mantenimiento');
+                                        event.preventDefault();
+                                        return;
+                                }
+                                
+                                if (kmInicial >= kmAlarma) {
+                                alert('KM Alarma debe ser mayor que KM Actual');
+                                        event.preventDefault();
+                                        return;
+                                }
+
+                                });
+                            </script>
+                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                        </body>
+                        </html>

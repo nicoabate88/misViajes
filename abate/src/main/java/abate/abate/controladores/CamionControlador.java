@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,33 +37,33 @@ public class CamionControlador {
     private CamionServicio camionServicio;
     @Autowired
     private ExcelServicio excelServicio;
-
+    
     @GetMapping("/registrar")
-    public String registrar(ModelMap modelo) {
-
+    public String registrarCamion(ModelMap modelo) {
+        
+        modelo.put("camion", new Camion());
+        
         return "camion_registrar.html";
-
     }
-
-    @PostMapping("/registro")
-    public String registro(@RequestParam String dominio, @RequestParam String marca, @RequestParam String modelo, @RequestParam String azul, ModelMap model, HttpSession session) {
-
+    
+     @PostMapping("/registro")
+    public String registroCamion(@ModelAttribute Camion camion, ModelMap model, HttpSession session) {
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
+        
         try {
-
-            camionServicio.crearCamion(logueado.getIdOrg(), marca, modelo, dominio, azul);
-
-            return "redirect:/camion/registrado";
-
+        
+        camionServicio.crearCamion(camion, logueado);
+        
+        return "redirect:/camion/registrado";
+        
         } catch (MiException ex) {
-
-            model.put("marca", marca);
-            model.put("modelo", modelo);
-            model.put("dominio", dominio);
-            model.put("error", ex.getMessage());
-
+            
+            model.addAttribute("camion", camion);
+            model.addAttribute("error", ex.getMessage());
+            
             return "camion_registrar.html";
+            
         }
     }
 
@@ -76,7 +77,7 @@ public class CamionControlador {
         modelo.put("camion", camionServicio.buscarCamion(id));
         modelo.put("exito", "Camión REGISTRADO con éxito");
 
-        return "camion_registrado.html";
+        return "camion_mostrar.html";
     }
 
     @GetMapping("/listar")
@@ -105,7 +106,8 @@ public class CamionControlador {
         for (CamionEstadistica e : lista) {
             
             if (e.getKmRecorrido() != 0.0) {
-                e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+                Double consumo = ((100.0 * e.getLitro()) / e.getKmRecorrido());
+                e.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
                 e.setConsumo(0.0);
@@ -135,7 +137,8 @@ public class CamionControlador {
 
         for (CamionEstadistica e : lista) {
             if (e.getKmRecorrido() != 0.0) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+            Double consumo = ((100.0 * e.getLitro()) / e.getKmRecorrido());
+                e.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
                 e.setConsumo(0.0);
@@ -154,15 +157,6 @@ public class CamionControlador {
         return "camion_estadistica.html";
     }
 
-    @GetMapping("/modificar/{id}")
-    public String modificar(@PathVariable Long id, ModelMap modelo) {
-
-        modelo.put("camion", camionServicio.buscarCamion(id));
-
-        return "camion_modificar.html";
-
-    }
-
     @GetMapping("/mostrarEstadisticaCamiones")
     public String buscarEstadisticaCamiones(ModelMap modelo, HttpSession session) throws ParseException {
 
@@ -179,7 +173,8 @@ public class CamionControlador {
         for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
 
             if (estadistica.getKmRecorrido() > 0) {
-                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
             } else {
                 estadistica.setConsumo(0.0);
@@ -210,7 +205,8 @@ public class CamionControlador {
         for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
 
             if (estadistica.getKmRecorrido() > 0) {
-                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
             } else {
                 estadistica.setConsumo(0.0);
@@ -225,19 +221,30 @@ public class CamionControlador {
 
         return "camion_estadisticaTodos.html";
     }
+    
+    @GetMapping("/modificar/{id}")
+    public String modificar(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("camion", camionServicio.buscarCamion(id));
+
+        return "camion_modificar.html";
+
+    }
 
     @PostMapping("/modifica")
-    public String modifica(@RequestParam Long id, @RequestParam String dominio, @RequestParam String marca, @RequestParam String modelo, @RequestParam String azul, ModelMap model) {
+    public String modifica(@ModelAttribute Camion camion, ModelMap model, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            camionServicio.modificarCamion(id, marca, modelo, dominio, azul);
+            camionServicio.modificarCamion(camion, logueado);
 
-            return "redirect:/camion/modificado/" + id;
+            return "redirect:/camion/modificado/" + camion.getId();
 
         } catch (MiException ex) {
 
-            model.put("camion", camionServicio.buscarCamion(id));
+            model.put("camion", camionServicio.buscarCamion(camion.getId()));
             model.put("error", ex.getMessage());
 
             return "camion_modificar.html";
@@ -251,7 +258,7 @@ public class CamionControlador {
         modelo.put("camion", camionServicio.buscarCamion(id));
         modelo.put("exito", "Camión MODIFICADO con éxito");
 
-        return "camion_registrado.html";
+        return "camion_mostrar.html";
 
     }
 
@@ -354,7 +361,8 @@ public class CamionControlador {
 
         for (CamionEstadistica e : lista) {
             if (e.getKmRecorrido() != 0.0) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+            Double consumo = ((100.0 * e.getLitro()) / e.getKmRecorrido());
+            e.setConsumo(Math.round(consumo * 100.0) / 100.0);
             e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
                 e.setConsumo(0.0);
@@ -380,7 +388,8 @@ public class CamionControlador {
         ArrayList<CamionEstadistica> myObjects = camionServicio.estadisticaCamion(desde, hasta, id);
         for (CamionEstadistica e : myObjects) {
             if (e.getKmRecorrido() != 0.0) {
-            e.setConsumo((double) Math.round((100 * e.getLitro()) / e.getKmRecorrido()));
+            Double consumo = ((100.0 * e.getLitro()) / e.getKmRecorrido());
+                e.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
             } else {
                 e.setConsumo(0.0);
@@ -405,7 +414,8 @@ public class CamionControlador {
         for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
 
             if (estadistica.getKmRecorrido() > 0) {
-                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
             } else {
                 estadistica.setConsumo(0.0);
@@ -430,7 +440,8 @@ public class CamionControlador {
         for (CamionesEstadistica estadistica : estadisticas.values()) {
 
             if (estadistica.getKmRecorrido() > 0) {
-                estadistica.setConsumo((double) Math.round((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                 estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
             } else {
                 estadistica.setConsumo(0.0);
@@ -438,6 +449,7 @@ public class CamionControlador {
             }
 
         }
+        
         String htmlContent = generateHtmlFromEstadisticaCamiones(estadisticas);
         excelServicio.exportHtmlToExcelEstadisticaCamiones(htmlContent, response);
     }

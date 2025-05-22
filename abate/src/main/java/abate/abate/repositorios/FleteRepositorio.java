@@ -1,5 +1,6 @@
 package abate.abate.repositorios;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Flete;
@@ -38,18 +39,50 @@ public interface FleteRepositorio extends JpaRepository<Flete, Long> {
 
     @Query("SELECT f FROM Flete f WHERE gasto_id = :id")
     public Flete buscarFleteIdGasto(@Param("id") Long id);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND chofer_id = :id")
+    public ArrayList<Flete> buscarFleteChofer(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("id") Long id);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND camion_id = :id")
+    public ArrayList<Flete> buscarFleteCamion(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("id") Long id);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND acoplado_id = :id")
+    public ArrayList<Flete> buscarFleteAcoplado(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("id") Long id);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND cliente_id = :id")
+    public ArrayList<Flete> buscarFleteCliente(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("id") Long id);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND chofer_id = :idChofer AND cliente_id = :idCliente")
+    public ArrayList<Flete> buscarFleteChoferCliente(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("idChofer") Long idChofer, @Param("idCliente") Long idCliente);
 
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND chofer_id = :idChofer AND camion_id = :idCamion")
+    public ArrayList<Flete> buscarFleteChoferCamion(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("idChofer") Long idChofer, @Param("idCamion") Long idCamion);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND cliente_id = :idCliente AND camion_id = :idCamion")
+    public ArrayList<Flete> buscarFleteClienteCamion(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("idCliente") Long idCliente, @Param("idCamion") Long idCamion);
+    
+    @Query("SELECT f FROM Flete f WHERE f.fechaFlete BETWEEN :desde AND :hasta AND chofer_id = :idChofer AND cliente_id = :idCliente AND camion_id = :idCamion")
+    public ArrayList<Flete> buscarFleteChoferClienteCamion(@Param("desde") Date desde, @Param("hasta") Date hasta, @Param("idChofer") Long idChofer, @Param("idCliente") Long idCliente, @Param("idCamion") Long idCamion);
+    
     ArrayList<Flete> findByFechaFleteBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
 
-    ArrayList<Flete> findByFechaFleteBetweenAndChofer(Date desde, Date hasta, Usuario chofer);
+    //ArrayList<Flete> findByFechaFleteBetweenAndChofer(Date desde, Date hasta, Usuario chofer);
 
-    ArrayList<Flete> findByFechaFleteBetweenAndCamion(Date desde, Date hasta, Camion camion);
+    //ArrayList<Flete> findByFechaFleteBetweenAndCamion(Date desde, Date hasta, Camion camion);
 
-    ArrayList<Flete> findByFechaFleteBetweenAndCliente(Date desde, Date hasta, Cliente cliente);
+    //ArrayList<Flete> findByFechaFleteBetweenAndCliente(Date desde, Date hasta, Cliente cliente);
 
-    ArrayList<Flete> findByFechaFleteBetweenAndChoferAndCliente(Date desde, Date hasta, Usuario chofer, Cliente cliente);
+    //ArrayList<Flete> findByFechaFleteBetweenAndChoferAndCliente(Date desde, Date hasta, Usuario chofer, Cliente cliente);
+    
+    //ArrayList<Flete> findByFechaFleteBetweenAndChoferAndCamion(Date desde, Date hasta, Usuario chofer, Camion camion);
+    
+    //ArrayList<Flete> findByFechaFleteBetweenAndClienteAndCamion(Date desde, Date hasta, Cliente cliente, Camion camion);
+    
+    //ArrayList<Flete> findByFechaFleteBetweenAndChoferAndClienteAndCamion(Date desde, Date hasta, Usuario chofer, Cliente cliente, Camion camion);
 
     Flete findTopByCamionOrderByIdDesc(Camion camion);
+    
+    Flete findTopByAcopladoOrderByIdDesc(Acoplado acoplado);
     
     Flete findTopByProductoOrderByIdDesc(Producto producto);
 

@@ -86,11 +86,64 @@ public class GastoControlador {
         
         Gasto gasto = gastoServicio.buscarUltimoGasto(logueado.getIdOrg());
         
-        modelo.put("id", idFlete);
+        modelo.put("idFlete", idFlete);
         modelo.put("gasto", gasto);
         modelo.put("exito", "Gasto REGISTRADO con éxito");
+        
+        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+            
+            return "gasto_mostrarChofer.html";
+        
+        } else {
+            
+            return "gasto_mostrarPendiente.html";
+            
+        }  
 
-        return "gasto_registradoDesdeFlete.html";
+    }
+    
+    @PostMapping("/registroAdmin")
+    public String guardarAdmin(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, @RequestParam("conceptos[]") List<String> conceptos,
+            @RequestParam("cantidades[]") List<Integer> cantidades,
+            @RequestParam("precios[]") List<Double> precios, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        List<Detalle> detalles = new ArrayList<>();
+        for (int i = 0; i < conceptos.size(); i++) {
+            Detalle detalle = new Detalle();
+            detalle.setConcepto(conceptos.get(i));
+            detalle.setCantidad(cantidades.get(i));
+            detalle.setPrecio(precios.get(i));
+            detalle.setTotal(cantidades.get(i) * precios.get(i));
+            detalles.add(detalle);
+        }
+
+        gastoServicio.registrarGastoFlete(detalles, idFlete, logueado);
+
+        return "redirect:/gasto/registradoAdmin?&idFlete=" + idFlete + "&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+    }
+    
+    @GetMapping("/registradoAdmin")
+    public String gastoRegistradoAdmin(@RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.put("gasto", gastoServicio.buscarUltimoGasto(logueado.getIdOrg()));
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "Gasto REGISTRADO con éxito");
+
+        return "gasto_mostrarAdmin.html";
 
     }
 
@@ -98,10 +151,9 @@ public class GastoControlador {
     public String verChofer(@PathVariable Long id, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFlete(id);
+        modelo.put("idFlete", id);
 
         if (flete.getGasto() != null) {
-
-            modelo.put("idFlete", flete.getId());
             modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
 
             return "gasto_mostrarChofer.html";
@@ -109,17 +161,102 @@ public class GastoControlador {
         } else if (flete.getGasto() == null && flete.getEstado().equalsIgnoreCase("PENDIENTE")) {
 
             modelo.addAttribute("detalles", new ArrayList<Detalle>());
-            modelo.put("idFlete", id);
 
             return "gasto_registrarFlete.html";
 
         } else {
-            
-            modelo.put("idFlete", id);
 
             return "gasto_mensaje.html";
             
         }
+    }
+    
+    @GetMapping("/modificarAdmin")
+    public String modificarAdmin(@RequestParam Long id, @RequestParam Long idFlete, @RequestParam String desde, @RequestParam String hasta, 
+        @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+        
+        modelo.put("gasto", gastoServicio.buscarGasto(id));
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+        return "gasto_modificarAdmin.html";
+
+    }
+    
+    @PostMapping("/modificaAdmin")
+    public String modificaAdmin(@RequestParam Long idGasto, @RequestParam Long idFlete,  @RequestParam String desde, @RequestParam String hasta, 
+        @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente,
+            @RequestParam("conceptos[]") List<String> conceptos, @RequestParam("cantidades[]") List<Integer> cantidades,
+            @RequestParam("precios[]") List<Double> precios, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        List<Detalle> detalles = new ArrayList<>();
+        for (int i = 0; i < conceptos.size(); i++) {
+            Detalle detalle = new Detalle();
+            detalle.setConcepto(conceptos.get(i));
+            detalle.setCantidad(cantidades.get(i));
+            detalle.setPrecio(precios.get(i));
+            detalle.setTotal(cantidades.get(i) * precios.get(i));
+            detalles.add(detalle);
+        }
+
+        gastoServicio.modificarGastoFlete(idGasto, detalles, logueado);
+
+        return "redirect:/gasto/modificadoAdmin?&idGasto=" + idGasto + "&idFlete=" + idFlete + "&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "");
+    }
+    
+    @GetMapping("/modificadoAdmin")
+    public String gastoModificadoAdmin(@RequestParam Long idGasto, @RequestParam Long idFlete,  @RequestParam String desde, @RequestParam String hasta, 
+        @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+        modelo.put("exito", "Gasto MODIFICADO con éxito");
+
+        return "gasto_mostrarAdmin.html";
+
+    }
+    
+    @GetMapping("/eliminarAdmin")
+    public String eliminarAdmin(@RequestParam Long id, @RequestParam Long idFlete,  @RequestParam String desde, @RequestParam String hasta, 
+        @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        modelo.put("gasto", gastoServicio.buscarGasto(id));
+        modelo.put("idFlete", idFlete);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
+
+        return "gasto_eliminarAdmin.html";
+
+    }
+    
+    @GetMapping("/eliminaAdmin")
+    public String eliminaAdmin(@RequestParam Long id, @RequestParam Long idFlete,  @RequestParam String desde, @RequestParam String hasta, 
+        @RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
+
+        gastoServicio.eliminarGastoFlete(id, idFlete);
+
+        return "redirect:/flete/mostrarAdmin?&id=" + idFlete + "&desde=" + desde + "&hasta=" + hasta +
+           (idChofer != null ? "&idChofer=" + idChofer : "") +
+           (idCamion != null ? "&idCamion=" + idCamion : "") +
+           (idCliente != null ? "&idCliente=" + idCliente : "") +
+                "&gasto=" + "si";
     }
 
     @GetMapping("/modificarDesdeFlete/{id}")
@@ -127,10 +264,22 @@ public class GastoControlador {
 
         Flete flete = fleteServicio.buscarFlete(id);
 
-        modelo.put("idFlete", flete.getId());
-        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+        modelo.put("idFlete", id);
+        modelo.put("gasto", flete.getGasto());
 
         return "gasto_modificarDesdeFlete.html";
+
+    }
+    
+    @GetMapping("/modificarPendiente/{id}")
+    public String modificarPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        modelo.put("idFlete", id);
+        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+
+        return "gasto_modificarPendiente.html";
 
     }
 
@@ -152,8 +301,30 @@ public class GastoControlador {
         }
 
         gastoServicio.modificarGastoFlete(idGasto, detalles, logueado);
+        
+        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
         return "redirect:/gasto/modificadoDesdeFlete/" + idFlete;
+        
+        } else {
+        
+        return "redirect:/gasto/modificadoPendiente/" + idFlete;
+            
+        }
+  
+    }
+    
+    @GetMapping("/modificadoPendiente/{idFlete}")
+    public String gastoModificadoPendiente(@PathVariable Long idFlete, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(idFlete);
+
+        modelo.put("idFlete", idFlete);
+        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+        modelo.put("exito", "Gasto MODIFICADO con éxito");
+
+        return "gasto_mostrarPendiente.html";
+
     }
 
     @GetMapping("/modificadoDesdeFlete/{idFlete}")
@@ -161,25 +332,35 @@ public class GastoControlador {
 
         Flete flete = fleteServicio.buscarFlete(idFlete);
 
-        modelo.put("idFlete", flete.getId());
-        modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+        modelo.put("idFlete", idFlete);
+        modelo.put("gasto", flete.getGasto());
         modelo.put("exito", "Gasto MODIFICADO con éxito");
 
         return "gasto_mostrarChofer.html";
 
     }
     
-    
-
     @GetMapping("/eliminarDesdeFlete/{id}")
     public String eliminar(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+
+        modelo.put("gasto", flete.getGasto());
+        modelo.put("idFlete", id);
+
+        return "gasto_eliminarDesdeFlete.html";
+
+    }
+    
+    @GetMapping("/eliminarPendiente/{id}")
+    public String eliminarPendiente(@PathVariable Long id, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFlete(id);
 
         modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
         modelo.put("idFlete", id);
 
-        return "gasto_eliminarDesdeFlete.html";
+        return "gasto_eliminarPendiente.html";
 
     }
 
@@ -202,7 +383,6 @@ public class GastoControlador {
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
             modelo.put("flete", fleteServicio.buscarFlete(idFlete));
-            modelo.put("idUsuario", logueado.getId());
             modelo.put("exito", "Gasto ELIMINADO con éxito");
 
             return "flete_mostrarChofer.html";
@@ -212,8 +392,57 @@ public class GastoControlador {
             modelo.put("flete", fleteServicio.buscarFlete(idFlete));
             modelo.put("exito", "Gasto ELIMINADO con éxito");
 
-            return "flete_mostrarAdmin.html";
+            return "flete_mostrarPendiente.html";
         }
+
+    }
+    
+    @GetMapping("/registrarDesdeCajaAdmin/{idChofer}")
+    public String registrarCaja(@PathVariable Long idChofer, ModelMap modelo) {
+       
+        Usuario chofer = choferServicio.buscarChofer(idChofer);
+        
+        modelo.addAttribute("detalles", new ArrayList<Detalle>());
+        modelo.put("chofer", chofer);
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(chofer.getIdOrg()));
+
+        return "gasto_registrarCajaAdmin.html";
+        
+    }
+    
+    @PostMapping("/registroDesdeCajaAdmin")
+    public String registroCajaAdmin(@RequestParam Long idChofer, @RequestParam String fecha, @RequestParam Long idCamion, 
+            @RequestParam("conceptos[]") List<String> conceptos, @RequestParam("cantidades[]") List<Integer> cantidades,
+            @RequestParam("precios[]") List<Double> precios, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        List<Detalle> detalles = new ArrayList<>();
+        for (int i = 0; i < conceptos.size(); i++) {
+            Detalle detalle = new Detalle();
+            detalle.setConcepto(conceptos.get(i));
+            detalle.setCantidad(cantidades.get(i));
+            detalle.setPrecio(precios.get(i));
+            detalle.setTotal(cantidades.get(i) * precios.get(i));
+            detalles.add(detalle);
+        }
+
+        gastoServicio.registrarGastoCaja(idChofer, fecha, idCamion, detalles, logueado);
+
+        return "redirect:/gasto/registradoDesdeCajaAdmin";
+    }
+    
+    @GetMapping("/registradoDesdeCajaAdmin")
+    public String registradoCajaAdmin(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        Gasto gasto = gastoServicio.buscarUltimoGasto(logueado.getIdOrg());
+        
+        modelo.put("gasto", gasto);
+        modelo.put("exito", "Gasto REGISTRADO con éxito");
+
+        return "gasto_mostrarAdminCaja.html";
 
     }
     
@@ -274,7 +503,69 @@ public class GastoControlador {
         modelo.put("gasto", gasto);
         modelo.put("exito", "Gasto REGISTRADO con éxito");
 
-        return "gasto_registradoDesdeCaja.html";
+        return "gasto_mostrarChoferCaja.html";
+
+    }
+    
+    @GetMapping("/mostrarChoferCaja/{id}")
+    public String mostrarGastoCaja(@PathVariable Long id, ModelMap modelo){
+        
+        modelo.put("gasto", gastoServicio.buscarGasto(id));
+
+        return "gasto_mostrarChoferCaja.html";
+        
+    }
+    
+    @GetMapping("/mostrarAdminCaja/{id}")
+    public String mostrarGastoAdmin(@PathVariable Long id, ModelMap modelo){
+        
+        modelo.put("gasto", gastoServicio.buscarGasto(id));
+
+        return "gasto_mostrarAdminCaja.html";
+        
+    }
+    
+    @GetMapping("/modificarDesdeCajaAdmin/{id}")
+    public String modificarCajaAdmin(@PathVariable Long id, ModelMap modelo) {
+
+        Gasto gasto = gastoServicio.buscarGasto(id);
+        
+        modelo.put("gasto", gasto);
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(gasto.getIdOrg()));
+
+        return "gasto_modificarDesdeCajaAdmin.html";
+
+    }
+    
+    @PostMapping("/modificaDesdeCajaAdmin")
+    public String modificaCajaAdmin(@RequestParam Long idGasto, @RequestParam String fecha, @RequestParam Long idCamion, 
+            @RequestParam("conceptos[]") List<String> conceptos, @RequestParam("cantidades[]") List<Integer> cantidades,
+            @RequestParam("precios[]") List<Double> precios, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        List<Detalle> detalles = new ArrayList<>();
+        for (int i = 0; i < conceptos.size(); i++) {
+            Detalle detalle = new Detalle();
+            detalle.setConcepto(conceptos.get(i));
+            detalle.setCantidad(cantidades.get(i));
+            detalle.setPrecio(precios.get(i));
+            detalle.setTotal(cantidades.get(i) * precios.get(i));
+            detalles.add(detalle);
+        }
+
+        gastoServicio.modificarGastoCaja(idGasto, fecha, idCamion, detalles, logueado);
+
+        return "redirect:/gasto/modificadoDesdeCajaAdmin/" + idGasto;
+    }
+        
+    @GetMapping("/modificadoDesdeCajaAdmin/{idGasto}")
+    public String modificadoCajaAdmin(@PathVariable Long idGasto, ModelMap modelo) {
+        
+        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
+        modelo.put("exito", "Gasto MODIFICADO con éxito");
+
+        return "transaccion_gastoAdmin.html";
 
     }
     
@@ -313,24 +604,11 @@ public class GastoControlador {
     }
 
     @GetMapping("/modificadoDesdeCaja/{idGasto}")
-    public String modificadoCaja(@PathVariable Long idGasto, ModelMap modelo, HttpSession session) {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+    public String modificadoCaja(@PathVariable Long idGasto, ModelMap modelo) {
         modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
         modelo.put("exito", "Gasto MODIFICADO con éxito");
 
-        return "transaccion_gastoChofer.html";
-        
-        } else {
-            
-        modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
-        modelo.put("exito", "Gasto MODIFICADO con éxito");
-
-        return "transaccion_gastoAdmin.html";
-            
-        }
+        return "gasto_mostrarChoferCaja.html";
 
     }
     
@@ -340,6 +618,7 @@ public class GastoControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+            
         modelo.put("gasto", gastoServicio.buscarGasto(id));
 
         return "gasto_eliminarDesdeCajaChofer.html";
@@ -351,6 +630,15 @@ public class GastoControlador {
         return "gasto_eliminarDesdeCajaAdmin.html";
             
         }
+
+    }
+    
+    @GetMapping("/eliminaDesdeCajaAdmin")
+    public String eliminaCajaAdmin(@RequestParam Long idGasto, @RequestParam Long idChofer, ModelMap modelo) {
+
+        gastoServicio.eliminarGastoCaja(idGasto);
+
+        return "redirect:/caja/mostrarAdmin/" +idChofer;
 
     }
 
@@ -367,21 +655,11 @@ public class GastoControlador {
     public String gastoEliminadoCaja(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
             
             modelo.put("chofer", logueado);
             modelo.put("exito", "Gasto ELIMINADO con éxito");
 
             return "index_chofer.html";
-
-        } else {
-
-            modelo.put("id", logueado.getId());
-            modelo.put("exito", "Gasto ELIMINADO con éxito");
-
-            return "index_admin.html";
-        }
 
     }
     
@@ -492,14 +770,20 @@ public class GastoControlador {
 
     }
     
-    @GetMapping("/verAdmin/{id}")
-    public String verAdmin(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/verAdmin")
+    public String verAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) {
 
         Flete flete = fleteServicio.buscarFlete(id);
+        modelo.put("idFlete", id);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idCliente", idCliente);
 
         if (flete.getGasto() != null) {
 
-            modelo.put("idFlete", flete.getId());
             modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
 
             return "gasto_mostrarAdmin.html";
@@ -507,9 +791,29 @@ public class GastoControlador {
         } else {
 
             modelo.addAttribute("detalles", new ArrayList<Detalle>());
-            modelo.put("idFlete", id);
 
-            return "gasto_registrarFlete.html";
+            return "gasto_registrarAdmin.html";
+
+        }
+    }
+    
+    @GetMapping("/verPendiente/{id}")
+    public String verPendiente(@PathVariable Long id, ModelMap modelo) {
+
+        Flete flete = fleteServicio.buscarFlete(id);
+        modelo.put("idFlete", id);
+
+        if (flete.getGasto() != null) {
+
+            modelo.put("gasto", gastoServicio.buscarGasto(flete.getGasto().getId()));
+
+            return "gasto_mostrarPendiente.html";
+
+        } else {
+
+            modelo.addAttribute("detalles", new ArrayList<Detalle>());
+
+            return "gasto_registrarPendiente.html";
 
         }
     }
@@ -556,17 +860,17 @@ public class GastoControlador {
 
         gastoServicio.volverPendienteGasto(id, logueado);
         
-        return "redirect:/gasto/pendiente/" +logueado.getId();
+        return "redirect:/gasto/pendiente/" +id;
 
     }
     
     @GetMapping("/pendiente/{id}")
     public String gastoPendiente(@PathVariable Long id, ModelMap modelo) {
 
-        modelo.put("id", id);
+        modelo.put("gasto", gastoServicio.buscarGasto(id));
         modelo.put("exito", "Gasto RETORNADO a Pendiente");
 
-        return "index_admin.html";
+        return "transaccion_gastoAdmin.html";
         
     }
 

@@ -30,6 +30,8 @@ public class Combustible {
     @OneToOne
     private Camion camion;
     @OneToOne
+    private Acoplado acoplado;
+    @OneToOne
     private Imagen imagen;
     @OneToOne
     private Usuario chofer;
@@ -41,7 +43,7 @@ public class Combustible {
     public Combustible() {
     }
 
-    public Combustible(Long id, Long idCarga, Long idOrg, Date fechaCarga, Double kmCarga, Double kmAnterior, Double kmRecorrido, Double litro, Double consumo, Double consumoPromedio, String completo, String estado, Camion camion, Imagen imagen, Usuario chofer, Usuario usuario, Azul azul) {
+    public Combustible(Long id, Long idCarga, Long idOrg, Date fechaCarga, Double kmCarga, Double kmAnterior, Double kmRecorrido, Double litro, Double consumo, Double consumoPromedio, String completo, String estado, Camion camion, Acoplado acoplado, Imagen imagen, Usuario chofer, Usuario usuario, Azul azul) {
         this.id = id;
         this.idCarga = idCarga;
         this.idOrg = idOrg;
@@ -55,6 +57,7 @@ public class Combustible {
         this.completo = completo;
         this.estado = estado;
         this.camion = camion;
+        this.acoplado = acoplado;
         this.imagen = imagen;
         this.chofer = chofer;
         this.usuario = usuario;
@@ -165,6 +168,14 @@ public class Combustible {
         this.camion = camion;
     }
 
+    public Acoplado getAcoplado() {
+        return acoplado;
+    }
+
+    public void setAcoplado(Acoplado acoplado) {
+        this.acoplado = acoplado;
+    }
+
     public Imagen getImagen() {
         return imagen;
     }
@@ -196,5 +207,7 @@ public class Combustible {
     public void setAzul(Azul azul) {
         this.azul = azul;
     }
+
+    
 
 }

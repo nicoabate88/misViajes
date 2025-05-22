@@ -107,31 +107,39 @@
 
                                 return true;
                             }
+                            window.onload = function () {
+                                var fechaActual = new Date();
+                                var dia = String(fechaActual.getDate()).padStart(2, '0');
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                                var anio = fechaActual.getFullYear();
+                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+
+                                document.getElementById('fc').max = fechaFormateada;
+                            };
                         </script>
                         </head>
                         <body>
-
-                            <div class="container mb-2">
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/caja/mostrarChofer/__${chofer.id}__}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-10">
-                                            <h4>Registrar Gasto</h4>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/caja/mostrarChofer/__${chofer.id}__}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Gasto</h4>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="container mb-2">   
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form th:action="@{/gasto/registroDesdeCaja}" method="post">
                                         <input hidden th:value="${chofer.id}" name="idChofer">  
-                                            
+
                                             <div class="row">
-                                            <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
+                                                <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
                                                     <label for="fc" class="form-label text-secondary">Fecha*</label>
                                                     <input type="date" class="form-control" id="fc" name="fecha" required>
                                                 </div>
@@ -210,7 +218,7 @@
 
                                                                 </form>
                                                                 </div>
-                            </div>
+                                                                </div>
                                                                 <script>
                                                                     document.getElementById('cantidad').addEventListener('keydown', function (event) {
                                                                         if (event.key === '.' || event.key === ',') {

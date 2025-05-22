@@ -1,10 +1,12 @@
 package abate.abate.controladores;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.ChoferEstadistica;
 import abate.abate.entidades.ChoferesEstadistica;
 import abate.abate.entidades.Usuario;
 import abate.abate.excepciones.MiException;
+import abate.abate.servicios.AcopladoServicio;
 import abate.abate.servicios.CamionServicio;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.ExcelServicio;
@@ -38,6 +40,8 @@ public class ChoferControlador {
     @Autowired
     private CamionServicio camionServicio;
     @Autowired
+    private AcopladoServicio acopladoServicio;
+    @Autowired
     private ExcelServicio excelServicio;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -47,21 +51,24 @@ public class ChoferControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
 
         return "chofer_registrar.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/registro")
-    public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion,
-            @RequestParam String caja, @RequestParam String cuenta, @RequestParam Double porcentaje, @RequestParam String nombreUsuario, @RequestParam String password,
-            @RequestParam String password2, ModelMap modelo, HttpSession session) {
+    public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
+            @RequestParam String caja, @RequestParam String cuenta, @RequestParam String documentacion, @RequestParam String mantenimiento, 
+            @RequestParam String nombreUsuario, @RequestParam Double porcentaje, 
+            @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, caja, cuenta, nombreUsuario, porcentaje, password, password2);
+            choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, idAcoplado, caja, cuenta, documentacion,
+                    mantenimiento, nombreUsuario, porcentaje, password, password2);
 
             return "redirect:/chofer/registrado";
 
@@ -71,14 +78,22 @@ public class ChoferControlador {
                 Camion camion = camionServicio.buscarCamion(idCamion);
                 modelo.put("camion", camion);
             } 
+            
+            if(idAcoplado != null ){
+                Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+                modelo.put("acoplado", acoplado);
+            }
 
             modelo.put("nombre", nombre);
             modelo.put("cuil", cuil);
             modelo.put("caja", caja);
             modelo.put("cuenta", cuenta);
+            modelo.put("documentacion", documentacion);
+            modelo.put("mantenimiento", mantenimiento);
             modelo.put("nombreUsuario", nombreUsuario);
             modelo.put("porcentaje", porcentaje);
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.put("error", ex.getMessage());
 
             return "chofer_registrar.html";
@@ -126,6 +141,7 @@ public class ChoferControlador {
 
         modelo.put("chofer", choferServicio.buscarChofer(id));
         modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
 
         return "chofer_modificar.html";
 
@@ -133,13 +149,14 @@ public class ChoferControlador {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/modifica/{id}")
-    public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil,
-            @RequestParam(required = false) Long idCamion, @RequestParam Double porcentaje, @RequestParam String nombreUsuario, ModelMap modelo, HttpSession session) {
+    public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, 
+            @RequestParam(required = false) Long idAcoplado, @RequestParam String documentacion, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, 
+            @RequestParam Double porcentaje, ModelMap modelo, HttpSession session) {
 
         try {
             
-            choferServicio.modificarChofer(id, nombre, cuil, idCamion, nombreUsuario, porcentaje);
-
+            choferServicio.modificarChofer(id, nombre, cuil, idCamion, idAcoplado, documentacion, mantenimiento, nombreUsuario, porcentaje);
+ 
             return "redirect:/chofer/modificado/" + id;
 
         } catch (MiException ex) {
@@ -148,6 +165,7 @@ public class ChoferControlador {
 
             modelo.put("chofer", choferServicio.buscarChofer(id));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.put("error", ex.getMessage());
 
             return "chofer_modificar.html";
@@ -283,7 +301,8 @@ public class ChoferControlador {
         for (ChoferEstadistica estadistica : lista) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -315,7 +334,8 @@ public class ChoferControlador {
         for (ChoferEstadistica estadistica : lista) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -350,7 +370,8 @@ public class ChoferControlador {
         for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -381,7 +402,8 @@ public class ChoferControlador {
          for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -409,7 +431,8 @@ public class ChoferControlador {
          for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -436,7 +459,8 @@ public class ChoferControlador {
          for (ChoferesEstadistica estadistica : estadisticas.values()) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -457,7 +481,8 @@ public class ChoferControlador {
         for (ChoferEstadistica estadistica : lista) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 
@@ -485,7 +510,8 @@ public class ChoferControlador {
         for (ChoferEstadistica estadistica : lista) {
            
                 if (estadistica.getKmRecorrido() > 0) {
-                    estadistica.setConsumo( (double) Math.round ((estadistica.getLitro() * 100) / estadistica.getKmRecorrido()));
+                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
                     estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
                 } else {
                     estadistica.setConsumo(0.0); 

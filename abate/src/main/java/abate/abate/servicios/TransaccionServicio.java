@@ -260,15 +260,10 @@ public class TransaccionServicio {
     }
 
     @Transactional
-    public void modificarTransaccionFlete(Long idFlete) {
+    public void modificarTransaccionFlete(Flete flete) {
 
-        Flete flete = new Flete();
-        Optional<Flete> fle = fleteRepositorio.findById(idFlete);
-        if (fle.isPresent()) {
-            flete = fle.get();
-        }
 
-        ArrayList<Transaccion> lista = transaccionRepositorio.buscarTransaccionesIdFlete(idFlete);
+        ArrayList<Transaccion> lista = transaccionRepositorio.buscarTransaccionesIdFlete(flete.getId());
 
         Transaccion tChofer = new Transaccion();
         Transaccion tCliente = new Transaccion();
@@ -286,7 +281,7 @@ public class TransaccionServicio {
 
             cuentaServicio.eliminarTransaccionCuentaChofer(tChofer); //elimina transaccion en cuenta chofer modificado
 
-            crearTransaccionFleteChofer(idFlete);   //agrega transaccion en cuenta Chofer modificado
+            crearTransaccionFleteChofer(flete.getId());   //agrega transaccion en cuenta Chofer modificado
 
             Transaccion tGasto = new Transaccion();
 
@@ -308,11 +303,12 @@ public class TransaccionServicio {
                 crearTransaccionGasto(tGasto.getGasto().getId());
                 cuentaServicio.eliminarTransaccionCuentaChofer(tGasto);
             }
-        } else if (flete.getCliente() != tCliente.getCliente()) {    //si lo que se modifico en la transacion es cliente, entra en este if
-
+            
+        } else if (flete.getCliente().getId() != tCliente.getCliente().getId()) {    //si lo que se modifico en la transacion es cliente, entra en este if
+            
             cuentaServicio.eliminarTransaccionCuentaCliente(tCliente); //elimina transaccion en cuenta cliente modificado
 
-            crearTransaccionFleteCliente(idFlete);   //agrega transaccion en cuenta Chofer modificado
+            crearTransaccionFleteCliente(flete.getId());   //agrega transaccion en cuenta Chofer modificado
 
         } else {
 

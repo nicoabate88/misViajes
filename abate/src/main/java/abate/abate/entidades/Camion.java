@@ -1,9 +1,14 @@
 package abate.abate.entidades;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Camion {
@@ -16,17 +21,26 @@ public class Camion {
     private String modelo;
     private String dominio;
     private String azul;
+    private String estado;
+    @OneToOne
+    private Usuario usuario;
+    @OneToMany(mappedBy = "camion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Eje> ejes = new ArrayList<>();
+    private Integer cantidadAuxilio;
 
     public Camion() {
     }
 
-    public Camion(Long id, Long idOrg, String marca, String modelo, String dominio, String azul) {
+    public Camion(Long id, Long idOrg, String marca, String modelo, String dominio, String azul, String estado, Usuario usuario, Integer cantidadAuxilio) {
         this.id = id;
         this.idOrg = idOrg;
         this.marca = marca;
         this.modelo = modelo;
         this.dominio = dominio;
         this.azul = azul;
+        this.estado = estado;
+        this.usuario = usuario;
+        this.cantidadAuxilio = cantidadAuxilio;
     }
 
     public Long getId() {
@@ -77,4 +91,40 @@ public class Camion {
         this.azul = azul;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public List<Eje> getEjes() {
+        return ejes;
+    }
+
+    public void setEjes(List<Eje> ejes) {
+        this.ejes = ejes;
+    }
+
+    public Integer getCantidadAuxilio() {
+        return cantidadAuxilio;
+    }
+
+    public void setCantidadAuxilio(Integer cantidadAuxilio) {
+        this.cantidadAuxilio = cantidadAuxilio;
+    }
+
+    
+
+
+    
 }

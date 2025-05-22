@@ -1,5 +1,6 @@
 package abate.abate.repositorios;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Usuario;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
     public ArrayList<Usuario> buscarUsuarios(@Param("id") Long id);
 
     Usuario findTopByCamionOrderByIdDesc(Camion camion);
+    
+    Usuario findTopByAcopladoOrderByIdDesc(Acoplado acoplado);
 
     @Query("SELECT u FROM Usuario u WHERE u.id IN (SELECT MIN(u1.id) FROM Usuario u1 GROUP BY u1.idOrg)")
     public ArrayList<Usuario> findFirstByIdOrg();

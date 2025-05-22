@@ -7,86 +7,85 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         </head>
                         <body>
-                            <div class="container">
-
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" onclick="window.history.back();"  type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-10">
-                                            <h4>Registrar Cliente</h4>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" onclick="window.history.back();"  type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Cliente</h4>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card">
-                                <form th:action="@{/cliente/registro}" method="POST">
-                                    <div class="row">
-                                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault01" class="form-label text-secondary">Apellido y Nombre*</label>
-                                        <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
-                                    </div>
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault02" class="form-label text-secondary">CUIT*</label>
-                                        <input type="number" class="form-control" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIT" name="cuit" th:value="${cuit}" required>
-                                        <span id="error-message" style="color: red; display: none;">El CUIT debe tener 11 dígitos.</span>    
-                                    </div>
-                                    <div class="d-block d-md-none col-6">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault01" class="form-label text-secondary">Localidad</label>
-                                        <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Localidad" name="localidad" th:value="${localidad}">
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault01" class="form-label text-secondary">Domicilio</label>
-                                        <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Domicilio" name="direccion" th:value="${direccion}">
-                                    </div>
-                                    </div>
-                                    <div class="row">
-                                    <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                        <label for="validationDefault01" class="form-label text-secondary">Teléfono</label>
-                                        <input type="number" class="form-control" id="validationDefault01" placeholder="Ingrese Teléfono" name="telefono" th:value="${telefono}">
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-5">
-                                        <label for="validationDefault01" class="form-label text-secondary">Email</label>
-                                        <input type="email" class="form-control" id="validationDefault01" placeholder="Ingrese Email" name="email" th:value="${email}">
-                                    </div>
-                                    </div>
-                                    <div class="container">
-                                        <div th:if="${error != null}" class="card-body mb-5 text-center" id="mensaje">                        
-                                            <h6 id="white" th:text="${error}"></h6>                                                                             
-                                        </div>
-                                    </div>
-                                      <div class="text-center mb-2">
-                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Cliente">Registrar</button>
+                                    <form th:action="@{/cliente/registro}" method="POST">
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+                                                <label for="validationDefault01" class="form-label text-secondary">Apellido y Nombre*</label>
+                                                <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
                                             </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/cliente/listar}" title="Cancelar">Cancelar</a>
-                                            </div> 
-                                </form>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="validationDefault02" class="form-label text-secondary">CUIT*</label>
+                                                <input type="number" class="form-control" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIT" name="cuit" th:value="${cuit}" required>
+                                                    <span id="error-message" style="color: red; display: none;">El CUIT debe tener 11 dígitos.</span>    
+                                            </div>
+                                            <div class="d-block d-md-none col-6">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+                                                <label for="validationDefault01" class="form-label text-secondary">Localidad</label>
+                                                <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Localidad" name="localidad" th:value="${localidad}">
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-2">
+                                                <label for="validationDefault01" class="form-label text-secondary">Domicilio</label>
+                                                <input type="text" class="form-control" id="validationDefault01" placeholder="Ingrese Domicilio" name="direccion" th:value="${direccion}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="validationDefault01" class="form-label text-secondary">Teléfono</label>
+                                                <input type="number" class="form-control" id="validationDefault01" placeholder="Ingrese Teléfono" name="telefono" th:value="${telefono}">
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-5">
+                                                <label for="validationDefault01" class="form-label text-secondary">Email</label>
+                                                <input type="email" class="form-control" id="validationDefault01" placeholder="Ingrese Email" name="email" th:value="${email}">
+                                            </div>
+                                        </div>
+                                        <div class="container">
+                                            <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
+                                                <h6 id="white" th:text="${error}"></h6>                                                                             
+                                            </div>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Cliente">Registrar</button>
+                                        </div>
+                                        <div class="text-center">
+                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/cliente/listar}" title="Cancelar">Cancelar</a>
+                                        </div> 
+                                    </form>
                                 </div>
                             </div>
                             </section>
                             <script>
                                 function checkLength(input) {
-    const errorMessage = document.getElementById("error-message");
-    const value = input.value;
+                                    const errorMessage = document.getElementById("error-message");
+                                    const value = input.value;
 
-    if (value.length > 11) {
-        input.value = value.slice(0, 11); // Limitar a 11 dígitos
-        errorMessage.style.display = "block";
-    } else if (value.length < 11 && value.length > 0) {
-        errorMessage.style.display = "block";
-    } else {
-        errorMessage.style.display = "none"; // Ocultar error si cumple
-    }
-}
+                                    if (value.length > 11) {
+                                        input.value = value.slice(0, 11); // Limitar a 11 dígitos
+                                        errorMessage.style.display = "block";
+                                    } else if (value.length < 11 && value.length > 0) {
+                                        errorMessage.style.display = "block";
+                                    } else {
+                                        errorMessage.style.display = "none"; // Ocultar error si cumple
+                                    }
+                                }
                             </script>    
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

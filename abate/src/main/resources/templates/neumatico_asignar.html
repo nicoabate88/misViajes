@@ -1,0 +1,475 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Neumatico Asignar</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css">  
+                        <style>
+                            .eje-container {
+                                border: 1px solid dimgray;
+                                border-radius: 8px;
+                                background-color: #d9d9d9;
+                            }
+
+                            .form-select {
+                                min-width: 150px;
+                            }
+
+                            .row {
+                                margin-bottom: 20px;
+                            }
+
+                            .col-md-3 {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                            }
+                            .link-historial {
+                                color: darkblue;
+                                background: none;
+                                border: none;
+                                padding: 0;
+                                cursor: pointer;
+                            }
+                            .modal-header-darkblue {
+                                background-color: darkblue;
+                                color: white;
+                            }
+                             @media (max-width: 576px) {
+                                .table {
+                                    font-size: 10px;
+                                }
+                            }
+
+                            @media (min-width: 577px) and (max-width: 768px) {
+                                .table {
+                                    font-size: 11px;
+                                }
+                            }
+                        </style>
+                        <script>
+                            window.onload = function () {
+                                var fechaActual = new Date();
+                                var dia = String(fechaActual.getDate()).padStart(2, '0');
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                                var anio = fechaActual.getFullYear();
+                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+
+                                document.getElementById('fecha').max = fechaFormateada;
+                            };
+                        </script>
+                        </head>
+                        <body>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/neumatico/listarAdmin}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Asignar Neumático</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mb-2">  
+                                <div th:if="${exito != null}" class="alert bg-success alert-secondary alert-dismissible fade show mb-2 p-3 text-center" role="alert">
+                                    <h6 id="white" th:text="${exito}" class="mb-0 d-inline"></h6>
+                                    <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="card border-secondary p-2" id="color-card">
+                                    <form id="formulario-neumaticos" method="post" th:action="@{/neumatico/asignaNeumatico}" th:object="${auxilioForm}">
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2 mb-2">
+                                                <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
+                                                <select class="form-control text-secondary" id="aplicaA" name="aplicaA" required onchange="enviarDatos()">
+                                                    <option selected th:text="${aplica}" th:value="${aplica}"></option>
+                                                    <option th:each="valor : ${aplicaA}" th:value="${valor}" th:text="${valor}"/>
+                                                </select>
+                                            </div>
+                                            <div th:if="${camiones != null}" class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                                <label for="idCamion" class="form-floting text-secondary">Camión*</label>
+                                                <select class="form-control text-secondary" id="idCamion" name="idEntidad" required onchange="enviarRegistroCamion()">
+                                                    <option th:if="${camion == null}" selected disabled value="">Seleccione Camión</option>
+                                                    <option th:if="${camion != null}" selected th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div th:if="${acoplados != null}" class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                                <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
+                                                <select class="form-control text-secondary" id="idAcoplado" name="idEntidad" required onchange="enviarRegistroAcoplado()">
+                                                    <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
+                                                    <option th:if="${acoplado != null}" selected th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"></option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2 mb-2">
+                                                <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                <input type="date" class="form-control text-secondary" id="fecha" th:value="${fecha}" name="fecha" required>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2 mb-2"> 
+                                                <label for="km" class="form-label text-secondary" th:text="'KM '+${aplica}+'*'"></label> 
+                                                <div class="input-group"> 
+                                                    <span class="input-group-text text-secondary">km</span> 
+                                                    <input type="number" class="form-control text-secondary" id="km" placeholder="Ingrese KM"
+                                                           th:value=${km} name="km" required> 
+                                                </div> 
+                                            </div>     
+                                        </div>
+                                        <div th:if="${camion != null}">
+                                            <div th:each="eje, ejeStat : ${camion.ejes}" class="eje-container p-3 mb-2">
+                                                <p class="text-center">
+                                                    <strong><span th:text="${eje.nombre}"></span></strong>
+                                                    <span th:text=' Izable '></span>
+                                                    <span th:text="${eje.elevable} ? 'Sí ('+${eje.porcentaje}+'%)' : 'No'"></span>
+                                                    <span th:text="' - Cantidad de Neumáticos '+${eje.cantidadNeumatico}"></span>
+                                                </p>
+                                                <div>
+                                                    <div th:if="${eje.cantidadNeumatico == 2}" class="row justify-content-between mb-0">
+                                                        <div class="col-md-3" th:each="i, iStat : ${#numbers.sequence(1,2)}">
+                                                            <label th:for="|posicion_${eje.id}_${i}|" th:text="'Posición ' + ${i}" class="form-label mb-1"></label>
+                                                            <!-- Input oculto para guardar la posición -->
+                                                            <input type="hidden" 
+                                                                   th:name="|posiciones[${ejeStat.index * 10 + iStat.index}].posicion|" 
+                                                                   th:value="${i}" />
+                                                            <!-- NUEVO Input oculto para guardar el ejeId -->
+                                                            <input type="hidden" 
+                                                                   th:name="|posiciones[${ejeStat.index * 10 + iStat.index}].ejeId|" 
+                                                                   th:value="${eje.id}" />
+                                                            <!-- Select para elegir el neumático -->
+                                                            <select class="form-control border-secondary" 
+                                                                    th:id="|posicion_${eje.id}_${i}|"
+                                                                    th:name="|posiciones[${ejeStat.index * 10 + iStat.index}].neumaticoId|">
+                                                                <option value="">Seleccione Neumático</option>
+                                                                <option th:if="${mapaAsignaciones[eje.id]?.get(i) != null}"
+                                                                        th:value="${mapaAsignaciones[eje.id]?.get(i)?.id}"
+                                                                        th:text="${#numbers.formatDecimal(mapaAsignaciones[eje.id]?.get(i)?.km, 0, 'POINT', 0, 'POINT') +' Km - '+mapaAsignaciones[eje.id]?.get(i)?.numero + ' ' + mapaAsignaciones[eje.id]?.get(i)?.marca.marca + ' ' + mapaAsignaciones[eje.id]?.get(i)?.modelo + ' - ' + mapaAsignaciones[eje.id]?.get(i)?.estado}"
+                                                                        selected>
+                                                                </option>
+                                                                <option th:each="n : ${neumaticos}"
+                                                                        th:if="${n.ubicacion == 'DEPOSITO'}"
+                                                                        th:value="${n.id}"
+                                                                        th:text="${#numbers.formatDecimal(n.km, 0, 'POINT', 0, 'POINT') + ' Km - ' + n.numero + ' ' + n.marca.marca + ' ' + n.modelo+' - ' + n.estado}"
+                                                                        th:selected="${mapaAsignaciones[eje.id]?.get(i)?.id == n.id}">
+                                                                </option>
+                                                            </select>
+                                                            <div th:if="${mapaAsignaciones[eje.id]?.get(i) != null}" class="mt-1"> 
+                                                                <h6><a href="#" th:attr="data-id=${mapaAsignaciones[eje.id]?.get(i)?.id}" onclick="verHistorial(this)" class="link-historial">
+                                                                        Ver historial
+                                                                    </a></h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div th:if="${eje.cantidadNeumatico != 2}">
+                                                        <div class="row mb-0" th:each="grupo : ${#numbers.sequence(0, eje.cantidadNeumatico - 1, 4)}">
+                                                            <div class="col-md-3" 
+                                                                 th:each="i, iStat : ${#numbers.sequence(grupo + 1, T(java.lang.Math).min(grupo + 4, eje.cantidadNeumatico))}">
+                                                                <label th:for="|posicion_${eje.id}_${i}|" th:text="'Posición ' + ${i}" class="form-label mb-1"></label>
+                                                                <!-- Input oculto para guardar la posición -->
+                                                                <input type="hidden" 
+                                                                       th:name="|posiciones[${ejeStat.index * 10 + grupo + iStat.index}].posicion|" 
+                                                                       th:value="${i}" />
+                                                                <!-- NUEVO Input oculto para guardar el ejeId -->
+                                                                <input type="hidden" 
+                                                                       th:name="|posiciones[${ejeStat.index * 10 + grupo + iStat.index}].ejeId|" 
+                                                                       th:value="${eje.id}" />
+                                                                <!-- Select para elegir el neumático -->
+                                                                <select class="form-control border-secondary" 
+                                                                        th:id="|posicion_${eje.id}_${i}|"
+                                                                        th:name="|posiciones[${ejeStat.index * 10 + grupo + iStat.index}].neumaticoId|">
+                                                                    <option value="">Seleccione Neumático</option>
+                                                                    <option th:if="${mapaAsignaciones[eje.id]?.get(i) != null}"
+                                                                            th:value="${mapaAsignaciones[eje.id]?.get(i)?.id}"
+                                                                            th:text="${#numbers.formatDecimal(mapaAsignaciones[eje.id]?.get(i)?.km, 0, 'POINT', 0, 'POINT') +' Km - '+mapaAsignaciones[eje.id]?.get(i)?.numero + ' ' + mapaAsignaciones[eje.id]?.get(i)?.marca.marca + ' ' + mapaAsignaciones[eje.id]?.get(i)?.modelo + ' - ' + mapaAsignaciones[eje.id]?.get(i)?.estado}"
+                                                                            selected>
+                                                                    </option>
+                                                                    <option th:each="n : ${neumaticos}"
+                                                                            th:if="${n.ubicacion == 'DEPOSITO'}"
+                                                                            th:value="${n.id}"
+                                                                            th:text="${#numbers.formatDecimal(n.km, 0, 'POINT', 0, 'POINT') + ' Km - ' + n.numero + ' ' + n.marca.marca + ' ' + n.modelo+' - ' + n.estado}"
+                                                                            th:selected="${mapaAsignaciones[eje.id]?.get(i)?.id == n.id}">
+                                                                    </option>
+                                                                </select>
+                                                                <div th:if="${mapaAsignaciones[eje.id]?.get(i) != null}" class="mt-1 mb-0"> 
+                                                                    <h6><a href="#" th:attr="data-id=${mapaAsignaciones[eje.id]?.get(i)?.id}" onclick="verHistorial(this)" class="link-historial">
+                                                                            Ver historial
+                                                                        </a></h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Neumáticos Auxiliares -->
+                                            <div th:if="${camion.cantidadAuxilio != null and camion.cantidadAuxilio > 0}" class="mb-4">
+                                                <div class="row">
+                                                    <div class="col-md-3 mb-3" th:each="i, iterStat : ${#numbers.sequence(1, camion.cantidadAuxilio)}">
+                                                        <label th:for="|auxilio_${i}|" th:text="'Auxilio ' + ${i}" class="form-label text-dark mb-1"></label>                                                          
+                                                        <input type="hidden" th:name="|auxilios[${i - 1}].posicion|" th:value="${i}" />
+                                                        <select class="form-control border-dark" th:name="|auxilios[${i - 1}].neumaticoId|">
+                                                            <option value="">Seleccione Neumático</option>
+                                                            <option th:each="n : ${neumaticos}"
+                                                                    th:if="${n.ubicacion == 'DEPOSITO' or n.id == auxilioForm.auxilios[i - 1].neumaticoId}"
+                                                                    th:value="${n.id}"
+                                                                    th:selected="${n.id == auxilioForm.auxilios[i - 1].neumaticoId}"
+                                                                    th:text="${#numbers.formatDecimal(n.km, 0, 'POINT', 0, 'POINT') + ' Km - ' + n.numero + ' ' + n.marca.marca + ' ' + n.modelo+' - ' + n.estado}"
+                                                                    </option>
+                                                        </select>
+                                                        <!-- Ver historial si hay neumático asignado al auxiliar -->
+                                                        <div th:if="${auxilioForm.auxilios[i - 1].neumaticoId != null}" class="mt-1 mb-0">
+                                                            <h6>
+                                                                <a href="#" th:attr="data-id=${auxilioForm.auxilios[i - 1].neumaticoId}" onclick="verHistorial(this)" class="link-historial">
+                                                                    Ver historial
+                                                                </a>
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div th:if="${acoplado != null}">
+                                            <div th:each="eje, ejeStat : ${acoplado.ejes}" class="eje-container p-3 mb-2">
+                                                <p class="text-center">
+                                                    <strong><span th:text="${eje.nombre}"></span></strong>
+                                                    <span th:text=' Izable '></span>
+                                                    <span th:text="${eje.elevable} ? 'Sí ('+${eje.porcentaje}+'%)' : 'No'"></span>
+                                                    <span th:text="' - Cantidad de Neumáticos '+${eje.cantidadNeumatico}"></span>
+                                                </p>
+                                                <div>
+                                                    <div th:if="${eje.cantidadNeumatico == 2}" class="row justify-content-between mb-0">
+                                                        <div class="col-md-3" th:each="i, iStat : ${#numbers.sequence(1,2)}">
+                                                            <label th:for="|posicion_${eje.id}_${i}|" th:text="'Posición ' + ${i}" class="form-label mb-1"></label>
+                                                            <!-- Input oculto para guardar la posición -->
+                                                            <input type="hidden" 
+                                                                   th:name="|posiciones[${ejeStat.index * 10 + iStat.index}].posicion|" 
+                                                                   th:value="${i}" />
+                                                            <!-- NUEVO Input oculto para guardar el ejeId -->
+                                                            <input type="hidden" 
+                                                                   th:name="|posiciones[${ejeStat.index * 10 + iStat.index}].ejeId|" 
+                                                                   th:value="${eje.id}" />
+                                                            <!-- Select para elegir el neumático -->
+                                                            <select class="form-control border-secondary" 
+                                                                    th:id="|posicion_${eje.id}_${i}|"
+                                                                    th:name="|posiciones[${ejeStat.index * 10 + iStat.index}].neumaticoId|">
+                                                                <option value="">Seleccione Neumático</option>
+                                                                <option th:if="${mapaAsignaciones[eje.id]?.get(i) != null}"
+                                                                        th:value="${mapaAsignaciones[eje.id]?.get(i)?.id}"
+                                                                        th:text="${#numbers.formatDecimal(mapaAsignaciones[eje.id]?.get(i)?.km, 0, 'POINT', 0, 'POINT') +' Km - '+mapaAsignaciones[eje.id]?.get(i)?.numero + ' ' + mapaAsignaciones[eje.id]?.get(i)?.marca.marca + ' ' + mapaAsignaciones[eje.id]?.get(i)?.modelo + ' - ' + mapaAsignaciones[eje.id]?.get(i)?.estado}"
+                                                                        selected>
+                                                                </option>
+                                                                <option th:each="n : ${neumaticos}"
+                                                                        th:if="${n.ubicacion == 'DEPOSITO'}"
+                                                                        th:value="${n.id}"
+                                                                        th:text="${#numbers.formatDecimal(n.km, 0, 'POINT', 0, 'POINT') + ' Km - ' + n.numero + ' ' + n.marca.marca + ' ' + n.modelo+' - ' + n.estado}"
+                                                                        th:selected="${mapaAsignaciones[eje.id]?.get(i)?.id == n.id}">
+                                                                </option>
+                                                            </select>
+                                                            <div th:if="${mapaAsignaciones[eje.id]?.get(i) != null}" class="mt-1"> 
+                                                                <h6><a href="#" th:attr="data-id=${mapaAsignaciones[eje.id]?.get(i)?.id}" onclick="verHistorial(this)" class="link-historial">
+                                                                        Ver historial
+                                                                    </a></h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div th:if="${eje.cantidadNeumatico != 2}">
+                                                        <div class="row mb-0" th:each="grupo : ${#numbers.sequence(0, eje.cantidadNeumatico - 1, 4)}">
+                                                            <div class="col-md-3" 
+                                                                 th:each="i, iStat : ${#numbers.sequence(grupo + 1, T(java.lang.Math).min(grupo + 4, eje.cantidadNeumatico))}">
+                                                                <label th:for="|posicion_${eje.id}_${i}|" th:text="'Posición ' + ${i}" class="form-label mb-1"></label>
+                                                                <!-- Input oculto para guardar la posición -->
+                                                                <input type="hidden" 
+                                                                       th:name="|posiciones[${ejeStat.index * 10 + grupo + iStat.index}].posicion|" 
+                                                                       th:value="${i}" />
+                                                                <!-- NUEVO Input oculto para guardar el ejeId -->
+                                                                <input type="hidden" 
+                                                                       th:name="|posiciones[${ejeStat.index * 10 + grupo + iStat.index}].ejeId|" 
+                                                                       th:value="${eje.id}" />
+                                                                <!-- Select para elegir el neumático -->
+                                                                <select class="form-control border-secondary" 
+                                                                        th:id="|posicion_${eje.id}_${i}|"
+                                                                        th:name="|posiciones[${ejeStat.index * 10 + grupo + iStat.index}].neumaticoId|">
+                                                                    <option value="">Seleccione Neumático</option>
+                                                                    <option th:if="${mapaAsignaciones[eje.id]?.get(i) != null}"
+                                                                            th:value="${mapaAsignaciones[eje.id]?.get(i)?.id}"
+                                                                            th:text="${#numbers.formatDecimal(mapaAsignaciones[eje.id]?.get(i)?.km, 0, 'POINT', 0, 'POINT') +' Km - '+mapaAsignaciones[eje.id]?.get(i)?.numero + ' ' + mapaAsignaciones[eje.id]?.get(i)?.marca.marca + ' ' + mapaAsignaciones[eje.id]?.get(i)?.modelo + ' - ' + mapaAsignaciones[eje.id]?.get(i)?.estado}"
+                                                                            selected>
+                                                                    </option>
+                                                                    <option th:each="n : ${neumaticos}"
+                                                                            th:if="${n.ubicacion == 'DEPOSITO'}"
+                                                                            th:value="${n.id}"
+                                                                            th:text="${#numbers.formatDecimal(n.km, 0, 'POINT', 0, 'POINT') + ' Km - ' + n.numero + ' ' + n.marca.marca + ' ' + n.modelo+' - ' + n.estado}"
+                                                                            th:selected="${mapaAsignaciones[eje.id]?.get(i)?.id == n.id}">
+                                                                    </option>
+                                                                </select>
+                                                                <div th:if="${mapaAsignaciones[eje.id]?.get(i) != null}" class="mt-1 mb-0"> 
+                                                                    <h6><a href="#" th:attr="data-id=${mapaAsignaciones[eje.id]?.get(i)?.id}" onclick="verHistorial(this)" class="link-historial">
+                                                                            Ver historial
+                                                                        </a></h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Neumáticos Auxiliares -->
+                                            <div th:if="${acoplado.cantidadAuxilio != null and acoplado.cantidadAuxilio > 0}" class="mb-4">
+                                                <div class="row">
+                                                    <div class="col-md-3 mb-3" th:each="i, iterStat : ${#numbers.sequence(1, acoplado.cantidadAuxilio)}">
+                                                        <label th:for="|auxilio_${i}|" th:text="'Auxilio ' + ${i}" class="form-label text-dark mb-1"></label>                                                          
+                                                        <input type="hidden" th:name="|auxilios[${i - 1}].posicion|" th:value="${i}" />
+                                                        <select class="form-control border-dark" th:name="|auxilios[${i - 1}].neumaticoId|">
+                                                            <option value="">Seleccione Neumático</option>
+                                                            <option th:each="n : ${neumaticos}"
+                                                                    th:if="${n.ubicacion == 'DEPOSITO' or n.id == auxilioForm.auxilios[i - 1].neumaticoId}"
+                                                                    th:value="${n.id}"
+                                                                    th:selected="${n.id == auxilioForm.auxilios[i - 1].neumaticoId}"
+                                                                    th:text="${#numbers.formatDecimal(n.km, 0, 'POINT', 0, 'POINT') + ' Km - ' + n.numero + ' ' + n.marca.marca + ' ' + n.modelo+' - ' + n.estado}"
+                                                                    </option>
+                                                        </select>
+                                                        <!-- Ver historial si hay neumático asignado al auxiliar -->
+                                                        <div th:if="${auxilioForm.auxilios[i - 1].neumaticoId != null}" class="mt-1 mb-0">
+                                                            <h6>
+                                                                <a href="#" th:attr="data-id=${auxilioForm.auxilios[i - 1].neumaticoId}" onclick="verHistorial(this)" class="link-historial">
+                                                                    Ver historial
+                                                                </a>
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                            <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Guardar Asignaciones">Guardar Asignación</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/neumatico/listarAdmin}" title="Cancelar">Volver</a>
+                                            </div>
+
+                                    </form>
+                                </div>
+                                <div th:if="${error != null}" class="card bg-secondary mb-2 p-3 border-secondary text-center">                        
+                                    <h6 id="white" th:text="${error}"></h6>                                                                             
+                                </div> 
+
+                            </div>
+                            <!-- Modal para mostrar historial -->
+                            <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header position-relative modal-header-darkblue">
+                                            <h4 class="modal-title mx-auto">Historial de Neumático</h4>
+                                            <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" id="historialContenido">
+                                            <!-- Aquí se cargará el fragmento HTML con el historial -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                document.getElementById('km').addEventListener('keydown', function (event) {
+                                    if (event.key === '.' || event.key === ',') {
+                                        event.preventDefault();
+                                    }
+                                });
+                                document.getElementById('km').addEventListener('input', function () {
+                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                });
+
+                                function enviarRegistroCamion() {
+
+                                    let aplicaA = document.getElementById("aplicaA").value;
+                                    let idCamion = document.getElementById("idCamion").value;
+
+                                    window.location.href = `/neumatico/asignar1?aplicaA=${aplicaA}&idEntidad=${idCamion}`;
+
+                                }
+
+                                function enviarRegistroAcoplado() {
+
+                                    let aplicaA = document.getElementById("aplicaA").value;
+                                    let idAcoplado = document.getElementById("idAcoplado").value;
+
+                                    window.location.href = `/neumatico/asignar1?aplicaA=${aplicaA}&idEntidad=${idAcoplado}`;
+
+                                }
+
+                                function enviarDatos() {
+
+                                    let aplicaA = document.getElementById("aplicaA").value;
+
+                                    window.location.href = `/neumatico/asignar?aplicaA=${aplicaA}`;
+
+                                }
+
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const form = document.getElementById("formulario-neumaticos");
+
+                                    form.addEventListener("submit", function (event) {
+                                        const selects = form.querySelectorAll("select[name$='.neumaticoId']");
+                                        const valores = new Map();
+
+                                        let duplicado = null;
+                                        let mensajeDuplicado = "";
+
+                                        selects.forEach((select) => {
+                                            const valor = select.value;
+                                            if (valor && valor !== "") {
+                                                if (valores.has(valor)) {
+                                                    duplicado = select;
+                                                    const numero = select.options[select.selectedIndex].text;
+                                                    mensajeDuplicado = "No puedes seleccionar el mismo neumático (" + numero + ") en más de una posición o auxiliar.";
+                                                } else {
+                                                    valores.set(valor, select);
+                                                }
+                                            }
+                                        });
+
+                                        if (duplicado) {
+                                            alert(mensajeDuplicado);
+                                            event.preventDefault();
+                                        }
+                                    });
+                                });
+
+                                function verHistorial(button) {
+                                    const neumaticoId = button.getAttribute('data-id');
+
+                                    fetch(`/neumatico/historial/${neumaticoId}`)
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error("Error al obtener historial");
+                                                }
+                                                return response.text();
+                                            })
+                                            .then(html => {
+                                                document.getElementById("historialContenido").innerHTML = html;
+                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                modal.show();
+                                            })
+                                            .catch(error => {
+                                                console.error("Error:", error);
+                                                alert("No se pudo cargar el historial del neumático.");
+                                            });
+                                }
+                            </script>
+                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                        </body>
+                        </html>

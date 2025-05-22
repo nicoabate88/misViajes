@@ -7,27 +7,27 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         </head>
                         <body>
-                            <div class="container">
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href= "@{/chofer/listar}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-10">
-                                            <h4>Registrar Chofer</h4>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href= "@{/chofer/listar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Chofer</h4>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card"> 
                                     <form th:action="@{/chofer/registro}" method="POST">
                                         <div class="row">
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="nombre" class="form-label text-secondary">Apellido y Nombre de Chofer*</label>
-                                                <input type="text" class="form-control" id="nombre" placeholder="Ingrese Apellido y Nombre" name="nombre" th:value="${nombre}" required>
+                                                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese Apellido y Nombre" th:value="${nombre}" required>
                                             </div>
 
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
@@ -41,12 +41,25 @@
                                                 <label for="camion" class="form-floting text-secondary">Asocia Camión</label>
                                                 <select class="form-control" id="camion" name="idCamion">
                                                     <option th:if="${camion} != null" selected th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" th:value="${camion.id}"></option>
-                                                    <option th:if="${camion} == null" selected disabled value="">Seleccione Camión</option>
+                                                    <option th:if="${camion} == null" selected value="">Seleccione Camión</option>
                                                     <option th:each="camion : ${camiones}"
                                                             th:value="${camion.id}"
                                                             th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
                                                 </select>
                                             </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="acoplado" class="form-floting text-secondary">Asocia Acoplado</label>
+                                                <select class="form-control" id="acoplado" name="idAcoplado">
+                                                    <option th:if="${acoplado} != null" selected th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}" 
+                                                            th:value="${acoplado.id}"></option>
+                                                    <option th:if="${acoplado} == null" selected value="">Seleccione Acoplado</option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="caja" class="form-floting text-secondary">Habilitar Caja de Gasto*</label>
                                                 <select class="form-control" id="caja" name="caja" required>
@@ -57,17 +70,30 @@
                                                 </select>
                                             </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="porcentaje" class="form-label text-secondary">Porcentaje de Chofer*</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">%</span>
-                                                    <input type="number" step="0.01" class="form-control" id="porcentaje" placeholder="Ingrese porcentaje" name="porcentaje" th:value="${porcentaje}" required>     
-                                                </div>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="cuenta" class="form-floting text-secondary">Mostrar Cuenta a Chofer*</label>
+                                                <label for="cuenta" class="form-floting text-secondary">Habilitar Cuenta*</label>
                                                 <select class="form-control" id="cuenta" name="cuenta" required>
                                                     <option th:if="${cuenta} != null" selected th:text="${cuenta}" th:value="${cuenta}"></option>
                                                     <option th:if="${cuenta} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="documentacion" class="form-floting text-secondary">Editar Documentación*</label>
+                                                <select class="form-control" id="documentacion" name="documentacion" required>
+                                                    <option th:if="${documentacion} != null" selected th:text="${documentacion}" th:value="${documentacion}"></option>
+                                                    <option th:if="${documentacion} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="mantenimiento" class="form-floting text-secondary">Editar Mantenimiento*</label>
+                                                <select class="form-control" id="mantenimiento" name="mantenimiento" required>
+                                                    <option th:if="${mantenimiento} != null" selected th:text="${mantenimiento}" th:value="${mantenimiento}"></option>
+                                                    <option th:if="${mantenimiento} == null" selected disabled value="">Seleccione Opción</option>
                                                     <option value="SI">SI</option>
                                                     <option value="NO">NO</option>
                                                 </select>
@@ -79,11 +105,15 @@
                                                 <input type="text" class="form-control" id="usuario" placeholder="Ingrese Nombre de Usuario" name="nombreUsuario" th:value="${nombreUsuario}" required>
                                                     <span id="errorUsuario" style="color: red; display: none;"></span>
                                             </div>
-                                            <div class="d-block d-md-none col-6 col-sm-6 col-md-6 mb-2">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="porcentaje" class="form-label text-secondary">Porcentaje de Chofer*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">%</span>
+                                                    <input type="number" step="0.01" class="form-control" id="porcentaje" placeholder="Ingrese porcentaje" name="porcentaje" th:value="${porcentaje}" required>     
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="row">
-
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="password" class="form-label text-secondary">Contraseña*</label>
                                                 <div class="input-group">
@@ -104,7 +134,7 @@
                                             </div>
                                         </div>
                                         <div class="container">
-                                            <div th:if="${error != null}" class="card-body mb-5 col-lg-10 col-xl-10 text-center" id="mensaje">                        
+                                            <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
                                                 <h6 id="white" th:text="${error}"></h6>                                                                             
                                             </div>
                                         </div>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <body>
+        <div th:fragment="historialFragment(historial)">
+            <div class="card mt-2 border-dark">
+                <div class="card p-3 mb-0">
+                    <h6 class="text-success">Detalle de Neumático:</h6>
+                    <h6 th:text="'N° '+${neumatico.numero}+' - '+${neumatico.marca.marca}+' '+${neumatico.modelo}"></h6>
+                    <h6 id="dimgray" th:text="'Estado '+${neumatico.estado}"></h6>
+                    <p class="mb-2">
+                        <span th:text="'KM de Neumático '+${#numbers.formatDecimal(neumatico.km, 0, 'POINT', 0, 'POINT')}"></span>
+                        <span id="dimgray" th:text="' (KM Estimado '+${#numbers.formatDecimal(neumatico.kmEstimado, 0, 'POINT', 0, 'POINT')}+' - KM Útil '+${#numbers.formatDecimal(neumatico.kmUtil, 0, 'POINT', 0, 'POINT')}+')'"></span>
+                    </p>
+                    <h6 th:if="${flag == true}" class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></h6>
+                    <p class='mb-1' th:if="${flag == false && posicion != null && posicion.camion != null}">
+                        <span><strong class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></strong></span>
+                        <span class="mb-2 text-dark" th:text="' (Camión '+${posicion.camion.dominio}+' '+${posicion.camion.marca}+' '+${posicion.camion.modelo}+')'"></span>
+                    </p>
+                    <p class='mb-1' th:if="${flag == false && posicion != null && posicion.acoplado != null}">
+                        <span><strong class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></strong></span>
+                        <span class="mb-2 text-dark" th:text="' (Acoplado '+${posicion.acoplado.dominio}+' '+${posicion.acoplado.marca}+' '+${posicion.acoplado.modelo}+')'"></span>
+                    </p>
+                    <p class='mb-1' th:if="${flag == false && auxilio.id != null && auxilio.camion != null}">
+                        <span><strong class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></strong></span>
+                        <span class="mb-2 text-dark" th:text="' (Camión '+${auxilio.camion.dominio}+' '+${auxilio.camion.marca}+' '+${auxilio.camion.modelo}+' - Fecha Colocación '+${#dates.format(auxilio.fechaColocacion, 'dd-MM-yyyy')}+')'"></span>
+                    </p>
+                    <p class='mb-1' th:if="${flag == false && auxilio.id != null && auxilio.acoplado != null}">
+                        <span><strong class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></strong></span>
+                        <span class="mb-2 text-dark" th:text="' (Acoplado '+${auxilio.acoplado.dominio}+' '+${auxilio.acoplado.marca}+' '+${auxilio.acoplado.modelo}+' - Fecha Colocación '+${#dates.format(auxilio.fechaColocacion, 'dd-MM-yyyy')}+')'"></span>
+                    </p>
+                    <p id="dimgray" class="mb-1" th:text="'Fecha de Ingreso '+${#dates.format(neumatico.fechaIngreso, 'dd-MM-yyyy')}+' (KM '+${#numbers.formatDecimal(neumatico.kmIngreso, 0, 'POINT', 0, 'POINT')}+') - Proveedor '+${neumatico.proveedor.nombre}"></p>
+                    <p th:if="${neumatico.fechaEgreso != null}" id="dimgray" class="mb-1" th:text="'Fecha de Egreso '+${#dates.format(neumatico.fechaEgreso, 'dd-MM-yyyy')}"></p>
+                    <p th:if="${neumatico.observacion != ''}" id="dimgray" class="mb-1" th:text="'Observación '+${neumatico.observacion}"></p>  
+                </div>
+                <div th:if="${!recapados.isEmpty()}">
+                    <div class="card p-3 mb-0" th:each="recapado : ${recapados}" th:if="${recapado.estado != 'EN RECAPADO'}">
+                        <h6 class="text-danger">Recapado:</h6>
+                        <p class="mb-1" id="dimgray" th:text="'Fecha '+${#dates.format(recapado.fechaEnvio, 'dd-MM-yyyy')}+' - Km al recapar '+${#numbers.formatDecimal(recapado.kmAlRecapar, 0, 'POINT', 0, 'POINT')}"></p>
+                        <h6 class="mb-1" id="dimgray" th:text="'KM Rodado Recapado '+${#numbers.formatDecimal(recapado.kmRecapado, 0, 'POINT', 0, 'POINT')}"></h6>
+                        <p id="dimgray" class="mb-1" th:text="'Proveedor '+${recapado.proveedor.nombre}"></p>
+                        <p th:if="${recapado.estado == 'FINALIZADO'}" class="mb-1" id="dimgray" th:text="'Km final Recapado '+${#numbers.formatDecimal(recapado.kmFinalRecapado, 0, 'POINT', 0, 'POINT')}+' - Km rodado Recapado '+${#numbers.formatDecimal(recapado.kmRecapado, 0, 'POINT', 0, 'POINT')}"></p>
+                        <p th:if="${recapado.observacion != ''}" id="dimgray" th:text="'Observación '+${recapado.observacion}"></p>
+                    </div>
+                </div>
+            </div>
+                <div th:if="${!historial.isEmpty()}">
+                    <br>
+                    <h6 class="text-center">Historial de Neumático</h6>
+                     <div class="table-responsive border border-dark rounded">
+                           <table class="table table-md bg-light table-hover mb-0 " id="dimgray">
+                        <thead>
+                            <tr>
+                                <th class="text-center" id="dimgray">Vehículo</th>
+                                <th class="text-center" id="dimgray">Eje</th>
+                                <th class="text-center" id="dimgray">Posición</th>
+                                <th class="text-center" id="dimgray">KM Vehículo Colocación</th>
+                                <th class="text-center" id="dimgray">KM Vehículo Actual</th>
+                                <th class="text-center" id="dimgray">KM Recorrido</th>
+                                <th class="text-center" id="dimgray">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${historial}">
+                                <td class="text-center" th:if="${item.camion != null}" th:with="texto=${item.camion.dominio} + ' ' + ${item.camion.marca} + ' ' + ${item.camion.modelo}">
+                                    <span th:if="${#strings.length(texto) <= 20}" th:text="${texto}"></span>
+                                    <span th:if="${#strings.length(texto) > 20}" th:text="${#strings.substring(texto, 0, 20)} + '...'"></span>
+                                </td>
+                                <td class="text-center" th:if="${item.acoplado != null}" th:with="texto=${item.acoplado.dominio} + ' ' + ${item.acoplado.marca} + ' ' + ${item.acoplado.modelo}">
+                                    <span th:if="${#strings.length(texto) <= 20}" th:text="${texto}"></span>
+                                    <span th:if="${#strings.length(texto) > 20}" th:text="${#strings.substring(texto, 0, 20)} + '...'"></span>
+                                </td>
+                                <td class="text-center" th:with="texto=${item.posicion.eje.numero + (item.posicion.eje.elevable ? ' - Izable '+item.posicion.eje.porcentaje+'%' : '') + ' - ' + item.posicion.eje.nombre}"
+                                    th:text="${#strings.length(texto) > 22} ? ${#strings.substring(texto, 0, 22)} + '...' : ${texto}">
+                                </td>
+                                <td class="text-center" th:text="${item.posicion.posicion}"></td>
+                                <td class="text-center" th:text="${#numbers.formatDecimal(item.kmColocacion, 0, 'POINT', 0, 'POINT')}+' ('+${#dates.format(item.fechaColocacion, 'dd-MM-yyyy')}+')'"></td>
+                                <td class="text-center" th:text="${#numbers.formatDecimal(item.kmRetiro, 0, 'POINT', 0, 'POINT')}+' ('+${#dates.format(item.fechaRetiro, 'dd-MM-yyyy')}+')'"></td>
+                                <td class="text-center" th:text="${#numbers.formatDecimal(item.kmRecorrido, 0, 'POINT', 0, 'POINT')}"></td>
+                                <td class="text-center" th:if="${item.estado == 'VIGENTE'}" ><a title="Ir a Modificar Historial" th:href="@{/neumatico/modificarHistorial/__${item.id}__}">
+                                        <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                        </svg>
+                                    </a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     </div>
+                </div>
+            <div th:if="${historial.isEmpty()}">
+                <br>
+                <h6 class='text-center'>No existe Historial de Neumático para mostrar</h6>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

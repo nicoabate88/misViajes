@@ -1,10 +1,12 @@
 package abate.abate.servicios;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Producto;
 import abate.abate.entidades.Usuario;
+import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.ClienteRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
@@ -37,13 +39,15 @@ public class FleteServicio {
     @Autowired
     private CamionRepositorio camionRepositorio;
     @Autowired
+    private AcopladoRepositorio acopladoRepositorio;
+    @Autowired
     private ProductoRepositorio productoRepositorio;
     @Autowired
     private ImagenServicio imagenServicio;
 
     @Transactional
-    public void crearFleteChofer(Long idOrg, String fechaCarga, Long idCliente, Long idCamion, String origen, String fechaViaje, String destino, Double km,
-            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Long idChofer) throws ParseException {
+    public void crearFleteChofer(Long idOrg, String fechaCarga, Long idCliente, Long idCamion, Long idAcoplado, String origen, String fechaViaje, String destino, Double km,
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, String observacion, Long idChofer) throws ParseException {
 
         Flete flete = new Flete();
 
@@ -65,11 +69,26 @@ public class FleteServicio {
             camion = cam.get();
         }
         
+        if(idAcoplado != null){
+        Acoplado acoplado = new Acoplado();
+        Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+        if (acop.isPresent()) {
+            acoplado = acop.get();
+        }
+        flete.setAcoplado(acoplado);
+        } else {
+            flete.setAcoplado(null);
+        }
+        
         Producto producto = productoRepositorio.getById(idProducto);
 
         Long ifFlete = buscarUltimoIdOrg(idOrg);
         String origenM = origen.toUpperCase();
         String destinoM = destino.toUpperCase();
+        if(!observacion.isEmpty()){
+            String obsM = observacion.toUpperCase();
+            flete.setObservacion(obsM);
+        }
         Date carga = convertirFecha(fechaCarga);
         Date viaje = convertirFecha(fechaViaje);
 
@@ -113,8 +132,8 @@ public class FleteServicio {
     }
 
     @Transactional
-    public void crearFleteAdmin(Long idOrg, Long idChofer, Long idCamion, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
-            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Double comisionTpte, String comisionTpteChofer, String ivaN, Long idUsuario) throws ParseException {
+    public void crearFleteAdmin(Long idOrg, Long idChofer, Long idCamion, Long idAcoplado, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Double comisionTpte, String comisionTpteChofer, String ivaN, String observacion, Long idUsuario) throws ParseException {
 
         Flete flete = new Flete();
 
@@ -141,11 +160,27 @@ public class FleteServicio {
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        
+        if(idAcoplado != null){
+        Acoplado acoplado = new Acoplado();
+        Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+        if (acop.isPresent()) {
+            acoplado = acop.get();
+        }
+        flete.setAcoplado(acoplado);
+        } else {
+            flete.setAcoplado(null);
+        }
+        
         Producto producto = productoRepositorio.getById(idProducto);
 
         Long ifFlete = buscarUltimoIdOrg(idOrg);
         String origenM = origen.toUpperCase();
         String destinoM = destino.toUpperCase();
+        if(!observacion.isEmpty()){
+            String obsM = observacion.toUpperCase();
+            flete.setObservacion(obsM);
+        } 
         Date carga = convertirFecha(fechaCarga);
         Date viaje = convertirFecha(fechaViaje);
         Double neto = (kg / 1000) * tarifa;
@@ -242,7 +277,7 @@ public class FleteServicio {
 
         transaccionServicio.crearTransaccionFleteChofer(idFlete);
         transaccionServicio.crearTransaccionFleteCliente(idFlete);
-        if (flete.getGasto() != null) {
+        if (flete.getGasto() != null && flete.getGasto().getEstado().equalsIgnoreCase("PENDIENTE")) {
             gastoServicio.aceptarGastoCaja(flete.getGasto().getId(), logueado);
             transaccionServicio.crearTransaccionGasto(flete.getGasto().getId());
         }
@@ -309,7 +344,7 @@ public class FleteServicio {
 
         ArrayList<Flete> lista = (ArrayList<Flete>) fleteRepositorio.buscarFletePendiente(idOrg);
 
-        Collections.sort(lista, FleteComparador.ordenarFechaAsc);
+       // Collections.sort(lista, FleteComparador.ordenarFechaAsc);
 
         return lista;
     }
@@ -336,71 +371,69 @@ public class FleteServicio {
         return lista;
     }
 
-    public ArrayList<Flete> buscarFletesIdChoferFecha(Long id, String desde, String hasta) throws ParseException {
-
-        Usuario chofer = new Usuario();
-        Optional<Usuario> chf = usuarioRepositorio.findById(id);
-        if (chf.isPresent()) {
-            chofer = chf.get();
-        }
+    public ArrayList<Flete> buscarFletesIdChoferFecha(Long idChofer, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> lista = fleteRepositorio.findByFechaFleteBetweenAndChofer(d, h, chofer);
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChofer(d, h, idChofer);
 
         Collections.sort(lista, FleteComparador.ordenarFechaDesc);
 
         return lista;
     }
 
-    public ArrayList<Flete> buscarFletesIdChoferFechaAsc(Long id, String desde, String hasta) throws ParseException {
-
-        Usuario chofer = new Usuario();
-        Optional<Usuario> chf = usuarioRepositorio.findById(id);
-        if (chf.isPresent()) {
-            chofer = chf.get();
-        }
+    public ArrayList<Flete> buscarFletesIdChoferFechaAsc(Long idChofer, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> lista = fleteRepositorio.findByFechaFleteBetweenAndChofer(d, h, chofer);
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChofer(d, h, idChofer);
 
         Collections.sort(lista, FleteComparador.ordenarFechaAsc);
 
         return lista;
     }
 
-    public ArrayList<Flete> buscarFletesIdClienteFecha(Long id, String desde, String hasta) throws ParseException {
-
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cli = clienteRepositorio.findById(id);
-        if (cli.isPresent()) {
-            cliente = cli.get();
-        }
+    public ArrayList<Flete> buscarFletesIdClienteFecha(Long idCliente, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> lista = fleteRepositorio.findByFechaFleteBetweenAndCliente(d, h, cliente);
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteCliente(d, h, idCliente);
         Collections.sort(lista, FleteComparador.ordenarIdDesc);
 
         return lista;
     }
 
-    public ArrayList<Flete> buscarFletesIdClienteFechaAsc(Long id, String desde, String hasta) throws ParseException {
-
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cli = clienteRepositorio.findById(id);
-        if (cli.isPresent()) {
-            cliente = cli.get();
-        }
+    public ArrayList<Flete> buscarFletesIdClienteFechaAsc(Long idCliente, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> lista = fleteRepositorio.findByFechaFleteBetweenAndCliente(d, h, cliente);
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteCliente(d, h, idCliente);
+        Collections.sort(lista, FleteComparador.ordenarFechaAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdCamionFecha(Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteCamion(d, h, idCamion);
+        Collections.sort(lista, FleteComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdCamionFechaAsc(Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteCamion(d, h, idCamion);
         Collections.sort(lista, FleteComparador.ordenarFechaAsc);
 
         return lista;
@@ -408,22 +441,10 @@ public class FleteServicio {
 
     public ArrayList<Flete> buscarFletesIdChoferClienteFecha(Long idChofer, Long idCliente, String desde, String hasta) throws ParseException {
 
-        Usuario chofer = new Usuario();
-        Optional<Usuario> chf = usuarioRepositorio.findById(idChofer);
-        if (chf.isPresent()) {
-            chofer = chf.get();
-        }
-
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cli = clienteRepositorio.findById(idCliente);
-        if (cli.isPresent()) {
-            cliente = cli.get();
-        }
-
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> lista = fleteRepositorio.findByFechaFleteBetweenAndChoferAndCliente(d, h, chofer, cliente);
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChoferCliente(d, h, idChofer, idCliente);
         Collections.sort(lista, FleteComparador.ordenarIdDesc);
 
         return lista;
@@ -431,22 +452,79 @@ public class FleteServicio {
 
     public ArrayList<Flete> buscarFletesIdChoferClienteFechaAsc(Long idChofer, Long idCliente, String desde, String hasta) throws ParseException {
 
-        Usuario chofer = new Usuario();
-        Optional<Usuario> chf = usuarioRepositorio.findById(idChofer);
-        if (chf.isPresent()) {
-            chofer = chf.get();
-        }
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
 
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cli = clienteRepositorio.findById(idCliente);
-        if (cli.isPresent()) {
-            cliente = cli.get();
-        }
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChoferCliente(d, h, idChofer, idCliente);
+
+        Collections.sort(lista, FleteComparador.ordenarFechaAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdChoferCamionFecha(Long idChofer, Long idCamion, String desde, String hasta) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> lista = fleteRepositorio.findByFechaFleteBetweenAndChoferAndCliente(d, h, chofer, cliente);
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChoferCamion(d, h, idChofer, idCamion);
+        Collections.sort(lista, FleteComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdChoferCamionFechaAsc(Long idChofer, Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChoferCamion(d, h, idChofer, idCamion);
+
+        Collections.sort(lista, FleteComparador.ordenarFechaAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdClienteCamionFecha(Long idCliente, Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteClienteCamion(d, h, idCliente, idCamion);
+        Collections.sort(lista, FleteComparador.ordenarIdDesc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdClienteCamionFechaAsc(Long idCliente, Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteClienteCamion(d, h, idCliente, idCamion);
+
+        Collections.sort(lista, FleteComparador.ordenarFechaAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Flete> buscarFletesIdChoferClienteCamionFecha(Long idChofer, Long idCliente, Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChoferClienteCamion(d, h, idChofer, idCliente, idCamion);
+        Collections.sort(lista, FleteComparador.ordenarIdDesc);
+
+        return lista;
+    }
+        
+    public ArrayList<Flete> buscarFletesIdChoferClienteCamionFechaAsc(Long idChofer, Long idCliente, Long idCamion, String desde, String hasta) throws ParseException {
+
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        ArrayList<Flete> lista = fleteRepositorio.buscarFleteChoferClienteCamion(d, h, idChofer, idCliente, idCamion);
 
         Collections.sort(lista, FleteComparador.ordenarFechaAsc);
 
@@ -476,8 +554,8 @@ public class FleteServicio {
     }
 
     @Transactional
-    public void modificarFleteChofer(Long idFlete, Long idCamion, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
-            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg) throws ParseException {
+    public void modificarFleteChofer(Long idFlete, Long idCamion, Long idAcoplado, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
+            Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, String observacion) throws ParseException {
 
         Flete flete = new Flete();
         Optional<Flete> fte = fleteRepositorio.findById(idFlete);
@@ -485,22 +563,60 @@ public class FleteServicio {
             flete = fte.get();
         }
 
+        if(flete.getCliente().getId() != idCliente){
         Cliente cliente = new Cliente();
         Optional<Cliente> cte = clienteRepositorio.findById(idCliente);
         if (cte.isPresent()) {
             cliente = cte.get();
         }
+        flete.setCliente(cliente);
+        }
 
+        if(flete.getCamion().getId() != idCamion){
         Camion camion = new Camion();
         Optional<Camion> cam = camionRepositorio.findById(idCamion);
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        flete.setCamion(camion);
+        }
         
+        if(idAcoplado != null) {
+        if(flete.getAcoplado() != null){    
+        if(flete.getAcoplado().getId() != idAcoplado){
+        Acoplado acoplado = new Acoplado();
+        Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+        if (acop.isPresent()) {
+            acoplado = acop.get();
+        }
+        flete.setAcoplado(acoplado);
+            }
+        } else {
+        Acoplado acoplado = new Acoplado();
+        Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+        if (acop.isPresent()) {
+            acoplado = acop.get();
+        }
+        flete.setAcoplado(acoplado);
+            
+        }
+        } else {
+            flete.setAcoplado(null);
+        }
+        
+        if(flete.getProducto().getId() != idProducto){
         Producto producto = productoRepositorio.getById(idProducto);
-
+        flete.setProducto(producto);
+        }
+        
         String origenM = origen.toUpperCase();
         String destinoM = destino.toUpperCase();
+        if(!observacion.isEmpty()){
+            String obsM = observacion.toUpperCase();
+            flete.setObservacion(obsM);
+        } else {
+            flete.setObservacion(null);
+        }
         Date carga = convertirFecha(fechaCarga);
         Date viaje = convertirFecha(fechaViaje);
         Double neto = (kg / 1000) * tarifa;
@@ -516,12 +632,10 @@ public class FleteServicio {
         Double totalR = Math.round(total * 100.0) / 100.0;
 
         flete.setFechaCarga(carga);
-        flete.setCliente(cliente);
         flete.setOrigenFlete(origenM);
         flete.setFechaFlete(viaje);
         flete.setDestinoFlete(destinoM);
         flete.setKmFlete(km);
-        flete.setProducto(producto);
         flete.setTarifa(tarifa);
         flete.setCartaPorte(cPorte);
         flete.setCtg(ctg);
@@ -530,16 +644,15 @@ public class FleteServicio {
         flete.setIva(ivaR);
         flete.setTotal(totalR);
         flete.setPorcentajeChofer(porcentaje);
-        flete.setCamion(camion);
 
         fleteRepositorio.save(flete);
 
     }
 
     @Transactional
-    public void modificarFleteAdmin(Long idFlete, Long idChofer, Long idCamion, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
+    public void modificarFleteAdmin(Long idFlete, Long idChofer, Long idCamion, Long idAcoplado, String fechaCarga, Long idCliente, String origen, String fechaViaje, String destino, Double km,
             Long idProducto, Double tarifa, String cPorte, String ctg, Double kg, Double ivaM, Double porciento, Double porcentajeChofer,
-            Double comisionTpte, String comisionTpteChofer, Long idUsuario) throws ParseException {
+            Double comisionTpte, String comisionTpteChofer, String observacion, Long idUsuario) throws ParseException {
 
         Flete flete = new Flete();
         Optional<Flete> fte = fleteRepositorio.findById(idFlete);
@@ -551,29 +664,69 @@ public class FleteServicio {
         Optional<Usuario> chof = usuarioRepositorio.findById(idChofer);
         if (chof.isPresent()) {
             chofer = chof.get();
+        flete.setChofer(chofer);    
         }
-
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cte = clienteRepositorio.findById(idCliente);
-        if (cte.isPresent()) {
-            cliente = cte.get();
-        }
-
+        
         Usuario usuario = new Usuario();
         Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
         if (user.isPresent()) {
             usuario = user.get();
         }
+        
+        if(flete.getCliente().getId() != idCliente){
+        Cliente cliente = new Cliente();
+        Optional<Cliente> cte = clienteRepositorio.findById(idCliente);
+        if (cte.isPresent()) {
+            cliente = cte.get();
+        }
+        flete.setCliente(cliente);
+        }
+
+        if(flete.getCamion().getId() != idCamion){
         Camion camion = new Camion();
         Optional<Camion> cam = camionRepositorio.findById(idCamion);
         if (cam.isPresent()) {
             camion = cam.get();
         }
+        flete.setCamion(camion);
+        }
         
+        if(idAcoplado != null) {
+        if(flete.getAcoplado() != null){    
+        if(flete.getAcoplado().getId() != idAcoplado){
+        Acoplado acoplado = new Acoplado();
+        Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+        if (acop.isPresent()) {
+            acoplado = acop.get();
+        }
+        flete.setAcoplado(acoplado);
+            }
+        } else {
+        Acoplado acoplado = new Acoplado();
+        Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+        if (acop.isPresent()) {
+            acoplado = acop.get();
+        }
+        flete.setAcoplado(acoplado);
+            
+        }
+        } else {
+            flete.setAcoplado(null);
+        }
+        
+        if(flete.getProducto().getId() != idProducto){
         Producto producto = productoRepositorio.getById(idProducto);
+        flete.setProducto(producto);
+        }
 
         String origenM = origen.toUpperCase();
         String destinoM = destino.toUpperCase();
+        if(!observacion.isEmpty()){
+            String obsM = observacion.toUpperCase();
+            flete.setObservacion(obsM);
+        } else {
+            flete.setObservacion(null);
+        }
         Date carga = convertirFecha(fechaCarga);
         Date viaje = convertirFecha(fechaViaje);
         Double neto = (kg / 1000) * tarifa;
@@ -621,12 +774,10 @@ public class FleteServicio {
         }
 
         flete.setFechaCarga(carga);
-        flete.setCliente(cliente);
         flete.setOrigenFlete(origenM);
         flete.setFechaFlete(viaje);
         flete.setDestinoFlete(destinoM);
         flete.setKmFlete(km);
-        flete.setProducto(producto);
         flete.setTarifa(tarifa);
         flete.setCartaPorte(cPorte);
         flete.setCtg(ctg);
@@ -636,19 +787,19 @@ public class FleteServicio {
         flete.setTotal(totalR);
         flete.setPorcientoChofer(porciento);
         flete.setPorcentajeChofer(porcentajeChofer);
-        flete.setChofer(chofer);
         flete.setUsuario(usuario);
-        flete.setCamion(camion);
 
         fleteRepositorio.save(flete);
 
         if (flete.getGasto() != null) {
             gastoServicio.modificarChoferGasto(flete.getGasto(), chofer);
         }
-
+        
+        
+        
         if (flete.getEstado().equalsIgnoreCase("ACEPTADO")) {
-
-            transaccionServicio.modificarTransaccionFlete(idFlete);
+                    
+            transaccionServicio.modificarTransaccionFlete(flete);
         }
 
     }
@@ -682,6 +833,7 @@ public class FleteServicio {
         flete.setCliente(null);
         flete.setUsuario(null);
         flete.setCamion(null);
+        flete.setAcoplado(null);
         flete.setProducto(null);
 
         fleteRepositorio.save(flete);

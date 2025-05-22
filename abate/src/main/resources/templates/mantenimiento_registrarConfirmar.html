@@ -1,0 +1,141 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Mantenimiento Confirmar</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css">  
+                        </head>
+                        <body>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a type="button" th:href="@{/mantenimiento/listarAdmin}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
+                                        <h4>Confirmar Mantenimiento</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mb-2">  
+                                <div class="card border-secondary p-3 mb-2" id="color-card">
+                                    <h6 th:if="${mantenimientoExistente.camion != null}" class='text-center'>
+                                        <strong th:text="'Actualmente el '+${mantenimientoExistente.aplicaA}+' '+${mantenimientoExistente.camion.dominio}
+                                                +' - '+${mantenimientoExistente.camion.marca}+' '+${mantenimientoExistente.camion.modelo}+' tiene el siguiente '
+                                                +${mantenimientoExistente.tipoMantenimiento.nombre}+' asociado:'"></strong></h6>
+                                    <h6 th:if="${mantenimientoExistente.acoplado != null}" class='text-center'>
+                                        <strong th:text="'Actualmente el '+${mantenimientoExistente.aplicaA}+' '+${mantenimientoExistente.acoplado.dominio}
+                                                +' - '+${mantenimientoExistente.acoplado.marca}+' '+${mantenimientoExistente.acoplado.modelo}+' tiene el siguiente '
+                                                +${mantenimientoExistente.tipoMantenimiento.nombre}+' asociado:'"></strong></h6>
+                                    <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(mantenimientoExistente.fecha, 'dd-MM-yyyy')}"></p>
+                                    <h6 th:if="${mantenimientoExistente.acoplado == null}" class="mb-2" id="dimgray" th:text="'Km Mantenimiento: ' +${#numbers.formatDecimal(mantenimientoExistente.km, 0, 'POINT', 0, 'POINT')}"></h6>
+                                    <h6><strong class="mb-2" id="dimgray" th:text="'KM Actual ' +${#numbers.formatDecimal(mantenimientoExistente.kmActual, 0, 'POINT', 0, 'POINT')}"></strong></h6>
+                                    <div class="mb-3">
+                                        <span th:switch="${mantenimientoExistente.estado}"><strong>
+                                                <span id="dimgray">Estado</span>
+                                                <span th:case="'VIGENTE'">✅ VIGENTE</span>
+                                                <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
+                                                <span th:case="'VENCIDO'">❌ VENCIDO</span>
+                                                <span th:text="' '+${#numbers.formatDecimal(mantenimientoExistente.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
+                                            </strong></span>
+                                    </div>
+                                    <h6 class="mb-2 text-dark" th:text="'🔧 Próximo Mantenimiento '+${#numbers.formatDecimal(mantenimientoExistente.kmProximo, 0, 'POINT', 0, 'POINT')}+' Km'"></h6>
+                                    <p class="mb-0" id="dimgray" th:text="'Observación '+${mantenimientoExistente.observacion}"></p> 
+                                </div>  
+                                <div class="card border-secondary p-2" id="color-card-chofer">
+                                    <h6 class='text-center text-success'>
+                                        <strong>Seleccione 'Confirmar' para registrar nuevo Mantenimiento.</strong></h6>
+                                    <h6 class='text-center text-success'>Esta acción, actualizará el nuevo Mantenimiento y cambiará el estado del mantenimento actual.</h6>
+
+                                    <div class="row">
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                            <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
+                                            <select class="form-control text-secondary" id="aplicaA">
+                                                <option selected th:text="${mantenimiento.aplicaA}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">   
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                            <label for="tipo" class="form-floting text-secondary">Tipo*</label>
+                                            <select class="form-control text-secondary" id="tipo">
+                                                <option selected th:text="${mantenimiento.tipoMantenimiento.nombre}" ></option>
+                                            </select>
+                                        </div>                                 
+                                        <div th:if="${mantenimiento.camion != null}" class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                            <label for="tipo" class="form-floting text-secondary">Camión*</label>
+                                            <select class="form-control text-secondary" id="tipo">
+                                                <option selected th:text="${mantenimiento.camion.dominio}+' - '+${mantenimiento.camion.marca}+' '+${mantenimiento.camion.modelo}"></option>
+                                            </select>
+                                        </div>
+                                        <div th:if="${mantenimiento.acoplado != null}" class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                            <label for="tipo" class="form-floting text-secondary">Acoplado*</label>
+                                            <select class="form-control text-secondary" id="tipo">
+                                                <option selected th:text="${mantenimiento.acoplado.dominio}+' - '+${mantenimiento.acoplado.marca}+' '+${mantenimiento.acoplado.modelo}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-sm-12 col-md-12 col-lg-10 col-xl-10 mb-2">
+                                            <label for="obs" class="form-label text-secondary">Observación</label>
+                                            <textarea class="form-control text-secondary" id="obs" rows="1" th:text="${mantenimiento.observacion}"></textarea>
+                                        </div>  
+                                    </div>
+                                    <div class="row mb-5">
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                            <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                            <input type="date" class="form-control text-secondary" id="fecha" th:value="${fecha}">
+                                        </div>
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
+                                            <label for="kmInicial" class="form-label text-secondary">KM Mantenimiento*</label> 
+                                            <div class="input-group"> 
+                                                <span class="input-group-text text-secondary">km</span> 
+                                                <input type="number" class="form-control text-secondary" id="kmInicial" th:value="${mantenimiento.km}"> 
+                                            </div> 
+                                        </div> 
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
+                                            <label for="kmProximo" class="form-label text-secondary">KM Próximo*</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text text-secondary">km</span>
+                                                <input type="number" class="form-control text-secondary" id="kmProximo" th:value="${mantenimiento.kmProximo}">
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                            <label for="kmAlarma" class="form-label text-secondary">Km Alarma*</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light text-danger">km</span>
+                                                <input type="number" class="form-control bg-light text-danger" id="kmAlarma" th:value="${mantenimiento.kmAlarma}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                        <h6 id="white" th:text="${error}"></h6>                                                                             
+                                    </div>
+                                    <form id="formulario" th:action="@{/mantenimiento/confirmarRegistro}" method="POST">
+                                        <input hidden th:value="${mantenimiento.aplicaA}" name="aplicaA">
+                                            <input hidden th:value="${mantenimiento.tipoMantenimiento.id}" name="idTipo">
+                                                <input th:if="${mantenimiento.camion != null}" hidden th:value="${mantenimiento.camion.id}" name="idEntidad">
+                                                    <input th:if="${mantenimiento.acoplado != null}" hidden th:value="${mantenimiento.acoplado.id}" name="idEntidad">
+                                                        <input hidden th:value="${mantenimiento.observacion}" name="observacion">
+                                                            <input hidden th:value="${fecha}" name="fecha">
+                                                                <input hidden th:value="${mantenimiento.km}" name="km">
+                                                                    <input hidden th:value="${mantenimiento.kmProximo}" name="kmProximo">
+                                                                        <input hidden th:value="${mantenimiento.kmAlarma}" name="kmAlarma">    
+                                                                            <input hidden th:value="${mantenimientoExistente.id}" name="idMantenimientoExistente">
+                                                                                <div class="text-center mb-2">
+                                                                                    <button class="btn btn-secondary bg-secondary border-secondary w-50" type="submit" title="Modificar Mantenimiento">Confirmar</button>
+                                                                                </div>
+                                                                                <div class="text-center">
+                                                                                    <a class="btn btn-primary bg-primary border-primary w-50" type="button" th:href="@{/mantenimiento/listarAdmin}" title="Cancelar">Cancelar</a>
+                                                                                </div> 
+                                                                                </form>
+                                                                                </div>
+                                                                                </div>
+                                                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                                </body>
+                                                                                </html>

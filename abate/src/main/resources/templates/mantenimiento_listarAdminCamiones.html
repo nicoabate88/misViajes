@@ -1,0 +1,194 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Camiones Mantenimiento</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                        <link rel="stylesheet" href="/css/medidas_container.css">   
+                            <style>
+
+                                /* Estilo para pantallas md */
+                                @media (max-width: 991.98px) {
+                                    .table {
+                                        font-size: 13px;
+                                    }
+                                    .text-dark {
+                                        font-size: 13px;
+                                    }
+                                }
+                                /* Estilo para pantallas sm */
+                                @media (max-width: 767.98px) {
+                                    .table {
+                                        font-size: 10px;
+                                    }
+                                    .text-dark {
+                                        font-size: 13px;
+                                    }
+                                }
+                                .text-green {
+                                    color: green;
+                                    font-size: 1.2em;
+                                }
+
+                                .text-yellow {
+                                    color: orange;
+                                    font-size: 1.2em;
+                                }
+
+                                .text-red {
+                                    color: red;
+                                    font-size: 1.2em;
+                                }
+                            </style>
+                            </head>
+                            <body>                        
+                                <div class="card-header mb-4" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a title="Volver" th:href="@{/mantenimiento/listarAdmin}" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                            <h4>Mantenimiento de Camión</h4>
+                                        </div>
+                                        <div title="Ir a Registrar Mantenimiento" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                            <a th:href="@{/mantenimiento/registrar/__${aplica}__}">
+                                                <svg width="20" height="20" viewBox="0 0 511.99842 511" xmlns="http://www.w3.org/2000/svg"><path d="m371.53125 204.308594c37.8125 13.46875 80.636719 4.160156 109.460938-24.664063 31.402343-31.402343 39.644531-79.40625 20.511718-119.457031l-9.140625-19.128906-64.375 64.375-21.207031-21.199219 64.378906-64.378906-19.128906-9.140625c-40.050781-19.132813-88.058594-10.890625-119.457031 20.511718-28.835938 28.835938-38.140625 71.667969-24.65625 109.492188-1.316407 1.320312 11.335937-11.371094-73.132813 73.363281l-79.878906-79.882812-.003906-56.371094-106.511719-76.984375-48.046875 48.050781 76.996094 106.515625h56.375l79.871094 79.875c-30.265626 30.214844-41.328126 41.441406-73.332032 73.148438-37.828125-13.503906-80.683594-4.203125-109.527344 24.640625-31.402343 31.402343-39.644531 79.40625-20.507812 119.457031l9.136719 19.128906 64.378906-64.375 21.203125 21.203125-64.378906 64.375 19.128906 9.140625c40.050781 19.132813 88.058594 10.890625 119.457031-20.511718 28.824219-28.824219 38.136719-71.640626 24.667969-109.453126l40.65625-40.5 182.726562 180.851563 84.804688-84.804687-182.765625-180.890626zm-278.871094-78.882813-53.050781-73.394531 11.921875-11.921875 73.398438 53.046875.003906 32.269531zm251.019532 21.878907-4.558594-9.546876c-13.667969-28.605468-7.777344-62.898437 14.65625-85.332031 16.957031-16.953125 40.6875-24.460937 63.617187-21.210937l-53.015625 53.019531 63.605469 63.605469 53.015625-53.015625c3.25 22.929687-4.253906 46.660156-21.210938 63.617187-22.429687 22.433594-56.722656 28.320313-85.328124 14.65625l-9.578126-4.574218-87.738281 87.917968-21.15625-21.15625c99.164063-99.488281 86.601563-86.882812 87.691407-87.980468zm-175.664063 218.070312 4.582031 9.585938c13.664063 28.605468 7.773438 62.898437-14.65625 85.328124-16.957031 16.957032-40.6875 24.460938-63.617187 21.214844l53.015625-53.015625-63.609375-63.609375-53.015625 53.015625c-3.246094-22.929687 4.257812-46.660156 21.214844-63.617187 22.429687-22.429688 56.722656-28.320313 85.328124-14.65625l9.507813 4.542968 7.496094-7.40625c39.035156-38.605468 57.058593-56.878906 80.523437-80.269531l21.179688 21.179688c-99.460938 99.191406-86.851563 86.613281-87.949219 87.707031zm259.070313 104.71875-118.753907-117.535156 42.398438-42.398438 118.753906 117.535156zm-97.667969-181.027344-42.394531 42.398438-21.324219-21.101563 42.351562-42.445312zm0 0" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>
+                                                <h6 id="icono">Nuevo</h6> </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-2">  
+                                    <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
+                                        <div class="row">
+                                            <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5 pb-3">
+                                                <label for="idCamion" class="form-floting text-secondary">Camión</label>
+                                                <select class="form-control text-secondary border-secondary" id="idCamion" name="idCamion">
+                                                    <option th:if="${camion == null}" selected value="">Todos</option>
+                                                    <option th:if="${camion != null}" selected th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                    <option th:if="${camion != null}" value="">Todos</option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
+                                                <label for="ver" class="form-floting">Ver</label> 
+                                                <button id="ver"  class="btn btn-primary" type="submit">
+                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div th:if="${camion != null}" class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 text-center">
+                                                <h6><a type="button" title="Ver Historial" th:href="@{/mantenimiento/listarHistorialCamionAdmin(id=${camion.id}, idCamion=${idCamion})}" th:text="' 🛠 Ver Historial de Mantenimientos'"></a>     
+                                                </h6></div>
+                                        </div>
+                                    </form>
+                                    <div th:if="${mantenimientos.size >= 1}">
+                                        <div class="mb-4" th:each="entry : ${mantenimientos}">
+                                            <h6 class="text-dark p-1 text-center"><strong th:text="${entry.key}"></strong></h6> 
+                                            <div class="table-responsive border border-secondary rounded">
+                                            <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">Dominio</th>
+                                                        <th class="text-center">Fecha</th>
+                                                        <th class="text-center">Km</th>
+                                                        <th class="text-center">Km Próximo</th>
+                                                        <th class="text-center">Km Actual</th>
+                                                        <th class="text-center">Km Vigencia</th>
+                                                        <th class="text-center">Estado</th>
+                                                        <th class="text-center">Observación</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr th:each="mantenimiento : ${entry.value}">
+                                                        <td class="text-center"><b><a id="dimgray" th:href="@{/mantenimiento/listarAdminCamion(id=${mantenimiento.id}, idCamion=${idCamion})}" th:text="${mantenimiento.camion.dominio}"></a></b></td>
+                                                        <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
+                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
+                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}"></td>
+                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                        <td class="text-center">
+                                                            <span th:switch="${mantenimiento.estado}">
+                                                                <span th:case="'VIGENTE'">✅ VIGENTE</span>
+                                                                <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
+                                                                <span th:case="'VENCIDO'">❌ VENCIDO</span>
+                                                            </span> 
+                                                        </td>
+                                                        <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
+                                                            <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
+                                                               th:attr="data-observacion=${mantenimiento.observacion}" 
+                                                               class="text-primary ver-mas">Ver</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrar/__${aplica}__}">Nuevo</a>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
+                                        </div>
+                                    </div>
+                                    <div th:if="${mantenimientos.size < 1}">
+                                        <br>
+                                            <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
+                                                <h6 id="azul">No existen Mantenimientos de Camiones para mostrar</h6>
+                                            </div>
+                                            <br>
+                                                <div class="text-center mb-2">
+                                                    <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrar/__${aplica}__}">Nuevo</a>
+                                                </div>
+                                                <div class="text-center mb-2">
+                                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
+                                                </div>
+                                                </div>
+                                                </div>
+                                                <script>
+
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        document.querySelectorAll(".ver-mas").forEach(function (link) {
+                                                            link.addEventListener("click", function (event) {
+                                                                event.preventDefault();
+
+                                                                let observacionCompleta = this.getAttribute("data-observacion");
+
+                                                                let observacionBox = document.getElementById("observacion-box");
+                                                                if (!observacionBox) {
+                                                                    observacionBox = document.createElement("div");
+                                                                    observacionBox.id = "observacion-box";
+                                                                    observacionBox.style.position = "fixed";
+                                                                    observacionBox.style.top = "50%";
+                                                                    observacionBox.style.left = "50%";
+                                                                    observacionBox.style.transform = "translate(-50%, -50%)";
+                                                                    observacionBox.style.background = "#fff";
+                                                                    observacionBox.style.padding = "20px";
+                                                                    observacionBox.style.boxShadow = "0px 0px 10px rgba(0,0,0,0.3)";
+                                                                    observacionBox.style.borderRadius = "10px";
+                                                                    observacionBox.style.zIndex = "1000";
+                                                                    observacionBox.style.maxWidth = "400px";
+                                                                    observacionBox.style.textAlign = "center";
+                                                                    document.body.appendChild(observacionBox);
+                                                                }
+
+                                                                observacionBox.innerHTML = `
+                <p>${observacionCompleta}</p>
+                <button onclick="document.getElementById('observacion-box').remove()" class="btn btn-danger btn-sm">Cerrar</button>
+            `;
+                                                            });
+                                                        });
+                                                    });
+                                                </script>
+                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                </body>
+                                                </html>

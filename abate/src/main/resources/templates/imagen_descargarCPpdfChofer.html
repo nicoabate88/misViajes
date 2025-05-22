@@ -7,7 +7,6 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-
                             <div class="container">                           
                                 <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
@@ -18,13 +17,14 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div class="col-10">
+                                        <div class="col-8 text-center">
                                             <h4>Archivo PDF CP</h4>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="container mb-2 text-center">   
                                 <div id="imagenes-container" class="mb-2">
-                                    <div class="card border-secondary p-4 text-center" id="color-card">
+                                    <div class="card border-secondary p-3 mb-4" id="color-card">
                                         <h6 id="dimgray" th:text="'ARCHIVO PDF DESCARGADO '+${imagenNombre}"></h6>
                                     </div>
                                     <iframe th:src="@{${imagenUrl}}" th:alt="${imagenNombre}" width="0" height="0"></iframe>

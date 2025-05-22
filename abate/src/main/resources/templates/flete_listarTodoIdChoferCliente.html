@@ -19,11 +19,8 @@
                             }
                         </style>
                     </head>
-
                     <body>
                         <section>
-                            <div class="container">
-
                                 <div class="card-header" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
@@ -33,10 +30,10 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-7">
+                                        <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
                                             <h4>Lista de Viajes</h4>
                                         </div>
-                                         <div class="col-3 text-center" th:if="${flag == true}">
+                                         <div class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
                                             <form th:action="@{/flete/exportarAdminIdChoferCliente}" method="POST">
                                                    <input hidden th:value="${desde}" name="desde"> 
                                                    <input hidden th:value="${hasta}" name="hasta">    
@@ -49,23 +46,24 @@
                                         </div>
                                     </div>
                                 </div>
+                            <div class="container mb-2">   
 
                                 <div class="card-header pb-3" id="bgWhite">
                                     <div class="row">
                                         <div class="col-6 col-md-2 col-lg-2 col-xl-2">
                                             <label for="desde" class="form-label">Desde</label>
-                                            <input type="date" class="form-control" id="desde" th:value="${desde}" disabled readonly>
+                                            <input type="date" class="form-control border-secondary" id="desde" th:value="${desde}" disabled readonly>
                                         </div>
                                         <div class="col-6 col-md-2 col-lg-2 col-xl-2 mb-1">
                                             <label for="hasta" class="form-label">Hasta</label>
-                                            <input type="date" class="form-control" id="hasta" th:value="${hasta}" disabled readonly>                                                                                          
+                                            <input type="date" class="form-control border-secondary" id="hasta" th:value="${hasta}" disabled readonly>                                                                                          
                                         </div> 
                                         <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-1">
                                             <label for="chofer" class="form-floting">Chofer</label>
-                                            <input type="text" class="form-control" id="chofer" th:value="${chofer.nombre}" disabled readonly>
+                                            <input type="text" class="form-control border-secondary" id="chofer" th:value="${chofer.nombre}" disabled readonly>
                                         </div>
                                         <div class="col-12 col-md-4 col-lg-4 col-xl-4">
-                                            <label for="cliente" class="form-floting">Cliente</label>
+                                            <label for="cliente" class="form-floting border-secondary">Cliente</label>
                                             <input type="text" class="form-control" id="cliente" th:value="${cliente.nombre}" disabled readonly>
                                     </div>                                    
                                 </div>

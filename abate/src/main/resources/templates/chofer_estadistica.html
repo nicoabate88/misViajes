@@ -7,10 +7,17 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         <style>
 
+                            .fila-alta {
+                                height: 50px;
+                            }
+
                             /* Estilo para pantallas md */
                             @media (max-width: 991.98px) {
                                 .table {
                                     font-size: 13px;
+                                .fila-alta {
+                                    height: 35px;
+                                }
                                 }
                             }
                             /* Estilo para pantallas sm */
@@ -18,92 +25,96 @@
                                 .table {
                                     font-size: 10px;
                                 }
+                                .fila-alta {
+                                    height: 35px;
+                                }
                             }
                         </style>
                         </head>
-                        <body>
-                            <div class="container mb-">                           
-                                <div class="card-header" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/chofer/mostrarEstadistica}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7">
-                                            <h4>Estadísticas de Chofer</h4>
-                                        </div>
-                                        <div title="Exportar a Excel" class="col-3 text-center" th:if="${flag == true}">
-                                            <form th:action="@{/chofer/estadisticaExportar}" method="POST">
-                                                <input hidden th:value="${desde}" name="desde"> 
-                                                    <input hidden th:value="${hasta}" name="hasta"> 
-                                                        <input hidden th:value="${chofer.id}" name="id">     
-                                                            <button class="btn btn-light" type="submit">
-                                                                <h6 id="icono">Exportar</h6> 
-                                                            </button>
-                                                            </form>
-                                                            </div>
-                                                            </div>
-                                                            </div>
+                        <body>                       
+                            <div class="card-header" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/chofer/mostrarEstadistica}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
+                                        <h4>Estadísticas de Chofer</h4>
+                                    </div>
+                                    <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
+                                        <form th:action="@{/chofer/estadisticaExportar}" method="POST">
+                                            <input hidden th:value="${desde}" name="desde"> 
+                                                <input hidden th:value="${hasta}" name="hasta"> 
+                                                    <input hidden th:value="${chofer.id}" name="id">     
+                                                        <button class="btn btn-light" type="submit">
+                                                            <h6 id="icono">Exportar</h6> 
+                                                        </button>
+                                                        </form>
+                                                        </div>
+                                                        </div>
+                                                        </div>
+                                                        <div class="container mb-2"> 
                                                             <div class="card-header pb-0" id="bgWhite">
                                                                 <form class="row" th:action="@{/chofer/estadisticaFiltro}" method="POST">
                                                                     <input hidden th:value="${chofer.id}" name="idChofer">  
-                                                                        
-                                                                            <div class="col-5 col-sm-5 col-md-5 col-lg-3 col-xl-3">
-                                                                                <label for="desde" class="form-label">Desde</label>
-                                                                                <input type="date" class="form-control" id="desde" th:value="${desde}" name="desde" required>
-                                                                            </div>
-                                                                            <div class="col-5 col-sm-5 col-md-5 col-lg-3 col-xl-3">
-                                                                                <label for="hasta" class="form-label">Hasta</label>
-                                                                                <input type="date" class="form-control" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
-                                                                            </div>
-                                                                            <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
-                                                                                <label for="ver" class="form-label">Ver</label>
-                                                                                <button id="ver" class="btn btn-primary" type="submit">
-                                                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                                                                    </svg>
-                                                                                </button>
-                                                                            </div>
-                                                                      
+
+                                                                        <div class="col-5 col-sm-5 col-md-5 col-lg-3 col-xl-3">
+                                                                            <label for="desde" class="form-label">Desde</label>
+                                                                            <input type="date" class="form-control border-secondary" id="desde" th:value="${desde}" name="desde" required>
+                                                                        </div>
+                                                                        <div class="col-5 col-sm-5 col-md-5 col-lg-3 col-xl-3">
+                                                                            <label for="hasta" class="form-label">Hasta</label>
+                                                                            <input type="date" class="form-control border-secondary" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
+                                                                        </div>
+                                                                        <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
+                                                                            <label for="ver" class="form-label">Ver</label>
+                                                                            <button id="ver" class="btn btn-primary" type="submit">
+                                                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                                                </svg>
+                                                                            </button>
+                                                                        </div>
+
                                                                 </form>   
                                                             </div>
                                                             <div th:if="${estadistica.size > 1}">
                                                                 <div class="card-body p-2">
                                                                     <h6 class="text-dark" th:text="${chofer.nombre}"></h6>
                                                                 </div>
-                                                                <div class="table-responsive mb-4">
-                                                                <table class="table border-secondary bg-light table-hover table-sm mb-2" id="dimgray">
-                                                                    <thead>
-                                                                        <tr class="row">
-                                                                            <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-right">Año</th>
-                                                                            <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Mes</th>
-                                                                            <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Viajes</th>
-                                                                        <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">KM</th>
-                                                                        <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Diesel</th>
-                                                                        <th class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">Consumo</th>
-                                                                        <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Gastos</th>
-                                                                        <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Neto</th>
-                                                                        <th class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">Neto/Km</th>  
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody th:each="e, iter : ${estadistica}">
-                                                                        <tr class="row" th:classappend="${iter.last} ? 'font-weight-bold bg-light' : ''">
-                                                                            <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-right" th:text="${iter.last} ? 'TOTAL' : ${e.year}"></td>
-                                                                            <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${iter.last} ? '' : ${e.month}"></td>
-                                                                            <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(e.flete, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(e.kmRecorrido, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(e.litro, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:text="${#numbers.formatDecimal(e.consumo, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(e.gasto, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(e.neto, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center" th:text="'$'+${#numbers.formatDecimal(e.rentabilidad, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                        </tr>     
-                                                                    </tbody>
-                                                                </table>
+                                                                <div class="table-responsive border border-secondary rounded">
+                                                                <table class="table table-md bg-light table-hover mb-0" id="dimgray">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="text-center">Año</th>
+                                                                                <th class="text-center">Mes</th>
+                                                                                <th class="text-center">Viajes</th>
+                                                                                <th class="text-center">KM</th>
+                                                                                <th class="text-center">Diesel</th>
+                                                                                <th class="text-center">Consumo</th>
+                                                                                <th class="text-center">Gastos</th>
+                                                                                <th class="text-center">Neto</th>
+                                                                                <th class="text-center">Neto/Km</th>  
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody th:each="e, iter : ${estadistica}">
+                                                                            <tr class="fila-alta" th:classappend="${iter.last} ? 'font-weight-bold bg-light' : ''">
+                                                                                <td class="text-center" th:text="${iter.last} ? 'TOTAL' : ${e.year}"></td>
+                                                                                <td class="text-center" th:text="${iter.last} ? '' : ${e.month}"></td>
+                                                                                <td class="text-center" th:text="${#numbers.formatDecimal(e.flete, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                <td class="text-center" th:text="${#numbers.formatDecimal(e.kmRecorrido, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                <td class="text-center" th:text="${#numbers.formatDecimal(e.litro, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                <td class="text-center" th:text="${#numbers.formatDecimal(e.consumo, 1, 'POINT', 1, 'POINT')}"></td>
+                                                                                <td class="text-center" th:text="'$'+${#numbers.formatDecimal(e.gasto, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                <td class="text-center" th:text="'$'+${#numbers.formatDecimal(e.neto, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                <td class="text-center" th:text="'$'+${#numbers.formatDecimal(e.rentabilidad, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                            </tr>     
+                                                                        </tbody>
+                                                                    </table>
                                                                 </div>
+                                                                <br>
                                                                 <div class="text-center mb-2">
                                                                     <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/chofer/mostrarEstadistica}">Volver</a>
                                                                 </div>

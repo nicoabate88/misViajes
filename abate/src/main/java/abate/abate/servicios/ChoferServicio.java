@@ -1,5 +1,6 @@
 package abate.abate.servicios;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Caja;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.ChoferEstadistica;
@@ -11,6 +12,7 @@ import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Ingreso;
 import abate.abate.entidades.Usuario;
 import abate.abate.excepciones.MiException;
+import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.CajaRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
@@ -62,9 +64,12 @@ public class ChoferServicio {
     private CajaRepositorio cajaRepositorio;
     @Autowired
     private GastoRepositorio gastoRepositorio;
+    @Autowired
+    private AcopladoRepositorio acopladoRepositorio;
 
     @Transactional
-    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, String caja, String cuenta, String nombreUsuario, Double porcentaje, String password, String password2) throws MiException {
+    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, Long idAcoplado, String caja, String cuenta, String documentacion,
+            String mantenimiento, String nombreUsuario, Double porcentaje, String password, String password2) throws MiException {
 
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
         String nombreM = nombre.toUpperCase();
@@ -80,6 +85,14 @@ public class ChoferServicio {
             }
             user.setCamion(camion);
         }
+        if (idAcoplado != null) {
+            Acoplado acoplado = new Acoplado();
+            Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+            if (acop.isPresent()) {
+                acoplado = acop.get();
+            }
+            user.setAcoplado(acoplado);
+        }
 
         user.setIdOrg(idOrg);
         user.setNombre(nombreM);
@@ -89,6 +102,8 @@ public class ChoferServicio {
         user.setRol("CHOFER");
         user.setCaja(caja);
         user.setCuenta(cuenta);
+        user.setDocumentacion(documentacion);
+        user.setMantenimiento(mantenimiento);
         user.setPorcentaje(porcentaje);
 
         usuarioRepositorio.save(user);
@@ -100,7 +115,8 @@ public class ChoferServicio {
     }
 
     @Transactional
-    public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, String nombreUsuario, Double porcentaje) throws MiException {
+    public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, Long idAcoplado, String documentacion, 
+            String mantenimiento, String nombreUsuario, Double porcentaje) throws MiException {
 
         String nombreM = nombre.toUpperCase();
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
@@ -123,11 +139,24 @@ public class ChoferServicio {
         } else {
             user.setCamion(null);
         }
+        
+        if (idAcoplado != 0) {
+            Acoplado acoplado = new Acoplado();
+            Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+            if (acop.isPresent()) {
+                acoplado = acop.get();
+            }
+            user.setAcoplado(acoplado);
+        } else {
+            user.setAcoplado(null);
+        }
 
         user.setNombre(nombreM);
         user.setCuil(cuil);
         user.setUsuario(nombreUsuario);
         user.setPorcentaje(porcentaje);
+        user.setDocumentacion(documentacion);
+        user.setMantenimiento(mantenimiento);
 
         usuarioRepositorio.save(user);
 
@@ -277,13 +306,12 @@ public class ChoferServicio {
     
     public ArrayList<ChoferEstadistica> estadisticaChofer(String desde, String hasta, Long idChofer) throws ParseException {
 
-        Usuario chofer = usuarioRepositorio.getById(idChofer);
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> fletes = fleteRepositorio.findByFechaFleteBetweenAndChofer(d, h, chofer);
-        ArrayList<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndChofer(d, h, chofer);
-        ArrayList<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndChoferId(d, h, chofer.getId());
+        ArrayList<Flete> fletes = fleteRepositorio.buscarFleteChofer(d, h, idChofer);
+        ArrayList<Combustible> cargas = combustibleRepositorio.buscarCombustibleIdChofer(d, h, idChofer);
+        ArrayList<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndChoferId(d, h, idChofer);
 
         Map<String, ChoferEstadistica> resumenMap = new HashMap<>();
         
@@ -384,9 +412,14 @@ public class ChoferServicio {
         List<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, idOrg);
         List<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndIdOrg(d, h, idOrg);
 
-
         Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = new HashMap<>();
         ChoferesEstadistica totalGeneral = new ChoferesEstadistica();
+        
+        // Pre-cargar todos los choferes
+        List<Usuario> choferes = usuarioRepositorio.buscarUsuariosChofer(idOrg);
+        for (Usuario chofer : choferes) {
+        estadisticasPorChofer.put(chofer, new ChoferesEstadistica());
+        }
 
         for (Flete flete : fletes) {
             Usuario chofer = flete.getChofer();

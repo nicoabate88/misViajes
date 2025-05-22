@@ -7,95 +7,95 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-                            <div class="container mb-5">  
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/camion/listar}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7">
-                                            <h4>Lista de Gastos</h4>
-                                        </div>
-                                        <div title="Exportar a Excel" class="col-3 text-center" th:if="${flag == true}">
-                                            <form th:action="@{/gasto/exportar}" method="POST">   
-                                                <input hidden th:value="${camion.id}" name="idCamion"> 
-                                                       <input hidden th:value="${desde}" name="desde">  
-                                                       <input hidden th:value="${hasta}" name="hasta"> 
-                                                       <button class="btn btn-light" type="submit">
-                                                           <h6 id="icono">Exportar</h6> 
-                                                       </button>
-                                            </form>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/camion/listar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
                                     </div>
-                                </div>
-                                <div class="card-header pb-0" id="bgWhite">
-                                    <form class="row g-3" th:action="@{/gasto/listarCamionFiltro}" method="POST">
-                                        <input hidden th:value="${camion.id}" name="idCamion">  
-                                            <div class="row">    
-                                                <div class="col-5">
-                                                    <label for="desde" class="form-label">Desde</label>
-                                                    <input type="date" class="form-control" id="desde" th:value="${desde}" name="desde" required>
-                                                </div>
-                                                <div class="col-5">
-                                                    <label for="hasta" class="form-label">Hasta</label>
-                                                    <input type="date" class="form-control" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
-                                                </div>
-                                                <div class="col-2 text-center">
-                                                    <label for="ver" class="form-label">Ver</label>
-                                                    <button id="ver" class="btn btn-primary" type="submit">
-                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                    </form>   
-                                </div>
-                                <div th:if="${!gastos.isEmpty()}">
-                                <div class="card-body p-2">
-                                    <h6 th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h6>
-                                    <h6 id="dimgray" th:text="'Total Gasto $'+${#numbers.formatDecimal(total, 0, 'POINT', 0, 'POINT')}"></h6>
-                                </div>
-                                    <div th:each="gasto : ${gastos}">
-                                        <div class="card border-secondary p-3 mb-1" id="color-card">
-                                            <h6 id="darkblue" th:text="'Importe: $'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></h6>
-                                            <div class="row">
-                                                <div class="col-9">
-                                                 <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(gasto.fecha, 'dd-MM-yyyy')}"></p>
-                                                 <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
-                                                 <p id="dimgray" th:text="'Chofer '+${gasto.chofer.nombre}"></p>
-                                                </div>
-                                                 <div class="text-center col-3">
-                                                <a th:href="@{/gasto/detalleCamion/__${gasto.id}__}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="15" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
-                                                        <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/>
-                                                        <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/>
-                                                    </svg> <p id="icono2">Detalle</p></a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                    </div>  
-                                    <br>
-                                         <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
+                                    <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
+                                        <h4>Lista de Gastos</h4>
                                     </div>
-                                </div>
-                                    <div th:if="${gastos.isEmpty()}">
-                                        <br>
-                                        <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
-                                            <h6 id="azul">No existen Gastos para la fecha seleccionada</h6>
-                                        </div>
-                                           
-                                         <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
-                                    </div>
-                                    </div>
-                                
-                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                        </body>
-                        </html>
+                                    <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
+                                        <form th:action="@{/gasto/exportar}" method="POST">   
+                                            <input hidden th:value="${camion.id}" name="idCamion"> 
+                                                <input hidden th:value="${desde}" name="desde">  
+                                                    <input hidden th:value="${hasta}" name="hasta"> 
+                                                        <button class="btn btn-light" type="submit">
+                                                            <h6 id="icono">Exportar</h6> 
+                                                        </button>
+                                                        </form>
+                                                        </div>
+                                                        </div>
+                                                        </div>
+                                                        <div class="container mb-2">   
+                                                            <div class="card-header pb-0" id="bgWhite">
+                                                                <form class="row g-3" th:action="@{/gasto/listarCamionFiltro}" method="POST">
+                                                                    <input hidden th:value="${camion.id}" name="idCamion">  
+                                                                        <div class="row">    
+                                                                            <div class="col-5">
+                                                                                <label for="desde" class="form-label">Desde</label>
+                                                                                <input type="date" class="form-control" id="desde" th:value="${desde}" name="desde" required>
+                                                                            </div>
+                                                                            <div class="col-5">
+                                                                                <label for="hasta" class="form-label">Hasta</label>
+                                                                                <input type="date" class="form-control" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
+                                                                            </div>
+                                                                            <div class="col-2 text-center">
+                                                                                <label for="ver" class="form-label">Ver</label>
+                                                                                <button id="ver" class="btn btn-primary" type="submit">
+                                                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                                                    </svg>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                </form>   
+                                                            </div>
+                                                            <div th:if="${!gastos.isEmpty()}">
+                                                                <div class="card-body p-2">
+                                                                    <h6 th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h6>
+                                                                    <h6 id="dimgray" th:text="'Total Gasto $'+${#numbers.formatDecimal(total, 0, 'POINT', 0, 'POINT')}"></h6>
+                                                                </div>
+                                                                <div th:each="gasto : ${gastos}">
+                                                                    <div class="card border-secondary p-3 mb-1" id="color-card">
+                                                                        <h6 id="darkblue" th:text="'Importe: $'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></h6>
+                                                                        <div class="row">
+                                                                            <div class="col-9">
+                                                                                <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(gasto.fecha, 'dd-MM-yyyy')}"></p>
+                                                                                <h6 class='mb-1' id="dimgray" th:text="${gasto.nombre}"></h6>
+                                                                                <p id="dimgray" th:text="'Chofer '+${gasto.chofer.nombre}"></p>
+                                                                            </div>
+                                                                            <div class="text-center col-3">
+                                                                                <a th:href="@{/gasto/detalleCamion/__${gasto.id}__}">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="15" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
+                                                                                        <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.053.224l-.5 1a.5.5 0 0 1-.8.13L13 14.707l-.646.647a.5.5 0 0 1-.708 0L11 14.707l-.646.647a.5.5 0 0 1-.708 0L9 14.707l-.646.647a.5.5 0 0 1-.708 0L7 14.707l-.646.647a.5.5 0 0 1-.708 0L5 14.707l-.646.647a.5.5 0 0 1-.708 0L3 14.707l-.646.647a.5.5 0 0 1-.801-.13l-.5-1A.5.5 0 0 1 1 14V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27m.217 1.338L2 2.118v11.764l.137.274.51-.51a.5.5 0 0 1 .707 0l.646.647.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.646.646.646-.646a.5.5 0 0 1 .708 0l.509.509.137-.274V2.118l-.137-.274-.51.51a.5.5 0 0 1-.707 0L12 1.707l-.646.647a.5.5 0 0 1-.708 0L10 1.707l-.646.647a.5.5 0 0 1-.708 0L8 1.707l-.646.647a.5.5 0 0 1-.708 0L6 1.707l-.646.647a.5.5 0 0 1-.708 0L4 1.707l-.646.647a.5.5 0 0 1-.708 0z"/>
+                                                                                        <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m8-6a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5"/>
+                                                                                    </svg> <p id="icono2">Detalle</p></a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>  
+                                                                <br>
+                                                                    <div class="text-center mb-2">
+                                                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
+                                                                    </div>
+                                                            </div>
+                                                            <div th:if="${gastos.isEmpty()}">
+                                                                <br>
+                                                                    <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                                                        <h6 id="azul">No existen Gastos para la fecha seleccionada</h6>
+                                                                    </div>
+
+                                                                    <div class="text-center mb-2">
+                                                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
+                                                                    </div>
+                                                            </div>
+
+                                                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                            </body>
+                                                            </html>

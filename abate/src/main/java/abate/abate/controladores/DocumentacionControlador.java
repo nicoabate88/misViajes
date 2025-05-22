@@ -1,0 +1,756 @@
+
+package abate.abate.controladores;
+
+import abate.abate.entidades.Acoplado;
+import abate.abate.entidades.Camion;
+import abate.abate.entidades.Documentacion;
+import abate.abate.entidades.TipoDocumentacion;
+import abate.abate.entidades.Usuario;
+import abate.abate.excepciones.MiException;
+import abate.abate.servicios.AcopladoServicio;
+import abate.abate.servicios.CamionServicio;
+import abate.abate.servicios.ChoferServicio;
+import abate.abate.servicios.DocumentacionServicio;
+import abate.abate.servicios.TipoDocumentacionServicio;
+import java.text.ParseException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+@Controller
+@RequestMapping("/documentacion")
+@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CHOFER')")
+public class DocumentacionControlador {
+    
+    @Autowired
+    private DocumentacionServicio documentacionServicio;
+    @Autowired
+    private TipoDocumentacionServicio tipoDocumentacionServicio;
+    @Autowired
+    private CamionServicio camionServicio;
+    @Autowired
+    private AcopladoServicio acopladoServicio;
+    @Autowired
+    private ChoferServicio choferServicio;
+    
+    @GetMapping("/registrar/{aplicaA}")
+    public String registrar(@PathVariable TipoDocumentacion.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
+        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+        modelo.put("aplica", aplicaA);
+        modelo.put("idOrg", logueado.getIdOrg());
+
+        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        } else {
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        }
+
+        return "documentacion_registrar.html";
+
+    }
+    
+    @GetMapping("/registrar1")
+    public String registrar1(Long idOrg, @RequestParam TipoDocumentacion.AplicaA aplicaA, ModelMap modelo) {
+        
+        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(idOrg));
+        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(idOrg));
+        } else {
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(idOrg));
+        }
+        
+        modelo.put("idOrg", idOrg);
+        modelo.put("aplica", aplicaA);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(idOrg, aplicaA));
+        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+
+        return "documentacion_registrar.html";
+
+    }
+    
+    @PostMapping("/registro")
+    public String registro(@RequestParam TipoDocumentacion.AplicaA aplicaA, @RequestParam Long idTipo, @RequestParam Long idEntidad, @RequestParam String fechaAlta, 
+            @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException, MiException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        try {
+            
+            documentacionServicio.crearDocumentacion(idTipo, aplicaA, idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
+            
+            return "redirect:/documentacion/registrado/ " +logueado.getIdOrg();
+            
+        } catch (MiException ex) {
+            
+        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        } else {
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        }
+        
+        modelo.put("idOrg", logueado.getIdOrg());
+        modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+        modelo.put("aplica", aplicaA);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
+        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+        modelo.put("fechaAlta", fechaAlta);
+        modelo.put("fechaVencimiento", fechaVencimiento);
+        modelo.put("obs", observacion);
+        modelo.put("error", ex.getMessage());
+
+        return "documentacion_registrar.html";
+            
+        }    
+
+    }
+
+    @GetMapping("/registrado/{id}")
+    public String registrado(@PathVariable Long id, ModelMap modelo) {
+
+        Long idDoc = documentacionServicio.buscarUltimo(id);
+        
+        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(idDoc));
+        modelo.put("exito", "Documentación REGISTRADA con éxito");
+
+        return "documentacion_mostrar.html";
+    }
+    
+    @GetMapping("/registrarChofer/{aplicaA}")
+    public String registrarChofer(@PathVariable TipoDocumentacion.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
+        modelo.put("aplica", aplicaA);
+
+        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camion", logueado.getCamion());
+        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplado", logueado.getAcoplado());
+        } else {
+            modelo.addAttribute("chofer", logueado);
+        }
+
+        return "documentacion_registrarChofer.html";
+
+    }
+    
+    @PostMapping("/registroChofer")
+    public String registroChofer(@RequestParam TipoDocumentacion.AplicaA aplicaA, @RequestParam Long idTipo, @RequestParam String fechaAlta, 
+            @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException, MiException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        Long idEntidad;
+        
+        try {
+            
+        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
+            idEntidad = logueado.getCamion().getId();
+        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
+            idEntidad = logueado.getAcoplado().getId();
+        } else {
+            idEntidad = logueado.getId();
+        }
+            
+            documentacionServicio.crearDocumentacion(idTipo, aplicaA, idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
+            
+            return "redirect:/documentacion/registradoChofer/ " +logueado.getIdOrg();
+            
+        } catch (MiException ex) {
+            
+        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camion", logueado.getCamion());
+        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplado", logueado.getAcoplado());
+        } else {
+            modelo.addAttribute("chofer", logueado);
+        }
+        
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
+        modelo.put("aplica", aplicaA);
+        modelo.put("fechaAlta", fechaAlta);
+        modelo.put("fechaVencimiento", fechaVencimiento);
+        modelo.put("obs", observacion);
+        modelo.put("error", ex.getMessage());
+
+        return "documentacion_registrarChofer.html";
+            
+        }    
+
+    }
+    
+    @GetMapping("/registradoChofer/{id}")
+    public String registradoChofer(@PathVariable Long id, ModelMap modelo) {
+
+        Long idDoc = documentacionServicio.buscarUltimo(id);
+        
+        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(idDoc));
+        modelo.put("exito", "Documentación REGISTRADA con éxito");
+
+        return "documentacion_mostrarChofer.html";
+    }
+    
+    @GetMapping("/modificar/{id}")
+    public String modificar(@PathVariable Long id, ModelMap modelo) {
+        
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+        
+        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(documentacion.getIdOrg()));
+        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(documentacion.getIdOrg()));
+        } else {
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(documentacion.getIdOrg()));
+        }
+        
+            modelo.put("documentacion", documentacion);
+            modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+            modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+
+            return "documentacion_modificar.html";
+
+    }
+    
+    @GetMapping("/modificar1")
+    public String modificar1(@RequestParam Long id, @RequestParam TipoDocumentacion.AplicaA aplicaA, ModelMap modelo) throws ParseException {
+        
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+        if(aplicaA != documentacion.getAplicaA()){
+            documentacion.setAplicaA(aplicaA);
+        }
+        
+        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(documentacion.getIdOrg()));
+        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(documentacion.getIdOrg()));
+        } else {
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(documentacion.getIdOrg()));
+        }
+        
+        modelo.put("documentacion", documentacion);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+
+        return "documentacion_modificar.html";
+
+    }
+
+    @PostMapping("/modifica")
+    public String modifica(@RequestParam Long id, @RequestParam TipoDocumentacion.AplicaA aplicaA, @RequestParam Long idTipo, @RequestParam Long idEntidad,
+        @RequestParam String fechaAlta, @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        try {
+            documentacionServicio.modificarDocumentacion(id, idTipo, aplicaA, idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
+            
+            return "redirect:/documentacion/modificado/" + id;
+            
+        } catch (MiException ex) {
+            
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+        if(idTipo != documentacion.getTipoDocumentacion().getId()){
+            documentacion.setTipoDocumentacion(tipoDocumentacionServicio.buscarTipo(idTipo));
+        } if(aplicaA != documentacion.getAplicaA()){
+            documentacion.setAplicaA(aplicaA);
+        }
+        
+        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(documentacion.getIdOrg()));
+        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(documentacion.getIdOrg()));
+        } else {
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(documentacion.getIdOrg()));
+        }
+        
+        modelo.put("documentacion", documentacion);
+        modelo.addAttribute("tipos",  tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+        modelo.put("error", ex.getMessage());
+        
+        return "documentacion_modificar.html";
+           
+        }
+
+    }
+
+    @GetMapping("/modificado/{id}")
+    public String modificado(@PathVariable Long id, ModelMap modelo) {
+
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Documentación MODIFICADA con éxito");
+
+            return "documentacion_mostrar.html";        
+
+    }
+    
+    @GetMapping("/modificarChofer/{id}")
+    public String modificarChofer(@PathVariable Long id, ModelMap modelo) {
+        
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+        
+            modelo.put("documentacion", documentacion);
+            modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+
+            return "documentacion_modificarChofer.html";
+
+    }
+    
+    @PostMapping("/modificaChofer")
+    public String modificaChofer(@RequestParam Long id, @RequestParam Long idTipo, @RequestParam String fechaAlta, 
+            @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+        
+        try {
+        
+        Long idEntidad;
+            
+        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+            idEntidad = documentacion.getCamion().getId();
+        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+            idEntidad = documentacion.getAcoplado().getId();
+        } else {
+            idEntidad = documentacion.getChofer().getId();
+        }
+            
+            documentacionServicio.modificarDocumentacion(id, idTipo, documentacion.getAplicaA(), idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
+            
+            return "redirect:/documentacion/modificadoChofer/" + id;
+            
+        } catch (MiException ex) {
+            
+        modelo.put("documentacion", documentacion);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+        modelo.put("error", ex.getMessage());
+        
+        return "documentacion_modificarChofer.html";
+           
+        }
+
+    }
+    
+    @GetMapping("/modificadoChofer/{id}")
+    public String modificadoChofer(@PathVariable Long id, ModelMap modelo) {
+
+            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+            modelo.put("exito", "Documentación MODIFICADA con éxito");
+
+            return "documentacion_mostrarChofer.html";        
+
+    }
+    
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Long id,ModelMap modelo) {
+
+        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+
+        return "documentacion_eliminar.html";
+    }
+
+    @GetMapping("/elimina/{id}")
+    public String elimina(@PathVariable Long id, ModelMap modelo) {
+
+        documentacionServicio.eliminarDocumentacion(id);
+        
+        return "redirect:/documentacion/eliminado";
+    }
+    
+    @GetMapping("/eliminado")
+    public String eliminado(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        if(logueado.getRol().equalsIgnoreCase("CHOFER")){
+            
+            modelo.put("chofer", logueado);
+            modelo.put("exito", "Documentación ELIMINADO con éxito");
+
+            return "index_chofer.html";
+            
+        } else {
+
+        modelo.put("exito", "Documentacion ELIMINADA con éxito");
+
+        return "documentacion_listarAdmin.html";
+        
+        }
+    }
+    
+    @GetMapping("/listarChofer/{id}")
+    public String listarChofer(@PathVariable Long id, ModelMap modelo) {
+        
+        Usuario chofer = choferServicio.buscarChofer(id);
+        Boolean flag = false;
+        if(chofer.getDocumentacion().equalsIgnoreCase("SI")){
+            flag = true;
+        }
+        
+        modelo.put("flag", flag);
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdChofer(id));
+        modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
+        
+        return "documentacion_listarChofer.html";
+        
+    }
+    
+    @GetMapping("/camionChofer")
+    public String camionChofer(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+       
+        Boolean flag = false;
+        if(logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getCamion() != null ) {
+            flag = true;
+        }
+        
+        if(logueado.getCamion() != null){
+            
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.put("camion", logueado.getCamion());
+            modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdCamion(logueado.getCamion().getId()));
+            modelo.put("flag", flag);
+            modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
+            
+            return "documentacion_listarCamionChofer.html";
+            
+        } else {
+        
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        
+        return "documentacion_listarCamionesChofer.html";
+        
+        }
+        
+    }
+    
+    @GetMapping("/listarCamionChofer")
+    public String listarCamionChofer(@RequestParam Long idCamion, ModelMap modelo) {
+        
+        Camion camion = camionServicio.buscarCamion(idCamion);
+        
+        modelo.put("camion", camion);
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(camion.getIdOrg()));
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdCamion(idCamion));
+        
+        return "documentacion_listarCamionChofer.html";
+    }
+    
+    @GetMapping("/acopladoChofer")
+    public String acopladoChofer(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        Boolean flag = false;
+        if(logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getAcoplado() != null ) {
+            flag = true;
+        }
+        
+        if(logueado.getAcoplado() != null){
+       
+        modelo.put("acoplado", logueado.getAcoplado());
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(logueado.getAcoplado().getId()));
+        modelo.put("flag", flag);
+        modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
+        
+        return "documentacion_listarAcopladoChofer.html";
+        
+        } else {
+            
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            return "documentacion_listarAcopladosChofer.html";
+            
+        }
+        
+    }
+    
+    @GetMapping("/listarAcopladoChofer")
+    public String listarAcopladoChofer(@RequestParam Long idAcoplado, ModelMap modelo) {
+        
+        Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+        
+        modelo.put("acoplado", acoplado);
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(acoplado.getIdOrg()));
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado));
+        
+        return "documentacion_listarAcopladoChofer.html";
+    }
+    
+    @GetMapping("/listarAdmin")
+    public String listarAdmin() {
+        
+        return "documentacion_listarAdmin.html";
+        
+    }
+    
+    @GetMapping("/listarAdminVencimiento")
+    public String listarAdminVencimiento(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        int dias = 30;
+        
+        List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("dias", dias);
+        
+        return "documentacion_listarAdminVencimiento.html";
+        
+    }
+    
+    @PostMapping("/listarAdminVencimientoFiltro")
+    public String listarAdminVencimientoFiltro(@RequestParam int dias, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("dias", dias);
+        
+        return "documentacion_listarAdminVencimiento.html";
+        
+    }
+    
+    @GetMapping("/listarAdminCamiones")
+    public String listarAdminCamiones(ModelMap modelo, HttpSession session) {
+        
+    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+    List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.put("camion", null);
+        modelo.put("idCamion", null);
+        
+        return "documentacion_listarAdminCamiones.html";
+        
+    }
+    
+    @PostMapping("/listarAdminCamionesFiltro")
+    public String listarAdminCamionesFiltro(@RequestParam(required = false) Long idCamion, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        if(idCamion != null){
+        
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("camion", camionServicio.buscarCamion(idCamion));
+        modelo.put("idCamion", idCamion);
+        
+        } else {
+            
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("camion", null);
+        modelo.put("idCamion", null);
+            
+        }
+        
+        modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        
+        return "documentacion_listarAdminCamiones.html";
+        
+    }
+    
+    @GetMapping("/listarAdminCamion")
+    public String listarAdminCamion(@RequestParam Long id, @RequestParam(required = false) Long idCamion, ModelMap modelo) {
+        
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+        modelo.put("idCamion", idCamion);
+        
+        return "documentacion_listarAdminCamion.html";
+        
+    }
+    
+    @GetMapping("/listarAdminAcoplados")
+    public String listarAdminAcoplados(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.put("acoplado", null);
+        modelo.put("idAcoplado", null);
+        
+        return "documentacion_listarAdminAcoplados.html";
+        
+    }
+    
+    @PostMapping("/listarAdminAcopladosFiltro")
+    public String listarAdminAcopladosFiltro(@RequestParam(required = false) Long idAcoplado, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        if(idAcoplado != null){
+        
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+        modelo.put("idAcoplado", idAcoplado);
+        
+        } else {
+            
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("acoplado", null);
+        modelo.put("idAcoplado", null);
+            
+        }
+        
+        modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        
+        return "documentacion_listarAdminAcoplados.html";
+        
+    }
+    
+    @GetMapping("/listarAdminAcoplado")
+    public String listarAdminAcoplado(@RequestParam Long id, @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
+        
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+        modelo.put("idAcoplado", idAcoplado);
+        
+        return "documentacion_listarAdminAcoplado.html";
+        
+    }
+    
+    @GetMapping("/listarAdminChoferes")
+    public String listarAdminChoferes(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.put("chofer", null);
+        modelo.put("idChofer", null);
+        
+        return "documentacion_listarAdminChoferes.html";
+        
+    }
+    
+    @PostMapping("/listarAdminChoferesFiltro")
+    public String listarAdminChoferesFiltro(@RequestParam(required = false) Long idChofer, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        if(idChofer != null){
+        
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionIdChofer(idChofer);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+        modelo.put("idChofer", idChofer);
+        
+        } else {
+            
+        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("chofer", null);
+        modelo.put("idChofer", null);
+            
+        }
+        
+        modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        
+        return "documentacion_listarAdminChoferes.html";
+        
+    }
+    
+    @GetMapping("/listarAdminChofer")
+    public String listarAdminChofer(@RequestParam Long id, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
+        
+        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+        modelo.put("idChofer", idChofer);
+        
+        return "documentacion_listarAdminChofer.html";
+        
+    }
+
+}
+

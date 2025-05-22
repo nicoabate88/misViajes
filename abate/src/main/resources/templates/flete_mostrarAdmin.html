@@ -13,129 +13,145 @@
                         </head>
                         <body>
                             <section>
-                                <div class="container">
-                                    <div class="card-header mb-2" style="height: 70px;">
-                                        <div class="row">
-                                            <div class="col-2">   
-                                                <a title="Volver" th:href="@{/index}" type="button">
-                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                        <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                    </svg> 
-                                                </a>   
-                                            </div>
-                                            <div  class="col-10">
-                                                <h4>Detalle de Viaje</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card border-secondary p-3 mb-2" id="color-card">
-                                        <div class="row">
-                                            <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">                                         
-                                                <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
-                                                <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
-                                                <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
-                                                <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
-                                                <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
-                                                <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="dimgray" th:text="'Neto $' +${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}+' + IVA $' +${#numbers.formatDecimal(flete.iva, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="dimgray" th:text="'TOTAL $' +${#numbers.formatDecimal(flete.total, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
-                                                <h6 id="azul" th:text="'Chofer '+${flete.chofer.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
-                                                <p th:if="${flete.comisionTpte} != 0.0" class="mb-1" id="dimgray" th:text="'Descuento Comisión Tpte '+${flete.comisionTpteChofer}"></p>
-                                                <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${#numbers.formatDecimal(flete.porcentajeChofer, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <p th:if="${flete.gasto != null}" id="dimgray" th:text="'Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 2, 'COMMA')}"></p>
-                                            </div>
-                                            <div class="col-lg-4 col-xl-4 text-center">
-                                                <div class="card-body">
-                                                    <div class="row mb-1">
-                                                        <div class="col-4 col-sm-4 col-md-4 col-lg-3 col-xl-4 text-center">
-                                                            <a th:href="@{/imagen/verCP/__${flete.id}__}" >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                                                    <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
-                                                                    <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
-                                                                </svg> <p id="icono2">CP</p>
-                                                            </a>
-                                                        </div>
-                                                        <div class="col-4 col-sm-4 col-md-4 col-lg-5 col-xl-4 text-center">
-                                                            <a th:href= "@{/imagen/verDescarga/__${flete.id}__}" >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                                                                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                                                                    <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
-                                                                </svg> <p id="icono2">Descarga</p>
-                                                            </a>
-                                                        </div>
-                                                        <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 text-center">    
-                                                            <a th:href="@{/gasto/verAdmin/__${flete.id}__}">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-files" viewBox="0 0 16 16">
-                                                                    <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2m0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1M3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
-                                                                </svg> <p id="icono2">Gasto</p>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <a th:href= "@{/flete/modificar/__${flete.id}__}" >
-                                                            <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                                            </svg> <p id="modificar">Modificar</p>
-                                                        </a>
-                                                    </div> 
-                                                    <div class="mb-2" th:if="${flete.estado != 'ACEPTADO'}">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"  name="options" value="option1" checked >
-                                                                <label class="form-check-label" for="option1">
-                                                                    <h6 id="darkgray">PENDIENTE</h6>
-                                                                </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="options" value="option2">
-                                                                <label class="form-check-label" for="option2">
-                                                                    <h6 id="dimgray">CONFIRMAR</h6>
-                                                                </label>
-                                                        </div>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">  
+                                            <form th:action="@{/flete/listarTodoFiltrado}" method="POST">
+                                                <input hidden th:value="${desde}" name="desde">
+                                                    <input hidden th:value="${hasta}" name="hasta">
+                                                        <input hidden th:value="${idChofer}" name="idChofer">
+                                                            <input hidden th:value="${idCamion}" name="idCamion">
+                                                                <input hidden th:value="${idCliente}" name="idCliente">
+                                                                    <button type="submit" class="border-0 bg-transparent shadow-none" title="Volver">
+                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                                            <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                                        </svg> 
+                                                                    </button>
+                                                                    </form>
+                                                                    </div>
+                                                                    <div  class="col-8 text-center">
+                                                                        <h4>Detalle de Viaje</h4>
+                                                                    </div>
+                                                                    </div>
+                                                                    </div>
+                                                                    <div class="container mb-2">   
+                                                                        <div class="card border-secondary p-3 mb-2" id="color-card">
+                                                                            <div class="row">
+                                                                                <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">                                         
+                                                                                    <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
+                                                                                    <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
+                                                                                    <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
+                                                                                    <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
+                                                                                    <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
+                                                                                    <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
+                                                                                    <h6 id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                                                    <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                                                    <h6 id="dimgray" th:text="'Neto $' +${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}+' + IVA $' +${#numbers.formatDecimal(flete.iva, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                                                    <h6 id="dimgray" th:text="'TOTAL $' +${#numbers.formatDecimal(flete.total, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                                                    <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
+                                                                                    <h6 id="azul" th:text="'Chofer '+${flete.chofer.nombre}"></h6>
+                                                                                    <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
+                                                                                    <h6 th:if="${flete.acoplado != null}" id="dimgray" th:text="'Acoplado '+${flete.acoplado.dominio}+' - '+${flete.acoplado.marca}+' '+${flete.acoplado.modelo}"></h6>
+                                                                                    <h6 th:if="${flete.acoplado == null}" id="dimgray" th:text="'Sin Acoplado'"></h6>
+                                                                                    <p th:if="${flete.comisionTpte} != 0.0" class="mb-1" id="dimgray" th:text="'Descuento Comisión Tpte '+${flete.comisionTpteChofer}"></p>
+                                                                                    <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${#numbers.formatDecimal(flete.porcentajeChofer, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                                                    <p id="dimgray" class="mb-1" th:text="'Observación: '+${flete.observacion}" th:if="${flete.observacion != null}"></p>
+                                                                                    <p th:if="${flete.gasto != null}" id="dimgray" th:text="'Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 2, 'COMMA')}"></p>
+                                                                                </div>
+                                                                                <div class="col-lg-4 col-xl-4 text-center">
+                                                                                    <div class="card-body">
+                                                                                        <div class="row mb-1">
+                                                                                            <div class="col-4 col-sm-4 col-md-4 col-lg-3 col-xl-4 text-center">
+                                                                                                <a th:href="@{/imagen/verCPAdmin(id=${flete.id}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                                                                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
+                                                                                                        <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                                                                                                    </svg> <p id="icono2">CP</p>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                            <div class="col-4 col-sm-4 col-md-4 col-lg-5 col-xl-4 text-center">
+                                                                                                <a th:href= "@{/imagen/verDescargaAdmin(id=${flete.id}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
+                                                                                                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+                                                                                                        <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
+                                                                                                    </svg> <p id="icono2">Descarga</p>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                            <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 text-center">    
+                                                                                                <a th:href="@{/gasto/verAdmin(id=${flete.id}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-files" viewBox="0 0 16 16">
+                                                                                                        <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2m0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1M3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
+                                                                                                    </svg> <p id="icono2">Gasto</p>
+                                                                                                </a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <a th:href= "@{/flete/modificarAdmin(id=${flete.id}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}" >
+                                                                                                <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                                                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                                                                                </svg> <p id="modificar">Modificar</p>
+                                                                                            </a>
+                                                                                        </div> 
+                                                                                        <div class="mb-2" th:if="${flete.estado != 'ACEPTADO'}">
+                                                                                            <div class="form-check">
+                                                                                                <input class="form-check-input" type="radio"  name="options" value="option1" checked >
+                                                                                                    <label class="form-check-label" for="option1">
+                                                                                                        <h6 id="darkgray">PENDIENTE</h6>
+                                                                                                    </label>
+                                                                                            </div>
+                                                                                            <div class="form-check">
+                                                                                                <input class="form-check-input" type="radio" name="options" value="option2">
+                                                                                                    <label class="form-check-label" for="option2">
+                                                                                                        <h6 id="dimgray">CONFIRMAR</h6>
+                                                                                                    </label>
+                                                                                            </div>
 
-                                                        <a id="myButton" type="button" th:href="@{/flete/aceptar/__${flete.id}__}">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check-square-fill" viewBox="0 0 16 16">
-                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
-                                                            </svg>
-                                                        </a>
-                                                    </div>        
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>    
+                                                                                            <a id="myButton" type="button" th:href="@{/flete/aceptarAdmin(id=${flete.id}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check-square-fill" viewBox="0 0 16 16">
+                                                                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+                                                                                                </svg>
+                                                                                            </a>
+                                                                                        </div>        
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>    
+                                                                        <div th:if="${exito != null}" class="card-body mb-2 text-center border border-secondary rounded" id="mensaje">                        
+                                                                            <h6 id="white" th:text="${exito}"></h6>                                                                             
+                                                                        </div>
+                                                                        <br>
+                                                                            <div class="text-center">
+                                                                                <form th:action="@{/flete/listarTodoFiltrado}" method="POST">
+                                                                                    <input hidden th:value="${desde}" name="desde">
+                                                                                        <input hidden th:value="${hasta}" name="hasta">
+                                                                                            <input hidden th:value="${idChofer}" name="idChofer">
+                                                                                                <input hidden th:value="${idCamion}" name="idCamion">
+                                                                                                    <input hidden th:value="${idCliente}" name="idCliente">   
+                                                                                                        <button title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
+                                                                                                        </form>
+                                                                                                        </div>
+                                                                                                        </div>
+                                                                                                        </section>
+                                                                                                        <script>
+                                                                                                            // Obtener referencias a los elementos de radio y al botón
+                                                                                                            const option1 = document.querySelector('input[name="options"][value="option1"]');
+                                                                                                            const option2 = document.querySelector('input[name="options"][value="option2"]');
+                                                                                                            const myButton = document.getElementById('myButton');
 
-                                    <div th:if="${exito != null}" class="card-body mb-5 text-center" id="mensaje">                        
-                                        <h6 id="white" th:text="${exito}"></h6>                                                                             
-                                    </div>
-                                    <br>
-                                        <div class="text-center mb-2">
-                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
-                                        </div>
-                                </div>
-                            </section>
-                            <script>
-                                // Obtener referencias a los elementos de radio y al botón
-                                const option1 = document.querySelector('input[name="options"][value="option1"]');
-                                const option2 = document.querySelector('input[name="options"][value="option2"]');
-                                const myButton = document.getElementById('myButton');
+                                                                                                            // Añadir evento para detectar el cambio en los inputs de radio
+                                                                                                            option1.addEventListener('change', function () {
+                                                                                                                if (option1.checked) {
+                                                                                                                    myButton.style.display = 'none'; // Ocultar el botón si Opción 1 está seleccionada
+                                                                                                                }
+                                                                                                            });
 
-                                // Añadir evento para detectar el cambio en los inputs de radio
-                                option1.addEventListener('change', function () {
-                                    if (option1.checked) {
-                                        myButton.style.display = 'none'; // Ocultar el botón si Opción 1 está seleccionada
-                                    }
-                                });
-
-                                option2.addEventListener('change', function () {
-                                    if (option2.checked) {
-                                        myButton.style.display = 'block'; // Mostrar el botón si Opción 2 está seleccionada
-                                    }
-                                });
-                            </script>
-                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                        </body>
-                        </html>
+                                                                                                            option2.addEventListener('change', function () {
+                                                                                                                if (option2.checked) {
+                                                                                                                    myButton.style.display = 'block'; // Mostrar el botón si Opción 2 está seleccionada
+                                                                                                                }
+                                                                                                            });
+                                                                                                        </script>
+                                                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                                                        </body>
+                                                                                                        </html>

@@ -20,4 +20,11 @@ public class CombustibleComparador {
         }
     };
     
+        public static Comparator<Combustible> ordenarFechaAsc = new Comparator<Combustible>() {
+        @Override
+        public int compare(Combustible c1, Combustible c2) {
+            return c1.getFechaCarga().compareTo(c2.getFechaCarga());
+        }
+    };
+    
 }

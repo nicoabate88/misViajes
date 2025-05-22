@@ -7,9 +7,6 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">       
                         </head>
                         <body>
-
-                            <div class="container">
-
                                 <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
@@ -19,25 +16,23 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-10">
+                                        <div  class="col-8 text-center">
                                             <h4>Cargar Carta de Porte</h4>
                                         </div>
                                     </div>
                                 </div>
-
+                                <div class="container mb-2">   
                                 <div class="card border-secondary p-2" id="color-card">
                                     <h6 th:text="'Flete ID'+${flete.idFlete}"></h6>
                                     <p class="card-text" id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
-
                                     <form th:action="@{/imagen/cargaCPdesdeFlete}" method="POST" enctype="multipart/form-data" onsubmit="mostrarCargando()">
                                         <input hidden th:value="${flete.id}" name="id"> 
                                             <div class="col-12 mb-5">
                                                 <label id="darkblue" for="file">Cargar CP</label>
                                                 <input type="file" id="file" name="file" accept="image/*" required>
                                             </div> 
-
                                             <div class="container">
-                                                <div th:if="${error != null}" class="card-body mb-5 text-center" id="mensaje">                        
+                                                <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
                                                     <h6 id="white" th:text="${error}"></h6>                                                                             
                                                 </div>
                                             </div>
@@ -47,10 +42,8 @@
                                             <div class="text-center">
                                                 <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
                                             </div>
-
                                     </form>
                                 </div>
-
                             </div>
                             <div id="loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; text-align: center; color: white;">
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">

@@ -4,19 +4,21 @@ import abate.abate.entidades.Camion;
 import abate.abate.entidades.CamionEstadistica;
 import abate.abate.entidades.CamionesEstadistica;
 import abate.abate.entidades.Combustible;
+import abate.abate.entidades.Eje;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Usuario;
 import abate.abate.excepciones.MiException;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
+import abate.abate.repositorios.EjeRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
 import abate.abate.repositorios.GastoRepositorio;
+import abate.abate.repositorios.PosicionNeumaticoRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
 import abate.abate.util.CamionComparador;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,72 +46,139 @@ public class CamionServicio {
     private UsuarioRepositorio usuarioRepositorio;
     @Autowired
     private GastoRepositorio gastoRepositorio;
+    @Autowired
+    private PosicionNeumaticoRepositorio posicionNeumaticoRepositorio;
+    @Autowired
+    private EjeRepositorio ejeRepositorio;
 
     @Transactional
-    public void crearCamion(Long idOrg, String marca, String modelo, String dominio, String azul) throws MiException {
-
-        validarDatos(idOrg, dominio);
-
-        Camion camion = new Camion();
-
-        String marcaMayusculas = marca.toUpperCase();
-        String modeloMayusculas = modelo.toUpperCase();
-        String dominioMayusculas = dominio.toUpperCase();
-
-        camion.setIdOrg(idOrg);
-        camion.setMarca(marcaMayusculas);
-        camion.setModelo(modeloMayusculas);
-        camion.setDominio(dominioMayusculas);
-        camion.setAzul(azul);
-
-        camionRepositorio.save(camion);
-
-    }
-
-    @Transactional
-    public void modificarCamion(Long id, String marca, String modelo, String dominio, String azul) throws MiException {
-
-        Camion camion = new Camion();
-        Optional<Camion> cam = camionRepositorio.findById(id);
-        if (cam.isPresent()) {
-            camion = cam.get();
+    public void crearCamion(Camion camion, Usuario logueado) throws MiException {
+        
+        validarDatos(logueado.getIdOrg(), camion.getDominio());
+        
+        // Asociar cada eje con el Camion antes de persistir
+        if (camion.getEjes() != null) {
+            for (Eje eje : camion.getEjes()) {
+                eje.setCamion(camion);
+                eje.setEstado("HABILITADO");
+                eje.setUsuario(logueado);
+            }
         }
-        validarDatosModificar(camion, dominio);
-
-        String marcaMayusculas = marca.toUpperCase();
-        String modeloMayusculas = modelo.toUpperCase();
-        String dominioMayusculas = dominio.toUpperCase();
-
-        camion.setMarca(marcaMayusculas);
-        camion.setModelo(modeloMayusculas);
-        camion.setDominio(dominioMayusculas);
-        camion.setAzul(azul);
-
+        
+        camion.setMarca(camion.getMarca().toUpperCase());
+        camion.setModelo(camion.getModelo().toUpperCase());
+        camion.setDominio(camion.getDominio().toUpperCase());
+        camion.setIdOrg(logueado.getIdOrg());
+        camion.setAzul(camion.getAzul());
+        camion.setEstado(camion.getEstado());
+        camion.setUsuario(logueado);
+        
         camionRepositorio.save(camion);
+    
+    }
+    
+    @Transactional
+    public void modificarCamion(Camion camionModificado, Usuario usuario) throws MiException {
+    
+    Camion camionOriginal = camionRepositorio.getById(camionModificado.getId());
 
+    String dominioMay = camionModificado.getDominio().toUpperCase();
+    
+    validarDatosModificar(camionOriginal, dominioMay);
+    
+    String marcaMay = camionModificado.getMarca().toUpperCase();
+    String modeloMay = camionModificado.getModelo().toUpperCase();
+    
+    camionOriginal.setDominio(dominioMay);
+    camionOriginal.setMarca(marcaMay);
+    camionOriginal.setModelo(modeloMay);
+    camionOriginal.setEstado(camionModificado.getEstado());
+    camionOriginal.setAzul(camionModificado.getAzul());
+    camionOriginal.setCantidadAuxilio(camionModificado.getCantidadAuxilio());
+    camionOriginal.setUsuario(usuario);
+
+    // Mapear ejes enviados desde el formulario
+    List<Eje> nuevosEjes = camionModificado.getEjes();
+
+    // Mapear ejes existentes en la base de datos
+    List<Eje> ejesOriginales = camionOriginal.getEjes();
+
+    // Detectar ejes eliminados
+    List<Eje> ejesAEliminar = new ArrayList<>();
+    for (Eje original : ejesOriginales) {
+        boolean sigueExistiendo = nuevosEjes.stream()
+            .anyMatch(e -> e.getId() != null && e.getId().equals(original.getId()));
+        if (!sigueExistiendo) {
+            boolean tienePosiciones = posicionNeumaticoRepositorio.existsByEje(original);
+            if (tienePosiciones) {
+                throw new MiException("No se puede eliminar el Eje N° " + original.getNumero() + ", tiene historial de neumáticos asociado.");
+            }
+            ejesAEliminar.add(original);
+        }
     }
 
+    // Eliminar los ejes permitidos
+    ejesAEliminar.forEach(e -> {
+        camionOriginal.getEjes().remove(e);
+        ejeRepositorio.delete(e);
+    });
+
+    // Procesar ejes nuevos o actualizados
+    for (Eje eje : nuevosEjes) {
+        eje.setCamion(camionOriginal);
+        if (eje.getId() == null) {
+            // Nuevo eje
+            camionOriginal.getEjes().add(eje);
+        } else {
+            // Actualizar eje existente
+            for (Eje existente : camionOriginal.getEjes()) {
+                if (existente.getId().equals(eje.getId())) {
+                    existente.setNombre(eje.getNombre());
+                    existente.setElevable(eje.getElevable()); 
+                    existente.setPorcentaje(eje.getPorcentaje());
+                    existente.setCantidadNeumatico(eje.getCantidadNeumatico());
+                    break;
+                }
+            }
+        }
+    }
+
+    // Renumerar todos los ejes del camión secuencialmente
+    int contador = 1;
+    for (Eje eje : camionOriginal.getEjes()) {
+        eje.setUsuario(usuario);
+        eje.setNumero(contador++);
+    }
+
+    camionRepositorio.save(camionOriginal);
+    
+   }
+    
     @Transactional
     public void eliminarCamion(Long id) throws MiException {
-
+        
         Camion camion = camionRepositorio.getById(id);
-
+        
         Combustible combustible = combustibleRepositorio.findTopByCamionOrderByIdDesc(camion);
         Flete flete = fleteRepositorio.findTopByCamionOrderByIdDesc(camion);
         Gasto gasto = gastoRepositorio.findTopByCamionOrderByIdDesc(camion);
         Usuario usuario = usuarioRepositorio.findTopByCamionOrderByIdDesc(camion);
 
         if (combustible == null && gasto == null && flete == null && usuario == null) {
+            
+            camion.setUsuario(null);
+            
+            camionRepositorio.save(camion);
 
             camionRepositorio.deleteById(id);
 
         } else {
 
-            throw new MiException("El Camión no puede ser eliminado, tiene Viaje / Gasto / Combustible y/o Chofer asociado.");
+            throw new MiException("El Camión no puede ser eliminado, tiene Viaje / Gasto y/o Combustible asociado.");
         }
 
     }
-
+    
     public ArrayList<Camion> buscarCamionesAsc(Long idOrg) {
 
         ArrayList<Camion> lista = camionRepositorio.buscarCamiones(idOrg);
@@ -133,13 +202,12 @@ public class CamionServicio {
 
     public ArrayList<CamionEstadistica> estadisticaCamion(String desde, String hasta, Long idCamion) throws ParseException {
 
-        Camion camion = camionRepositorio.getById(idCamion);
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        ArrayList<Flete> fletes = fleteRepositorio.findByFechaFleteBetweenAndCamion(d, h, camion);
-        ArrayList<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndCamion(d, h, camion);
-        ArrayList<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndCamionId(d, h, camion.getId());
+        ArrayList<Flete> fletes = fleteRepositorio.buscarFleteCamion(d, h, idCamion);
+        ArrayList<Combustible> cargas = combustibleRepositorio.buscarCombustibleIdCamion(d, h, idCamion);
+        ArrayList<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndCamionId(d, h, idCamion);
 
         // Paso 1: Procesar los fletes
         Map<String, CamionEstadistica> resumenMap = new HashMap<>();
@@ -239,6 +307,7 @@ public class CamionServicio {
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
+        List<Camion> todasLosCamiones = camionRepositorio.buscarCamiones(idOrg);
         List<Flete> fletes = fleteRepositorio.findByFechaFleteBetweenAndIdOrg(d, h, idOrg);
         List<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, idOrg);
         List<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndIdOrg(d, h, idOrg);
@@ -246,6 +315,20 @@ public class CamionServicio {
         // Mapa para almacenar estadísticas por camión
         Map<Camion, CamionesEstadistica> estadisticasPorCamion = new HashMap<>();
         CamionesEstadistica totalGeneral = new CamionesEstadistica();
+        
+        for (Camion camion : todasLosCamiones) {
+            CamionesEstadistica estadistica = new CamionesEstadistica();
+            estadistica.setFlete(0);
+            estadistica.setKmRecorrido(0);
+            estadistica.setLitro(0.0);
+            estadistica.setConsumo(0.0);
+            estadistica.setAzul(0);
+            estadistica.setLubricante(0.0);
+            estadistica.setGasto(0);
+            estadistica.setCamion(camion);
+            estadisticasPorCamion.put(camion, estadistica);
+        }
+        
         // Procesar los fletes
         for (Flete flete : fletes) {
             Camion camion = flete.getCamion();
@@ -303,7 +386,7 @@ public class CamionServicio {
 
         for (Camion c : lista) {
             if (c.getDominio().equalsIgnoreCase(dominio)) {
-                throw new MiException("El DOMINIO de Camión ya está registrado.");
+                throw new MiException("El DOMINIO '"+dominio+"' ya está registrado.");
             }
         }
     }
@@ -315,7 +398,7 @@ public class CamionServicio {
         if (!camion.getDominio().equalsIgnoreCase(dominio)) {
             for (Camion c : lista) {
                 if (c.getDominio().equalsIgnoreCase(dominio)) {
-                    throw new MiException("El DOMINIO de Camión ya está registrado.");
+                    throw new MiException("El DOMINIO '"+dominio+"' ya está registrado.");
                 }
             }
         }

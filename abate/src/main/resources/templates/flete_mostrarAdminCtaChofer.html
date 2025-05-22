@@ -12,40 +12,43 @@
                         </style>
                         </head>
                         <body>
-                            <div class="container">
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/flete/listarIdChofer/__${flete.chofer.id}__}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-10">
-                                            <h4>Detalle de Viaje</h4>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/flete/listarIdChofer/__${flete.chofer.id}__}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Detalle de Viaje</h4>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="container mb-2">   
                                 <div class="card border-secondary p-3 mb-2" id="color-card">
                                     <div class="row">
                                         <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8">
-                                                <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
-                                                <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
-                                                <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
-                                                <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
-                                                <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
-                                                <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="dimgray" th:text="'Neto $' +${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}+' + IVA $' +${#numbers.formatDecimal(flete.iva, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <h6 id="dimgray" th:text="'TOTAL $' +${#numbers.formatDecimal(flete.total, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
-                                                <h6 id="azul" th:text="'Chofer '+${flete.chofer.nombre}"></h6>
-                                                <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
-                                                <p th:if="${flete.comisionTpte} != 0.0" class="mb-1" id="dimgray" th:text="'Descuento Comisión Tpte '+${flete.comisionTpteChofer}"></p>
-                                                <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${#numbers.formatDecimal(flete.porcentajeChofer, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                <p th:if="${flete.gasto != null}" id="dimgray" th:text="'Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 2, 'COMMA')}"></p>
+                                            <h6 th:text="${flete.estado}" th:if="${flete.estado != 'ACEPTADO'}"></h6>
+                                            <h6 th:text="'Fecha ' + ${#dates.format(flete.fechaFlete, 'dd-MM-yyyy')}+' - ID'+${flete.idFlete}"></h6>
+                                            <p class='mb-0' id="dimgray" th:text="'Origen '+${flete.origenFlete}"></p>
+                                            <p class='mb-0' id="dimgray" th:text="'Destino '+${flete.destinoFlete}"></p>
+                                            <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
+                                            <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
+                                            <h6 id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                            <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                            <h6 id="dimgray" th:text="'Neto $' +${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}+' + IVA $' +${#numbers.formatDecimal(flete.iva, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                            <h6 id="dimgray" th:text="'TOTAL $' +${#numbers.formatDecimal(flete.total, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                            <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
+                                            <h6 id="azul" th:text="'Chofer '+${flete.chofer.nombre}"></h6>
+                                            <h6 id="dimgray" th:text="'Camión '+${flete.camion.dominio}+' - '+${flete.camion.marca}+' '+${flete.camion.modelo}"></h6>
+                                            <h6 th:if="${flete.acoplado != null}" id="dimgray" th:text="'Acoplado '+${flete.acoplado.dominio}+' - '+${flete.acoplado.marca}+' '+${flete.acoplado.modelo}"></h6>
+                                            <h6 th:if="${flete.acoplado == null}" id="dimgray" th:text="'Sin Acoplado'"></h6>
+                                            <p th:if="${flete.comisionTpte} != 0.0" class="mb-1" id="dimgray" th:text="'Descuento Comisión Tpte '+${flete.comisionTpteChofer}"></p>
+                                            <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${#numbers.formatDecimal(flete.porcentajeChofer, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                            <p id="dimgray" class="mb-1" th:text="'Observación: '+${flete.observacion}" th:if="${flete.observacion != null}"></p>
+                                            <p th:if="${flete.gasto != null}" id="dimgray" th:text="'Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 2, 'COMMA')}"></p>
                                         </div>
                                         <div class="col-lg-4 col-xl-4 text-center">
                                             <div class="card-body">
@@ -104,7 +107,7 @@
                                         </div>
                                     </div>
                                 </div>    
-                                <div th:if="${exito != null}" class="card-body mb-5 text-center" id="mensaje">                        
+                                <div th:if="${exito != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
                                 </div>
                                 <br>
