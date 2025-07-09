@@ -116,7 +116,7 @@ public class TipoDocumentacionServicio {
         
         for (TipoDocumentacion u : lista) {
             if (u.getNombre().equalsIgnoreCase(nombre)) {
-                throw new MiException("El Nombre de Tipo de Documentación no es válido, por favor ingrese otro.");
+                throw new MiException("El Tipo de Documentación '"+nombre+"' ya está registrado.");
             }
     }
     
@@ -129,7 +129,7 @@ public class TipoDocumentacionServicio {
         if(!tipo.getNombre().equalsIgnoreCase(nombre)){
         for (TipoDocumentacion t : lista) {
             if (t.getNombre().equalsIgnoreCase(nombre)) {
-                throw new MiException("El NOMBRE '"+nombre+"' ya está registrado.");
+                throw new MiException("El Tipo de Documentación '"+nombre+"' ya está registrado.");
             }
         }
     } 

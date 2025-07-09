@@ -23,8 +23,29 @@
                             </div>
                             <div class="container mb-2">
                                 <div th:if="${!cuentas.isEmpty()}">
-                                    <div class="card-body pb-2">
-                                        <h6 id="dimgray" th:text="'Total Saldo $'+${#numbers.formatDecimal(saldo, 0, 'POINT', 2, 'COMMA')}"></h6>  
+                                    <div class="card-header pb-0" id="bgWhite">
+                                    <form class="row" th:action="@{/cuenta/listarChoferFiltro}" method="GET">
+                                        <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5">
+                                            <label for="chofer" class="form-floting">Cuenta Chofer</label>  
+                                            <select class="form-control border-secondary" id="chofer" name="id">
+                                                <option th:value=null>Todos</option>
+                                                <option th:each="cuenta : ${cuentas}"
+                                                        th:value="${cuenta.id}"
+                                                        th:text="${cuenta.chofer.nombre}"/>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 text-center">
+                                            <label for="ver" class="form-floting">Ver</label> 
+                                            <button id="ver"  class="btn btn-primary" type="submit">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </form>   
+                                </div>
+                                    <div class="p-2 pb-2">
+                                        <h6><strong id="dimgray" th:text="'Total Saldo $'+${#numbers.formatDecimal(saldo, 1, 'POINT', 2, 'COMMA')}"></strong></h6>  
                                     </div>
                                     <div th:each="cuenta : ${cuentas}">
                                         <div class="card border-secondary p-2 mb-1" id="color-card">

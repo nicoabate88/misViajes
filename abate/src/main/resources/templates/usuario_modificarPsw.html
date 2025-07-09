@@ -33,16 +33,27 @@
                                                 <div class="col-6 col-sm-6 col-md-6 col-lg-7 col-xl-7">
                                                 </div>
                                             </div>
+                                            
                                             <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                    <label for="password" class="form-label text-secondary">Ingrese Nueva Contraseña</label>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="password" class="form-label text-secondary">Nueva Contraseña*</label>
+                                                <div class="input-group">
                                                     <input type="password" class="form-control" id="password" placeholder="Ingrese Contraseña" name="password" required>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
-                                                    <label for="password2" class="form-label text-secondary">Repita Nueva Contraseña</label>
-                                                    <input type="password" class="form-control" id="password2" placeholder="Repita Contraseña" required>
+                                                        <button class="btn btn-secondary border-secondary bg-light" type="button" id="togglePassword">
+                                                            <i class="fas fa-eye"></i> 
+                                                        </button>
                                                 </div>
                                             </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
+                                                <label for="password2" class="form-label text-secondary">Repita Contraseña*</label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" id="password2" placeholder="Repita Contraseña" name="password2" required>
+                                                        <button class="btn btn-secondary border-secondary bg-light" type="button" id="togglePassword2">
+                                                            <i class="fas fa-eye"></i> 
+                                                        </button>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                             <div class="container">
                                                 <div th:if="${error == null}" class="card border-primary mb-5 p-3 col-lg-10 col-xl-10 text-center" id="eliminar">
@@ -64,7 +75,65 @@
                                     </form>
                                 </div>
                             </div>
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
                             <script>
+                                document.getElementById("togglePassword").addEventListener("click", function () {
+                                    var passwordInput = document.getElementById("password");
+                                    var icon = this.querySelector("i");
+
+                                    if (passwordInput.type === "password") {
+                                        passwordInput.type = "text";
+                                        icon.classList.remove("fa-eye");
+                                        icon.classList.add("fa-eye-slash");
+                                    } else {
+                                        passwordInput.type = "password";
+                                        icon.classList.remove("fa-eye-slash");
+                                        icon.classList.add("fa-eye");
+                                    }
+                                });
+                                document.getElementById("togglePassword2").addEventListener("click", function () {
+                                    var passwordInput = document.getElementById("password2");
+                                    var icon = this.querySelector("i");
+
+                                    if (passwordInput.type === "password") {
+                                        passwordInput.type = "text";
+                                        icon.classList.remove("fa-eye");
+                                        icon.classList.add("fa-eye-slash");
+                                    } else {
+                                        passwordInput.type = "password";
+                                        icon.classList.remove("fa-eye-slash");
+                                        icon.classList.add("fa-eye");
+                                    }
+                                });
+                                
+                                document.getElementById('usuario').addEventListener('input', function (event) {
+                                    const usuario = event.target.value;
+
+                                    // Validar si el usuario contiene espacios
+                                    if (/\s/.test(usuario)) {
+                                        document.getElementById('errorUsuario').style.display = 'inline'; // Mostrar mensaje de error
+                                        event.target.value = usuario.replace(/\s/g, ''); // Eliminar espacios automáticamente
+                                    } else {
+                                        document.getElementById('errorUsuario').style.display = 'none'; // Ocultar mensaje de error
+                                    }
+                                });
+                                
+                                const passwordInput = document.getElementById('password');
+
+                                passwordInput.addEventListener('keydown', function (event) {
+                                    if (event.key === ' ') {
+                                        event.preventDefault(); // evita que se escriba el espacio
+                                    }
+                                });
+
+                                const passwordInput2 = document.getElementById('password2');
+
+                                passwordInput2.addEventListener('keydown', function (event) {
+                                    if (event.key === ' ') {
+                                        event.preventDefault(); // evita que se escriba el espacio
+                                    }
+                                });
+                               
                                 document.getElementById('form').addEventListener('submit', function (event) {
                                     const psw = document.getElementById('password').value;
                                     const psw2 = document.getElementById('password2').value;

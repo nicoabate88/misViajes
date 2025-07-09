@@ -68,8 +68,8 @@ public class ChoferServicio {
     private AcopladoRepositorio acopladoRepositorio;
 
     @Transactional
-    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, Long idAcoplado, String caja, String cuenta, String documentacion,
-            String mantenimiento, String nombreUsuario, Double porcentaje, String password, String password2) throws MiException {
+    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, Long idAcoplado, String caja, String cuenta,String verDocumentacion, String documentacion,
+            String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String password, String password2) throws MiException {
 
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
         String nombreM = nombre.toUpperCase();
@@ -102,7 +102,9 @@ public class ChoferServicio {
         user.setRol("CHOFER");
         user.setCaja(caja);
         user.setCuenta(cuenta);
+        user.setVerDocumentacion(verDocumentacion);
         user.setDocumentacion(documentacion);
+        user.setVerMantenimiento(verMantenimiento);
         user.setMantenimiento(mantenimiento);
         user.setPorcentaje(porcentaje);
 
@@ -115,8 +117,8 @@ public class ChoferServicio {
     }
 
     @Transactional
-    public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, Long idAcoplado, String documentacion, 
-            String mantenimiento, String nombreUsuario, Double porcentaje) throws MiException {
+    public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, Long idAcoplado, String verDocumentacion,  String documentacion, 
+            String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje) throws MiException {
 
         String nombreM = nombre.toUpperCase();
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
@@ -155,7 +157,9 @@ public class ChoferServicio {
         user.setCuil(cuil);
         user.setUsuario(nombreUsuario);
         user.setPorcentaje(porcentaje);
+        user.setVerDocumentacion(verDocumentacion);
         user.setDocumentacion(documentacion);
+        user.setVerMantenimiento(verMantenimiento);
         user.setMantenimiento(mantenimiento);
 
         usuarioRepositorio.save(user);
@@ -416,8 +420,8 @@ public class ChoferServicio {
         ChoferesEstadistica totalGeneral = new ChoferesEstadistica();
         
         // Pre-cargar todos los choferes
-        List<Usuario> choferes = usuarioRepositorio.buscarUsuariosChofer(idOrg);
-        for (Usuario chofer : choferes) {
+        ArrayList<Usuario> lista = usuarioRepositorio.buscarUsuariosChofer(idOrg);
+        for (Usuario chofer : lista) {
         estadisticasPorChofer.put(chofer, new ChoferesEstadistica());
         }
 
@@ -432,7 +436,7 @@ public class ChoferServicio {
         }
 
         for (Combustible combustible : cargas) {
-            if(combustible.getChofer() != null){
+            if(combustible.getChofer() != null && combustible.getConsumo() != null){
             Usuario chofer = combustible.getChofer();
             estadisticasPorChofer.putIfAbsent(chofer, new ChoferesEstadistica());
             ChoferesEstadistica resumen = estadisticasPorChofer.get(chofer);

@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Flete Mostrar</title>
+        <title>Viaje Mostrar</title>
         <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
@@ -22,7 +22,7 @@
                                                         <input hidden th:value="${idChofer}" name="idChofer">
                                                             <input hidden th:value="${idCamion}" name="idCamion">
                                                                 <input hidden th:value="${idCliente}" name="idCliente">
-                                                                    <button type="submit" class="border-0 bg-transparent shadow-none" title="Volver">
+                                                                    <button id="volver1" type="submit" class="border-0 bg-transparent shadow-none" title="Volver">
                                                                         <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                                             <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                                         </svg> 
@@ -45,7 +45,7 @@
                                                                                     <p class='mb-1' id="dimgray" th:text="'KM '+${#numbers.formatDecimal(flete.kmFlete, 0, 'POINT', 0, 'COMMA')}"></p>
                                                                                     <h6 id="azul" th:text="'Cliente '+${flete.cliente.nombre}"></h6>
                                                                                     <h6 id="dimgray" th:text="${flete.producto.nombre}+ ' ' +${#numbers.formatDecimal(flete.kgFlete, 0, 'POINT', 2, 'COMMA')}+ ' KG - Tarifa $'+${#numbers.formatDecimal(flete.tarifa, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                                                    <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 0, 'POINT', 2, 'COMMA')}"></h6>
+                                                                                    <h6 id="azul" th:text="'Comisión Tpte: '+${flete.comisionTpte}+'% - $'+${#numbers.formatDecimal(flete.comisionTpteValor, 1, 'POINT', 2, 'COMMA')}"></h6>
                                                                                     <h6 id="dimgray" th:text="'Neto $' +${#numbers.formatDecimal(flete.neto, 0, 'POINT', 2, 'COMMA')}+' + IVA $' +${#numbers.formatDecimal(flete.iva, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                                                     <h6 id="dimgray" th:text="'TOTAL $' +${#numbers.formatDecimal(flete.total, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                                                     <p id="dimgray" th:text="'CP '+${flete.cartaPorte}+ ' - CTG '+${flete.ctg}"></p>
@@ -127,9 +127,16 @@
                                                                                             <input hidden th:value="${idChofer}" name="idChofer">
                                                                                                 <input hidden th:value="${idCamion}" name="idCamion">
                                                                                                     <input hidden th:value="${idCliente}" name="idCliente">   
-                                                                                                        <button title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
+                                                                                                        <button id="volver2" title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
                                                                                                         </form>
                                                                                                         </div>
+                                                                                                        </div>
+                                                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                                                </div>
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                         </section>
                                                                                                         <script>
@@ -149,7 +156,30 @@
                                                                                                                 if (option2.checked) {
                                                                                                                     myButton.style.display = 'block'; // Mostrar el botón si Opción 2 está seleccionada
                                                                                                                 }
+                                                                                                            });                                
+                                                                                                            
+                                                                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                                                                const volverBtn = document.getElementById("myButton");
+                                                                                                                volverBtn.addEventListener("click", function (e) {
+                                                                                                                    // Mostrar spinner
+                                                                                                                    document.getElementById("spinner").style.display = "block";
+                                                                                                                });
                                                                                                             });
+                                                                                                            
+                                                                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                                                                                        const volverBtn = document.getElementById("volver1");
+                                                                                                                                        volverBtn.addEventListener("click", function (e) {
+                                                                                                                                            // Mostrar spinner
+                                                                                                                                            document.getElementById("spinner").style.display = "block";
+                                                                                                                                        });
+                                                                                                                                    });
+                                                                                                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                                                                                                        const volverBtn = document.getElementById("volver2");
+                                                                                                                                        volverBtn.addEventListener("click", function (e) {
+                                                                                                                                            // Mostrar spinner
+                                                                                                                                            document.getElementById("spinner").style.display = "block";
+                                                                                                                                        });
+                                                                                                                                    });
                                                                                                         </script>
                                                                                                         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                                                                         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

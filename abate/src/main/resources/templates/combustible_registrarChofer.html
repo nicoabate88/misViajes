@@ -124,21 +124,28 @@
                                                             </select>
                                                         </div>   
                                                         <div th:if="${camion.azul == 'HABILITADO'}" class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
-                                                        <label for="azul" class="form-label text-primary">Urea</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text bg-primary">Lts</span>
-                                                            <input type="number" class="form-control" id="azul" placeholder="Ingrese Litros" name="azul">
-                                                        </div>    
+                                                            <label for="azul" class="form-label text-primary">Urea</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text bg-primary">Lts</span>
+                                                                <input type="number" class="form-control" id="azul" placeholder="Ingrese Litros" name="azul">
+                                                            </div>    
                                                         </div>
                                                     </div>
                                                     <div class="text-center mb-2">
-                                                        <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Disel">Registrar</button>
+                                                        <button id="registrar" class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Disel">Registrar</button>
                                                     </div>
                                                     <div class="text-center">
                                                         <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/index}" title="Cancelar">Cancelar</a>
                                                     </div> 
                                                     </form>
                                                     </div>
+                                                    </div>
+                                                    <div id="spinner" class="modal" style="display: none;">
+                                                        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                <span class="sr-only">Cargando...</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <script>
                                                         function enviarDatos() {
@@ -189,6 +196,9 @@
                                                                 event.preventDefault();
                                                                 return;
                                                             }
+                                                            
+                                                            document.getElementById("spinner").style.display = "block";
+                                                            
                                                             function formatearFecha(fecha) {
                                                                 var dia = String(fecha.getDate()).padStart(2, '0');
                                                                 var mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
@@ -197,6 +207,7 @@
                                                             }
                                                         });
                                                     </script>
+                                                    
                                                     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                                                     </body>

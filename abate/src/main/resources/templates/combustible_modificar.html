@@ -54,17 +54,17 @@
                                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4  mb-2">
                                                             <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
                                                             <select class="form-control" id="idAcoplado" name="idAcoplado">
-                                                                                    <option th:if="${carga.acoplado != null}" th:text="${carga.acoplado.dominio}+' - '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}" th:value="${carga.acoplado.id}"></option>
-                                                                                    <option th:if="${carga.acoplado == null}" th:value="${carga.acoplado}">Sin Acoplado</option>                                                          
-                                                                                    <option th:each="acoplado : ${acoplados}"
-                                                                                            th:value="${acoplado.id}"
-                                                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
-                                                                                    <option th:if="${carga.acoplado != null}" th:value=null>Sin Acoplado</option>
-                                                                                </select>
+                                                                <option th:if="${carga.acoplado != null}" th:text="${carga.acoplado.dominio}+' - '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}" th:value="${carga.acoplado.id}"></option>
+                                                                <option th:if="${carga.acoplado == null}" th:value="${carga.acoplado}">Sin Acoplado</option>                                                          
+                                                                <option th:each="acoplado : ${acoplados}"
+                                                                        th:value="${acoplado.id}"
+                                                                        th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                                <option th:if="${carga.acoplado != null}" th:value=null>Sin Acoplado</option>
+                                                            </select>
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                         <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                        <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
                                                             <label for="anterior" class="form-floting text-secondary">KM Carga Anterior</label>
                                                             <input type="text" class="form-control" id="anterior" th:value="${#numbers.formatDecimal(carga.kmAnterior, 0, 'POINT', 1, 'COMMA')}" disabled readonly>
                                                         </div>
@@ -125,13 +125,13 @@
                                                                 <input type="number" class="form-control" id="azul" th:value="${carga.azul.litro}" name="azul">
                                                             </div>    
                                                         </div>                                                   
-                                                            <div th:if="${carga.camion.azul == 'HABILITADO' && carga.azul == null}" class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
-                                                                <label for="azul2" class="form-label text-primary">Urea</label>
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text bg-primary">Lts</span>
-                                                                    <input type="number" class="form-control" id="azul2" placeholder="Ingrese Litros" name="azul">
-                                                                </div>    
-                                                            </div>
+                                                        <div th:if="${carga.camion.azul == 'HABILITADO' && carga.azul == null}" class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
+                                                            <label for="azul2" class="form-label text-primary">Urea</label>
+                                                            <div class="input-group">
+                                                                <span class="input-group-text bg-primary">Lts</span>
+                                                                <input type="number" class="form-control" id="azul2" placeholder="Ingrese Litros" name="azul">
+                                                            </div>    
+                                                        </div>
                                                     </div>
                                                     <div class="text-center mb-2">
                                                         <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Disel">Modificar</button>
@@ -141,6 +141,13 @@
                                                     </div> 
                                                     </form>
                                                     </div>
+                                                    </div>
+                                                    <div id="spinner" class="modal" style="display: none;">
+                                                        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                <span class="sr-only">Cargando...</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <script>
                                                         document.getElementById('form').addEventListener('submit', function (event) {
@@ -168,6 +175,8 @@
                                                                 event.preventDefault();
                                                                 return;
                                                             }
+                                                            
+                                                            document.getElementById("spinner").style.display = "block";
 
                                                             function formatearFecha(fecha) {
                                                                 var dia = String(fecha.getDate()).padStart(2, '0');

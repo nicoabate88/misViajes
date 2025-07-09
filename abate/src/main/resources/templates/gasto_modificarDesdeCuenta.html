@@ -104,6 +104,8 @@
                                     alert("Debes ingresar al menos un ítem de gasto");
                                     return false;
                                 }
+                                
+                                document.getElementById("spinner").style.display = "block";
 
                                 return true;
                             }
@@ -204,7 +206,13 @@
                                                                 </form>
                                                                 </div>    
                                                                 </div>
-
+                                                                <div id="spinner" class="modal" style="display: none;">
+                                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                            <span class="sr-only">Cargando...</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                                 <script>
                                                                     document.getElementById('cantidad').addEventListener('keydown', function (event) {
                                                                         if (event.key === '.' || event.key === ',') {

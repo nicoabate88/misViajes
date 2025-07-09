@@ -23,12 +23,12 @@ public class SeguridadWeb extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(usuarioServicio)
                 .passwordEncoder(new BCryptPasswordEncoder());
     }
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests()
-                .antMatchers("/css/*", "/js/*", "/img/*", "/**")
+                .antMatchers("/css/*", "/js/*", "/img/*", "/health", "/")
                 .permitAll()
                 .and().formLogin()
                 .loginPage("/")
@@ -43,5 +43,5 @@ public class SeguridadWeb extends WebSecurityConfigurerAdapter {
                 .disable();
 
     }
-
+     
 }

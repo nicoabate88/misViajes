@@ -59,16 +59,16 @@ public class ChoferControlador {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/registro")
     public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
-            @RequestParam String caja, @RequestParam String cuenta, @RequestParam String documentacion, @RequestParam String mantenimiento, 
-            @RequestParam String nombreUsuario, @RequestParam Double porcentaje, 
+            @RequestParam String cuenta, @RequestParam String caja, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
+            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, @RequestParam Double porcentaje, 
             @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, idAcoplado, caja, cuenta, documentacion,
-                    mantenimiento, nombreUsuario, porcentaje, password, password2);
+            choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, idAcoplado, caja, cuenta, verDocumentacion, documentacion,
+                    verMantenimiento, mantenimiento, nombreUsuario, porcentaje, password, password2);
 
             return "redirect:/chofer/registrado";
 
@@ -88,7 +88,9 @@ public class ChoferControlador {
             modelo.put("cuil", cuil);
             modelo.put("caja", caja);
             modelo.put("cuenta", cuenta);
+            modelo.put("verDocumentacion", verDocumentacion);
             modelo.put("documentacion", documentacion);
+            modelo.put("verMantenimiento", verMantenimiento);
             modelo.put("mantenimiento", mantenimiento);
             modelo.put("nombreUsuario", nombreUsuario);
             modelo.put("porcentaje", porcentaje);
@@ -118,9 +120,31 @@ public class ChoferControlador {
     public String listar(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        List<Usuario> choferes = choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg());
+        Boolean flag = false;
+        
+        for(Usuario c : choferes){
+            if(c.getCaja().equalsIgnoreCase("SI")){
+                flag = true;
+            }
+        }
+        
+        modelo.put("flag", flag);
+        modelo.addAttribute("choferes", choferes);
 
         return "chofer_listar.html";
+    }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/listarFiltro")
+    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.put("chofer", choferServicio.buscarChofer(id));
+
+        return "chofer_listarFiltro.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CHOFER')")
@@ -130,6 +154,15 @@ public class ChoferControlador {
         modelo.put("chofer", choferServicio.buscarChofer(id));
 
         return "chofer_mostrar.html";
+
+    }
+    
+    @GetMapping("/detalle/{id}")
+    public String obtenerDetalle(@PathVariable Long id, ModelMap modelo) {
+        
+        modelo.put("chofer", choferServicio.buscarChofer(id));
+
+        return "fragmentos/detalle_chofer :: historialFragment";
 
     }
 
@@ -150,12 +183,13 @@ public class ChoferControlador {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/modifica/{id}")
     public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, 
-            @RequestParam(required = false) Long idAcoplado, @RequestParam String documentacion, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, 
+            @RequestParam(required = false) Long idAcoplado, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
+            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, 
             @RequestParam Double porcentaje, ModelMap modelo, HttpSession session) {
 
         try {
             
-            choferServicio.modificarChofer(id, nombre, cuil, idCamion, idAcoplado, documentacion, mantenimiento, nombreUsuario, porcentaje);
+            choferServicio.modificarChofer(id, nombre, cuil, idCamion, idAcoplado, verDocumentacion, documentacion, verMantenimiento, mantenimiento, nombreUsuario, porcentaje);
  
             return "redirect:/chofer/modificado/" + id;
 

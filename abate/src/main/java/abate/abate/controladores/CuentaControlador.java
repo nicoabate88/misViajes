@@ -69,6 +69,18 @@ public class CuentaControlador {
 
         return "cuenta_listarChofer.html";
     }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/listarChoferFiltro")
+    public String listarChoferFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("cuentas", cuentaServicio.buscarCuentasChofer(logueado.getIdOrg()));
+        modelo.addAttribute("cuenta", cuentaServicio.buscarCuenta(id));
+
+        return "cuenta_listarChoferFiltro.html";
+    }
 
     @GetMapping("/mostrarChofer/{id}")
     public String mostrarChofer(@PathVariable Long id, ModelMap modelo) throws ParseException {
@@ -220,6 +232,18 @@ public class CuentaControlador {
         modelo.put("saldo", saldo);
 
         return "cuenta_listarCliente.html";
+    }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/listarClienteFiltro")
+    public String listarClienteFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("cuentas", cuentaServicio.buscarCuentasCliente(logueado.getIdOrg()));
+        modelo.addAttribute("cuenta", cuentaServicio.buscarCuenta(id));
+
+        return "cuenta_listarClienteFiltro.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

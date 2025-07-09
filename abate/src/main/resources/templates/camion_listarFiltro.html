@@ -1,0 +1,131 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Camion Listar</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css">   
+                        </head>
+                        <body>  
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">   
+                                        <a title="Volver" th:href="@{/camion/listar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-6 col-sm-6 col-md-6 col-lg-8 col-xl-8 text-center">
+                                        <h4>Lista de Camiones</h4>
+                                    </div>
+                                    <div title="Ir a Registrar Camión" class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                        <a th:href="@{/producto/listar}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                            </svg> <h6 id="icono">Producto</h6> </a>
+                                    </div>
+                                    <div title="Ir a Registrar Camión" class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                        <a th:href="@{/camion/registrar}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" id="Icons" width="20" height="20" viewBox="0 0 60 60"><path d="M57.942,28.151l-.832-11.63a3.337,3.337,0,0,0-2.535-3.083l-22.119-3.4A3,3,0,0,0,29,13V38H6a6,6,0,1,0,5.91,7h2.274A3,3,0,0,0,17,47H32a3,3,0,0,0,2.816-2H37.09a5.986,5.986,0,0,0,10.37,3H57a3,3,0,0,0,3-3V31A3.007,3.007,0,0,0,57.942,28.151ZM58,31v5.184A2.966,2.966,0,0,0,57,36H56V30h1A1,1,0,0,1,58,31Zm-2.074-3H48a2,2,0,0,1-2-2V23a1,1,0,0,1,1-1h8.5ZM46,29.444A3.959,3.959,0,0,0,48,30h6v6H46ZM31,13a1,1,0,0,1,1.151-.988l22.12,3.4c.372.057.8.7.845,1.248L55.355,20H47a3,3,0,0,0-3,3V38.09A6,6,0,0,0,43,38H31Zm3.816,27H38.54a5.979,5.979,0,0,0-1.45,3H35V41A2.966,2.966,0,0,0,34.816,40ZM28,40v5H21V40ZM14,43H11.91a5.979,5.979,0,0,0-1.45-3h3.724A2.966,2.966,0,0,0,14,41ZM6,48a4,4,0,1,1,4-4A4,4,0,0,1,6,48Zm10-4V41a1,1,0,0,1,1-1h2v5H17A1,1,0,0,1,16,44Zm17,0a1,1,0,0,1-1,1H30V40h2a1,1,0,0,1,1,1Zm10,4a4,4,0,1,1,4-4A4,4,0,0,1,43,48Zm15-3a1,1,0,0,1-1,1H48.65A5.963,5.963,0,0,0,46,38.812V38H57a1,1,0,0,1,1,1Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M35,28h4a2,2,0,0,0,2-2V22a2,2,0,0,0-2-2H35a2,2,0,0,0-2,2v4A2,2,0,0,0,35,28Zm0-6h4l0,4H35Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>                                                            
+                                            <h6 id="icono">Nuevo</h6> </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mb-2"> 
+                                    <div class="card-header pb-0" id="bgWhite">
+                                    <form class="row" th:action="@{/camion/listarFiltro}" method="GET">
+                                        <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5 mb-2">
+                                            <label for="camion" class="form-floting">Camión</label>  
+                                            <select class="form-control border-secondary" id="camion" name="id">
+                                                <option selected th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
+                                                <option th:each="camion : ${camiones}"
+                                                        th:value="${camion.id}"
+                                                        th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 text-center">
+                                            <label for="ver" class="form-floting">Ver</label> 
+                                            <button id="ver"  class="btn btn-primary" type="submit">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </form>   
+                                    </div>
+                                        <div class="card border-secondary p-3 mb-1" id="color-card">
+                                        <h6 th:text="'Dominio '+${camion.dominio}"></h6>
+                                    <h6 class='mb-2' id="dimgray" th:text="'Marca '+${camion.marca}+' Modelo '+${camion.modelo}"></h6>
+                                    <h6 class='mb-2' id="dimgray" th:text="'Estado '+${camion.estado}"></h6>
+                                    <p id="dimgray" class="mb-1" th:text="'Carga de Úrea '+${camion.azul}"></p>
+                                    <p th:if="${camion.cantidadAuxilio != 0}" id="dimgray" class="mb-2" th:text="'Neumáticos de Auxilio '+${camion.cantidadAuxilio}"></p>
+                                    <p th:if="${camion.cantidadAuxilio == 0}" id="dimgray" class="mb-2" th:text="'Neumáticos de Auxilio (sin auxilio)'"></p>
+                                    <h6 class="mb-1 text-dark" th:text="'➖ Ejes del Camión ➖ '"></h6>
+                                    <div class="table-responsive mb-3">
+                                        <table class="table table-borderless table-hover table-sm">
+                                            <thead>
+                                                <tr id="darkblue" class="text-center">
+                                                    <td></td>
+                                                    <td>Número</td>
+                                                    <td>Nombre</td>
+                                                    <td>Izable</td>
+                                                    <td>% de Km</td>
+                                                    <td>Cantidad de Neumáticos</td> 
+                                                    <td></td>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="text-center" th:each="eje : ${camion.ejes}">
+                                                <tr id="dimgray">
+                                                    <td></td>
+                                                    <td th:text="${eje.numero}"></td>
+                                                    <td th:text="${eje.nombre}"></td>
+                                                    <td th:text="${eje.elevable} ? 'Sí' : 'No'"></td>
+                                                    <td th:text="${eje.porcentaje}"></td>
+                                                    <td th:text="${eje.cantidadNeumatico}"></td>
+                                                    <th></th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                            <div class="row text-center">
+                                                <div class="col-3">
+                                                    <a th:href="@{/combustible/listarAdmin/__${camion.id}__}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-fuel-pump-diesel" viewBox="0 0 16 16">
+                                                            <path d="M3.5 2a.5.5 0 0 0-.5.5v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-5a.5.5 0 0 0-.5-.5zM4 14V9h1.796q.75 0 1.237.293t.725.85Q8 10.7 8 11.487q0 .792-.242 1.355a1.8 1.8 0 0 1-.732.861Q6.54 14 5.796 14zm1.666-4.194h-.692v3.385h.692q.343 0 .595-.103a1 1 0 0 0 .412-.315q.162-.213.241-.528.084-.314.083-.74 0-.565-.144-.94a1.1 1.1 0 0 0-.436-.569q-.293-.19-.75-.19Z"/>
+                                                            <path d="M3 0a2 2 0 0 0-2 2v13H.5a.5.5 0 0 0 0 1h11a.5.5 0 0 0 0-1H11v-4a1 1 0 0 1 1 1v.5a1.5 1.5 0 0 0 3 0V8h.5a.5.5 0 0 0 .5-.5V4.324c0-.616 0-1.426-.294-2.081a1.97 1.97 0 0 0-.794-.907Q14.345.999 13.5 1a.5.5 0 0 0 0 1c.436 0 .716.086.9.195a.97.97 0 0 1 .394.458c.147.328.19.746.201 1.222H13.5a.5.5 0 0 0-.5.5V7.5a.5.5 0 0 0 .5.5h.5v4.5a.5.5 0 0 1-1 0V12a2 2 0 0 0-2-2V2a2 2 0 0 0-2-2zm7 2v13H2V2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                                        </svg><p id="icono2">Carga</p></a>
+                                                </div>
+                                                <div class="col-3">
+                                                    <a th:href="@{/combustible/mostrarConsumoAdmin/__${camion.id}__}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-speedometer" viewBox="0 0 16 16">
+                                                            <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z"/>
+                                                            <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0"/>
+                                                        </svg> <p id="icono2">Consumo</p></a>
+                                                </div>
+                                                <div th:if="${camion.azul == 'HABILITADO'}" class="col-3">
+                                                    <a th:href="@{/azul/listarAdmin/__${camion.id}__}">
+                                                        <svg viewBox="0 0 480 480" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="m320 424c0 4.417969-3.582031 8-8 8h-16v16h16c13.253906 0 24-10.746094 24-24v-16h-16zm0 0" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="m296 160c-.066406-13.226562-10.773438-23.933594-24-24h-176c-13.230469.058594-23.941406 10.769531-24 24v240c.074219 13.222656 10.777344 23.925781 24 24h176c13.230469-.058594 23.941406-10.769531 24-24zm-75.3125 40h-73.375l-48-48h169.375zm-4.6875 16v128h-64v-128zm-80-4.6875v137.375l-48 48v-233.375zm11.3125 148.6875h73.375l48 48h-169.375zm84.6875-11.3125v-137.375l48-48v233.375zm0 0" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="m477.65625 42.34375-40-40c-2.527344-2.527344-6.421875-3.070312-9.542969-1.335938l-65.992187 36.664063-5.832032-5.839844c-3.125-3.125-8.1875-3.125-11.3125 0l-33.945312 33.945313c-3.121094 3.121094-3.121094 8.1875 0 11.3125l5.65625 5.652344-11.3125 11.320312-11.71875-11.71875c-1.5-1.5-3.535156-2.34375-5.65625-2.34375v-24c-.027344-22.082031-17.917969-39.972656-40-40h-152v-8c0-4.417969-3.582031-8-8-8h-40c-26.5.0273438-47.9726562 21.5-48 48v384c.0273438 26.5 21.5 47.972656 48 48h272c26.5-.027344 47.972656-21.5 48-48v-272c0-2.121094-.84375-4.15625-2.34375-5.65625l-3.71875-3.71875 11.320312-11.3125 5.652344 5.65625c3.125 3.121094 8.191406 3.121094 11.3125 0l33.945313-33.9375c3.125-3.125 3.125-8.1875 0-11.3125l-5.671875-5.664062 17.0625-28.453126 17.914062 5.964844c2.871094.960938 6.039063.214844 8.183594-1.925781l16-16c3.113281-3.121094 3.113281-8.175781 0-11.296875zm-229.65625-10.34375c13.253906 0 24 10.746094 24 24v24h-16v-24c0-4.417969-3.582031-8-8-8h-152v-16zm-152 32h144v16h-144zm256 368c0 17.671875-14.328125 32-32 32h-272c-17.671875 0-32-14.328125-32-32v-384c0-17.671875 14.328125-32 32-32h32v72c0 4.417969 3.582031 8 8 8h196.6875l67.3125 67.3125zm9.945312-304-11.3125 11.3125-33.945312-33.9375 11.3125-11.320312zm22.621094 0-56.566406-56.566406 22.632812-22.632813 56.558594 56.566407zm69.273438-73.160156-19.3125-6.398438c-3.550782-1.1875-7.453125.253906-9.382813 3.460938l-18.304687 30.496094-32.953125-32.957032 56.722656-31.519531 30.078125 30.078125zm0 0" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
+                                                        <p id="icono2">Urea</p></a>
+                                                </div>
+                                                <div title="Ir a Modificar Camión" class="col-3 text-center">
+                                                    <a th:href= "@{/camion/modificar/__${camion.id}__}">
+                                                        <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                                        </svg>     <p id="modificar">Modificar</p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    <br>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Ir a Registrar Camión" th:href="@{/camion/registrar}">Nuevo</a>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/camion/listar}">Volver</a>
+                                        </div> 
+                            </div>
+                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                        </body>
+                        </html>

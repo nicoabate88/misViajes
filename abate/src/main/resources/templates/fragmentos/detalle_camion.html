@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <body>
+        <div th:fragment="historialFragment(historial)">
+            <div class="card mt-2 border-dark">
+                <div class="card p-3 mb-0">
+                    <h6 th:text="'Dominio '+${camion.dominio}"></h6>
+                    <h6 class='mb-2' id="dimgray" th:text="'Marca '+${camion.marca}+' Modelo '+${camion.modelo}"></h6>
+                    <h6 class='mb-2' id="dimgray" th:text="'Estado '+${camion.estado}"></h6>
+                    <p id="dimgray" class="mb-1" th:text="'Carga de Úrea '+${camion.azul}"></p>
+                    <p th:if="${camion.cantidadAuxilio != 0}" id="dimgray" class="mb-2" th:text="'Neumáticos de Auxilio '+${camion.cantidadAuxilio}"></p>
+                    <p th:if="${camion.cantidadAuxilio == 0}" id="dimgray" class="mb-2" th:text="'Neumáticos de Auxilio (sin auxilio)'"></p>
+                    <h6 class="mb-1 text-dark" th:text="'➖ Ejes del Camión ➖ '"></h6>
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover table-sm">
+                            <thead>
+                                <tr id="darkblue" class="text-center">
+                                    <td></td>
+                                    <td>Número</td>
+                                    <td>Nombre</td>
+                                    <td>Izable</td>
+                                    <td>% de Km</td>
+                                    <td>Cantidad de Neumáticos</td> 
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center" th:each="eje : ${camion.ejes}">
+                                <tr id="dimgray">
+                                    <td></td>
+                                    <td th:text="${eje.numero}"></td>
+                                    <td th:text="${eje.nombre}"></td>
+                                    <td th:text="${eje.elevable} ? 'Sí' : 'No'"></td>
+                                    <td th:text="${eje.porcentaje}"></td>
+                                    <td th:text="${eje.cantidadNeumatico}"></td>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

@@ -114,7 +114,7 @@ public class HistorialRecapadoServicio {
 
         neumatico.setUbicacion("DEPOSITO");
         neumatico.setEstado("RECAPADO");
-        Integer kmEstimado = neumatico.getKmEstimado() + recapado.getKmEstimado();
+        Integer kmEstimado = neumatico.getKm() + recapado.getKmEstimado();
         neumatico.setKmEstimado(kmEstimado);
         neumatico.setKmUtil(kmEstimado - neumatico.getKm());
         neumatico.setUsuario(usuario);

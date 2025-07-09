@@ -387,7 +387,7 @@ public class CombustibleControlador {
         ArrayList<Combustible> cargas = combustibleServicio.buscarCargasIdCamion(id, desde, hasta);
         Double litro = 0.0;
         Double azul = 0.0;
-        Boolean flag1 = false;
+        int registroKm = 0;
         Boolean flag = false;
 
         if(!cargas.isEmpty()){
@@ -398,16 +398,11 @@ public class CombustibleControlador {
             azul = azul + c.getAzul().getLitro();
             }
             if(c.getConsumo() == null){
-                flag1 = true;
+                registroKm = registroKm + 1;
             }
         }
         }
         
-        int cantidad = cargas.size();
-        if(flag1 == true){
-            cantidad = cantidad - 1;
-        }
-
         modelo.put("flag", flag);
         modelo.addAttribute("cargas", cargas);
         modelo.put("desde", desde);
@@ -419,7 +414,7 @@ public class CombustibleControlador {
         modelo.put("idOrg", camion.getIdOrg());
         modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(camion.getIdOrg()));
         modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(camion.getIdOrg()));
-        modelo.put("cantidad", cantidad);
+        modelo.put("cantidad", cargas.size() - registroKm);
         modelo.put("litros", litro);
         modelo.put("azul", azul);
 
@@ -436,7 +431,7 @@ public class CombustibleControlador {
         ArrayList<Combustible> cargas = combustibleServicio.buscarCargas(logueado.getIdOrg(), desde, hasta);
         Double litro = 0.0;
         Double azul = 0.0;
-        Boolean flag1 = false;
+        int registroKm = 0;
         Boolean flag = false;
 
         if(!cargas.isEmpty()){
@@ -447,14 +442,9 @@ public class CombustibleControlador {
             azul = azul + c.getAzul().getLitro();
             }
             if(c.getConsumo() == null){
-                flag1 = true;
+                registroKm = registroKm + 1;
             }
         } 
-        }
-        
-        int cantidad = cargas.size();
-        if(flag1 == true){
-            cantidad = cantidad - 1;
         }
 
         modelo.put("flag", flag);
@@ -468,7 +458,7 @@ public class CombustibleControlador {
         modelo.put("idOrg", logueado.getIdOrg());
         modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
         modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-        modelo.put("cantidad", cantidad);
+        modelo.put("cantidad", cargas.size() - registroKm);
         modelo.put("litros", litro);
         modelo.put("azul", azul);
 
@@ -518,7 +508,7 @@ public class CombustibleControlador {
         
         Double litro = 0.0;
         Double azul = 0.0;
-        Boolean flag1 = false;
+        int registroKm = 0;
         Boolean flag = false;
 
         if(!cargas.isEmpty()){
@@ -529,19 +519,14 @@ public class CombustibleControlador {
             azul = azul + c.getAzul().getLitro();
             }
             if(c.getConsumo() == null){
-                flag1 = true;
+                registroKm = registroKm + 1;
             }
         }
         }
         
-        int cantidad = cargas.size();
-        if(flag1 == true){
-            cantidad = cantidad - 1;
-        }
-        
         modelo.put("flag", flag);
         modelo.put("idOrg", logueado.getIdOrg());
-        modelo.put("cantidad", cantidad);
+        modelo.put("cantidad", cargas.size() - registroKm);
         modelo.put("litros", litro);
         modelo.put("azul", azul); 
         modelo.put("desde", desde);
@@ -598,7 +583,7 @@ public class CombustibleControlador {
         
         Double litro = 0.0;
         Double azul = 0.0;
-        Boolean flag1 = false;
+        int registroKm = 0;
         Boolean flag = false;
 
         if(!cargas.isEmpty()){
@@ -609,19 +594,14 @@ public class CombustibleControlador {
             azul = azul + c.getAzul().getLitro();
             }
             if(c.getConsumo() == null){
-                flag1 = true;
+                registroKm = registroKm + 1;
             }
         }
         }
         
-        int cantidad = cargas.size();
-        if(flag1 == true){
-            cantidad = cantidad - 1;
-        }
-        
         modelo.put("flag", flag);
         modelo.put("idOrg", logueado.getIdOrg());
-        modelo.put("cantidad", cantidad);
+        modelo.put("cantidad", cargas.size() - registroKm);
         modelo.put("litros", litro);
         modelo.put("azul", azul); 
         modelo.put("desde", desde);
@@ -634,7 +614,7 @@ public class CombustibleControlador {
         modelo.put("exito", "KM de Camión REGISTRADO con éxito");
         }
         if(aceptar != null){
-        modelo.put("exito", "Carga de Combustible ACEPTADA con éxito");
+        modelo.put("exito", "Carga de Combustible CONFIRMADA con éxito");
         }
         if(eliminado != null){
         modelo.put("exito", "Carga de Combustible ELIMINADA con éxito");

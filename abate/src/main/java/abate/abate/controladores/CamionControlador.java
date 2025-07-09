@@ -90,6 +90,26 @@ public class CamionControlador {
         return "camion_listar.html";
 
     }
+    
+    @GetMapping("/listarFiltro")
+    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.put("camion", camionServicio.buscarCamion(id));
+
+        return "camion_listarFiltro.html";
+    }
+    
+    @GetMapping("/detalle/{id}")
+    public String obtenerDetalle(@PathVariable Long id, ModelMap modelo) {
+        
+        modelo.put("camion", camionServicio.buscarCamion(id));
+
+        return "fragmentos/detalle_camion :: historialFragment";
+
+    }
 
     @GetMapping("/mostrarEstadistica/{id}")
     public String buscarEstadistica(@PathVariable Long id, ModelMap modelo) throws ParseException {

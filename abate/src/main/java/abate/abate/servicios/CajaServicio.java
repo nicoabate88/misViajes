@@ -6,6 +6,8 @@ import abate.abate.entidades.Usuario;
 import abate.abate.repositorios.CajaRepositorio;
 import abate.abate.repositorios.TransaccionRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
+import abate.abate.util.CajaComparador;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -66,6 +68,15 @@ public class CajaServicio {
 
         cajaRepositorio.save(caja);
 
+    }
+    
+    public List<Caja> buscarCajas(Long idOrg) {
+
+        List<Caja> cajas = cajaRepositorio.buscarCajas(idOrg);
+
+        Collections.sort(cajas, CajaComparador.ordenarNombreChoferAsc);
+
+        return cajas;
     }
 
     @Transactional

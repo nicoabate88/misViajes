@@ -45,13 +45,13 @@
                                     <form id="formulario" th:action="@{/mantenimiento/registro}" method="POST">
                                         <div class="row">
                                             <input hidden id="idOrg" th:value="${idOrg}">
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
-                                                <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
-                                                <select class="form-control text-secondary" id="aplicaA" name="aplicaA" required onchange="enviarDatos()">
-                                                    <option selected th:text="${aplica}" th:value="${aplica}"></option>
-                                                    <option th:each="valor : ${aplicaA}" th:value="${valor}" th:text="${valor}"/>
-                                                </select>
-                                            </div>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                                    <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
+                                                    <select class="form-control text-secondary" id="aplicaA" name="aplicaA" required onchange="enviarDatos()">
+                                                        <option selected th:text="${aplica}" th:value="${aplica}"></option>
+                                                        <option th:each="valor : ${aplicaA}" th:value="${valor}" th:text="${valor}"/>
+                                                    </select>
+                                                </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
@@ -90,19 +90,27 @@
                                         </div>
                                         <div class="row mb-5">
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
-                                                <label for="kmInicial" class="form-label text-secondary">KM Mantenimiento*</label> 
+                                                <label for="kmInicial" class="form-label text-secondary">Km Mantenimiento*</label> 
                                                 <div class="input-group"> 
                                                     <span class="input-group-text text-secondary">km</span> 
                                                     <input type="number" class="form-control text-secondary" id="kmInicial" placeholder="Ingrese KM"
                                                            th:value=${km} name="km" required oninput="calcularKm()"> 
                                                 </div> 
                                             </div> 
+
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
-                                                <label for="kmProximo" class="form-label text-secondary">KM Próximo*</label>
+                                                <label for="kmProximo" class="form-label text-secondary">Km Próximo*</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text text-secondary">km</span>
                                                     <input type="number" class="form-control text-secondary" id="kmProximo" 
-                                                           th:value=${kmProximo} name="kmProximo" required oninput="calcularKm()">
+                                                           th:value=${kmProximo} name="kmProximo" required oninput="calcularKmAlarma()">
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                                <label for="kmVigencia" class="form-label text-secondary">Km Vigencia</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light text-success">km</span>
+                                                    <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${kmVigencia} disabled>
                                                 </div>
                                             </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
@@ -118,12 +126,19 @@
                                             <h6 id="white" th:text="${error}"></h6>                                                                             
                                         </div>
                                         <div class="text-center mb-2">
-                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Mantenimiento">Registrar</button>
+                                            <button id="registrar" class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Mantenimiento">Registrar</button>
                                         </div>
                                         <div class="text-center">
                                             <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/mantenimiento/listarAdminAcoplados}" title="Cancelar">Cancelar</a>
                                         </div> 
                                     </form>
+                                </div>
+                            </div>
+                            <div id="spinner" class="modal" style="display: none;">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                        <span class="sr-only">Cargando...</span>
+                                    </div>
                                 </div>
                             </div>
                             <script>
@@ -152,7 +167,7 @@
                                 document.getElementById('kmAlarma').addEventListener('input', function () {
                                     this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
                                 });
-                                
+
                                 function enviarDatos() {
 
                                     let aplicaA = document.getElementById("aplicaA").value;
@@ -161,7 +176,7 @@
                                     window.location.href = `/mantenimiento/registrar1?idOrg=${idOrg}&aplicaA=${aplicaA}`;
 
                                 }
-                                
+
                                 function enviarRegistroAcoplado() {
 
                                     let aplicaA = document.getElementById("aplicaA").value;
@@ -172,46 +187,60 @@
                                     window.location.href = `/mantenimiento/registrar2?idOrg=${idOrg}&aplicaA=${aplicaA}&idTipo=${tipo}&idEntidad=${idAcoplado}`;
 
                                 }
-                                
+
                                 function calcularKm() {
                                     const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
                                     const kmProximo = kmInicial + 10000;
                                     const kmAlarma = kmInicial + 9000;
+                                    const kmVigencia = kmInicial + 10000 - kmInicial;
 
                                     document.getElementById('kmProximo').value = kmProximo >= 0 ? kmProximo : '';
                                     document.getElementById('kmAlarma').value = kmAlarma >= 0 ? kmAlarma : '';
+                                    document.getElementById('kmVigencia').value = kmVigencia >= 0 ? kmVigencia : '';
                                 }
-                                
+
+                                function calcularKmAlarma() {
+                                    const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
+                                    const kmProximo = parseInt(document.getElementById('kmProximo').value) || 0;
+                                    const kmAlarma = kmProximo - 1000;
+                                    const kmVigencia = kmProximo - kmInicial;
+
+                                    document.getElementById('kmAlarma').value = kmAlarma >= 0 ? kmAlarma : '';
+                                    document.getElementById('kmVigencia').value = kmVigencia >= 0 ? kmVigencia : '';
+                                }
+
                                 document.getElementById('formulario').addEventListener('submit', function (event) {
 
-                                        const km = parseInt(document.getElementById('km').value);
-                                        const kmInicial = parseInt(document.getElementById('kmInicial').value);
-                                        const kmProximo = parseInt(document.getElementById('kmProximo').value);
-                                        const kmAlarma = parseInt(document.getElementById('kmAlarma').value);
-                                /*        
-                                if (km > kmInicial) {
-                                alert('Km Actual debe ser mayor o igual a ' + km);
+                                    const km = parseInt(document.getElementById('km').value);
+                                    const kmInicial = parseInt(document.getElementById('kmInicial').value);
+                                    const kmProximo = parseInt(document.getElementById('kmProximo').value);
+                                    const kmAlarma = parseInt(document.getElementById('kmAlarma').value);
+                                    /*        
+                                     if (km > kmInicial) {
+                                     alert('Km Actual debe ser mayor o igual a ' + km);
+                                     event.preventDefault();
+                                     return;
+                                     }
+                                     */
+                                    if (kmInicial >= kmProximo) {
+                                        alert('KM Próximo Mantenimiento debe ser mayor que KM Actual');
                                         event.preventDefault();
                                         return;
-                                }
-                                */
-                                if (kmInicial >= kmProximo) {
-                                alert('KM Próximo Mantenimiento debe ser mayor que KM Actual');
-                                        event.preventDefault();
-                                        return;
-                                }
+                                    }
 
-                                if (kmProximo < kmAlarma) {
-                                alert('KM Alarma debe ser menor que KM Próximo Mantenimiento');
+                                    if (kmProximo < kmAlarma) {
+                                        alert('KM Alarma debe ser menor que KM Próximo Mantenimiento');
                                         event.preventDefault();
                                         return;
-                                }
-                                
-                                if (kmInicial >= kmAlarma) {
-                                alert('KM Alarma debe ser mayor que KM Actual');
+                                    }
+
+                                    if (kmInicial >= kmAlarma) {
+                                        alert('KM Alarma debe ser mayor que KM Actual');
                                         event.preventDefault();
                                         return;
-                                }
+                                    }
+                                    
+                                    document.getElementById("spinner").style.display = "block";
 
                                 });
                             </script>

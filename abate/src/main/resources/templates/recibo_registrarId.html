@@ -43,7 +43,6 @@
                                 <div class="container mb-2">   
                                     <div class="card border-secondary p-2" id="color-card"> 
                                         <form id="form" th:action="@{/recibo/registro}" method="POST">
-
                                             <input hidden th:value="${cuenta.cliente.id}" name="idCliente"> 
                                                 <div class="row">
                                                     <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
@@ -54,7 +53,7 @@
                                                         <label for="saldo" class="form-label text-secondary">Saldo*</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text">$</span>
-                                                            <input type="text" class="form-control" th:value="${#numbers.formatDecimal(cuenta.saldo, 0, 'POINT', 2, 'COMMA')}" id="saldo" disabled readonly>
+                                                            <input type="text" class="form-control" th:value="${#numbers.formatDecimal(cuenta.saldo, 1, 'POINT', 2, 'COMMA')}" id="saldo" disabled readonly>
                                                         </div>    
                                                     </div>
                                                     <div class="d-none d-sm-block col-lg-4 col-xl-4">
@@ -76,7 +75,7 @@
                                                 <div class="row">
                                                     <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8 mb-5">
                                                         <label for="observacion" class="form-label text-secondary">Observación</label>
-                                                        <input type="text" class="form-control" id="observacion" placeholder="Ingrese Observación" name="observacion" required minlength="1" maxlength="60" size="60">
+                                                        <input type="text" class="form-control" id="observacion" placeholder="Ingrese Observación" name="observacion" required minlength="1" maxlength="600" size="600">
                                                     </div>
                                                     <div class="d-none d-sm-block col-lg-4 col-xl-4">
                                                     </div>
@@ -91,14 +90,26 @@
                                     </div>
                                 </div>
                             </section>
+                            <div id="spinner" class="modal" style="display: none;">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                        <span class="sr-only">Cargando...</span>
+                                    </div>
+                                </div>
+                            </div>
                             <script>
                                 const conceptoInput = document.getElementById('observacion');
-                                const maxLength = 60;
+                                const maxLength = 600;
 
                                 conceptoInput.addEventListener('input', function () {
                                     if (conceptoInput.value.length > maxLength) {
                                         conceptoInput.value = conceptoInput.value.slice(0, maxLength);
                                     }
+                                });
+                            </script>
+                            <script>
+                                document.getElementById("form").addEventListener("submit", function () {
+                                    document.getElementById("spinner").style.display = "block";
                                 });
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

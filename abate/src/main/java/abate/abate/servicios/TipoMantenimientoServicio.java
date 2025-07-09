@@ -116,7 +116,7 @@ public class TipoMantenimientoServicio {
         
         for (TipoMantenimiento u : lista) {
             if (u.getNombre().equalsIgnoreCase(nombre)) {
-                throw new MiException("El NOMBRE '"+nombre+"' ya está registrado.");
+                throw new MiException("El Tipo de Mantenimiento '"+nombre+"' ya está registrado.");
             }
     }
     
@@ -129,7 +129,7 @@ public class TipoMantenimientoServicio {
         if(!tipo.getNombre().equalsIgnoreCase(nombre)){
         for (TipoMantenimiento t : lista) {
             if (t.getNombre().equalsIgnoreCase(nombre)) {
-                throw new MiException("El NOMBRE '"+nombre+"' ya está registrado.");
+                throw new MiException("El Tipo de Mantenimiento '"+nombre+"' ya está registrado.");
             }
         }
     } 

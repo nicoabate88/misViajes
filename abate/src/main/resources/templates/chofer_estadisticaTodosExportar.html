@@ -45,7 +45,7 @@
                                 <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" th:href="@{/chofer/mostrarEstadistica}" type="button">
+                                            <a id="volver1" title="Volver" th:href="@{/chofer/mostrarEstadistica}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -107,8 +107,15 @@
                                                                 </table>
                                                             </div>
                                                             <br>
-                                                            <div class="text-center mb-2">
-                                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/chofer/mostrarEstadistica}">Volver</a>
+                                                                <div class="text-center mb-2">
+                                                                    <a id="volver2" class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/chofer/mostrarEstadistica}">Volver</a>
+                                                                </div>
+                                                        </div>
+                                                        <div id="spinner" class="modal" style="display: none;">
+                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                    <span class="sr-only">Cargando...</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         </section>
@@ -156,6 +163,20 @@
                                                                         });
                                                             }
 
+                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                const volverBtn = document.getElementById("volver1");
+                                                                volverBtn.addEventListener("click", function (e) {
+                                                                    // Mostrar spinner
+                                                                    document.getElementById("spinner").style.display = "block";
+                                                                });
+                                                            });
+                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                const volverBtn = document.getElementById("volver2");
+                                                                volverBtn.addEventListener("click", function (e) {
+                                                                    // Mostrar spinner
+                                                                    document.getElementById("spinner").style.display = "block";
+                                                                });
+                                                            });
                                                         </script>
                                                         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

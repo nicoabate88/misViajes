@@ -64,6 +64,7 @@ public class MantenimientoControlador {
             modelo.put("km", km);
             modelo.put("kmProximo", km + 10000);
             modelo.put("kmAlarma", km + 9000);
+            modelo.put("kmVigencia", 10000);
             } else {
             modelo.addAttribute("camion", null);
             } 
@@ -80,6 +81,7 @@ public class MantenimientoControlador {
             modelo.put("km", km);
             modelo.put("kmProximo", km + 10000);
             modelo.put("kmAlarma", km + 9000);
+            modelo.put("kmVigencia", 10000);
             } else {
             modelo.addAttribute("acoplado", null);
             }
@@ -185,6 +187,7 @@ public class MantenimientoControlador {
             modelo.put("km", km);
             modelo.put("kmProximo", km + 10000);
             modelo.put("kmAlarma", km + 9000);
+            modelo.put("kmVigencia", 10000);
             
             return "mantenimiento_registrarCamion.html"; 
             
@@ -202,6 +205,7 @@ public class MantenimientoControlador {
             modelo.put("km", km);
             modelo.put("kmProximo", km + 10000);
             modelo.put("kmAlarma", km + 9000);
+            modelo.put("kmVigencia", 10000);
            
             return "mantenimiento_registrarAcoplado.html"; 
             
@@ -337,7 +341,7 @@ public class MantenimientoControlador {
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {
         
-        Mantenimiento mantenimiento = mantenimientoServicio.buscarMantenimiento(id);
+        Mantenimiento mantenimiento = mantenimientoServicio.buscarMantenimientoDiasVigencia(id);
         
         modelo.put("mantenimiento", mantenimiento);
         modelo.addAttribute("tipos", tipoMantenimientoServicio.buscarTiposAplicaA(mantenimiento.getIdOrg(), mantenimiento.getAplicaA()));

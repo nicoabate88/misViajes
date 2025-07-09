@@ -76,6 +76,27 @@ public class ClienteControlador {
 
         return "cliente_listar.html";
     }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/listarFiltro")
+    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+        modelo.put("cliente", clienteServicio.buscarCliente(id));
+
+        return "cliente_listarFiltro.html";
+    }
+    
+    @GetMapping("/detalle/{id}")
+    public String obtenerDetalle(@PathVariable Long id, ModelMap modelo) {
+        
+        modelo.put("cliente", clienteServicio.buscarCliente(id));
+
+        return "fragmentos/detalle_cliente :: historialFragment";
+
+    }
 
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {

@@ -104,6 +104,8 @@
                                     alert("Debes ingresar al menos un ítem de gasto");
                                     return false;
                                 }
+                                
+                                document.getElementById("spinner").style.display = "block";
 
                                 return true;
                             }
@@ -126,7 +128,7 @@
                             </div>
                             <div class="container mb-2">   
                                 <div class="card border-secondary p-2" id="color-card">
-                                    <form th:action="@{/gasto/registroDesdeFlete}" method="post">
+                                    <form id="form" th:action="@{/gasto/registroDesdeFlete}" method="post">
                                         <input hidden th:value="${idFlete}" name="idFlete">  
                                             <div class="row">
                                                 <div class="col-md-10 mb-2">
@@ -185,15 +187,20 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="text-center mb-2">
-                                                                    <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" onclick="return validarFormulario()" title="Registrar Gasto">Registrar</button>
+                                                                    <button id="registra" class="btn btn-secondary bg-secondary border-light w-50" type="submit" onclick="return validarFormulario()" title="Registrar Gasto">Registrar</button>
                                                                 </div>
                                                                 <div class="text-center">
                                                                     <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/flete/mostrarChofer/__${idFlete}__}" title="Cancelar">Cancelar</a>
                                                                 </div>
-
                                                                 </form>
                                                                 </div>
-
+                                                                <div id="spinner" class="modal" style="display: none;">
+                                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                            <span class="sr-only">Cargando...</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                                 <script>
                                                                     document.getElementById('cantidad').addEventListener('keydown', function (event) {
                                                                         if (event.key === '.' || event.key === ',') {

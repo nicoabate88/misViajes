@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <body>
+        <div th:fragment="historialFragment(historial)">
+            <div class="card mt-2 border-dark">
+                <div class="card p-3 mb-0">
+                    <h6 th:text="${chofer.nombre}"></h6>
+                    <p id="dimgray" class="mb-1" th:text="'CUIL '+${chofer.cuil}"></p>
+                    <h6 id="dimgray" th:text="'Nombre de Usuario: '+${chofer.usuario}"></h6>
+                    <p class="mb-1" id="dimgray" th:text="'Porcentaje '+${chofer.porcentaje}+'%'"></p>
+                    <p class="mb-1" id="dimgray" th:text="'Cuenta '+${chofer.cuenta}+' / Caja de Gastos '+${chofer.caja}"></p>
+                    <p class="mb-1" id="dimgray" th:text="'Mostrar Documentación '+${chofer.verDocumentacion}+' / Editar Documentación '+${chofer.documentacion}"></p>
+                    <p class="mb-2" id="dimgray" th:text="'Mostrar Mantenimiento '+${chofer.verMantenimiento}+' / Editar Mantenimiento '+${chofer.mantenimiento}"></p>
+                    <h6 th:if="${chofer.camion} != null" class="mb-1" id="dimgray" th:text="'Camión '+${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}"></h6>
+                    <h6 th:if="${chofer.camion} == null" class="mb-1" id="dimgray">No tiene Camión Asociado</h6>
+                    <h6 th:if="${chofer.acoplado} != null" id="dimgray" th:text="'Acoplado '+${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}"></h6>
+                    <h6 th:if="${chofer.acoplado} == null" class="mb-1" id="dimgray">No tiene Acoplado Asociado</h6>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

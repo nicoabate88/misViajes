@@ -2,6 +2,7 @@ package abate.abate.controladores;
 
 import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Flete;
+import abate.abate.entidades.Imagen;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.AcopladoServicio;
 import abate.abate.servicios.CamionServicio;
@@ -9,7 +10,9 @@ import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.ClienteServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.FleteServicio;
+import abate.abate.servicios.ImagenServicio;
 import abate.abate.servicios.ProductoServicio;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/flete")
@@ -47,11 +52,17 @@ public class FleteControlador {
     private CamionServicio camionServicio;
     @Autowired
     private AcopladoServicio acopladoServicio;
+    @Autowired
+    private ImagenServicio imagenServicio;
+    
 
     @GetMapping("/registrar")
     public String registrarFlete(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        if(logueado.getIdOrg() != 3){
+        
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
             modelo.put("chofer", logueado);
@@ -64,14 +75,46 @@ public class FleteControlador {
 
         } else {
 
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+
+            return "flete_registrarAdmin.html";
+        }
+        
+        } else { //obligatorio cargar imagen de CP y Descarga
+            
+            if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+            
+            modelo.put("chofer", logueado);
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
+
+            return "flete_registrarChoferImagen.html";
+            
+        } else {
+                
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+
+            return "flete_registrarAdmin.html";
+                
+            }
+        }
+    }
+    
+    @GetMapping("/registrarAdmin")
+    public String registrarAdmin(@RequestParam("idChofer") Long idChofer, ModelMap modelo, HttpSession session) {
+        
+            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
             modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
 
-            return "flete_registrarAdmin.html";
-        }
+            return "flete_registrarAdmin1.html";
+
     }
 
     @PostMapping("/registroChofer")
@@ -89,6 +132,91 @@ public class FleteControlador {
         return "redirect:/flete/registradoChofer";
 
     }
+    
+    @PostMapping("/registroChoferImagen")
+    public String registroFleteImagen(@RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam Long idCliente,
+            @RequestParam String fechaCarga, @RequestParam String fechaFlete,
+            @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
+            @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg,
+            @RequestParam(required = false) String observacion, @RequestParam("cp") MultipartFile cp, @RequestParam("descarga") MultipartFile descarga,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        Long idCP;
+        Long idDescarga;
+        
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("CP");
+            imagen.setTipo(cp.getContentType());
+            if (cp.getContentType().equals("application/pdf")) {
+                imagen.setDatos(cp.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(cp));
+            }
+
+           idCP = imagenServicio.crearImagenCPObligatorio(imagen);
+
+        } catch (Exception e) {
+
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen CP. Intente nuevamente o ingrese otro archivo");
+            modelo.put("chofer", logueado);
+            modelo.put("destino", destino);
+            modelo.put("origen", origen);
+            modelo.put("km", km);
+            modelo.put("tarifa", tarifa);
+            modelo.put("kg", kg);
+            modelo.put("cPorte", cPorte);
+            modelo.put("ctg", ctg);
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
+
+            return "flete_registrarChoferImagen.html";
+            
+        }
+        
+        try {
+
+            Imagen imagen = new Imagen();
+            imagen.setNombre("Descarga");
+            imagen.setTipo(descarga.getContentType());
+            if (descarga.getContentType().equals("application/pdf")) {
+                imagen.setDatos(descarga.getBytes());
+            } else {
+                imagen.setDatos(optimizeImage(descarga));
+            }
+
+            idDescarga = imagenServicio.crearImagenDescargaObligatorio(imagen);
+
+        } catch (Exception e) {
+
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen Ticket de Descarga. Intente nuevamente o ingrese otro archivo");
+            modelo.put("chofer", logueado);
+            modelo.put("destino", destino);
+            modelo.put("origen", origen);
+            modelo.put("km", km);
+            modelo.put("tarifa", tarifa);
+            modelo.put("kg", kg);
+            modelo.put("cPorte", cPorte);
+            modelo.put("ctg", ctg);
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
+
+            return "flete_registrarChoferImagen.html";
+        }
+
+        fleteServicio.crearFleteChoferImagenObligatorio(logueado.getIdOrg(), fechaCarga, idCliente, idCamion, idAcoplado, origen, fechaFlete, destino, km, 
+                idProducto, tarifa, cPorte, ctg, kg, observacion, idCP, idDescarga, logueado.getId());
+
+        return "redirect:/flete/registradoChofer";
+
+    }
 
     @GetMapping("/registradoChofer")
     public String registradoChofer(HttpSession session, ModelMap modelo) {
@@ -102,20 +230,21 @@ public class FleteControlador {
 
         return "flete_mostrarChofer.html";
 
-    }
-
+    }  
+        
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/registroAdmin")
     public String registroFleteAdmin(@RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, 
             @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete,
             @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte,
-            @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam String comisionTpteChofer,
-            @RequestParam String iva, @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+            @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam Double comisionTpteValor, 
+            @RequestParam String comisionTpteChofer, @RequestParam Double neto, @RequestParam Double iva, @RequestParam Double total, @RequestParam Double porcentaje, 
+            @RequestParam Double gananciaChofer, @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        fleteServicio.crearFleteAdmin(logueado.getIdOrg(), idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, 
-                km, idProducto, tarifa, cPorte, ctg, kg, comisionTpte, comisionTpteChofer, iva, observacion, logueado.getId());
+        fleteServicio.crearFleteAdmin(logueado.getIdOrg(), idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, 
+                cPorte, ctg, kg, comisionTpte, comisionTpteValor, comisionTpteChofer, neto, iva, total, porcentaje, gananciaChofer, observacion, logueado.getId());
 
         return "redirect:/flete/registradoAdmin";
 
@@ -606,10 +735,10 @@ public class FleteControlador {
     @PostMapping("/modificaAdmin/{id}")
     public String modificaAdmin(@RequestParam Long id, @RequestParam Long idChofer, @RequestParam Long idCamion, @RequestParam(required = false) Long idAcoplado, 
             @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete, @RequestParam String origen, 
-            @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto,
-            @RequestParam String cPorte, @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte,
-            @RequestParam String comisionTpteChofer, @RequestParam Double iva, @RequestParam Double porcentaje, @RequestParam Double porcentajeChofer,
-            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+            @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte, @RequestParam String ctg, 
+            @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam Double comisionTpteValor,
+            @RequestParam String comisionTpteChofer, @RequestParam Double neto, @RequestParam Double iva, @RequestParam Double total, @RequestParam Double porcentaje, 
+            @RequestParam Double gananciaChofer, @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Flete flete = fleteServicio.buscarFlete(id);
@@ -617,14 +746,14 @@ public class FleteControlador {
         if (flete.getEstado().equalsIgnoreCase("PENDIENTE")) {
 
             fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
-            kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, observacion, logueado.getId());
+            kg, neto, iva, total, porcentaje, gananciaChofer, comisionTpte, comisionTpteValor, comisionTpteChofer, observacion, logueado.getId());
 
             return "redirect:/flete/modificadoPendiente/" + id;
 
         } else {
             
             fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
-                    kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, observacion, logueado.getId());
+                    kg, neto, iva, total, porcentaje, gananciaChofer, comisionTpte, comisionTpteValor, comisionTpteChofer, observacion, logueado.getId());
 
             return "redirect:/flete/modificadoAdmin/" + id;
 
@@ -678,14 +807,14 @@ public class FleteControlador {
            @RequestParam(required = false) Long camion, @RequestParam(required = false) Long cliente, @RequestParam Long idChofer, @RequestParam Long idCamion, 
            @RequestParam(required = false) Long idAcoplado, @RequestParam Long idCliente, @RequestParam String fechaCarga, @RequestParam String fechaFlete, 
            @RequestParam String origen, @RequestParam String destino, @RequestParam Double km, @RequestParam Long idProducto, @RequestParam String cPorte, 
-           @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam String comisionTpteChofer, 
-            @RequestParam Double iva, @RequestParam Double porcentaje, @RequestParam Double porcentajeChofer,
-            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+           @RequestParam String ctg, @RequestParam Double tarifa, @RequestParam Double kg, @RequestParam Double comisionTpte, @RequestParam Double comisionTpteValor, 
+           @RequestParam String comisionTpteChofer, @RequestParam Double neto, @RequestParam Double iva, @RequestParam Double total, @RequestParam Double porcentaje, 
+           @RequestParam Double gananciaChofer, @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         
         fleteServicio.modificarFleteAdmin(id, idChofer, idCamion, idAcoplado, fechaCarga, idCliente, origen, fechaFlete, destino, km, idProducto, tarifa, cPorte, ctg,
-                    kg, iva, porcentaje, porcentajeChofer, comisionTpte, comisionTpteChofer, observacion, logueado.getId());
+                    kg, neto, iva, total, porcentaje, gananciaChofer, comisionTpte, comisionTpteValor, comisionTpteChofer, observacion, logueado.getId());
 
         return "redirect:/flete/modificado?id=" + id +"&desde=" + desde + "&hasta=" + hasta +
            (chofer != null ? "&chofer=" + chofer : "") +
@@ -816,7 +945,7 @@ public class FleteControlador {
 
         LocalDate now = LocalDate.now();
 
-         LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
+        LocalDate firstDayOfPreviousMonth = now.minusMonths(1).withDayOfMonth(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -1299,6 +1428,15 @@ public class FleteControlador {
         }
         
         return "flete_listarTodoFiltrado.html";
+    }
+    
+        public byte[] optimizeImage(MultipartFile file) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Thumbnails.of(file.getInputStream())
+                .size(1024, 768) // Ajusta el tamaño según tus necesidades
+                .outputQuality(0.99) // Ajusta la calidad según tus necesidades
+                .toOutputStream(outputStream);
+        return outputStream.toByteArray();
     }
 
 }

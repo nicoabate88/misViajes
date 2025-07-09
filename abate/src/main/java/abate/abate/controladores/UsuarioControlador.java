@@ -164,6 +164,8 @@ public class UsuarioControlador {
 
     }
 
+    //metodo para crear usuario CEO, es necesario quitar PreAuthorize
+    
     @PreAuthorize("hasAnyRole('ROLE_CEO')")
     @GetMapping("/registrarCeo")
     public String registrarUsuarioCeo() {
@@ -171,6 +173,8 @@ public class UsuarioControlador {
         return "usuario_registrarCeo.html";
 
     }
+    
+    //metodo para crear usuario CEO
 
     @PreAuthorize("hasAnyRole('ROLE_CEO')")
     @PostMapping("/registroCeo")
@@ -266,6 +270,35 @@ public class UsuarioControlador {
         modelo.addAttribute("usuarios", usuarioServicio.buscarUsuarios(idOrg));
 
         return "usuario_mostrarAdmin.html";
+    }
+    
+    @PreAuthorize("hasAnyRole('ROLE_CEO')")
+    @GetMapping("/modificarPswAdmin/{id}")
+    public String modificarPswAdmin(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("usuario", usuarioServicio.buscarUsuario(id));
+
+        return "usuario_modificarPswAdmin.html";
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_CEO')")
+    @PostMapping("/modificaPswAdmin/{id}")
+    public String modificaPswAdmin(@RequestParam Long id, @RequestParam String password, ModelMap modelo, HttpSession session) {
+
+        usuarioServicio.modificarPswUsuario(id, password);
+
+        return "redirect:/usuario/modificadoPswAdmin/" + id;
+    }
+    
+    @GetMapping("/modificadoPswAdmin/{id}")
+    public String modificadoPswAdmin(@PathVariable Long id, ModelMap modelo) {
+
+        modelo.put("usuario", usuarioServicio.buscarUsuario(id));
+        modelo.put("exito", "Contraseña de Usuario MODIFICADA con éxito");
+
+        return "usuario_mostrar.html";       
+
     }
 
 }

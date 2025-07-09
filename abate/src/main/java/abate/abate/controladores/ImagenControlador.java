@@ -473,12 +473,14 @@ public class ImagenControlador {
 
             imagenServicio.crearImagenCP(id, imagen);
 
-                return "redirect:/imagen/cargadoCPChofer/" + id;
+            return "redirect:/imagen/cargadoCPChofer/" + id;
 
         } catch (Exception e) {
+            
             modelo.addAttribute("flete", flete);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
             return "imagen_CPcargar.html";
+            
         }
 
     }

@@ -4,7 +4,31 @@
         <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-                    <link rel="stylesheet" href="/css/medidas_container.css">   
+                    <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <style>
+                            .link-historial {
+                                color: darkblue;
+                                background: none;
+                                border: none;
+                                padding: 0;
+                                cursor: pointer;
+                            }
+                            .modal-header-darkblue {
+                                background-color: darkblue;
+                                color: white;
+                            }
+                            @media (max-width: 576px) {
+                                .table {
+                                    font-size: 10px;
+                                }
+                            }
+
+                            @media (min-width: 577px) and (max-width: 768px) {
+                                .table {
+                                    font-size: 11px;
+                                }
+                            }
+                        </style>
                         </head>
                         <body>   
                             <div class="card-header mb-2" style="height: 70px;">
@@ -30,27 +54,54 @@
                             </div>
                             <div class="container mb-2"> 
                                 <div th:if="${!choferes.isEmpty()}">
+                                <div class="card-header pb-0" id="bgWhite">
+                                    <form class="row" th:action="@{/chofer/listarFiltro}" method="GET">
+                                        <div class="col-8 col-sm-8 col-md-8 col-lg-5 col-xl-5 mb-2">
+                                            <label for="chofer" class="form-floting">Chofer</label>  
+                                            <select class="form-control border-secondary" id="chofer" name="id">
+                                                <option th:value=null>Todos</option>
+                                                <option th:each="chofer : ${choferes}"
+                                                        th:value="${chofer.id}"
+                                                        th:text="${chofer.nombre}"/>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 text-center">
+                                            <label for="ver" class="form-floting">Ver</label> 
+                                            <button id="ver"  class="btn btn-primary" type="submit">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                      
+                                    <div class="col-3 col-sm-3 col-md-3 col-lg-6 col-xl-6 pt-4 text-center" th:if="${flag == true}">
+                                            <a th:href="@{/caja/mostrarTodas}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16">
+                                                 <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+                                           </svg><p>Cajas</p></a>
+                                    </div>
+                                    </form>
+                                </div>
                                     <div th:each="chofer : ${choferes}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
+                                            <div class="row">
+                                            <div class="col-9">
                                             <h6 class="mb-1" th:text="${chofer.nombre}"></h6>
-                                                    <p class='mb-1' id="dimgray" th:text="'CUIL '+${chofer.cuil}"></p>
-                                                    <h6 class="mb-1" id="dimgray" th:text="'Nombre de Usuario: '+${chofer.usuario}" ></h6>
-                                            <div class="mb-4">                          
-                                                <p class="mb-0" id="dimgray" th:text="'Porcentaje '+${chofer.porcentaje}+'%'"></p>
-                                                <p class="mb-0" th:if="${chofer.caja != 'SI'}" th:text="'Caja de Gastos INHABILITADA'"></p>
-                                                <p class="mb-0" th:if="${chofer.cuenta != 'SI'}" th:text="'Mostrar Cuenta a Chofer INHABILITADA'"></p>
-                                                <span th:if="${chofer.camion} != null" class="mb-0" id="dimgray" th:text="'Camión '+${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}"></span>
-                                                <span th:if="${chofer.camion} == null" class="mb-0" id="dimgray" th:text="'Camión NO ASOCIADO'"></span>
-                                                <span th:if="${chofer.acoplado} != null" id="dimgray" th:text="' / Acoplado '+${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}"></span>
-                                                <span th:if="${chofer.acoplado} == null" id="dimgray" th:text="' / Acoplado NO ASOCIADO'"></span>
+                                            <p class='mb-1' id="dimgray" th:text="'CUIL '+${chofer.cuil}"></p>
+                                            </div>
+                                            <div class="col-3 text-center"> 
+                                                <a href="#" th:attr="data-id=${chofer.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 -30 64 94" enable-background="new 0 0 64 64" xml:space="preserve"><g id="Loupe"><path d="M53.7602806,35.6955452c7.028801-7.0301018,7.0278015-18.4271011-0.0023003-25.455801 c-7.030098-7.0288005-18.4270973-7.0279007-25.4557934,0.0021992c-5.8004055,5.8014011-6.800106,14.5709-3.0264053,21.4111004 L4.9687819,51.960144l7.0709996,7.0710983L32.346981,38.7240448 C39.1881866,42.4984436,47.9591866,41.4976425,53.7602806,35.6955452z M12.0397816,56.2027435L7.7971873,51.960144 l18.5755939-18.5755997c0.5754051,0.8079987,1.2066994,1.588501,1.9315987,2.3133011 c0.7241001,0.7238998,1.5039005,1.3544998,2.3111,1.9292984L12.0397816,56.2027435z M29.7174816,34.282444 c-6.2378998-6.2378006-6.2382946-16.3880005-0.0009995-22.6264c3.0217037-3.0222998,7.0394993-4.6869001,11.3132-4.6873002 c4.2737999-0.0004001,8.2918968,1.6635003,11.3141975,4.6853004l0.0008011,0.0007992l0.0003014,0.0003004 c6.2377968,6.2378006,6.238205,16.3878994,0.0009003,22.6263008c-3.0216942,3.0223007-7.0395012,4.6869011-11.3132019,4.6872978 C36.7588806,38.9691429,32.7407799,37.3052444,29.7174816,34.282444z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M50.2242813,13.7756433c-2.4559021-2.4551992-5.7206993-3.8071995-9.1938019-3.8076 c-3.4726982,0.0007-6.7374992,1.3528004-9.1923981,3.809c-0.390501,0.3905001-0.3901005,1.0241003,0,1.4142008 c0.3908997,0.3908997,1.0237007,0.3905001,1.4141998,0c2.0779076-2.0778008,4.8400002-3.2227001,7.7789078-3.2227001 c2.9381905-0.0007,5.7010918,1.1434994,7.7788925,3.2213993c0.3908005,0.3908005,1.0237007,0.3904009,1.4141998,0 C50.6147804,14.7994442,50.6143799,14.165844,50.2242813,13.7756433z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></svg>     
+                                                    <p>Detalle</p></a>
+                                            </div>
                                             </div>
                                             <div class="row text-center">
                                                 <div class="col-3">
-                                                <a th:href= "@{/flete/listarIdChofer/__${chofer.id}__}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
-                                                        <path d="M4 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4m8-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4M.115 3.18A.5.5 0 0 1 .5 3h15a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 14 12H2a.5.5 0 0 1-.491-.408l-1.5-8a.5.5 0 0 1 .106-.411zm.987.82 1.313 7h11.17l1.313-7z"/>
-                                                        <path fill-rule="evenodd" d="M6 1a2.498 2.498 0 0 1 4 0c.818 0 1.545.394 2 1 .67 0 1.552.57 2 1h-2c-.314 0-.611-.15-.8-.4-.274-.365-.71-.6-1.2-.6-.314 0-.611-.15-.8-.4a1.497 1.497 0 0 0-2.4 0c-.189.25-.486.4-.8.4-.507 0-.955.251-1.228.638q-.136.194-.308.362H3c.13-.147.401-.432.562-.545a1.6 1.6 0 0 0 .393-.393A2.5 2.5 0 0 1 6 1"/>
-                                                    </svg><p id="icono2">Viajes</p></a>
+                                                    <a th:href= "@{/flete/listarIdChofer/__${chofer.id}__}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
+                                                            <path d="M4 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4m8-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4M.115 3.18A.5.5 0 0 1 .5 3h15a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 14 12H2a.5.5 0 0 1-.491-.408l-1.5-8a.5.5 0 0 1 .106-.411zm.987.82 1.313 7h11.17l1.313-7z"/>
+                                                            <path fill-rule="evenodd" d="M6 1a2.498 2.498 0 0 1 4 0c.818 0 1.545.394 2 1 .67 0 1.552.57 2 1h-2c-.314 0-.611-.15-.8-.4-.274-.365-.71-.6-1.2-.6-.314 0-.611-.15-.8-.4a1.497 1.497 0 0 0-2.4 0c-.189.25-.486.4-.8.4-.507 0-.955.251-1.228.638q-.136.194-.308.362H3c.13-.147.401-.432.562-.545a1.6 1.6 0 0 0 .393-.393A2.5 2.5 0 0 1 6 1"/>
+                                                        </svg><p id="icono2">Viajes</p></a>
                                                 </div>
                                                 <div class="col-3">
                                                     <a th:href= "@{/cuenta/mostrarIdChoferAdmin/__${chofer.id}__}">
@@ -83,7 +134,7 @@
                                     </div>
                                     <br>
                                         <div class="text-center mb-2">
-                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo Chofer</a>
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo</a>
                                         </div>
                                         <div class="text-center mb-2">
                                             <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
@@ -91,20 +142,85 @@
                                 </div>
                                 <div th:if="${choferes.isEmpty()}">
                                     <br>
-                                    <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
-                                        <h6 id="azul">No existen Choferes Registrados</h6>
-                                    </div>
-                                    <div class="text-center mb-2">
-                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo Chofer</a>
-                                    </div>
+                                        <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                            <h6 id="azul">No existen Choferes Registrados</h6>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Chofer" th:href="@{/chofer/registrar}">Nuevo</a>
+                                        </div>
 
-                                    <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
-                                    </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                        </div>
 
                                 </div>
                             </div>
+                            <!-- Modal para mostrar historial -->
+                            <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header position-relative modal-header-darkblue">
+                                            <h4 class="modal-title mx-auto">Detalle de Chofer</h4>
+                                            <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" id="historialContenido">
+                                            <!-- Aquí se cargará el fragmento HTML con el historial -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <script>
+                                function verHistorial(button) {
+                                    const choferId = button.getAttribute('data-id');
+
+                                    fetch(`/chofer/detalle/${choferId}`)
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error("Error al obtener detalle");
+                                                }
+                                                return response.text();
+                                            })
+                                            .then(html => {
+                                                document.getElementById("historialContenido").innerHTML = html;
+                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                modal.show();
+                                            })
+                                            .catch(error => {
+                                                console.error("Error:", error);
+                                                alert("No se pudo cargar el detalle del chofer.");
+                                            });
+                                }
+
+
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                        btn.addEventListener("click", function () {
+                                            const id = this.getAttribute("data-id");
+
+                                            fetch("/chofer/detalle/" + id)
+                                                    .then(response => response.text())
+                                                    .then(html => {
+                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                    })
+                                                    .catch(error => console.error("Error al cargar detalle", error));
+                                        });
+                                    });
+                                });
+
+                                $(document).ready(function () {
+                                    $('#filtroForm').on('submit', function () {
+                                        $('#loadingModal').modal('show');
+                                    });
+                                });
+                                $(document).ready(function () {
+                                    $('#exportaForm').on('submit', function () {
+                                        $('#loadingModal').modal('show');
+                                    });
+                                });
+                            </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                         </body>

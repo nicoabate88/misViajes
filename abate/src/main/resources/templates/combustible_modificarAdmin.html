@@ -194,6 +194,13 @@
                                                                         </form>
                                                                         </div>
                                                                         </div>
+                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                         <script>
                                                                             document.getElementById('form').addEventListener('submit', function (event) {
                                                                                 var fechaAnterior = new Date(document.getElementById('fechaAnterior').value);
@@ -219,13 +226,15 @@
                                                                                     event.preventDefault();
                                                                                     return;
                                                                                 }
+                                                                                
+                                                                                document.getElementById("spinner").style.display = "block";
 
                                                                                 function formatearFecha(fecha) {
                                                                                     var dia = String(fecha.getDate()).padStart(2, '0');
                                                                                     var mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan desde 0
                                                                                     var anio = fecha.getFullYear();
                                                                                     return dia + '-' + mes + '-' + anio;
-                                                                                }
+                                                                                }                                                            
 
                                                                             });
                                                                             function calcularTotalKm() {

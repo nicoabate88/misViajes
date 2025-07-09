@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <body>
+        <div th:fragment="historialFragment(historial)">
+            <div class="card mt-2 border-dark">
+                <div class="card p-3 mb-0">
+                    <h6 th:text="${cliente.nombre}"></h6>
+                    <p id="dimgray" class="mb-1" th:text="'CUIT '+${cliente.cuit}"></p>
+                    <p class="mb-0"  id="dimgray" th:text="'Localidad '+${cliente.localidad}"></p>
+                    <p class="mb-0"  id="dimgray" th:text="'Domicilio '+${cliente.direccion}"></p>
+                    <p class="mb-0"  id="dimgray" th:text="'Teléfono '+${cliente.telefono}"></p>
+                    <p class="mb-0" id="dimgray" th:text="'Email '+${cliente.email}"></p>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+

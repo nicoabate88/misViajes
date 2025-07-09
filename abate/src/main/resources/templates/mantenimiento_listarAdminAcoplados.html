@@ -94,50 +94,51 @@
                                         <div class="mb-4" th:each="entry : ${mantenimientos}">
                                             <h6 class="text-dark p-1 text-center"><strong th:text="${entry.key}"></strong></h6> 
                                             <div class="table-responsive border border-secondary rounded">
-                                            <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center">Dominio</th>
-                                                        <th class="text-center">Fecha</th>
-                                                        <th class="text-center">Km</th>
-                                                        <th class="text-center">Km Próximo</th>
-                                                        <th class="text-center">Km Actual</th>
-                                                        <th class="text-center">Km Vigencia</th>
-                                                        <th class="text-center">Estado</th>
-                                                        <th class="text-center">Observación</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr th:each="mantenimiento : ${entry.value}">
-                                                        <td class="text-center"><b><a id="dimgray" th:href="@{/mantenimiento/listarAdminAcoplado(id=${mantenimiento.id}, idAcoplado=${idAcoplado})}" th:text="${mantenimiento.acoplado.dominio}"></a></b></td>
-                                                        <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
-                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
-                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}"></td>
-                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></strong></td>
-                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
-                                                        <td class="text-center">
-                                                            <span th:switch="${mantenimiento.estado}">
-                                                                <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                                                <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                                                <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                            </span> 
-                                                        </td>
-                                                        <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
-                                                            <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
-                                                               th:attr="data-observacion=${mantenimiento.observacion}" 
-                                                               class="text-primary ver-mas">Ver</a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                                <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center">Dominio</th>
+                                                            <th class="text-center">Fecha</th>
+                                                            <th class="text-center">Km</th>
+                                                            <th class="text-center">Km Próximo</th>
+                                                            <th class="text-center">Km Actual</th>
+                                                            <th class="text-center">Km Vigencia</th>
+                                                            <th class="text-center">Estado</th>
+                                                            <th class="text-center">Observación</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="mantenimiento : ${entry.value}">
+                                                            <td class="text-center"><b><a id="dimgray" th:href="@{/mantenimiento/listarAdminAcoplado(id=${mantenimiento.id}, idAcoplado=${idAcoplado})}" th:text="${mantenimiento.acoplado.dominio}"></a></b></td>
+                                                            <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
+                                                            <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
+                                                            <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}"></td>
+                                                            <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                            <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                            <td class="text-center">
+                                                                <span th:switch="${mantenimiento.estado}">
+                                                                    <span th:case="'VIGENTE'">✅ VIGENTE</span>
+                                                                    <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
+                                                                    <span th:case="'VENCIDO'">❌ VENCIDO</span>
+                                                                </span> 
+                                                            </td>
+                                                            <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
+                                                                <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
+                                                                   th:attr="data-observacion=${mantenimiento.observacion}" 
+                                                                   class="text-primary ver-mas">Ver</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
-                                        <div class="text-center mb-2">
-                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrar/__${aplica}__}">Nuevo</a>
-                                        </div>
-                                        <div class="text-center mb-2">
-                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
-                                        </div>
+                                        <br>
+                                            <div class="text-center mb-2">
+                                                <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrar/__${aplica}__}">Nuevo</a>
+                                            </div>
+                                            <div class="text-center mb-2">
+                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
+                                            </div>
                                     </div>
                                     <div th:if="${mantenimientos.size < 1}">
                                         <br>
@@ -152,6 +153,13 @@
                                                     <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
                                                 </div>
                                                 </div>
+                                                </div>
+                                                <div id="spinner" class="modal" style="display: none;">
+                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                            <span class="sr-only">Cargando...</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <script>
 
@@ -187,6 +195,15 @@
                                                             });
                                                         });
                                                     });
+
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        const volverBtn = document.getElementById("ver");
+                                                        volverBtn.addEventListener("click", function (e) {
+                                                            // Mostrar spinner
+                                                            document.getElementById("spinner").style.display = "block";
+                                                        });
+                                                    });
+
                                                 </script>
                                                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

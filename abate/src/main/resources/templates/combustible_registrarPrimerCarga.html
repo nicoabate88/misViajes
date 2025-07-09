@@ -36,39 +36,55 @@
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form th:action="@{/combustible/registroPrimerCarga}" method="POST">
                                         <input hidden th:value="${desde}" name="desde">
-                                        <input hidden th:value="${hasta}" name="hasta">
-                                        <input hidden th:value="${idCamion}" name="idCamion">
-                                        <input hidden th:value="${idChofer}" name="idChofer">
-                                        <input hidden th:value="${camion.id}" name="camion"> 
-                                            <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="camion" class="form-floting text-secondary">Camión</label>
-                                                    <input type="text" class="form-control" id="camion" th:value="${camion.dominio}" name="idCamion" disabled readonly>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
-                                                    <input type="date" class="form-control" id="fecha" name="fecha" required>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
-                                                    <label for="km" class="form-label text-secondary">KM Actual*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">KM</span>
-                                                        <input type="number" step="0.01" min="0" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
-                                                    </div>    
-                                                </div>
-                                            </div>
-                                            <div class="d-block d-md-none col-sm-6 col-md-6">
-                                            </div>    
-                                            <div class="text-center mb-2">
-                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar KM Camión">Registrar</button>
-                                            </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" th:href="@{/combustible/listarAdminFiltroGet(desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">Cancelar</a>
-                                            </div>    
-                                    </form>
-                                </div>
-                            </div>
-                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                        </body>
-                        </html>
+                                            <input hidden th:value="${hasta}" name="hasta">
+                                                <input hidden th:value="${idCamion}" name="idCamion">
+                                                    <input hidden th:value="${idChofer}" name="idChofer">
+                                                        <input hidden th:value="${camion.id}" name="camion"> 
+                                                            <div class="row">
+                                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                    <label for="camion" class="form-floting text-secondary">Camión</label>
+                                                                    <input type="text" class="form-control" id="camion" th:value="${camion.dominio}" name="idCamion" disabled readonly>
+                                                                </div>
+                                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                                    <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                                                </div>
+                                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-5">
+                                                                    <label for="km" class="form-label text-secondary">KM Actual*</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text">KM</span>
+                                                                        <input type="number" step="0.01" min="0" class="form-control" id="km" placeholder="Ingrese KM" name="km" required>
+                                                                    </div>    
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-block d-md-none col-sm-6 col-md-6">
+                                                            </div>    
+                                                            <div class="text-center mb-2">
+                                                                <button id="registrar" class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar KM Camión">Registrar</button>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" th:href="@{/combustible/listarAdminFiltroGet(desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">Cancelar</a>
+                                                            </div>    
+                                                            </form>
+                                                            </div>
+                                                            </div>
+                                                            <div id="spinner" class="modal" style="display: none;">
+                                                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                        <span class="sr-only">Cargando...</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <script>
+                                                                document.addEventListener("DOMContentLoaded", function () {
+                                                                    const volverBtn = document.getElementById("registrar");
+                                                                    volverBtn.addEventListener("click", function (e) {
+                                                                        // Mostrar spinner
+                                                                        document.getElementById("spinner").style.display = "block";
+                                                                    });
+                                                                });
+                                                            </script>
+                                                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                            </body>
+                                                            </html>

@@ -2,6 +2,7 @@ package abate.abate.controladores;
 
 import abate.abate.entidades.Caja;
 import abate.abate.entidades.Transaccion;
+import abate.abate.entidades.Usuario;
 import abate.abate.servicios.CajaServicio;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.ExcelServicio;
@@ -13,7 +14,9 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -87,6 +90,72 @@ public class CajaControlador {
         return "caja_mostrarFiltroAdmin.html";
 
     }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/mostrarTodas")
+    public String mostrarTodas(ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Double saldo = 0.0;
+        List<Caja> cajas = cajaServicio.buscarCajas(logueado.getIdOrg());
+        for (Caja c : cajas) {
+            saldo = saldo + c.getSaldo();
+        }
+
+        modelo.addAttribute("cajas", cajas);
+        modelo.put("saldo", saldo);
+
+        return "caja_mostrarTodas.html";
+
+    }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/mostrarAdminTodas/{id}")
+    public String mostrarAdminTodas(@PathVariable Long id, ModelMap modelo) throws ParseException {
+
+        Caja caja = cajaServicio.buscarCajaChofer(id);
+        String desde = obtenerFechaDesde();
+        String hasta = obtenerFechaHasta();
+
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(caja.getId(), desde, hasta);
+        Boolean flag = true;
+        if (lista.isEmpty()) {
+            flag = false;
+        }
+
+        modelo.put("flag", flag);
+        modelo.put("caja", caja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.addAttribute("transacciones", lista);
+
+        return "caja_mostrarAdminTodas.html";
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PostMapping("/mostrarFiltroAdminTodas")
+    public String mostrarFiltroAdminTodas(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+
+        Boolean flag = true;
+
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(id, desde, hasta);
+
+        if (lista.isEmpty()) {
+            flag = false;
+        }
+
+        modelo.put("flag", flag);
+        modelo.put("caja", cajaServicio.buscarCaja(id));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.addAttribute("transacciones", lista);
+
+        return "caja_mostrarFiltroAdminTodas.html";
+
+    }
+    
 
     @GetMapping("/mostrarChofer/{id}")
     public String mostrarChofer(@PathVariable Long id, ModelMap modelo) throws ParseException {

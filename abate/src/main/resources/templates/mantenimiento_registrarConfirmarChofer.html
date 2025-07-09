@@ -119,7 +119,7 @@
                                         <input hidden th:value="${mantenimiento.aplicaA}" name="aplicaA">
                                             <input hidden th:value="${mantenimiento.tipoMantenimiento.id}" name="idTipo">
                                                 <input th:if="${mantenimiento.camion != null}" hidden th:value="${mantenimiento.camion.id}" name="idEntidad">
-                                                        <input th:if="${mantenimiento.acoplado != null}" hidden th:value="${mantenimiento.acoplado.id}" name="idEntidad">
+                                                    <input th:if="${mantenimiento.acoplado != null}" hidden th:value="${mantenimiento.acoplado.id}" name="idEntidad">
                                                         <input hidden th:value="${mantenimiento.observacion}" name="observacion">
                                                             <input hidden th:value="${fecha}" name="fecha">
                                                                 <input hidden th:value="${mantenimiento.km}" name="km">
@@ -127,7 +127,7 @@
                                                                         <input hidden th:value="${mantenimiento.kmAlarma}" name="kmAlarma">    
                                                                             <input hidden th:value="${mantenimientoExistente.id}" name="idMantenimientoExistente">
                                                                                 <div class="text-center mb-2">
-                                                                                    <button class="btn btn-secondary bg-secondary border-secondary w-50" type="submit" title="Modificar Mantenimiento">Confirmar</button>
+                                                                                    <button id="modifica" class="btn btn-secondary bg-secondary border-secondary w-50" type="submit" title="Modificar Mantenimiento">Confirmar</button>
                                                                                 </div>
                                                                                 <div class="text-center">
                                                                                     <a class="btn btn-primary bg-primary border-primary w-50" type="button" th:href="@{/mantenimiento/listarChofer}" title="Cancelar">Cancelar</a>
@@ -135,6 +135,22 @@
                                                                                 </form>
                                                                                 </div>
                                                                                 </div>
+                                                                                <div id="spinner" class="modal" style="display: none;">
+                                                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                            <span class="sr-only">Cargando...</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <script>
+                                                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                                                        const volverBtn = document.getElementById("modifica");
+                                                                                        volverBtn.addEventListener("click", function (e) {
+                                                                                            // Mostrar spinner
+                                                                                            document.getElementById("spinner").style.display = "block";
+                                                                                        });
+                                                                                    });
+                                                                                </script>
                                                                                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                                                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                                                                                 </body>

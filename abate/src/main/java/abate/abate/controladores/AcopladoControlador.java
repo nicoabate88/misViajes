@@ -90,6 +90,26 @@ public class AcopladoControlador {
 
     }
     
+    @GetMapping("/listarFiltro")
+    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
+
+        return "acoplado_listarFiltro.html";
+    }
+    
+    @GetMapping("/detalle/{id}")
+    public String obtenerDetalle(@PathVariable Long id, ModelMap modelo) {
+        
+        modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
+
+        return "fragmentos/detalle_acoplado :: historialFragment";
+
+    }
+    
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {
 

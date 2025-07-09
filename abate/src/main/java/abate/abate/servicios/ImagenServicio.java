@@ -89,6 +89,17 @@ public class ImagenServicio {
         fleteRepositorio.save(flete);
 
     }
+    
+    @Transactional
+    public Long crearImagenCPObligatorio(Imagen imagen) {
+
+        imagenRepositorio.save(imagen);
+        
+        Long idImg = buscarUltimo();
+
+        return idImg;
+
+    }
 
     @Transactional
     public void crearImagenDescarga(Long id, Imagen imagen) {
@@ -107,6 +118,17 @@ public class ImagenServicio {
         flete.setImagenDescarga(img);
 
         fleteRepositorio.save(flete);
+
+    }
+    
+    @Transactional
+    public Long crearImagenDescargaObligatorio(Imagen imagen) {
+
+        imagenRepositorio.save(imagen);
+        
+        Long idImg = buscarUltimo();
+
+        return idImg;
 
     }
 

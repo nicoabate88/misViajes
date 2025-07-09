@@ -5,6 +5,30 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                     <link rel="stylesheet" href="/css/medidas_container.css">   
+                        <style>
+                            .link-historial {
+                                color: darkblue;
+                                background: none;
+                                border: none;
+                                padding: 0;
+                                cursor: pointer;
+                            }
+                            .modal-header-darkblue {
+                                background-color: darkblue;
+                                color: white;
+                            }
+                            @media (max-width: 576px) {
+                                .table {
+                                    font-size: 10px;
+                                }
+                            }
+
+                            @media (min-width: 577px) and (max-width: 768px) {
+                                .table {
+                                    font-size: 11px;
+                                }
+                            }
+                        </style>
                         </head>
                         <body>  
                             <div class="card-header mb-2" style="height: 70px;">
@@ -31,26 +55,54 @@
                                 <h6 id="white" th:text="${exito}"></h6>                                                                             
                             </div>
                                 <div th:if="${!acoplados.isEmpty()}">
+                                     <div class="card-header pb-0" id="bgWhite">
+                                    <form class="row" th:action="@{/acoplado/listarFiltro}" method="GET">
+                                        <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5 mb-2">
+                                            <label for="acoplado" class="form-floting">Acoplado</label>  
+                                            <select class="form-control border-secondary" id="acoplado" name="id">
+                                                <option th:value=null>Todos</option>
+                                                <option th:each="acoplado : ${acoplados}"
+                                                        th:value="${acoplado.id}"
+                                                        th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 text-center">
+                                            <label for="ver" class="form-floting">Ver</label> 
+                                            <button id="ver"  class="btn btn-primary" type="submit">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </form>   
+                                    </div>
                                     <div th:each="acoplado : ${acoplados}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
-                                            <h6 th:text="${acoplado.dominio}"></h6>
                                             <div class="row">
-                                                <div class="col-8">                                                
+                                                <div class="col-8">    
+                                                    <h6 th:text="${acoplado.dominio}"></h6>
                                                     <h6 id="dimgray" th:text="${acoplado.marca}+' '+${acoplado.modelo}"></h6>
                                                 </div>
-                                                <div title="Ir a Modificar Acoplado" class="col-4 text-center">
+                                                <div class="col-4">
+                                                <div class="text-center"> 
+                                                <a href="#" th:attr="data-id=${acoplado.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 -30 64 94" enable-background="new 0 0 64 64" xml:space="preserve"><g id="Loupe"><path d="M53.7602806,35.6955452c7.028801-7.0301018,7.0278015-18.4271011-0.0023003-25.455801 c-7.030098-7.0288005-18.4270973-7.0279007-25.4557934,0.0021992c-5.8004055,5.8014011-6.800106,14.5709-3.0264053,21.4111004 L4.9687819,51.960144l7.0709996,7.0710983L32.346981,38.7240448 C39.1881866,42.4984436,47.9591866,41.4976425,53.7602806,35.6955452z M12.0397816,56.2027435L7.7971873,51.960144 l18.5755939-18.5755997c0.5754051,0.8079987,1.2066994,1.588501,1.9315987,2.3133011 c0.7241001,0.7238998,1.5039005,1.3544998,2.3111,1.9292984L12.0397816,56.2027435z M29.7174816,34.282444 c-6.2378998-6.2378006-6.2382946-16.3880005-0.0009995-22.6264c3.0217037-3.0222998,7.0394993-4.6869001,11.3132-4.6873002 c4.2737999-0.0004001,8.2918968,1.6635003,11.3141975,4.6853004l0.0008011,0.0007992l0.0003014,0.0003004 c6.2377968,6.2378006,6.238205,16.3878994,0.0009003,22.6263008c-3.0216942,3.0223007-7.0395012,4.6869011-11.3132019,4.6872978 C36.7588806,38.9691429,32.7407799,37.3052444,29.7174816,34.282444z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M50.2242813,13.7756433c-2.4559021-2.4551992-5.7206993-3.8071995-9.1938019-3.8076 c-3.4726982,0.0007-6.7374992,1.3528004-9.1923981,3.809c-0.390501,0.3905001-0.3901005,1.0241003,0,1.4142008 c0.3908997,0.3908997,1.0237007,0.3905001,1.4141998,0c2.0779076-2.0778008,4.8400002-3.2227001,7.7789078-3.2227001 c2.9381905-0.0007,5.7010918,1.1434994,7.7788925,3.2213993c0.3908005,0.3908005,1.0237007,0.3904009,1.4141998,0 C50.6147804,14.7994442,50.6143799,14.165844,50.2242813,13.7756433z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></svg>     
+                                                    <p>Detalle</p></a>
+                                                </div>
+                                                <div title="Ir a Modificar Acoplado" class="text-center">
                                                     <a th:href= "@{/acoplado/modificar/__${acoplado.id}__}">
                                                         <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
                                                         </svg>     <p id="modificar">Modificar</p>
                                                     </a>
                                                 </div>
+                                                </div>
                                             </div>   
                                         </div>  
                                     </div>
                                     <br>
                                         <div class="text-center mb-2">
-                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Ir a Registrar Acoplado" th:href="@{/acoplado/registrar}">Nuevo Acoplado</a>
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Ir a Registrar Acoplado" th:href="@{/acoplado/registrar}">Nuevo</a>
                                         </div>
                                         <div class="text-center mb-2">
                                             <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
@@ -62,14 +114,79 @@
                                         <h6 id="azul">No existen Acoplados Registrados</h6>
                                     </div>
                                     <div class="text-center mb-2">
-                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Acoplado" th:href="@{/acoplado/registrar}">Nuevo Acoplado</a>
+                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Acoplado" th:href="@{/acoplado/registrar}">Nuevo</a>
                                     </div>
                                     <div class="text-center mb-2">
                                         <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
                                     </div>
                                 </div>
                             </div>
+                            <!-- Modal para mostrar historial -->
+                            <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header position-relative modal-header-darkblue">
+                                            <h4 class="modal-title mx-auto">Detalle de Acoplado</h4>
+                                            <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" id="historialContenido">
+                                            <!-- Aquí se cargará el fragmento HTML con el historial -->
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <script>
+                                function verHistorial(button) {
+                                    const acopladoId = button.getAttribute('data-id');
+
+                                    fetch(`/acoplado/detalle/${acopladoId}`)
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error("Error al obtener detalle");
+                                                }
+                                                return response.text();
+                                            })
+                                            .then(html => {
+                                                document.getElementById("historialContenido").innerHTML = html;
+                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                modal.show();
+                                            })
+                                            .catch(error => {
+                                                console.error("Error:", error);
+                                                alert("No se pudo cargar el detalle del acoplado.");
+                                            });
+                                }
+
+
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                        btn.addEventListener("click", function () {
+                                            const id = this.getAttribute("data-id");
+
+                                            fetch("/acoplado/detalle/" + id)
+                                                    .then(response => response.text())
+                                                    .then(html => {
+                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                    })
+                                                    .catch(error => console.error("Error al cargar detalle", error));
+                                        });
+                                    });
+                                });
+
+                                $(document).ready(function () {
+                                    $('#filtroForm').on('submit', function () {
+                                        $('#loadingModal').modal('show');
+                                    });
+                                });
+                                $(document).ready(function () {
+                                    $('#exportaForm').on('submit', function () {
+                                        $('#loadingModal').modal('show');
+                                    });
+                                });
+                            </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                         </body>

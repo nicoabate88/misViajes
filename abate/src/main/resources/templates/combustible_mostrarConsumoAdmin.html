@@ -54,9 +54,9 @@
                                         <tbody th:each="carga : ${cargas}">
                                             <tr>
                                                 <td class="text-center" th:text="${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></td>
-                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}"></td>
-                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmRecorrido, 0, 'POINT', 1, 'COMMA')}"></td>
-                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.litro, 0, 'POINT', 1, 'COMMA')}"></td>
+                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmCarga, 1, 'POINT', 1, 'COMMA')}"></td>
+                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmRecorrido, 1, 'POINT', 1, 'COMMA')}"></td>
+                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.litro, 1, 'POINT', 1, 'COMMA')}"></td>
                                                 <th id="dimgray" class="text-center" th:text="${carga.consumo}"></th>
                                                 <th id="dimgray" class="text-center" th:text="${carga.consumoPromedio}" th:if="${carga.completo == 'SI'}"></th>
                                             </tr>     

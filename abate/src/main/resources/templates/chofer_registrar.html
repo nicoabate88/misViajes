@@ -23,13 +23,12 @@
                             </div>
                             <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card"> 
-                                    <form th:action="@{/chofer/registro}" method="POST">
+                                    <form id="form" th:action="@{/chofer/registro}" method="POST">
                                         <div class="row">
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="nombre" class="form-label text-secondary">Apellido y Nombre de Chofer*</label>
                                                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese Apellido y Nombre" th:value="${nombre}" required>
                                             </div>
-
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="cuil" class="form-label text-secondary">CUIL de Chofer*</label>
                                                 <input type="number" class="form-control" id="cuil" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIL" name="cuil" th:value="${cuil}" required>
@@ -61,15 +60,6 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="caja" class="form-floting text-secondary">Habilitar Caja de Gasto*</label>
-                                                <select class="form-control" id="caja" name="caja" required>
-                                                    <option th:if="${caja} != null" selected th:text="${caja}" th:value="${caja}"></option>
-                                                    <option th:if="${caja} == null" selected disabled value="">Seleccione Opción</option>
-                                                    <option value="SI">SI</option>
-                                                    <option value="NO">NO</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="cuenta" class="form-floting text-secondary">Habilitar Cuenta*</label>
                                                 <select class="form-control" id="cuenta" name="cuenta" required>
                                                     <option th:if="${cuenta} != null" selected th:text="${cuenta}" th:value="${cuenta}"></option>
@@ -78,13 +68,42 @@
                                                     <option value="NO">NO</option>
                                                 </select>
                                             </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="caja" class="form-floting text-secondary">Habilitar Caja de Gasto*</label>
+                                                <select class="form-control" id="caja" name="caja" required>
+                                                    <option th:if="${caja} != null" selected th:text="${caja}" th:value="${caja}"></option>
+                                                    <option th:if="${caja} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="verDocumentacion" class="form-floting text-secondary">Mostrar Documentación*</label>
+                                                <select class="form-control" id="verDocumentacion" name="verDocumentacion" required>
+                                                    <option th:if="${verDocumentacion} != null" selected th:text="${verDocumentacion}" th:value="${verDocumentacion}"></option>
+                                                    <option th:if="${verDocumentacion} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="documentacion" class="form-floting text-secondary">Editar Documentación*</label>
                                                 <select class="form-control" id="documentacion" name="documentacion" required>
                                                     <option th:if="${documentacion} != null" selected th:text="${documentacion}" th:value="${documentacion}"></option>
                                                     <option th:if="${documentacion} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="verMantenimiento" class="form-floting text-secondary">Mostrar Mantenimiento*</label>
+                                                <select class="form-control" id="verMantenimiento" name="verMantenimiento" required>
+                                                    <option th:if="${verMantenimiento} != null" selected th:text="${verMantenimiento}" th:value="${verMantenimiento}"></option>
+                                                    <option th:if="${verMantenimiento} == null" selected disabled value="">Seleccione Opción</option>
                                                     <option value="SI">SI</option>
                                                     <option value="NO">NO</option>
                                                 </select>
@@ -145,6 +164,13 @@
                                             <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href= "@{/chofer/listar}" title="Cancelar">Cancelar</a>
                                         </div> 
                                     </form>
+                                </div>
+                            </div>
+                            <div id="spinner" class="modal" style="display: none;">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                        <span class="sr-only">Cargando...</span>
+                                    </div>
                                 </div>
                             </div>
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -214,6 +240,22 @@
                                     }
                                 });
 
+                                const passwordInput = document.getElementById('password');
+
+                                passwordInput.addEventListener('keydown', function (event) {
+                                    if (event.key === ' ') {
+                                        event.preventDefault(); // evita que se escriba el espacio
+                                    }
+                                });
+
+                                const passwordInput2 = document.getElementById('password2');
+
+                                passwordInput2.addEventListener('keydown', function (event) {
+                                    if (event.key === ' ') {
+                                        event.preventDefault(); // evita que se escriba el espacio
+                                    }
+                                });
+
 // Validación al enviar el formulario
                                 function validarFormulario() {
                                     const usuario = document.getElementById('usuario').value;
@@ -234,7 +276,20 @@
 // Si todo está bien
                                     return true;
                                 }
+                                
+                                document.getElementById('form').addEventListener('submit', function (event) {
+                                    const psw = document.getElementById('password').value;
+                                    const psw2 = document.getElementById('password2').value;
 
+                                    if (psw !== psw2) {
+                                        alert('Las Contraseñas ingresadas deben ser iguales');
+                                        event.preventDefault();
+                                        return;
+                                    }
+                                    
+                                    document.getElementById("spinner").style.display = "block";
+                                    
+                                });
 
                             </script> 
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

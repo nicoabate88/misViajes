@@ -30,7 +30,7 @@
                             </div>
                             <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card">
-                                    <form th:action="@{/chofer/modifica/__${chofer.id}__}" method="POST">
+                                    <form id="form" th:action="@{/chofer/modifica/__${chofer.id}__}" method="POST">
 
                                         <input hidden th:value="${chofer.id}" name="id">
                                             <div class="row">
@@ -71,22 +71,40 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="documentacion" class="form-floting text-secondary">Editar Documentación*</label>
-                                                <select class="form-control" id="documentacion" name="documentacion" required>
-                                                    <option selected th:text="${chofer.documentacion}" th:value="${chofer.documentacion}"></option>
-                                                    <option value="SI">SI</option>
-                                                    <option value="NO">NO</option>
-                                                </select>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="verDocumentacion" class="form-floting text-secondary">Mostrar Documentación*</label>
+                                                    <select class="form-control" id="verDocumentacion" name="verDocumentacion" required>
+                                                        <option selected th:text="${chofer.verDocumentacion}" th:value="${chofer.verDocumentacion}"></option>
+                                                        <option value="SI">SI</option>
+                                                        <option value="NO">NO</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="documentacion" class="form-floting text-secondary">Editar Documentación*</label>
+                                                    <select class="form-control" id="documentacion" name="documentacion" required>
+                                                        <option selected th:text="${chofer.documentacion}" th:value="${chofer.documentacion}"></option>
+                                                        <option value="SI">SI</option>
+                                                        <option value="NO">NO</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="mantenimiento" class="form-floting text-secondary">Editar Mantenimiento*</label>
-                                                <select class="form-control" id="mantenimiento" name="mantenimiento" required>
-                                                    <option selected th:text="${chofer.mantenimiento}" th:value="${chofer.mantenimiento}"></option>
-                                                    <option value="SI">SI</option>
-                                                    <option value="NO">NO</option>
-                                                </select>
-                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="verMantenimiento" class="form-floting text-secondary">Mostrar Mantenimiento*</label>
+                                                    <select class="form-control" id="verMantenimiento" name="verMantenimiento" required>
+                                                        <option selected th:text="${chofer.verMantenimiento}" th:value="${chofer.verMantenimiento}"></option>
+                                                        <option value="SI">SI</option>
+                                                        <option value="NO">NO</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                    <label for="mantenimiento" class="form-floting text-secondary">Editar Mantenimiento*</label>
+                                                    <select class="form-control" id="mantenimiento" name="mantenimiento" required>
+                                                        <option selected th:text="${chofer.mantenimiento}" th:value="${chofer.mantenimiento}"></option>
+                                                        <option value="SI">SI</option>
+                                                        <option value="NO">NO</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
@@ -149,6 +167,13 @@
                                     </form>
                                 </div>
                             </div>
+                            <div id="spinner" class="modal" style="display: none;">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                        <span class="sr-only">Cargando...</span>
+                                    </div>
+                                </div>
+                            </div>
                             <script>
                                 function checkLength(input) {
                                     const errorMessage = document.getElementById("error-message");
@@ -206,6 +231,11 @@
                                     return true;
                                 }
 
+                            </script>
+                            <script>
+                                document.getElementById("form").addEventListener("submit", function () {
+                                    document.getElementById("spinner").style.display = "block";
+                                });
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

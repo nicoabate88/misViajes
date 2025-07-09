@@ -21,7 +21,9 @@ public class Usuario {
     private Double porcentaje;
     private String caja;
     private String cuenta;
+    private String verDocumentacion;
     private String documentacion;
+    private String verMantenimiento;
     private String mantenimiento;
     private String empresa;
     private String direccion;
@@ -35,7 +37,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String documentacion, String mantenimiento, String empresa, String direccion, String localidad, String telefono, Camion camion, Acoplado acoplado) {
+    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String verDocumentacion, String documentacion, String verMantenimiento, String mantenimiento, String empresa, String direccion, String localidad, String telefono, Camion camion, Acoplado acoplado) {
         this.id = id;
         this.idOrg = idOrg;
         this.nombre = nombre;
@@ -46,7 +48,9 @@ public class Usuario {
         this.porcentaje = porcentaje;
         this.caja = caja;
         this.cuenta = cuenta;
+        this.verDocumentacion = verDocumentacion;
         this.documentacion = documentacion;
+        this.verMantenimiento = verMantenimiento;
         this.mantenimiento = mantenimiento;
         this.empresa = empresa;
         this.direccion = direccion;
@@ -136,12 +140,28 @@ public class Usuario {
         this.cuenta = cuenta;
     }
 
+    public String getVerDocumentacion() {
+        return verDocumentacion;
+    }
+
+    public void setVerDocumentacion(String verDocumentacion) {
+        this.verDocumentacion = verDocumentacion;
+    }
+
     public String getDocumentacion() {
         return documentacion;
     }
 
     public void setDocumentacion(String documentacion) {
         this.documentacion = documentacion;
+    }
+
+    public String getVerMantenimiento() {
+        return verMantenimiento;
+    }
+
+    public void setVerMantenimiento(String verMantenimiento) {
+        this.verMantenimiento = verMantenimiento;
     }
 
     public String getMantenimiento() {
@@ -200,6 +220,5 @@ public class Usuario {
         this.acoplado = acoplado;
     }
 
-    
     
 }

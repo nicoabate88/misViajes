@@ -104,6 +104,8 @@
                                     alert("Debes ingresar al menos un ítem de gasto");
                                     return false;
                                 }
+                                
+                                document.getElementById("spinner").style.display = "block";
 
                                 return true;
                             }
@@ -135,110 +137,116 @@
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form id="form" th:action="@{/gasto/modificaAdmin}" method="POST">
                                         <input hidden th:value="${gasto.id}" name="idGasto">
-                                        <input hidden th:value="${idFlete}" name="idFlete">  
-                                        <input hidden th:value="${desde}" name="desde"> 
-                                        <input hidden th:value="${hasta}" name="hasta"> 
-                                        <input hidden th:value="${idChofer}" name="idChofer"> 
-                                        <input hidden th:value="${idCamion}" name="idCamion"> 
-                                        <input hidden th:value="${idCliente}" name="idCliente"> 
-                                                <div class="row mb-2">
-                                                    <div class="col-md-10">
-                                                        <label for="concepto" class="form-label text-secondary">Concepto*</label>
-                                                        <input type="text" class="form-control" id="concepto" placeholder="Ingrese Concepto" name="concepto" minlength="1" maxlength="40" size="40">
-                                                    </div>
-                                                </div>
-                                                <div class="row mb-3"> 
-                                                    <div class="col-5">
-                                                        <label for="cantidad" class="form-label text-secondary">Cantidad*</label>
-                                                        <input type="number" step="1" class="form-control" id="cantidad" placeholder="Ingrese Cantidad" name="cantidad">
-                                                    </div>
-                                                    <div class="col-5">
-                                                        <label for="precio" class="form-label text-secondary">Precio Unitario*</label>
-                                                        <input type="number" step="1" class="form-control" id="precio" placeholder="Ingrese Precio" name="precio">
-                                                    </div>
-                                                    <div class="col-1">  
-                                                        <div class="form-floating">
-                                                            <label class="form-label text-white"></label><br><br>
-                                                                    <button type="button" class="btn btn-outline-primary border-primary p-1" onclick="agregarDetalle()" title="Agregar Detalle">
-                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                                        </svg>
-                                                                    </button>
-                                                                    </div>
-                                                                    </div>                  
-                                                                    </div>
-                                                                    <div class="table-responsive">
-                                                                        <div class="table mb-5 text-center">
-                                                                            <table class="table table-borderless table-sm" id="tabla-detalles">
-                                                                                <thead>
-                                                                                    <tr id="darkblue">
-                                                                                        <td>Concepto</td>
-                                                                                        <td>Cantidad</td>
-                                                                                        <td>Precio</td>
-                                                                                        <td>SubTotal</td>
-                                                                                        <td>Acción</td>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody id="item" style="color: dimgray">
-                                                                                    <tr th:each="detalle : ${gasto.detalles}">
-                                                                                        <td><input type="hidden" name="conceptos[]" th:value="${detalle.concepto}" th:text="${detalle.concepto}"></td>
-                                                                                        <td><input type="hidden" name="cantidades[]" th:value="${detalle.cantidad}" th:text="${detalle.cantidad}"></td>
-                                                                                        <td><input type="hidden" name="precios[]" th:value="${detalle.precio}" th:text="'$'+${#numbers.formatDecimal(detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                                        <td class="total-col"><input type="hidden" name="totales[]" th:value="${detalle.cantidad * detalle.precio}" th:text="'$'+${#numbers.formatDecimal(detalle.cantidad * detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                                        <td><button type="button" class="btn-eliminar" title="Quitar Item" onclick="eliminarFila(this)">❌</button></td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                                <tfoot>
-                                                                                    <tr>
-                                                                                        <th id="dimgray">TOTAL</th>
-                                                                                        <td></td>
-                                                                                        <td></td>
-                                                                                        <th id="totalGeneral" style="color : dimgray" th:text="'$'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></th>
-                                                                                        <td></td>
-                                                                                    </tr>
-                                                                                </tfoot>
-                                                                            </table>
+                                            <input hidden th:value="${idFlete}" name="idFlete">  
+                                                <input hidden th:value="${desde}" name="desde"> 
+                                                    <input hidden th:value="${hasta}" name="hasta"> 
+                                                        <input hidden th:value="${idChofer}" name="idChofer"> 
+                                                            <input hidden th:value="${idCamion}" name="idCamion"> 
+                                                                <input hidden th:value="${idCliente}" name="idCliente"> 
+                                                                    <div class="row mb-2">
+                                                                        <div class="col-md-10">
+                                                                            <label for="concepto" class="form-label text-secondary">Concepto*</label>
+                                                                            <input type="text" class="form-control" id="concepto" placeholder="Ingrese Concepto" name="concepto" minlength="1" maxlength="40" size="40">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="text-center mb-2">
-                                                                        <button type="submit" class="btn btn-secondary bg-secondary border-light w-50" onclick="return validarFormulario()" title="Modificar Gasto">Modificar</button>
-                                                                    </div>
-                                                                    <div class="text-center">
-                                                                        <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" 
-                                                                           th:href="@{/flete/mostrarAdmin(id=${idFlete}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">Cancelar</a>
-                                                                    </div>
-                                                                    </form>
-                                                                    </div>    
-                                                                    </div>
+                                                                    <div class="row mb-3"> 
+                                                                        <div class="col-5">
+                                                                            <label for="cantidad" class="form-label text-secondary">Cantidad*</label>
+                                                                            <input type="number" step="1" class="form-control" id="cantidad" placeholder="Ingrese Cantidad" name="cantidad">
+                                                                        </div>
+                                                                        <div class="col-5">
+                                                                            <label for="precio" class="form-label text-secondary">Precio Unitario*</label>
+                                                                            <input type="number" step="1" class="form-control" id="precio" placeholder="Ingrese Precio" name="precio">
+                                                                        </div>
+                                                                        <div class="col-1">  
+                                                                            <div class="form-floating">
+                                                                                <label class="form-label text-white"></label><br><br>
+                                                                                        <button type="button" class="btn btn-outline-primary border-primary p-1" onclick="agregarDetalle()" title="Agregar Detalle">
+                                                                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                                            </svg>
+                                                                                        </button>
+                                                                                        </div>
+                                                                                        </div>                  
+                                                                                        </div>
+                                                                                        <div class="table-responsive">
+                                                                                            <div class="table mb-5 text-center">
+                                                                                                <table class="table table-borderless table-sm" id="tabla-detalles">
+                                                                                                    <thead>
+                                                                                                        <tr id="darkblue">
+                                                                                                            <td>Concepto</td>
+                                                                                                            <td>Cantidad</td>
+                                                                                                            <td>Precio</td>
+                                                                                                            <td>SubTotal</td>
+                                                                                                            <td>Acción</td>
+                                                                                                        </tr>
+                                                                                                    </thead>
+                                                                                                    <tbody id="item" style="color: dimgray">
+                                                                                                        <tr th:each="detalle : ${gasto.detalles}">
+                                                                                                            <td><input type="hidden" name="conceptos[]" th:value="${detalle.concepto}" th:text="${detalle.concepto}"></td>
+                                                                                                            <td><input type="hidden" name="cantidades[]" th:value="${detalle.cantidad}" th:text="${detalle.cantidad}"></td>
+                                                                                                            <td><input type="hidden" name="precios[]" th:value="${detalle.precio}" th:text="'$'+${#numbers.formatDecimal(detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                                            <td class="total-col"><input type="hidden" name="totales[]" th:value="${detalle.cantidad * detalle.precio}" th:text="'$'+${#numbers.formatDecimal(detalle.cantidad * detalle.precio, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                                            <td><button type="button" class="btn-eliminar" title="Quitar Item" onclick="eliminarFila(this)">❌</button></td>
+                                                                                                        </tr>
+                                                                                                    </tbody>
+                                                                                                    <tfoot>
+                                                                                                        <tr>
+                                                                                                            <th id="dimgray">TOTAL</th>
+                                                                                                            <td></td>
+                                                                                                            <td></td>
+                                                                                                            <th id="totalGeneral" style="color : dimgray" th:text="'$'+${#numbers.formatDecimal(gasto.importe, 0, 'POINT', 0, 'POINT')}"></th>
+                                                                                                            <td></td>
+                                                                                                        </tr>
+                                                                                                    </tfoot>
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="text-center mb-2">
+                                                                                            <button type="submit" class="btn btn-secondary bg-secondary border-light w-50" onclick="return validarFormulario()" title="Modificar Gasto">Modificar</button>
+                                                                                        </div>
+                                                                                        <div class="text-center">
+                                                                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" 
+                                                                                               th:href="@{/flete/mostrarAdmin(id=${idFlete}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">Cancelar</a>
+                                                                                        </div>
+                                                                                        </form>
+                                                                                        </div>    
+                                                                                        </div>
+                                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <script>
+                                                                                            document.getElementById('cantidad').addEventListener('keydown', function (event) {
+                                                                                                if (event.key === '.' || event.key === ',') {
+                                                                                                    event.preventDefault();
+                                                                                                }
+                                                                                            });
 
-                                                                    <script>
-                                                                        document.getElementById('cantidad').addEventListener('keydown', function (event) {
-                                                                            if (event.key === '.' || event.key === ',') {
-                                                                                event.preventDefault();
-                                                                            }
-                                                                        });
+                                                                                            document.getElementById('cantidad').addEventListener('input', function () {
+                                                                                                this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                                                            });
+                                                                                            document.getElementById('precio').addEventListener('keydown', function (event) {
+                                                                                                if (event.key === '.' || event.key === ',') {
+                                                                                                    event.preventDefault();
+                                                                                                }
+                                                                                            });
+                                                                                            document.getElementById('precio').addEventListener('input', function () {
+                                                                                                this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                                                            });
+                                                                                            const conceptoInput = document.getElementById('concepto');
+                                                                                            const maxLength = 40;
 
-                                                                        document.getElementById('cantidad').addEventListener('input', function () {
-                                                                            this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
-                                                                        });
-                                                                        document.getElementById('precio').addEventListener('keydown', function (event) {
-                                                                            if (event.key === '.' || event.key === ',') {
-                                                                                event.preventDefault();
-                                                                            }
-                                                                        });
-                                                                        document.getElementById('precio').addEventListener('input', function () {
-                                                                            this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
-                                                                        });
-                                                                        const conceptoInput = document.getElementById('concepto');
-                                                                        const maxLength = 40;
-
-                                                                        conceptoInput.addEventListener('input', function () {
-                                                                            if (conceptoInput.value.length > maxLength) {
-                                                                                conceptoInput.value = conceptoInput.value.slice(0, maxLength);
-                                                                            }
-                                                                        });
-                                                                    </script>
-                                                                    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                                    </body>
-                                                                    </html>
+                                                                                            conceptoInput.addEventListener('input', function () {
+                                                                                                if (conceptoInput.value.length > maxLength) {
+                                                                                                    conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                                                                                }
+                                                                                            });
+                                                                                        </script>
+                                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                                        </body>
+                                                                                        </html>
