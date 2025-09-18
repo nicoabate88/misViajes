@@ -52,6 +52,7 @@
                                                         <option value="" selected disabled>Seleccione Chofer</option>
                                                         <option th:each="cuenta : ${cuentas}"
                                                                 th:value="${cuenta.chofer.id}"
+                                                                th:if="${cuenta.chofer.estado == 'HABILITADO'}"
                                                                 th:text="${cuenta.chofer.nombre}+' - Saldo: $'+${#numbers.formatDecimal(cuenta.saldo, 1, 'POINT', 2, 'COMMA')}"/>
                                                     </select>
                                                 </div>

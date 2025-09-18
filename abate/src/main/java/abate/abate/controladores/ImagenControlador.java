@@ -12,6 +12,7 @@ import abate.abate.servicios.DocumentacionServicio;
 import abate.abate.servicios.FleteServicio;
 import abate.abate.servicios.GastoServicio;
 import abate.abate.servicios.ImagenServicio;
+import abate.abate.servicios.UsuarioServicio;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.servlet.http.HttpSession;
@@ -47,6 +48,8 @@ public class ImagenControlador {
     private CombustibleServicio combustibleServicio;
     @Autowired
     private DocumentacionServicio documentacionServicio;
+    @Autowired
+    private UsuarioServicio usuarioServicio;
 
     @GetMapping("/cargarGasto/{id}") //llega id de Flete
     public String registrar(@PathVariable Long id, ModelMap modelo) {
@@ -3223,6 +3226,144 @@ public class ImagenControlador {
             return "documentacion_mostrar.html";
             
             }
+
+    }
+    
+    @GetMapping("/verLogo/{id}")
+    public String verLogo(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+
+        Usuario usuario = usuarioServicio.buscarUsuario(id);
+
+        modelo.put("idUsuario", id);
+
+        if (usuario.getLogo() != null) {
+
+            Long idLogo = usuario.getLogo().getId();
+            Imagen imagen = imagenServicio.obtenerImagenPorId(idLogo);
+                
+                modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idLogo);
+                modelo.addAttribute("imagenNombre", imagen.getNombre());
+                modelo.addAttribute("id", idLogo);
+
+                return "imagen_logoMostrar.html";
+                
+            }  else {
+
+            return "imagen_logoCargar.html";
+
+        }
+    }
+    
+    @PostMapping("/cargaLogo")
+    public String cargaLogo(@RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
+
+        Usuario usuario = (Usuario) session.getAttribute("usuariosession");
+
+        try {
+            
+            Imagen logo = new Imagen();
+            
+            logo.setNombre(usuario.getEmpresa());
+            logo.setTipo(file.getContentType());
+            
+            logo.setDatos(optimizeImage(file));
+
+            imagenServicio.crearImagenLogo(usuario.getIdOrg(), logo);
+            
+            return "redirect:/imagen/logoCargado";
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("idUsuario", usuario.getId());
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_logoCargar.html";
+        }
+    }
+    
+    @GetMapping("/logoCargado")
+    public String logoCargado(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            
+            modelo.put("usuario", logueado);
+            modelo.put("exito", "Logo CARGADO con éxito");
+            
+            return "usuario_mostrar.html"; 
+
+    }
+    
+    @GetMapping("/logoModificar") //llega id de Imagen
+    public String logoModificar(@RequestParam Long id, @RequestParam Long idUsuario, ModelMap modelo) {
+        
+        modelo.put("id", id);
+        modelo.put("idUsuario", idUsuario);
+
+        return "imagen_logoModificar.html";
+        
+    }
+
+    @PostMapping("/logoModifica")
+    public String logoModifica(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
+
+        try {
+            
+            Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+            Imagen logo = new Imagen();
+            
+            logo.setNombre(logueado.getEmpresa());
+            logo.setTipo(file.getContentType());
+
+            logo.setDatos(optimizeImage(file));
+            
+            imagenServicio.modificarImagen(id, logo);
+            
+            return "redirect:/imagen/logoCargado";
+
+        } catch (Exception e) {
+            
+            modelo.addAttribute("id", id);
+            modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
+            
+            return "imagen_logoModificar.html";
+        }
+
+    }
+    
+    @GetMapping("/logoEliminar")
+    public String logoEliminar(@RequestParam Long id, @RequestParam Long idUsuario, ModelMap model) {
+        
+        Imagen imagen = imagenServicio.obtenerImagenPorId(id); 
+           
+        model.addAttribute("imagenNombre", imagen.getNombre());
+        model.addAttribute("id", id);
+        model.addAttribute("idUsuario", idUsuario);
+
+        return "imagen_logoEliminar.html";
+
+    }
+
+    @GetMapping("/logoElimina")
+    public String logoElimina(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        imagenServicio.eliminarLogo(id, logueado.getIdOrg());
+        
+        return "redirect:/imagen/logoEliminado"; 
+        
+    }
+    
+    @GetMapping("/logoEliminado")
+    public String logoEliminado( ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            
+            modelo.put("usuario", logueado);
+            modelo.put("exito", "Logo ELIMINADO con éxito");
+            
+            return "usuario_mostrar.html";   
 
     }
 

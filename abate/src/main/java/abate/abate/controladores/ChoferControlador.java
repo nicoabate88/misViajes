@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,8 @@ public class ChoferControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
         return "chofer_registrar.html";
     }
@@ -61,14 +60,14 @@ public class ChoferControlador {
     public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
             @RequestParam String cuenta, @RequestParam String caja, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
             @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, @RequestParam Double porcentaje, 
-            @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
+            @RequestParam String estado, @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
             choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, idAcoplado, caja, cuenta, verDocumentacion, documentacion,
-                    verMantenimiento, mantenimiento, nombreUsuario, porcentaje, password, password2);
+                    verMantenimiento, mantenimiento, nombreUsuario, porcentaje, estado, password, password2);
 
             return "redirect:/chofer/registrado";
 
@@ -94,8 +93,8 @@ public class ChoferControlador {
             modelo.put("mantenimiento", mantenimiento);
             modelo.put("nombreUsuario", nombreUsuario);
             modelo.put("porcentaje", porcentaje);
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.put("error", ex.getMessage());
 
             return "chofer_registrar.html";
@@ -173,8 +172,8 @@ public class ChoferControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("chofer", choferServicio.buscarChofer(id));
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
         return "chofer_modificar.html";
 
@@ -185,11 +184,11 @@ public class ChoferControlador {
     public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, 
             @RequestParam(required = false) Long idAcoplado, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
             @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, 
-            @RequestParam Double porcentaje, ModelMap modelo, HttpSession session) {
+            @RequestParam Double porcentaje, @RequestParam String estado,  ModelMap modelo, HttpSession session) {
 
         try {
             
-            choferServicio.modificarChofer(id, nombre, cuil, idCamion, idAcoplado, verDocumentacion, documentacion, verMantenimiento, mantenimiento, nombreUsuario, porcentaje);
+            choferServicio.modificarChofer(id, nombre, cuil, idCamion, idAcoplado, verDocumentacion, documentacion, verMantenimiento, mantenimiento, nombreUsuario, porcentaje, estado);
  
             return "redirect:/chofer/modificado/" + id;
 
@@ -198,8 +197,8 @@ public class ChoferControlador {
             Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
             modelo.put("chofer", choferServicio.buscarChofer(id));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.put("error", ex.getMessage());
 
             return "chofer_modificar.html";

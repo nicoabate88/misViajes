@@ -1,9 +1,11 @@
 package abate.abate.controladores;
 
 import abate.abate.entidades.Caja;
+import abate.abate.entidades.Imagen;
 import abate.abate.entidades.Ingreso;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.CajaServicio;
+import abate.abate.servicios.ImagenServicio;
 import abate.abate.servicios.IngresoServicio;
 import java.text.ParseException;
 import javax.servlet.http.HttpSession;
@@ -26,6 +28,8 @@ public class IngresoControlador {
     private IngresoServicio ingresoServicio;
     @Autowired
     private CajaServicio cajaServicio;
+    @Autowired
+    private ImagenServicio imagenServicio;
 
     @GetMapping("/registrar/{id}")
     public String registrarIngreso(@PathVariable Long id, ModelMap modelo) {
@@ -138,9 +142,22 @@ public class IngresoControlador {
     }
 
     @GetMapping("/imprimir/{id}")
-    public String imprimir(@PathVariable Long id, ModelMap modelo) {
+    public String imprimir(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Ingreso ingreso = ingresoServicio.buscarIngreso(id);
+        
+        modelo.addAttribute("flag", false);
+        
+        if (logueado.getLogo() != null) {
+
+            Long idLogo = logueado.getLogo().getId();
+            Imagen logo = imagenServicio.obtenerImagenPorId(idLogo);
+                
+            modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idLogo);
+            modelo.addAttribute("flag", true);
+                
+        }
 
         modelo.put("ingreso", ingreso);
 

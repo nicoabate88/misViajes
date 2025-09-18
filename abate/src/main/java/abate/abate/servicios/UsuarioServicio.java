@@ -47,6 +47,7 @@ public class UsuarioServicio implements UserDetailsService {
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setRol("ADMIN");
         user.setCaja("NO");
+        user.setEstado("HABILITADO");
 
         usuarioRepositorio.save(user);
 
@@ -75,6 +76,7 @@ public class UsuarioServicio implements UserDetailsService {
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setRol("ADMIN");
         user.setCaja("NO");
+        user.setEstado("HABILITADO");
 
         usuarioRepositorio.save(user);
 
@@ -197,6 +199,7 @@ public class UsuarioServicio implements UserDetailsService {
         user.setUsuario(nombreUsuario);
         user.setPassword(new BCryptPasswordEncoder().encode(password));
         user.setRol("CEO");
+        user.setEstado("HABILITADO");
 
         usuarioRepositorio.save(user);
 
@@ -215,7 +218,7 @@ public class UsuarioServicio implements UserDetailsService {
 
         Usuario usuario = usuarioRepositorio.buscarUsuarioPorUsuario(nombreUsuario);
 
-        if (usuario != null) {
+        if (usuario != null && usuario.getEstado().equalsIgnoreCase("HABILITADO")) {
 
             List<GrantedAuthority> permisos = new ArrayList();
 

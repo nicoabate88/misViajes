@@ -152,6 +152,17 @@ public class CuentaServicio {
 
         return lista;
     }
+    
+    public ArrayList<Cuenta> buscarCuentasChoferHab(Long idOrg) {
+
+        ArrayList<Cuenta> lista = new ArrayList();
+
+        lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasChofer(idOrg);
+
+        Collections.sort(lista, CuentaComparador.ordenarNombreChoferAsc);
+
+        return lista;
+    }
 
     public ArrayList<Cuenta> buscarCuentasCliente(Long idOrg) {
 

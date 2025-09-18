@@ -2,10 +2,12 @@ package abate.abate.controladores;
 
 import abate.abate.entidades.Cuenta;
 import abate.abate.entidades.Entrega;
+import abate.abate.entidades.Imagen;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.CuentaServicio;
 import abate.abate.servicios.EntregaServicio;
+import abate.abate.servicios.ImagenServicio;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +34,8 @@ public class EntregaControlador {
     private ChoferServicio choferServicio;
     @Autowired
     private CuentaServicio cuentaServicio;
+    @Autowired
+    private ImagenServicio imagenServicio;
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/registrar")
@@ -202,7 +206,7 @@ public class EntregaControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("entrega", entregaServicio.buscarEntrega(id));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
 
         return "entrega_modificar.html";
 
@@ -241,7 +245,7 @@ public class EntregaControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("entrega", entregaServicio.buscarEntrega(id));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
 
         return "entrega_modificarDesdeChofer.html";
 
@@ -280,9 +284,22 @@ public class EntregaControlador {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/imprimir/{id}")
-    public String imprimir(@PathVariable Long id, ModelMap modelo) {
+    public String imprimir(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Entrega entrega = entregaServicio.buscarEntrega(id);
+        
+        modelo.addAttribute("flag", false);
+        
+        if (logueado.getLogo() != null) {
+
+            Long idLogo = logueado.getLogo().getId();
+            Imagen logo = imagenServicio.obtenerImagenPorId(idLogo);
+                
+            modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idLogo);
+            modelo.addAttribute("flag", true);
+                
+        }
 
         modelo.put("entrega", entrega);
 

@@ -69,7 +69,7 @@ public class ChoferServicio {
 
     @Transactional
     public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, Long idAcoplado, String caja, String cuenta,String verDocumentacion, String documentacion,
-            String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String password, String password2) throws MiException {
+            String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String estado, String password, String password2) throws MiException {
 
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
         String nombreM = nombre.toUpperCase();
@@ -107,6 +107,7 @@ public class ChoferServicio {
         user.setVerMantenimiento(verMantenimiento);
         user.setMantenimiento(mantenimiento);
         user.setPorcentaje(porcentaje);
+        user.setEstado(estado);
 
         usuarioRepositorio.save(user);
 
@@ -118,7 +119,7 @@ public class ChoferServicio {
 
     @Transactional
     public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, Long idAcoplado, String verDocumentacion,  String documentacion, 
-            String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje) throws MiException {
+            String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String estado) throws MiException {
 
         String nombreM = nombre.toUpperCase();
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
@@ -161,6 +162,7 @@ public class ChoferServicio {
         user.setDocumentacion(documentacion);
         user.setVerMantenimiento(verMantenimiento);
         user.setMantenimiento(mantenimiento);
+        user.setEstado(estado);
 
         usuarioRepositorio.save(user);
 
@@ -283,6 +285,15 @@ public class ChoferServicio {
     public ArrayList<Usuario> bucarChoferesNombreAsc(Long idOrg) {
 
         ArrayList<Usuario> lista = usuarioRepositorio.buscarUsuariosChofer(idOrg);
+
+        Collections.sort(lista, ChoferComparador.ordenarNombreAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Usuario> bucarChoferesHabNombreAsc(Long idOrg) {
+
+        ArrayList<Usuario> lista = usuarioRepositorio.buscarUsuariosChoferHab(idOrg);
 
         Collections.sort(lista, ChoferComparador.ordenarNombreAsc);
 
@@ -420,7 +431,7 @@ public class ChoferServicio {
         ChoferesEstadistica totalGeneral = new ChoferesEstadistica();
         
         // Pre-cargar todos los choferes
-        ArrayList<Usuario> lista = usuarioRepositorio.buscarUsuariosChofer(idOrg);
+        ArrayList<Usuario> lista = usuarioRepositorio.buscarUsuariosChoferHab(idOrg);
         for (Usuario chofer : lista) {
         estadisticasPorChofer.put(chofer, new ChoferesEstadistica());
         }
@@ -534,6 +545,7 @@ public class ChoferServicio {
                 }
             }
         }
+        
     }
 
     public Date convertirFecha(String fecha) throws ParseException { //convierte fecha String a fecha Date

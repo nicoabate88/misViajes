@@ -50,6 +50,7 @@
                                                         <option value="" selected disabled>Seleccione Cliente</option>
                                                         <option th:each="cuenta : ${cuentas}"
                                                                 th:value="${cuenta.cliente.id}"
+                                                                th:if="${cuenta.cliente.estado == 'HABILITADO'}"
                                                                 th:text="${cuenta.cliente.nombre}+' - Saldo: $'+${#numbers.formatDecimal(cuenta.saldo, 1, 'POINT', 2, 'COMMA')}"/>
                                                     </select>
                                                 </div>

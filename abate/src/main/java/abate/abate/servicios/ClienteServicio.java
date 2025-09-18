@@ -25,7 +25,7 @@ public class ClienteServicio {
     private CuentaServicio cuentaServicio;
 
     @Transactional
-    public void crearCliente(Long idOrg, String nombre, Long cuit, String localidad, String direccion, Long telefono, String email) throws MiException {
+    public void crearCliente(Long idOrg, String nombre, Long cuit, String localidad, String direccion, Long telefono, String email, String estado) throws MiException {
 
         validarDatos(idOrg, nombre, cuit);
 
@@ -42,6 +42,7 @@ public class ClienteServicio {
         cliente.setDireccion(direccionMayusculas);
         cliente.setTelefono(telefono);
         cliente.setEmail(email);
+        cliente.setEstado(estado);
 
         clienteRepositorio.save(cliente);
 
@@ -50,7 +51,7 @@ public class ClienteServicio {
     }
 
     @Transactional
-    public void modificarCliente(Long id, String nombre, Long cuit, String localidad, String direccion, Long telefono, String email) throws MiException {
+    public void modificarCliente(Long id, String nombre, Long cuit, String localidad, String direccion, Long telefono, String email, String estado) throws MiException {
 
         Cliente cliente = new Cliente();
 
@@ -70,6 +71,7 @@ public class ClienteServicio {
         cliente.setDireccion(direccionMayusculas);
         cliente.setTelefono(telefono);
         cliente.setEmail(email);
+        cliente.setEstado(estado);
 
         clienteRepositorio.save(cliente);
 
@@ -103,6 +105,16 @@ public class ClienteServicio {
     public ArrayList<Cliente> buscarClientesNombreAsc(Long idOrg) {
 
         ArrayList<Cliente> lista = clienteRepositorio.buscarClientes(idOrg);
+
+        Collections.sort(lista, ClienteComparador.ordenarNombreAsc); //ordena por nombre alfabetico los nombres de clientes
+
+        return lista;
+
+    }
+    
+    public ArrayList<Cliente> buscarClientesHabNombreAsc(Long idOrg) {
+
+        ArrayList<Cliente> lista = clienteRepositorio.buscarClientesHab(idOrg);
 
         Collections.sort(lista, ClienteComparador.ordenarNombreAsc); //ordena por nombre alfabetico los nombres de clientes
 

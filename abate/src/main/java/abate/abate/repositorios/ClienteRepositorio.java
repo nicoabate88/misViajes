@@ -15,5 +15,8 @@ public interface ClienteRepositorio extends JpaRepository<Cliente, Long> {
 
     @Query("SELECT c FROM Cliente c WHERE c.idOrg = :id")
     public ArrayList<Cliente> buscarClientes(@Param("id") Long id);
+    
+    @Query("SELECT c FROM Cliente c WHERE c.idOrg = :id AND c.estado = 'HABILITADO'")
+    public ArrayList<Cliente> buscarClientesHab(@Param("id") Long id);
 
 }

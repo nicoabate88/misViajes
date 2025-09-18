@@ -20,4 +20,7 @@ public interface AcopladoRepositorio extends JpaRepository<Acoplado, Long> {
     @Query("SELECT a FROM Acoplado a WHERE a.idOrg = :id")
     public List<Acoplado> buscarAcoplados(@Param("id") Long id);
     
+    @Query("SELECT a FROM Acoplado a WHERE a.idOrg = :id AND a.estado = 'HABILITADO'")
+    public List<Acoplado> buscarAcopladosHab(@Param("id") Long id);
+    
 }

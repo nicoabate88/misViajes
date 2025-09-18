@@ -81,7 +81,14 @@ public class AcopladoServicio {
 
     String dominioMay = acopladoModificado.getDominio().toUpperCase();
     
-    validarDatosModificar(acopladoOriginal, dominioMay);
+    if(acopladoModificado.getEstado().equalsIgnoreCase("HABILITADO")){
+        
+        validarDatosModificar(acopladoOriginal, dominioMay);
+    
+    } else {
+        
+         validarDatosModificarInhabilitado(acopladoOriginal, dominioMay);
+    }
     
     String marcaMay = acopladoModificado.getMarca().toUpperCase();
     String modeloMay = acopladoModificado.getModelo().toUpperCase();
@@ -183,6 +190,16 @@ public class AcopladoServicio {
         return lista;
 
     }
+    
+    public List<Acoplado> buscarAcopladosHabAsc(Long idOrg) {
+
+        List<Acoplado> lista = acopladoRepositorio.buscarAcopladosHab(idOrg);
+
+        Collections.sort(lista, AcopladoComparador.ordenarDominioAsc);
+
+        return lista;
+
+    }
 
     public Acoplado buscarAcoplado(Long id) {
 
@@ -223,13 +240,36 @@ public class AcopladoServicio {
             }
         }
     }
+    
+    public void validarDatosModificarInhabilitado(Acoplado acoplado, String dominio) throws MiException {
+        
+        List<Usuario> usuarios = usuarioRepositorio.findByAcoplado_Id(acoplado.getId());
+
+       if (!usuarios.isEmpty()) {
+           for(Usuario u : usuarios){
+               
+               throw new MiException("No puede INHABILITAR este acoplado porque está asociado al chofer '"+u.getNombre()+"'. Modifique la configuración del chofer y vuelva a ejecutar esta operación.");
+               
+           }
+        }
+
+        List<Acoplado> lista = acopladoRepositorio.buscarAcoplados(acoplado.getIdOrg());
+
+        if (!acoplado.getDominio().equalsIgnoreCase(dominio)) {
+            for (Acoplado a : lista) {
+                if (a.getDominio().equalsIgnoreCase(dominio)) {
+                     throw new MiException("El DOMINIO '"+dominio+"' ya está registrado.");
+                }
+            }
+        }
+    }
    
     public Map<Acoplado, AcopladosEstadistica> estadisticaAcoplados(String desde, String hasta, Long idOrg) throws ParseException {
 
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        List<Acoplado> todasLosAcoplados = acopladoRepositorio.buscarAcoplados(idOrg);
+        List<Acoplado> todasLosAcoplados = acopladoRepositorio.buscarAcopladosHab(idOrg);
         List<Flete> fletes = fleteRepositorio.findByFechaFleteBetweenAndIdOrg(d, h, idOrg);
         List<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, idOrg);
 

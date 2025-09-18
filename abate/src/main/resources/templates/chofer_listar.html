@@ -84,10 +84,12 @@
                                 </div>
                                     <div th:each="chofer : ${choferes}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
-                                            <div class="row">
+                                            <div class="row mb-2">
                                             <div class="col-9">
                                             <h6 class="mb-1" th:text="${chofer.nombre}"></h6>
                                             <p class='mb-1' id="dimgray" th:text="'CUIL '+${chofer.cuil}"></p>
+                                            <h6 th:if="${chofer.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${chofer.estado}"></h6>
+                                            <h6 th:if="${chofer.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${chofer.estado}"></h6>
                                             </div>
                                             <div class="col-3 text-center"> 
                                                 <a href="#" th:attr="data-id=${chofer.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">

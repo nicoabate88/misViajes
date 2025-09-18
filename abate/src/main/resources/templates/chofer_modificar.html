@@ -107,7 +107,7 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                     <label for="usuario" class="form-label text-secondary">Nombre de Usuario*</label>
                                                     <input type="text" class="form-control" id="usuario" name="nombreUsuario" th:value="${chofer.usuario}" required>
                                                         <span id="errorUsuario" style="color: red; display: none;"></span>    
@@ -118,6 +118,16 @@
                                                         <span class="input-group-text">%</span>
                                                         <input type="number" step="0.01" class="form-control" id="porcentaje" name="porcentaje" th:value="${chofer.porcentaje}" required>     
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-5">
+                                                    <label for="estado" class="form-floting text-secondary">Habilitar Chofer*</label>
+                                                    <select class="form-control" id="estado" name="estado" required>
+                                                        <option selected th:text="${chofer.estado}" th:value="${chofer.estado}"></option>
+                                                        <option value="HABILITADO">HABILITADO</option>
+                                                        <option value="INHABILITADO">INHABILITADO</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="row">

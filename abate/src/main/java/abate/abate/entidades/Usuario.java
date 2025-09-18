@@ -29,15 +29,18 @@ public class Usuario {
     private String direccion;
     private String localidad;
     private String telefono;
+    private String estado;
     @OneToOne
     private Camion camion;
     @OneToOne
     private Acoplado acoplado;
+    @OneToOne
+    private Imagen logo;
 
     public Usuario() {
     }
 
-    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String verDocumentacion, String documentacion, String verMantenimiento, String mantenimiento, String empresa, String direccion, String localidad, String telefono, Camion camion, Acoplado acoplado) {
+    public Usuario(Long id, Long idOrg, String nombre, String usuario, String password, String rol, Long cuil, Double porcentaje, String caja, String cuenta, String verDocumentacion, String documentacion, String verMantenimiento, String mantenimiento, String empresa, String direccion, String localidad, String telefono, String estado, Camion camion, Acoplado acoplado, Imagen logo) {
         this.id = id;
         this.idOrg = idOrg;
         this.nombre = nombre;
@@ -56,8 +59,10 @@ public class Usuario {
         this.direccion = direccion;
         this.localidad = localidad;
         this.telefono = telefono;
+        this.estado = estado;
         this.camion = camion;
         this.acoplado = acoplado;
+        this.logo = logo;
     }
 
     public Long getId() {
@@ -204,6 +209,14 @@ public class Usuario {
         this.telefono = telefono;
     }
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public Camion getCamion() {
         return camion;
     }
@@ -220,5 +233,12 @@ public class Usuario {
         this.acoplado = acoplado;
     }
 
+    public Imagen getLogo() {
+        return logo;
+    }
+
+    public void setLogo(Imagen logo) {
+        this.logo = logo;
+    } 
     
 }

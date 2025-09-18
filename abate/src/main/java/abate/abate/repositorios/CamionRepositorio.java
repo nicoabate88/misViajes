@@ -15,5 +15,8 @@ public interface CamionRepositorio extends JpaRepository<Camion, Long> {
 
     @Query("SELECT c FROM Camion c WHERE c.idOrg = :id")
     public ArrayList<Camion> buscarCamiones(@Param("id") Long id);
+    
+    @Query("SELECT c FROM Camion c WHERE c.idOrg = :id AND c.estado = 'HABILITADO'")
+    public ArrayList<Camion> buscarCamionesHab(@Param("id") Long id);
 
 }

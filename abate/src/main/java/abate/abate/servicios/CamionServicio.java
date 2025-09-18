@@ -84,7 +84,14 @@ public class CamionServicio {
 
     String dominioMay = camionModificado.getDominio().toUpperCase();
     
-    validarDatosModificar(camionOriginal, dominioMay);
+    if(camionModificado.getEstado().equalsIgnoreCase("HABILITADO")){
+        
+        validarDatosModificar(camionOriginal, dominioMay);
+    
+    } else {
+        
+         validarDatosModificarInhabilitado(camionOriginal, dominioMay);
+    }
     
     String marcaMay = camionModificado.getMarca().toUpperCase();
     String modeloMay = camionModificado.getModelo().toUpperCase();
@@ -182,6 +189,16 @@ public class CamionServicio {
     public ArrayList<Camion> buscarCamionesAsc(Long idOrg) {
 
         ArrayList<Camion> lista = camionRepositorio.buscarCamiones(idOrg);
+
+        Collections.sort(lista, CamionComparador.ordenarDominioAsc);
+
+        return lista;
+
+    }
+    
+    public ArrayList<Camion> buscarCamionesHabAsc(Long idOrg) {
+
+        ArrayList<Camion> lista = camionRepositorio.buscarCamionesHab(idOrg);
 
         Collections.sort(lista, CamionComparador.ordenarDominioAsc);
 
@@ -307,7 +324,7 @@ public class CamionServicio {
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 
-        List<Camion> todasLosCamiones = camionRepositorio.buscarCamiones(idOrg);
+        List<Camion> todasLosCamiones = camionRepositorio.buscarCamionesHab(idOrg);
         List<Flete> fletes = fleteRepositorio.findByFechaFleteBetweenAndIdOrg(d, h, idOrg);
         List<Combustible> cargas = combustibleRepositorio.findByFechaCargaBetweenAndIdOrg(d, h, idOrg);
         List<Gasto> gastos = gastoRepositorio.findByFechaBetweenAndIdOrg(d, h, idOrg);
@@ -392,6 +409,29 @@ public class CamionServicio {
     }
 
     public void validarDatosModificar(Camion camion, String dominio) throws MiException {
+
+        ArrayList<Camion> lista = camionRepositorio.buscarCamiones(camion.getIdOrg());
+
+        if (!camion.getDominio().equalsIgnoreCase(dominio)) {
+            for (Camion c : lista) {
+                if (c.getDominio().equalsIgnoreCase(dominio)) {
+                    throw new MiException("El DOMINIO '"+dominio+"' ya está registrado.");
+                }
+            }
+        }
+    }
+    
+    public void validarDatosModificarInhabilitado(Camion camion, String dominio) throws MiException {
+        
+        List<Usuario> usuarios = usuarioRepositorio.findByCamion_Id(camion.getId());
+
+       if (!usuarios.isEmpty()) {
+           for(Usuario u : usuarios){
+               
+               throw new MiException("No puede INHABILITAR este camión porque está asociado al chofer '"+u.getNombre()+"'. Modifique la configuración del chofer y vuelva a ejecutar esta operación.");
+               
+           }
+        } 
 
         ArrayList<Camion> lista = camionRepositorio.buscarCamiones(camion.getIdOrg());
 

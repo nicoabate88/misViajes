@@ -14,11 +14,11 @@
                         <span id="dimgray" th:text="' (KM Estimado '+${#numbers.formatDecimal(neumatico.kmEstimado, 0, 'POINT', 0, 'POINT')}+' - KM Útil '+${#numbers.formatDecimal(neumatico.kmUtil, 0, 'POINT', 0, 'POINT')}+')'"></span>
                     </p>
                     <h6 th:if="${flag == true}" class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></h6>
-                    <p class='mb-1' th:if="${flag == false && posicion != null && posicion.camion != null}">
+                    <p class='mb-1' th:if="${flag == false && auxilio.id == null && posicion != null && posicion.camion != null}">
                         <span><strong class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></strong></span>
                         <span class="mb-2 text-dark" th:text="' (Camión '+${posicion.camion.dominio}+' '+${posicion.camion.marca}+' '+${posicion.camion.modelo}+')'"></span>
                     </p>
-                    <p class='mb-1' th:if="${flag == false && posicion != null && posicion.acoplado != null}">
+                    <p class='mb-1' th:if="${flag == false && auxilio.id == null && posicion != null && posicion.acoplado != null}">
                         <span><strong class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></strong></span>
                         <span class="mb-2 text-dark" th:text="' (Acoplado '+${posicion.acoplado.dominio}+' '+${posicion.acoplado.marca}+' '+${posicion.acoplado.modelo}+')'"></span>
                     </p>

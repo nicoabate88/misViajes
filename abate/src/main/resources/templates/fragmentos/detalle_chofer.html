@@ -16,6 +16,7 @@
                     <h6 th:if="${chofer.camion} == null" class="mb-1" id="dimgray">No tiene Camión Asociado</h6>
                     <h6 th:if="${chofer.acoplado} != null" id="dimgray" th:text="'Acoplado '+${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}"></h6>
                     <h6 th:if="${chofer.acoplado} == null" class="mb-1" id="dimgray">No tiene Acoplado Asociado</h6>
+                    <h6 class='mb-2' id="dimgray" th:text="'Estado '+${chofer.estado}"></h6>
                 </div>
             </div>
         </div>

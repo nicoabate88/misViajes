@@ -18,11 +18,12 @@ public class Cliente {
     private String direccion;
     private Long telefono;
     private String email;
+    private String estado;
 
     public Cliente() {
     }
 
-    public Cliente(Long id, Long idOrg, String nombre, Long cuit, String localidad, String direccion, Long telefono, String email) {
+    public Cliente(Long id, Long idOrg, String nombre, Long cuit, String localidad, String direccion, Long telefono, String email, String estado) {
         this.id = id;
         this.idOrg = idOrg;
         this.nombre = nombre;
@@ -31,6 +32,7 @@ public class Cliente {
         this.direccion = direccion;
         this.telefono = telefono;
         this.email = email;
+        this.estado = estado;
     }
 
     public Long getId() {
@@ -96,5 +98,15 @@ public class Cliente {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    
 
 }

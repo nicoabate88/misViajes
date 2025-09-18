@@ -48,6 +48,19 @@
                 text-align: center;
                 flex-grow: 1;
             }
+
+            input {
+                border: none;
+                background: transparent;
+                width: auto;
+
+            }
+
+            .input-bold {
+                font-weight: bold;
+            }
+
+
             @media print {
                 .boton-imprimir {
                     display: none !important;
@@ -62,6 +75,24 @@
     </head>
     <body>
         <div class="recibo-container">
+            <div th:if="${flag == true}" class="row header d-flex align-items-center justify-content-between">
+                <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <img th:src="@{${imagenUrl}}" th:alt="${imagenNombre}" style="height:60px;">
+                </div>
+                <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
+                    <h2>Entrega a Chofer</h2>
+                </div>
+                <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-end">
+                    <a title="Cerrar Ventana" id="cerrar" onclick="window.close();">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                             class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${flag == false}">
             <div class="text-end">
                 <a title="Cerrar Ventana" id="cerrar" onclick="window.close();">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
@@ -72,20 +103,36 @@
             <div class="recibo-header">
                 <h2>Entrega a Chofer</h2>
             </div>
-            <div class="recibo-section">
+            </div>
+            <div class="recibo-section"> 
                 <div class="usuario-datos">
                     <div>
-                        <p><strong><span th:text="${entrega.usuario.empresa}"></strong></span></p>
-                        <p><strong>CUIT:</strong> <span th:text="${entrega.usuario.cuil}"></span></p>
+                        <p>
+                            <input class="input-bold" type="text" name="empresa" th:value="${entrega.usuario.empresa}" size="40" />
+                        </p>
+                        <p>
+                            <strong>CUIT:</strong> 
+                            <input type="text" name="cuil" th:value="${entrega.usuario.cuil}" size="35" />
+                        </p>
                         <p><strong>-</strong> <span></span></p>
                     </div>
                     <div class="text-end">
-                        <p><strong>Dirección:</strong> <span th:text="${entrega.usuario.direccion}"></span></p>
-                        <p><strong>Localidad:</strong> <span th:text="${entrega.usuario.localidad}"></span></p>
-                        <p><strong>Teléfono:</strong> <span th:text="${entrega.usuario.telefono}"></span></p>
+                        <p>
+                            <strong>Dirección:</strong> 
+                            <input type="text" name="direccion" th:value="${entrega.usuario.direccion}" size="30" />
+                        </p>
+                        <p>
+                            <strong>Localidad:</strong> 
+                            <input type="text" name="localidad" th:value="${entrega.usuario.localidad}" size="30" />
+                        </p>
+                        <p>
+                            <strong>Teléfono:</strong> 
+                            <input type="text" name="telefono" th:value="${entrega.usuario.telefono}" size="31"/>
+                        </p>
                     </div>
                 </div>
             </div>
+
             <div class="recibo-section">
                 <h5>Detalle de Entrega</h5>
                 <div class="recibo-datos">
@@ -108,12 +155,12 @@
                 <div class="footer-text">
                     <p class="text-muted mb-0">_____________</p>
                     <p class="text-muted">Firma</p>
-                <a title="Imprimir Entrega" href="#" class="boton-imprimir pb-5" onclick="window.print(); return false;">
-                    <svg id="imprimir" xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="bi bi-printer" viewBox="0 0 16 16">
-                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
-                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
-                    </svg>
-                </a>
+                    <a title="Imprimir Entrega" href="#" class="boton-imprimir pb-5" onclick="window.print(); return false;">
+                        <svg id="imprimir" xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="bi bi-printer" viewBox="0 0 16 16">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </div>

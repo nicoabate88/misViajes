@@ -59,38 +59,39 @@
                             <div class="container mb-2"> 
                                 <div th:if="${!camiones.isEmpty()}">
                                     <div class="card-header pb-0" id="bgWhite">
-                                    <form class="row" th:action="@{/camion/listarFiltro}" method="GET">
-                                        <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5 mb-2">
-                                            <label for="camion" class="form-floting">Camión</label>  
-                                            <select class="form-control border-secondary" id="camion" name="id">
-                                                <option th:value=null>Todos</option>
-                                                <option th:each="camion : ${camiones}"
-                                                        th:value="${camion.id}"
-                                                        th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
-                                            </select>
-                                        </div>
-                                        <div class="col-1 text-center">
-                                            <label for="ver" class="form-floting">Ver</label> 
-                                            <button id="ver"  class="btn btn-primary" type="submit">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </form>   
+                                        <form class="row" th:action="@{/camion/listarFiltro}" method="GET">
+                                            <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5 mb-2">
+                                                <label for="camion" class="form-floting">Camión</label>  
+                                                <select class="form-control border-secondary" id="camion" name="id">
+                                                    <option th:value=null>Todos</option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-1 text-center">
+                                                <label for="ver" class="form-floting">Ver</label> 
+                                                <button id="ver"  class="btn btn-primary" type="submit">
+                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </form>   
                                     </div>
                                     <div th:each="camion : ${camiones}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
                                             <div class="row">
-                                            <div class="col-9 mb-5">
-                                            <h6 th:text="${camion.dominio}"></h6>
-                                            <h6 id="dimgray" th:text="${camion.marca}+' '+${camion.modelo}"></h6>
-                                            </div>
-                                            <div class="col-3 text-center"> 
-                                                <a href="#" th:attr="data-id=${camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 -30 64 94" enable-background="new 0 0 64 64" xml:space="preserve"><g id="Loupe"><path d="M53.7602806,35.6955452c7.028801-7.0301018,7.0278015-18.4271011-0.0023003-25.455801 c-7.030098-7.0288005-18.4270973-7.0279007-25.4557934,0.0021992c-5.8004055,5.8014011-6.800106,14.5709-3.0264053,21.4111004 L4.9687819,51.960144l7.0709996,7.0710983L32.346981,38.7240448 C39.1881866,42.4984436,47.9591866,41.4976425,53.7602806,35.6955452z M12.0397816,56.2027435L7.7971873,51.960144 l18.5755939-18.5755997c0.5754051,0.8079987,1.2066994,1.588501,1.9315987,2.3133011 c0.7241001,0.7238998,1.5039005,1.3544998,2.3111,1.9292984L12.0397816,56.2027435z M29.7174816,34.282444 c-6.2378998-6.2378006-6.2382946-16.3880005-0.0009995-22.6264c3.0217037-3.0222998,7.0394993-4.6869001,11.3132-4.6873002 c4.2737999-0.0004001,8.2918968,1.6635003,11.3141975,4.6853004l0.0008011,0.0007992l0.0003014,0.0003004 c6.2377968,6.2378006,6.238205,16.3878994,0.0009003,22.6263008c-3.0216942,3.0223007-7.0395012,4.6869011-11.3132019,4.6872978 C36.7588806,38.9691429,32.7407799,37.3052444,29.7174816,34.282444z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M50.2242813,13.7756433c-2.4559021-2.4551992-5.7206993-3.8071995-9.1938019-3.8076 c-3.4726982,0.0007-6.7374992,1.3528004-9.1923981,3.809c-0.390501,0.3905001-0.3901005,1.0241003,0,1.4142008 c0.3908997,0.3908997,1.0237007,0.3905001,1.4141998,0c2.0779076-2.0778008,4.8400002-3.2227001,7.7789078-3.2227001 c2.9381905-0.0007,5.7010918,1.1434994,7.7788925,3.2213993c0.3908005,0.3908005,1.0237007,0.3904009,1.4141998,0 C50.6147804,14.7994442,50.6143799,14.165844,50.2242813,13.7756433z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></svg>     
-                                                    <p>Detalle</p></a>
-                                            </div>
+                                                <div class="col-9 mb-2">
+                                                    <h6 th:text="${camion.dominio}+' '+${camion.marca}+' '+${camion.modelo}"></h6>
+                                                    <h6 th:if="${camion.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${camion.estado}"></h6>
+                                                    <h6 th:if="${camion.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${camion.estado}"></h6>
+                                                </div>
+                                                <div class="col-3 text-center"> 
+                                                    <a href="#" th:attr="data-id=${camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 -30 64 94" enable-background="new 0 0 64 64" xml:space="preserve"><g id="Loupe"><path d="M53.7602806,35.6955452c7.028801-7.0301018,7.0278015-18.4271011-0.0023003-25.455801 c-7.030098-7.0288005-18.4270973-7.0279007-25.4557934,0.0021992c-5.8004055,5.8014011-6.800106,14.5709-3.0264053,21.4111004 L4.9687819,51.960144l7.0709996,7.0710983L32.346981,38.7240448 C39.1881866,42.4984436,47.9591866,41.4976425,53.7602806,35.6955452z M12.0397816,56.2027435L7.7971873,51.960144 l18.5755939-18.5755997c0.5754051,0.8079987,1.2066994,1.588501,1.9315987,2.3133011 c0.7241001,0.7238998,1.5039005,1.3544998,2.3111,1.9292984L12.0397816,56.2027435z M29.7174816,34.282444 c-6.2378998-6.2378006-6.2382946-16.3880005-0.0009995-22.6264c3.0217037-3.0222998,7.0394993-4.6869001,11.3132-4.6873002 c4.2737999-0.0004001,8.2918968,1.6635003,11.3141975,4.6853004l0.0008011,0.0007992l0.0003014,0.0003004 c6.2377968,6.2378006,6.238205,16.3878994,0.0009003,22.6263008c-3.0216942,3.0223007-7.0395012,4.6869011-11.3132019,4.6872978 C36.7588806,38.9691429,32.7407799,37.3052444,29.7174816,34.282444z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M50.2242813,13.7756433c-2.4559021-2.4551992-5.7206993-3.8071995-9.1938019-3.8076 c-3.4726982,0.0007-6.7374992,1.3528004-9.1923981,3.809c-0.390501,0.3905001-0.3901005,1.0241003,0,1.4142008 c0.3908997,0.3908997,1.0237007,0.3905001,1.4141998,0c2.0779076-2.0778008,4.8400002-3.2227001,7.7789078-3.2227001 c2.9381905-0.0007,5.7010918,1.1434994,7.7788925,3.2213993c0.3908005,0.3908005,1.0237007,0.3904009,1.4141998,0 C50.6147804,14.7994442,50.6143799,14.165844,50.2242813,13.7756433z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></svg>     
+                                                        <p>Detalle</p></a>
+                                                </div>
                                             </div>
                                             <div class="row text-center">
                                                 <div class="col-3">

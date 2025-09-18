@@ -39,7 +39,8 @@
                                     <div class="row">
                                         <div class="col-8">
                                             <p id="dimgray" class="mb-1" th:text="${entrega.chofer.nombre}"></p>
-                                            <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>
+                                            <p class="mb-1" id="dimgray" th:text="${entrega.observacion}"></p>
+                                            <p class='mb-0' id="darkgray" th:text="${entrega.usuario.nombre}"></p>
                                         </div>
                                         <div class="col-4 text-center">
                                             <a title="Ir a Imprimir Entrega" target="_blank" th:href= "@{/entrega/imprimir/__${entrega.id}__}" >

@@ -60,13 +60,13 @@ public class CombustibleControlador {
             modelo.put("kmAnterior", carga.getKmCarga());
             modelo.put("fechaAnterior", carga.getFechaCarga());
             modelo.put("camion", camion);
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             if(logueado.getAcoplado() != null){
             modelo.put("acoplado", logueado.getAcoplado());
             } else {
             modelo.put("acoplado", null);
             }
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
             return "combustible_registrarChofer.html";
 
@@ -82,7 +82,7 @@ public class CombustibleControlador {
         } else {
              
         modelo.put("chofer", logueado);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
 
         return "combustible_registrar.html";
         
@@ -106,13 +106,13 @@ public class CombustibleControlador {
             modelo.put("kmAnterior", carga.getKmCarga());
             modelo.put("fechaAnterior", carga.getFechaCarga());
             modelo.put("camion", camion);
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             if(logueado.getAcoplado() != null){
             modelo.put("acoplado", logueado.getAcoplado());
             } else {
             modelo.put("acoplado", null);
             }
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
             return "combustible_registrarChofer.html";
 
@@ -149,9 +149,9 @@ public class CombustibleControlador {
             modelo.put("kmAnterior", carga.getKmCarga());
             modelo.put("fechaAnterior", carga.getFechaCarga());
             modelo.put("camion", camion);
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(idOrg));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(idOrg));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(idOrg));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(idOrg));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
 
             return "combustible_registrarAdmin.html";
 
@@ -165,7 +165,7 @@ public class CombustibleControlador {
                 
             } else {
         
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(idOrg));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
             modelo.put("camion", null);
             modelo.put("acoplados", null);
             modelo.put("choferes", null);
@@ -197,9 +197,9 @@ public class CombustibleControlador {
 
             modelo.put("kmAnterior", carga.getKmCarga());
             modelo.put("fechaAnterior", carga.getFechaCarga());
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(camion.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(camion.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(camion.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(camion.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(camion.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(camion.getIdOrg()));
 
             return "combustible_registrarAdmin.html";
 
@@ -412,8 +412,8 @@ public class CombustibleControlador {
         modelo.put("camion", camion);
         modelo.put("chofer", null);
         modelo.put("idOrg", camion.getIdOrg());
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(camion.getIdOrg()));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(camion.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(camion.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(camion.getIdOrg()));
         modelo.put("cantidad", cargas.size() - registroKm);
         modelo.put("litros", litro);
         modelo.put("azul", azul);
@@ -456,8 +456,8 @@ public class CombustibleControlador {
         modelo.put("camion", null);
         modelo.put("chofer", null);
         modelo.put("idOrg", logueado.getIdOrg());
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         modelo.put("cantidad", cargas.size() - registroKm);
         modelo.put("litros", litro);
         modelo.put("azul", azul);
@@ -533,8 +533,8 @@ public class CombustibleControlador {
         modelo.put("hasta", hasta);
         modelo.put("idCamion", idCamion);
         modelo.put("idChofer", idChofer);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
 
         return "combustible_listarCargasAdmin.html";
     }
@@ -608,8 +608,8 @@ public class CombustibleControlador {
         modelo.put("hasta", hasta);
         modelo.put("idCamion", idCamion);
         modelo.put("idChofer", idChofer);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         if(registroKM != null){
         modelo.put("exito", "KM de Camión REGISTRADO con éxito");
         }
@@ -671,7 +671,7 @@ public class CombustibleControlador {
             modelo.put("fechaAnterior", cargaAnterior.getFechaCarga());
             modelo.put("carga", carga);
             modelo.put("flag", combustibleServicio.ultimaCarga(carga.getCamion(), id));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(carga.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(carga.getIdOrg()));
 
             return "combustible_modificar.html";
 
@@ -723,8 +723,8 @@ public class CombustibleControlador {
 
             modelo.put("fechaAnterior", cargaAnterior.getFechaCarga());
             modelo.put("carga", carga);
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(carga.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(carga.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(carga.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(carga.getIdOrg()));
             modelo.put("flag", combustibleServicio.ultimaCarga(carga.getCamion(), idCarga));
 
             return "combustible_modificarAdmin.html";

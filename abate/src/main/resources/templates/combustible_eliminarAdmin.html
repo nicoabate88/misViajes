@@ -34,7 +34,7 @@
                                             <p class="mb-0" id="darkgray" th:if="${carga.chofer != null}" th:text="'Chofer '+${carga.chofer.nombre}"></p>
                                 </div>
                                 <div th:if="${error == null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">
-                                    <h6 id="white">¿Seguro desea ELIMINAR esta Carga Diesel?</h6>
+                                    <h6 id="white">¿Seguro desea ELIMINAR esta Carga de Combustible?</h6>
                                     <p class='mb-0' id="white">Si la carga es eliminada del sistema, no podrá ser recuperada.</p>
                                     <p th:if="${carga.azul != null}" id="white">Además, se eliminará la carga de Urea asociada.</p>
                                 </div>

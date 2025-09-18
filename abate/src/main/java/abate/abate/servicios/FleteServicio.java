@@ -398,8 +398,6 @@ public class FleteServicio {
 
         ArrayList<Flete> lista = (ArrayList<Flete>) fleteRepositorio.buscarFletePendiente(idOrg);
 
-       // Collections.sort(lista, FleteComparador.ordenarFechaAsc);
-
         return lista;
     }
 

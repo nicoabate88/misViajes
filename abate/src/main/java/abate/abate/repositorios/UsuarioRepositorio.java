@@ -4,6 +4,7 @@ import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Usuario;
 import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +24,9 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
 
     @Query("SELECT u FROM Usuario u WHERE u.rol = 'CHOFER' AND u.idOrg = :id")
     public ArrayList<Usuario> buscarUsuariosChofer(@Param("id") Long id);
+    
+    @Query("SELECT u FROM Usuario u WHERE u.rol = 'CHOFER' AND u.estado = 'HABILITADO' AND u.idOrg = :id")
+    public ArrayList<Usuario> buscarUsuariosChoferHab(@Param("id") Long id);
 
     @Query("SELECT u FROM Usuario u WHERE u.rol = 'ADMIN' AND u.idOrg = :id")
     public ArrayList<Usuario> buscarUsuariosAdmin(@Param("id") Long id);
@@ -36,5 +40,9 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
 
     @Query("SELECT u FROM Usuario u WHERE u.id IN (SELECT MIN(u1.id) FROM Usuario u1 GROUP BY u1.idOrg)")
     public ArrayList<Usuario> findFirstByIdOrg();
+    
+    List<Usuario> findByCamion_Id(Long idCamion);
+    
+    List<Usuario> findByAcoplado_Id(Long idAcoplado);
 
 }

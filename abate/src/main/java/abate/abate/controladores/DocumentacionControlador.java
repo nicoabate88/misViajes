@@ -56,11 +56,11 @@ public class DocumentacionControlador {
         modelo.put("idOrg", logueado.getIdOrg());
 
         if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         }
 
         return "documentacion_registrar.html";
@@ -71,11 +71,11 @@ public class DocumentacionControlador {
     public String registrar1(Long idOrg, @RequestParam TipoDocumentacion.AplicaA aplicaA, ModelMap modelo) {
         
         if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(idOrg));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
         } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(idOrg));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
         } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(idOrg));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(idOrg));
         }
         
         modelo.put("idOrg", idOrg);
@@ -102,11 +102,11 @@ public class DocumentacionControlador {
         } catch (MiException ex) {
             
         if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         }
         
         modelo.put("idOrg", logueado.getIdOrg());
@@ -218,11 +218,11 @@ public class DocumentacionControlador {
         Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
         
         if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
         } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
         } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
         }
         
             modelo.put("documentacion", documentacion);
@@ -242,11 +242,11 @@ public class DocumentacionControlador {
         }
         
         if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
         } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
         } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
         }
         
         modelo.put("documentacion", documentacion);
@@ -278,11 +278,11 @@ public class DocumentacionControlador {
         }
         
         if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
         } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
         } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(documentacion.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
         }
         
         modelo.put("documentacion", documentacion);
@@ -430,7 +430,7 @@ public class DocumentacionControlador {
         
         if(logueado.getCamion() != null){
             
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             modelo.put("camion", logueado.getCamion());
             modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdCamion(logueado.getCamion().getId()));
             modelo.put("flag", flag);
@@ -440,7 +440,7 @@ public class DocumentacionControlador {
             
         } else {
         
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         
         return "documentacion_listarCamionesChofer.html";
         
@@ -454,7 +454,7 @@ public class DocumentacionControlador {
         Camion camion = camionServicio.buscarCamion(idCamion);
         
         modelo.put("camion", camion);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(camion.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(camion.getIdOrg()));
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdCamion(idCamion));
         
         return "documentacion_listarCamionChofer.html";
@@ -473,7 +473,7 @@ public class DocumentacionControlador {
         if(logueado.getAcoplado() != null){
        
         modelo.put("acoplado", logueado.getAcoplado());
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(logueado.getAcoplado().getId()));
         modelo.put("flag", flag);
         modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
@@ -482,7 +482,7 @@ public class DocumentacionControlador {
         
         } else {
             
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             return "documentacion_listarAcopladosChofer.html";
             
         }
@@ -495,7 +495,7 @@ public class DocumentacionControlador {
         Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
         
         modelo.put("acoplado", acoplado);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(acoplado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(acoplado.getIdOrg()));
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado));
         
         return "documentacion_listarAcopladoChofer.html";
@@ -558,7 +558,7 @@ public class DocumentacionControlador {
         
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.put("camion", null);
         modelo.put("idCamion", null);
         
@@ -598,7 +598,7 @@ public class DocumentacionControlador {
         }
         
         modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         
         return "documentacion_listarAdminCamiones.html";
         
@@ -627,7 +627,7 @@ public class DocumentacionControlador {
         
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.put("acoplado", null);
         modelo.put("idAcoplado", null);
         
@@ -667,7 +667,7 @@ public class DocumentacionControlador {
         }
         
         modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         
         return "documentacion_listarAdminAcoplados.html";
         
@@ -696,7 +696,7 @@ public class DocumentacionControlador {
         
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         modelo.put("chofer", null);
         modelo.put("idChofer", null);
         
@@ -736,7 +736,7 @@ public class DocumentacionControlador {
         }
         
         modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         
         return "documentacion_listarAdminChoferes.html";
         

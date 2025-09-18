@@ -105,7 +105,7 @@ public class MantenimientoControlador {
 
         if(aplicaA == TipoMantenimiento.AplicaA.CAMION){
             if(logueado.getRol().equalsIgnoreCase("ADMIN")){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             } else {
             modelo.addAttribute("camiones", logueado.getCamion());
             }
@@ -116,7 +116,7 @@ public class MantenimientoControlador {
             
         }  else {
             if(logueado.getRol().equalsIgnoreCase("ADMIN")){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             } else {
             modelo.addAttribute("acoplados", logueado.getAcoplado());
             }
@@ -139,7 +139,7 @@ public class MantenimientoControlador {
         
         if(aplicaA == TipoMantenimiento.AplicaA.CAMION){
             if(logueado.getRol().equalsIgnoreCase("ADMIN")){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(idOrg));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
             } else {
             modelo.addAttribute("camiones", logueado.getCamion());
             }
@@ -149,7 +149,7 @@ public class MantenimientoControlador {
             
         } else {
             if(logueado.getRol().equalsIgnoreCase("ADMIN")){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(idOrg));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
             } else {
             modelo.addAttribute("acoplados", logueado.getAcoplado());
             }
@@ -179,7 +179,7 @@ public class MantenimientoControlador {
             int km = combustibleServicio.kmUltimaCarga(camion);
             
             if(logueado.getRol().equalsIgnoreCase("ADMIN")){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(idOrg));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
             } else {
             modelo.addAttribute("camiones", logueado.getCamion());
             }
@@ -197,7 +197,7 @@ public class MantenimientoControlador {
             int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
             
             if(logueado.getRol().equalsIgnoreCase("ADMIN")){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(idOrg));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
             } else {
             modelo.addAttribute("acoplados", logueado.getAcoplado());
             }
@@ -451,7 +451,7 @@ public class MantenimientoControlador {
         modelo.put("flag", flag); 
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
         modelo.put("camion", logueado.getCamion());
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdCamion(logueado.getCamion().getId()));
         
         return "mantenimiento_listarChoferCamion.html";
@@ -460,7 +460,7 @@ public class MantenimientoControlador {
 
         modelo.put("flag", flag); 
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         
         return "mantenimiento_listarChoferCamiones.html";
         
@@ -485,7 +485,7 @@ public class MantenimientoControlador {
         modelo.put("flag", flag); 
         modelo.put("camion", camionServicio.buscarCamion(idCamion));
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdCamion(idCamion));
         
         return "mantenimiento_listarChoferCamion.html";
@@ -523,7 +523,7 @@ public class MantenimientoControlador {
         modelo.put("flag", flag); 
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
         modelo.put("acoplado", logueado.getAcoplado());
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdAcoplado(logueado.getAcoplado().getId()));
         
         return "mantenimiento_listarChoferAcoplado.html";
@@ -532,7 +532,7 @@ public class MantenimientoControlador {
 
         modelo.put("flag", flag); 
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         
         return "mantenimiento_listarChoferAcoplados.html";
         
@@ -557,7 +557,7 @@ public class MantenimientoControlador {
         modelo.put("flag", flag);
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdAcoplado(idAcoplado));
         
         return "mantenimiento_listarChoferAcoplado.html";
@@ -638,7 +638,7 @@ public class MantenimientoControlador {
         
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.put("idCamion", null);
         modelo.put("camion", null);
         
@@ -661,7 +661,7 @@ public class MantenimientoControlador {
         
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.put("camion", camionServicio.buscarCamion(idCamion));
         modelo.put("idCamion", idCamion);
         
@@ -675,7 +675,7 @@ public class MantenimientoControlador {
         
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.put("camion", null);
         modelo.put("idCamion", null);
             
@@ -708,7 +708,7 @@ public class MantenimientoControlador {
         
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
        modelo.put("idAcoplado", null);
         modelo.put("acoplado", null);
         
@@ -731,7 +731,7 @@ public class MantenimientoControlador {
         
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
         modelo.put("idAcoplado", idAcoplado);
         
@@ -745,7 +745,7 @@ public class MantenimientoControlador {
         
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.put("acoplado", null);
         modelo.put("idAcoplado", null);
             

@@ -122,17 +122,21 @@
                                                                     </div>
                                                                     <div th:each="carga : ${cargas}">
                                                                         <div class="card border-secondary p-3 mb-1" th:classappend="${carga.estado != null && carga.estado == 'PENDIENTE'} ? 'bg-soft-red' : 'bg-whitesmoke'">
+
+                                                                            <h6 th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
+                                                                            <h6>
+                                                                            <span class="text-dark" th:text="'Camión '+${carga.camion.dominio}+' '+${carga.camion.marca}+' '+${carga.camion.modelo}"></span>
+                                                                            <span class="text-dark" th:if="${carga.acoplado != null}" th:text="'- Acoplado '+${carga.acoplado.dominio}+' '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}"></span>
+                                                                            </h6>
                                                                             <div class="row">
                                                                                 <div class="col-9">
-                                                                                    <h6 th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
-                                                                                    <h6 class="text-dark" th:text="'Camión '+${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
-                                                                                    <h6 class="text-dark" th:if="${carga.acoplado != null}" th:text="'Acoplado '+${carga.acoplado.dominio}+' - '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}"></h6>
                                                                                     <p class="mb-1" id="dimgray" th:text="'KM Carga '+${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}"></p>
                                                                                     <h6 class="mb-2" id="dimgray" th:text="'Km Recorrido: ' + ${#numbers.formatDecimal(carga.kmRecorrido, 1, 'POINT', 1, 'COMMA')}"></h6>
                                                                                     <p class="mb-1 text-dark" th:text="${carga.litro} + ' L - Tanque Lleno: ' + ${carga.completo}"></p>
                                                                                     <h6 class="mb-1" th:text="'Consumo: ' + ${carga.consumo} + ' L / 100 Km'"></h6>
                                                                                     <span id="dimgray" th:if="${carga.azul != null}" th:text="'Urea '+${carga.azul.litro}+' Lts '"></span>
-                                                                                    <p class="mb-0" id="darkgray" th:if="${carga.chofer != null}" th:text="'Chofer '+${carga.chofer.nombre}"></p>
+                                                                                    <p class="mb-0" id="dimgray" th:if="${carga.chofer != null}" th:text="'Chofer '+${carga.chofer.nombre}"></p>
+                                                                                    <p class='mb-0' th:if="${carga.estado == 'ACEPTADO'}" id="darkgray" th:text="'Confirmó '+${carga.usuario.nombre}"></p>
                                                                                 </div>
                                                                                 <div class="col-3 text-center">
                                                                                     <a th:href="@{/imagen/verCombustibleAdmin(idCarga=${carga.id}, desde=${desde}, hasta=${hasta}, idCamion=${idCamion}, idChofer=${idChofer})}">

@@ -31,13 +31,14 @@ public class ClienteControlador {
     @PostMapping("/registro")
     public String registroCliente(@RequestParam String nombre, @RequestParam(required = false) Long cuit,
             @RequestParam(required = false) String localidad, @RequestParam(required = false) String direccion,
-            @RequestParam(required = false) Long telefono, @RequestParam(required = false) String email, ModelMap modelo, HttpSession session) {
+            @RequestParam(required = false) Long telefono, @RequestParam(required = false) String email, @RequestParam String estado, 
+            ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            clienteServicio.crearCliente(logueado.getIdOrg(), nombre, cuit, localidad, direccion, telefono, email);
+            clienteServicio.crearCliente(logueado.getIdOrg(), nombre, cuit, localidad, direccion, telefono, email, estado);
 
             return "redirect:/cliente/registrado";
 
@@ -110,10 +111,10 @@ public class ClienteControlador {
     @PostMapping("/modifica/{id}")
     public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam(required = false) Long cuit,
             @RequestParam(required = false) String localidad, @RequestParam(required = false) String direccion,
-            @RequestParam(required = false) Long telefono, @RequestParam(required = false) String email, ModelMap modelo) {
+            @RequestParam(required = false) Long telefono, @RequestParam(required = false) String email, @RequestParam String estado, ModelMap modelo) {
 
         try {
-            clienteServicio.modificarCliente(id, nombre, cuit, localidad, direccion, telefono, email);
+            clienteServicio.modificarCliente(id, nombre, cuit, localidad, direccion, telefono, email, estado);
 
             return "redirect:/cliente/modificado/" + id;
 

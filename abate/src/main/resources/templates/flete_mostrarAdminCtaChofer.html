@@ -48,7 +48,8 @@
                                             <p th:if="${flete.comisionTpte} != 0.0" class="mb-1" id="dimgray" th:text="'Descuento Comisión Tpte '+${flete.comisionTpteChofer}"></p>
                                             <h6 id="dimgray" th:text="${flete.porcientoChofer}+ '% - Ganancia $'+${#numbers.formatDecimal(flete.porcentajeChofer, 0, 'POINT', 2, 'COMMA')}"></h6>
                                             <p id="dimgray" class="mb-1" th:text="'Observación: '+${flete.observacion}" th:if="${flete.observacion != null}"></p>
-                                            <p th:if="${flete.gasto != null}" id="dimgray" th:text="'Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 2, 'COMMA')}"></p>
+                                            <p class='mb-1' th:if="${flete.gasto != null}" id="dimgray" th:text="'Gasto $'+${#numbers.formatDecimal(flete.gasto.importe, 0, 'POINT', 2, 'COMMA')}"></p>
+                                            <p class='mb-0' th:if="${flete.estado == 'ACEPTADO'}" id="darkgray" th:text="'Confirmó '+${flete.usuario.nombre}"></p>
                                         </div>
                                         <div class="col-lg-4 col-xl-4 text-center">
                                             <div class="card-body">

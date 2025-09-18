@@ -404,7 +404,7 @@ public class GastoControlador {
         
         modelo.addAttribute("detalles", new ArrayList<Detalle>());
         modelo.put("chofer", chofer);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(chofer.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(chofer.getIdOrg()));
 
         return "gasto_registrarCajaAdmin.html";
         
@@ -455,7 +455,7 @@ public class GastoControlador {
         
         modelo.addAttribute("detalles", new ArrayList<Detalle>());
         modelo.put("chofer", logueado);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
 
         return "gasto_registrarCajaChofer.html";
         
@@ -463,7 +463,7 @@ public class GastoControlador {
             
         modelo.addAttribute("detalles", new ArrayList<Detalle>());
         modelo.put("chofer", choferServicio.buscarChofer(id));
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
 
         return "gasto_registrarCajaAdmin.html";
             
@@ -531,7 +531,7 @@ public class GastoControlador {
         Gasto gasto = gastoServicio.buscarGasto(id);
         
         modelo.put("gasto", gasto);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(gasto.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(gasto.getIdOrg()));
 
         return "gasto_modificarDesdeCajaAdmin.html";
 

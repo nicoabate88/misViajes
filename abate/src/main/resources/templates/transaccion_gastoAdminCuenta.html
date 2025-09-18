@@ -137,6 +137,7 @@
                                             </tr>
                                         </table>
                                     </div>
+                                    <p class='mb-0' th:if="${gasto.estado == 'ACEPTADO'}" id="darkgray" th:text="'Confirmó '+${gasto.usuario.nombre}"></p>
                                 </div>
                                 <div th:if="${exito != null}" class="card-body mb-2 text-center" id="mensaje">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             

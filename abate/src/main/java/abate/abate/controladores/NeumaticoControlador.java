@@ -404,14 +404,14 @@ public class NeumaticoControlador {
 
         if (aplicaA == Neumatico.AplicaA.CAMION) {
             
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             modelo.put("camion", null);
 
             return "neumatico_asignar.html";
 
         } else {
             
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.put("acoplado", null);
 
             return "neumatico_asignar.html";
@@ -477,7 +477,7 @@ public class NeumaticoControlador {
 
             modelo.addAttribute("mapaAsignaciones", mapaAsignaciones);
             modelo.addAttribute("auxilioForm", new AuxilioForm(auxilios));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             modelo.put("camion", camion);
             modelo.put("km", km);
 
@@ -532,7 +532,7 @@ public class NeumaticoControlador {
         
             modelo.addAttribute("mapaAsignaciones", mapaAsignaciones);
             modelo.addAttribute("auxilioForm", new AuxilioForm(auxilios));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.put("acoplado", acoplado);
             modelo.put("km", km);
 

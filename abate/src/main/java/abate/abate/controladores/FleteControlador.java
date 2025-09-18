@@ -66,16 +66,16 @@ public class FleteControlador {
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
             modelo.put("chofer", logueado);
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarChofer.html";
 
         } else {
 
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
 
             return "flete_registrarAdmin.html";
         }
@@ -85,9 +85,9 @@ public class FleteControlador {
             if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
             
             modelo.put("chofer", logueado);
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarChoferImagen.html";
@@ -106,10 +106,10 @@ public class FleteControlador {
     public String registrarAdmin(@RequestParam("idChofer") Long idChofer, ModelMap modelo, HttpSession session) {
         
             Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
             modelo.put("chofer", choferServicio.buscarChofer(idChofer));
 
@@ -170,9 +170,9 @@ public class FleteControlador {
             modelo.put("kg", kg);
             modelo.put("cPorte", cPorte);
             modelo.put("ctg", ctg);
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarChoferImagen.html";
@@ -203,9 +203,9 @@ public class FleteControlador {
             modelo.put("kg", kg);
             modelo.put("cPorte", cPorte);
             modelo.put("ctg", ctg);
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_registrarChoferImagen.html";
@@ -351,9 +351,9 @@ public class FleteControlador {
         modelo.put("camion", null);
         modelo.put("cliente", cliente);
         modelo.put("cliente", clienteServicio.buscarCliente(id));
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(cliente.getIdOrg()));
-        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(cliente.getIdOrg()));
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(cliente.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(cliente.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(cliente.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(cliente.getIdOrg()));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("cantidad", fletes.size());
@@ -379,9 +379,9 @@ public class FleteControlador {
         modelo.put("chofer", chofer);
         modelo.put("camion", null);
         modelo.put("cliente", null);
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(chofer.getIdOrg()));
-        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(chofer.getIdOrg()));
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(chofer.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(chofer.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(chofer.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(chofer.getIdOrg()));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("cantidad", fletes.size());
@@ -403,9 +403,9 @@ public class FleteControlador {
 
         modelo.addAttribute("fletes", fletes);
         modelo.put("flag", flag);
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("cantidad", fletes.size());
@@ -546,9 +546,9 @@ public class FleteControlador {
         modelo.put("idChofer", idChofer);
         modelo.put("idCliente", idCliente);
         modelo.put("idCamion", idCamion);
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-        modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         
         return "flete_listarTodoFiltrado.html";
     }
@@ -690,9 +690,9 @@ public class FleteControlador {
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_modificarChofer.html";
@@ -700,10 +700,10 @@ public class FleteControlador {
         } else {
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
 
             return "flete_modificarAdmin.html";
@@ -787,10 +787,10 @@ public class FleteControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
             modelo.put("flete", fleteServicio.buscarFlete(id));
-            modelo.addAttribute("clientes", clienteServicio.buscarClientesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.addAttribute("productos", productoServicio.buscarProductosHabAsc(logueado.getIdOrg()));
             modelo.put("desde", desde);
         modelo.put("hasta", hasta);

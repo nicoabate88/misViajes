@@ -1,10 +1,12 @@
 package abate.abate.controladores;
 
 import abate.abate.entidades.Cuenta;
+import abate.abate.entidades.Imagen;
 import abate.abate.entidades.Recibo;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.ClienteServicio;
 import abate.abate.servicios.CuentaServicio;
+import abate.abate.servicios.ImagenServicio;
 import abate.abate.servicios.ReciboServicio;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -32,6 +34,8 @@ public class ReciboControlador {
     private ReciboServicio reciboServicio;
     @Autowired
     private CuentaServicio cuentaServicio;
+    @Autowired
+    private ImagenServicio imagenServicio;
 
     @GetMapping("/registrar")
     public String registrarRecibo(ModelMap modelo, HttpSession session) {
@@ -236,9 +240,22 @@ public class ReciboControlador {
     }
 
     @GetMapping("/imprimir/{id}")
-    public String imprimir(@PathVariable Long id, ModelMap modelo) {
+    public String imprimir(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         Recibo recibo = reciboServicio.buscarRecibo(id);
+        modelo.addAttribute("flag", false);
+        
+        if (logueado.getLogo() != null) {
+
+            Long idLogo = logueado.getLogo().getId();
+            Imagen logo = imagenServicio.obtenerImagenPorId(idLogo);
+                
+            modelo.addAttribute("imagenUrl", "/imagen/img/bytes/" + idLogo);
+            modelo.addAttribute("flag", true);
+                
+        }
 
         modelo.put("recibo", recibo);
 

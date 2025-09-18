@@ -61,8 +61,10 @@
                                             <p class="mb-2" id="dimgray" th:text="'Mostrar Mantenimiento '+${chofer.verMantenimiento}+' / Editar Mantenimiento '+${chofer.mantenimiento}"></p>
                                             <h6 th:if="${chofer.camion} != null" class="mb-1" id="dimgray" th:text="'Camión '+${chofer.camion.dominio}+' - '+${chofer.camion.marca}+' '+${chofer.camion.modelo}"></h6>
                                             <h6 th:if="${chofer.camion} == null" class="mb-1" id="dimgray">No tiene Camión Asociado</h6>
-                                            <h6 th:if="${chofer.acoplado} != null" id="dimgray" class="mb-5" th:text="'Acoplado '+${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}"></h6>
-                                            <h6 th:if="${chofer.acoplado} == null" class="mb-5" id="dimgray">No tiene Acoplado Asociado</h6>
+                                            <h6 th:if="${chofer.acoplado} != null" id="dimgray" class="mb-2" th:text="'Acoplado '+${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}"></h6>
+                                            <h6 th:if="${chofer.acoplado} == null" class="mb-2" id="dimgray">No tiene Acoplado Asociado</h6>
+                                            <h6 th:if="${chofer.estado == 'HABILITADO'}" id="dimgray" class="mb-5" th:text="'Estado '+${chofer.estado}"></h6>
+                                            <h6 th:if="${chofer.estado == 'INHABILITADO'}" class="text-danger mb-5" th:text="'Estado '+${chofer.estado}"></h6>
                                             <div class="row text-center">
                                                 <div class="col-3">
                                                     <a th:href= "@{/flete/listarIdChofer/__${chofer.id}__}">

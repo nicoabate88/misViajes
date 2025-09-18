@@ -58,10 +58,11 @@
                                 <div th:if="${!cargas.isEmpty()}">
                                     <div th:each="carga : ${cargas}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
+                                            <h6 th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
+                                            <h6 class="text-dark" th:if="${carga.camion != null}" th:text="${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
+                                            <h6 class="text-dark" th:if="${carga.acoplado != null}" th:text="${carga.acoplado.dominio}+' - '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}"></h6>
                                             <div class="row">
                                                 <div class="col-9">
-                                                    <h6 th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
-                                                    <h6 class="text-dark" th:if="${carga.camion != null}" th:text="${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
                                                     <p class="mb-1" id="dimgray" th:text="'KM Carga '+${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}"></p>
                                                     <p class="mb-1" id="dimgray" th:text="'KM Recorrido '+${#numbers.formatDecimal(carga.kmRecorrido, 0, 'POINT', 1, 'COMMA')}"></p>
                                                     <p class="mb-1" id="darkgray" th:text="${carga.litro}+' L - Tanque Lleno '+${carga.completo}"></p>

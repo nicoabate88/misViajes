@@ -5,11 +5,14 @@ import abate.abate.entidades.Documentacion;
 import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Imagen;
+import abate.abate.entidades.Usuario;
 import abate.abate.repositorios.CombustibleRepositorio;
 import abate.abate.repositorios.DocumentacionRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
 import abate.abate.repositorios.GastoRepositorio;
 import abate.abate.repositorios.ImagenRepositorio;
+import abate.abate.repositorios.UsuarioRepositorio;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,8 @@ public class ImagenServicio {
     private CombustibleRepositorio combustibleRepositorio;
     @Autowired
     private DocumentacionRepositorio documentacionRepositorio;
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
 
     @Transactional
     public void crearImagenGasto(Long id, Imagen imagen) {
@@ -167,6 +172,26 @@ public class ImagenServicio {
         documentacionRepositorio.save(documentacion);
 
     }
+    
+    @Transactional
+    public void crearImagenLogo(Long idOrg, Imagen imagen) {
+
+        imagenRepositorio.save(imagen);
+        Long idImg = buscarUltimo();
+
+        Imagen img = imagenRepositorio.getById(idImg);
+
+        List<Usuario> listaAdmin = usuarioRepositorio.buscarUsuariosAdmin(idOrg);
+        
+        for(Usuario admin : listaAdmin){
+        
+        admin.setLogo(img);
+
+        usuarioRepositorio.save(admin);
+        
+        }
+
+    }
 
     @Transactional
     public void modificarImagen(Long id, Imagen imagen) {
@@ -178,6 +203,23 @@ public class ImagenServicio {
         img.setNombre(imagen.getNombre());
 
         imagenRepositorio.save(img);
+
+    }
+    
+    @Transactional
+    public void eliminarLogo(Long id, Long idOrg) {
+        
+        List<Usuario> listaAdmin = usuarioRepositorio.buscarUsuariosAdmin(idOrg);
+        
+        for(Usuario admin : listaAdmin){
+        
+        admin.setLogo(null);
+
+        usuarioRepositorio.save(admin);
+        
+        }
+
+        imagenRepositorio.deleteById(id);
 
     }
 
