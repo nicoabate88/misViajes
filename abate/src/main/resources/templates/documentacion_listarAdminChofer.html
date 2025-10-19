@@ -44,6 +44,7 @@
                                                     </span>
                                                 </div>
                                                 <p th:if="${documentacion.observacion != ''}" id="dimgray" th:text="'Observación '+${documentacion.observacion}"></p> 
+                                                <p class='mb-0' id="darkgray" th:text="'Usuario '+${documentacion.usuario.nombre}"></p>
                                             </div>
                                             <div class="col-3 col-md-3 text-center">
                                                 <a th:href="@{/imagen/verDocumentacion/__${documentacion.id}__}" >

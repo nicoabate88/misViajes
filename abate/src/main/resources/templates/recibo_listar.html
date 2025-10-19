@@ -23,21 +23,32 @@
                             </div>
                             <div class="container mb-2">   
                                 <div class="card-header pb-0" id="bgWhite">
-                                    <form class="row g-3" th:action="@{/recibo/listarFiltro}" method="POST">
+                                    <form th:action="@{/recibo/listarFiltro}" method="POST">
                                         <input hidden th:value="${id}" name="id">  
                                             <div class="row">    
-                                                <div class="col-5">
+                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
                                                     <label for="desde" class="form-label">Desde</label>
                                                     <input type="date" class="form-control border-secondary" id="desde" th:value="${desde}" name="desde" required>
                                                 </div>
-                                                <div class="col-5">
+                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
                                                     <label for="hasta" class="form-label">Hasta</label>
                                                     <input type="date" class="form-control border-secondary" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
                                                 </div>
-                                                <div class="col-2 text-center">
-                                                    <label for="ver" class="form-label">Ver</label>
-                                                    <button id="ver" class="btn btn-primary" type="submit">
-                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                <div class="col-10 col-sm-10 col-md-5 col-lg-6 col-xl-6">
+                                                    <label for="cliente" class="form-floting">Cliente</label>  
+                                                    <select class="form-control border-secondary" id="cliente" name="idCliente">
+                                                        <option th:if="${cliente != null}" th:value="${cliente.id}"
+                                                                th:text="${cliente.nombre}" selected></option>
+                                                        <option th:value=null>Todos</option>
+                                                        <option th:each="cliente : ${clientes}"
+                                                                th:value="${cliente.id}"
+                                                                th:text="${cliente.nombre}"/>
+                                                    </select>
+                                                </div>
+                                                <div class="col-1">
+                                                    <label for="ver" class="form-floting">Ver</label>
+                                                    <button id="ver"title="Buscar" class="btn btn-primary" type="submit">
+                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="16" height="22" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                                                         </svg>
                                                     </button>

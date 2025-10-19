@@ -37,10 +37,10 @@
                                                                     </button>
                                                                     </form>
                                                                     </div>
-                                                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                                                    <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center">
                                                                         <h4>Exportar Viajes</h4>
                                                                     </div>
-                                                                    <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
                                                                         <form>
                                                                             <input id="idOrg" hidden th:value="${idOrg}" name="idOrg">
                                                                                 <input id="desde" hidden th:value="${desde}" name="desde">
@@ -52,6 +52,14 @@
                                                                                                         <h6 id="icono">Excel</h6>
                                                                                                     </button>
                                                                                                     </form>
+                                                                                                    </div>
+                                                                                                    <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                                                                                        <a title="Ir a Imprimir Mantenimiento" target="_blank" th:href="@{/flete/imprimirAdmin(idOrg=${idOrg}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer}, idCamion=${idCamion}, idCliente=${idCliente})}">
+                                                                                                            <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                                                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                                                                                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                                                                                            </svg><p id="imprimirExporta">Imprimir</p>
+                                                                                                        </a>
                                                                                                     </div>
                                                                                                     </div>
                                                                                                     </div>
@@ -84,10 +92,12 @@
                                                                                                                     <th class="text-center">CP</th>
                                                                                                                     <th class="text-center">CTG</th>
                                                                                                                     <th class="text-center">Tarifa</th>
+                                                                                                                    <th class="text-center">Comisión</th>
                                                                                                                     <th class="text-center">KG</th>
                                                                                                                     <th class="text-center">Neto</th>
                                                                                                                     <th class="text-center">Iva</th>
                                                                                                                     <th class="text-center">Total</th>
+                                                                                                                    <th th:if="${cont != 0}" class="text-center">Gasto</th>
                                                                                                                 </tr>
                                                                                                             </thead>
                                                                                                             <tbody>
@@ -106,15 +116,17 @@
                                                                                                                     <td class="text-center" th:text="${flete.cartaPorte}"></td>
                                                                                                                     <td class="text-center" th:text="${flete.ctg}"></td>
                                                                                                                     <td class="text-center" th:text="'$'+${flete.tarifa}"></td>
+                                                                                                                    <td class="text-center" th:text="${flete.comisionTpte}"></td>
                                                                                                                     <td class="text-center" th:text="${flete.kgFlete}"></td>
                                                                                                                     <td class="text-center" th:text="'$'+${flete.neto}"></td>
                                                                                                                     <td class="text-center" th:text="'$'+${flete.iva}"></td>
                                                                                                                     <td class="text-center" th:text="'$'+${flete.total}"></td>
+                                                                                                                    <td th:if="${flete.gasto != null}" class="text-center" th:text="'$'+${flete.gasto.importe}"></td>
                                                                                                             </tbody>
                                                                                                         </table>
                                                                                                     </div>
                                                                                                     <br>
-                                                                                                        <div class="text-center">
+                                                                                                        <div class="container text-center">
                                                                                                             <form th:action="@{/flete/listarTodoFiltrado}" method="POST">
                                                                                                                 <input hidden th:value="${desde}" name="desde">
                                                                                                                     <input hidden th:value="${hasta}" name="hasta">

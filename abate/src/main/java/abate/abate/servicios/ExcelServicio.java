@@ -65,8 +65,8 @@ public class ExcelServicio {
         workbook.close();
         outputStream.close();
     }
-    
-        public void exportHtmlToExcelNeumaticos(String htmlContent, HttpServletResponse response) throws IOException {
+
+    public void exportHtmlToExcelNeumaticos(String htmlContent, HttpServletResponse response) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
@@ -162,6 +162,229 @@ public class ExcelServicio {
         outputStream.close();
     }
 
+    public void exportHtmlToExcelConsumoCombustible(String htmlContent, HttpServletResponse response, Camion camion, Double consumo) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("ConsumoCombustible");
+
+        CellStyle titleStyle = workbook.createCellStyle();
+        Font titleFont = workbook.createFont();
+        titleFont.setFontHeightInPoints((short) 11);
+        titleStyle.setFont(titleFont);
+
+        int rowIndex = 0;
+
+        // Escribir el título
+        Row titleRow = sheet.createRow(rowIndex++);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue(camion.getDominio() + ' ' + camion.getMarca() + ' ' + camion.getModelo());
+        titleCell.setCellStyle(titleStyle);
+
+        Row subtitleRow = sheet.createRow(rowIndex++);
+        Cell subtitleCell = subtitleRow.createCell(0);
+        subtitleCell.setCellValue("Consumo: " + consumo + "L / 100 Km");
+        subtitleCell.setCellStyle(titleStyle);
+
+        sheet.createRow(rowIndex++);
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        // Intenta convertir el texto en un número
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        // Si no es un número, se guarda como texto
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = 0;
+        if (sheet.getRow(3) != null) {
+            columnCount = sheet.getRow(3).getPhysicalNumberOfCells();
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=ConsumoCombustible.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelMantenimiento(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Mantenimiento");
+
+        int rowIndex = 0;
+
+        sheet.createRow(rowIndex++);
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        // Intenta convertir el texto en un número
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        // Si no es un número, se guarda como texto
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = 0;
+        if (sheet.getRow(3) != null) {
+            columnCount = sheet.getRow(3).getPhysicalNumberOfCells();
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Mantenimiento.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelDocumentacion(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Documentacion");
+
+        int rowIndex = 0;
+
+        sheet.createRow(rowIndex++);
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        // Intenta convertir el texto en un número
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        // Si no es un número, se guarda como texto
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = 0;
+        if (sheet.getRow(3) != null) {
+            columnCount = sheet.getRow(3).getPhysicalNumberOfCells();
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Documentacion.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelMantenimientoHistorial(String htmlContent, HttpServletResponse response, Camion camion, Acoplado acoplado) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("HistorialMantenimiento");
+
+        // Crear estilos para el título y el subtítulo
+        CellStyle titleStyle = workbook.createCellStyle();
+        Font titleFont = workbook.createFont();
+        titleFont.setFontHeightInPoints((short) 11);
+        titleStyle.setFont(titleFont);
+
+        int rowIndex = 0;
+
+        Row titleRow = sheet.createRow(rowIndex++);
+        Cell titleCell = titleRow.createCell(0);
+        if (camion != null) {
+            titleCell.setCellValue(camion.getDominio() + ' ' + camion.getMarca() + ' ' + camion.getModelo());
+        } else {
+            titleCell.setCellValue(acoplado.getDominio() + ' ' + acoplado.getMarca() + ' ' + acoplado.getModelo());
+        }
+        titleCell.setCellStyle(titleStyle);
+
+        sheet.createRow(rowIndex++);
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        // Intenta convertir el texto en un número
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        // Si no es un número, se guarda como texto
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = 0;
+        if (sheet.getRow(3) != null) {
+            columnCount = sheet.getRow(3).getPhysicalNumberOfCells();
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=HistorialMantenimiento.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
     public void exportHtmlToExcelEstadistica(String htmlContent, HttpServletResponse response, Camion camion) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
@@ -221,8 +444,8 @@ public class ExcelServicio {
         workbook.close();
         outputStream.close();
     }
-    
-        public void exportHtmlToExcelEstadisticaAcoplado(String htmlContent, HttpServletResponse response, Acoplado acoplado) throws IOException {
+
+    public void exportHtmlToExcelEstadisticaAcoplado(String htmlContent, HttpServletResponse response, Acoplado acoplado) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
@@ -341,8 +564,8 @@ public class ExcelServicio {
         workbook.close();
         outputStream.close();
     }
-    
-        public void exportHtmlToExcelChofer(String htmlContent, HttpServletResponse response, Usuario chofer) throws IOException {
+
+    public void exportHtmlToExcelChofer(String htmlContent, HttpServletResponse response, Usuario chofer) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
@@ -701,8 +924,8 @@ public class ExcelServicio {
         workbook.close();
         outputStream.close();
     }
-    
-        public void exportHtmlToExcelEstadisticaAcoplados(String htmlContent, HttpServletResponse response) throws IOException {
+
+    public void exportHtmlToExcelEstadisticaAcoplados(String htmlContent, HttpServletResponse response) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
 
@@ -776,6 +999,86 @@ public class ExcelServicio {
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=EstadisticasChoferes.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelClientes(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Clientes");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Clientes.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelChoferes(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Choferes");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=Choferes.xlsx");
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();

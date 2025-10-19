@@ -97,25 +97,42 @@ public class ReciboControlador {
             total = r.getImporte() + total;
         }
 
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
         modelo.addAttribute("recibos", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("id", logueado.getIdOrg());
         modelo.put("total", total);
+        modelo.put("cliente", null);
 
         return "recibo_listar.html";
     }
 
     @PostMapping("/listarFiltro")
-    public String listar(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+    public String listar(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idCliente,
+            ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        ArrayList<Recibo> lista = reciboServicio.buscarRecibos(logueado.getIdOrg(), desde, hasta);
         Double total = 0.0;
+        ArrayList<Recibo> lista = new ArrayList();
+        
+        if(idCliente == null){
+        
+        lista = reciboServicio.buscarRecibos(logueado.getIdOrg(), desde, hasta);
+        modelo.put("cliente", null);
+        
+        } else {
+            
+        lista = reciboServicio.buscarRecibosIdCliente(idCliente, desde, hasta);
+        modelo.put("cliente", clienteServicio.buscarCliente(idCliente));
+            
+        }
+        
         for (Recibo r : lista) {
             total = r.getImporte() + total;
         }
 
+        modelo.addAttribute("clientes", clienteServicio.buscarClientesHabNombreAsc(logueado.getIdOrg()));
         modelo.addAttribute("recibos", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);

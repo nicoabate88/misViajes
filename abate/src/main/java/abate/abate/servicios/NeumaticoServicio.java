@@ -70,15 +70,17 @@ public class NeumaticoServicio {
     
     @Transactional
     public void crearNeumatico(Integer numero, Long idMarca, String modelo, Long idProveedor, Integer km, Integer kmEstimado,
-            String fechaIngreso, List<Neumatico.AplicaA> aplicaA, String observacion, String estado, Usuario usuario) throws ParseException, MiException {
-
+            String fechaIngreso, List<Neumatico.AplicaA> aplicaA, Integer cantidad, String observacion, String estado, Usuario usuario) throws ParseException, MiException {
+        
         validarDatos(numero, usuario.getIdOrg());
-
-        Neumatico neumatico = new Neumatico();
 
         Date fecha = convertirFecha(fechaIngreso);
         NeumaticoMarca marca = marcaRepositorio.getById(idMarca);
         NeumaticoProveedor proveedor = proveedorRepositorio.getById(idProveedor);
+        
+        if(cantidad == 1){
+
+        Neumatico neumatico = new Neumatico();
 
         neumatico.setNumero(numero);
         neumatico.setIdOrg(usuario.getIdOrg());
@@ -97,6 +99,36 @@ public class NeumaticoServicio {
         neumatico.setAplicaA(aplicaA);
         
         neumaticoRepositorio.save(neumatico);
+        
+        } else {    
+        
+        for (int i = 0; i < cantidad; i++) {
+            
+        int numeroNeumatico = numero + i;    
+        
+        Neumatico neumatico = new Neumatico();
+
+        neumatico.setNumero(numeroNeumatico);
+        neumatico.setIdOrg(usuario.getIdOrg());
+        neumatico.setMarca(marca);
+        neumatico.setModelo(modelo.toUpperCase());
+        neumatico.setProveedor(proveedor);
+        neumatico.setKm(km);
+        neumatico.setKmIngreso(km);
+        neumatico.setKmEstimado(kmEstimado);
+        neumatico.setKmUtil(kmEstimado - km);
+        neumatico.setEstado(estado);
+        neumatico.setUbicacion("DEPOSITO");
+        neumatico.setUsuario(usuario);
+        neumatico.setFechaIngreso(fecha);
+        neumatico.setObservacion(observacion.toUpperCase());
+        neumatico.setAplicaA(aplicaA);
+        
+        neumaticoRepositorio.save(neumatico); 
+        
+        }
+            
+        }
         
     }
     
@@ -195,6 +227,7 @@ public class NeumaticoServicio {
 
         historial.setFechaColocacion(fechaColocacion);
         historial.setKmColocacion(km);
+        historial.setUsuario(logueado);
 
         historialRepositorio.save(historial);
 

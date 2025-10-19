@@ -423,6 +423,60 @@ public class CamionControlador {
         excelServicio.exportHtmlToExcelEstadistica(htmlContent, response, camion);
 
     }
+    
+    @GetMapping("/imprimirEstadistica")
+    public String imprimirEstadistica(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        modelo.addAttribute("estadistica", estadisticasPorCamion);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+
+        return "camion_imprimirEstadistica.html";
+        
+    }
+    
+    @GetMapping("/imprimirEstadisticaCamion")
+    public String imprimirEstadisticaCamion(@RequestParam Long idCamion, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+        
+        ArrayList<CamionEstadistica> lista = camionServicio.estadisticaCamion(desde, hasta, idCamion);
+
+        for (CamionEstadistica e : lista) {
+            if (e.getKmRecorrido() != 0.0) {
+            Double consumo = ((100.0 * e.getLitro()) / e.getKmRecorrido());
+            e.setConsumo(Math.round(consumo * 100.0) / 100.0);
+            e.setRentabilidad((double) Math.round(e.getNeto() / e.getKmRecorrido()));
+            } else {
+                e.setConsumo(0.0);
+                e.setRentabilidad(0.0);
+            }
+        }
+
+        Collections.sort(lista, CamionEstadisticaComparador.ordenarMes);
+
+        modelo.addAttribute("estadistica", lista);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        return "camion_imprimirEstadisticaCamion.html";
+          
+    }
 
     @PostMapping("/exportarEstadisticaCamiones")
     public String exportarEstadisticaCamiones(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {

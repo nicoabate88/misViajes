@@ -7,6 +7,17 @@
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                         <link rel="stylesheet" href="/css/medidas_container.css">   
                             <style>
+                                .link-historial {
+                                    color: darkgrey;
+                                    background: none;
+                                    border: none;
+                                    padding: 0;
+                                    cursor: pointer;
+                                }
+                                .modal-header-darkblue {
+                                    background-color: darkblue;
+                                    color: white;
+                                }
 
                                 /* Estilo para pantallas md */
                                 @media (max-width: 991.98px) {
@@ -52,10 +63,24 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-8 text-center">
+                                        <div class="col-5 col-sm-5 col-md-6 col-lg-7 col-xl-7 text-center">
                                             <h4>Documentación de Acoplados</h4>
                                         </div>
-                                        <div title="Ir a Registrar Documentación" class="col-2 text-center">
+                                        <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
+                                            <form th:action="@{/documentacion/exportarAcoplados}" method="POST">      
+                                                <input th:if="${idAcoplado != null}" hidden th:value="${idAcoplado}" name="idAcoplado">  
+                                                    <input th:if="${idTipo != null}" hidden th:value="${idTipo}" name="idTipo"> 
+                                                    <button id="exportar" class="btn btn-light" type="submit">
+                                                        <h6 id="icono">Exportar</h6> 
+                                                    </button>
+                                            </form>
+                                        </div>
+                                        <div title="Ir a Registrar Documentación" class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                            <a th:href="@{/documentacion/registrar/__${aplica}__}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 60 60"><path d="M11,50v-.952a4.013,4.013,0,0,1,.877-2.494L14.562,43.2A2,2,0,0,0,15,41.947V31.5A1.5,1.5,0,0,0,13.5,30a1.486,1.486,0,0,0-.9.3h0a1.486,1.486,0,0,0-.6,1.2V37a1,1,0,0,1-2,0V31.5a3.5,3.5,0,0,1,1-2.419V21.762L3.928,30.25A4,4,0,0,0,3,32.811V54h8Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M17,31.5V41.945a4,4,0,0,1-.877,2.5L13.438,47.8A2.007,2.007,0,0,0,13,49.054V50H47v-.949a1.99,1.99,0,0,0-.438-1.247l-2.685-3.356a4,4,0,0,1-.877-2.5V31.5A3.5,3.5,0,0,1,46.5,28a3.464,3.464,0,0,1,.5.04V9H42a2,2,0,0,1-2-2V2H14a1,1,0,0,0-1,1V28.04a3.464,3.464,0,0,1,.5-.04A3.5,3.5,0,0,1,17,31.5ZM30,43H20a1,1,0,0,1,0-2H30a1,1,0,0,1,0,2Zm10-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2Zm0-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2ZM18,11H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><polygon points="42 3.414 42 7 45.586 7 42 3.414" fill="#000000" style="fill: rgb(255, 255, 255);"></polygon><path d="M45,31.5V41.947a2,2,0,0,0,.438,1.249l2.686,3.358a4.014,4.014,0,0,1,.876,2.5V54h8V32.811a4,4,0,0,0-.928-2.561L49,21.762v7.319A3.5,3.5,0,0,1,50,31.5V37a1,1,0,0,1-2,0V31.5a1.486,1.486,0,0,0-.6-1.2h0a1.486,1.486,0,0,0-.9-.3A1.5,1.5,0,0,0,45,31.5Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M3,58h8a1,1,0,1,0,0-2H3a1,1,0,0,0,0,2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M49,56a1,1,0,0,0,0,2h8a1,1,0,0,0,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>
+                                                <h6 id="icono">Nuevo</h6> </a>
+                                        </div>
+                                        <div title="Ir a Registrar Documentación" class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag != true}">
                                             <a th:href="@{/documentacion/registrar/__${aplica}__}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 60 60"><path d="M11,50v-.952a4.013,4.013,0,0,1,.877-2.494L14.562,43.2A2,2,0,0,0,15,41.947V31.5A1.5,1.5,0,0,0,13.5,30a1.486,1.486,0,0,0-.9.3h0a1.486,1.486,0,0,0-.6,1.2V37a1,1,0,0,1-2,0V31.5a3.5,3.5,0,0,1,1-2.419V21.762L3.928,30.25A4,4,0,0,0,3,32.811V54h8Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M17,31.5V41.945a4,4,0,0,1-.877,2.5L13.438,47.8A2.007,2.007,0,0,0,13,49.054V50H47v-.949a1.99,1.99,0,0,0-.438-1.247l-2.685-3.356a4,4,0,0,1-.877-2.5V31.5A3.5,3.5,0,0,1,46.5,28a3.464,3.464,0,0,1,.5.04V9H42a2,2,0,0,1-2-2V2H14a1,1,0,0,0-1,1V28.04a3.464,3.464,0,0,1,.5-.04A3.5,3.5,0,0,1,17,31.5ZM30,43H20a1,1,0,0,1,0-2H30a1,1,0,0,1,0,2Zm10-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2Zm0-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2ZM18,11H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><polygon points="42 3.414 42 7 45.586 7 42 3.414" fill="#000000" style="fill: rgb(255, 255, 255);"></polygon><path d="M45,31.5V41.947a2,2,0,0,0,.438,1.249l2.686,3.358a4.014,4.014,0,0,1,.876,2.5V54h8V32.811a4,4,0,0,0-.928-2.561L49,21.762v7.319A3.5,3.5,0,0,1,50,31.5V37a1,1,0,0,1-2,0V31.5a1.486,1.486,0,0,0-.6-1.2h0a1.486,1.486,0,0,0-.9-.3A1.5,1.5,0,0,0,45,31.5Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M3,58h8a1,1,0,1,0,0-2H3a1,1,0,0,0,0,2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M49,56a1,1,0,0,0,0,2h8a1,1,0,0,0,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>
                                                 <h6 id="icono">Nuevo</h6> </a>
@@ -65,7 +90,7 @@
                                 <div class="container mb-2">  
                                     <form th:action="@{/documentacion/listarAdminAcopladosFiltro}" method="POST">
                                         <div class="row">
-                                            <div class="col-10 col-sm-10 col-md-10 col-lg-5 col-xl-5 pb-3">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 pb-3">
                                                 <label for="idAcoplado" class="form-floting text-secondary">Acoplado</label>
                                                 <select class="form-control text-secondary border-secondary" id="idAcoplado" name="idAcoplado">
                                                     <option th:if="${acoplado == null}" selected value="">Todos</option>
@@ -75,6 +100,17 @@
                                                     <option th:each="acoplado : ${acoplados}"
                                                             th:value="${acoplado.id}"
                                                             th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-10 col-sm-10 col-md-5 col-lg-5 col-xl-5 pb-3">
+                                                <label for="idTipo" class="form-floting text-secondary">Tipo de Documentación</label>
+                                                <select class="form-control text-secondary border-secondary" id="idTipo" name="idTipo">
+                                                    <option th:if="${tipo == null}" selected value="">Todos</option>
+                                                    <option th:if="${tipo != null}" selected th:value="${tipo.id}" th:text="${tipo.nombre}"></option>
+                                                    <option th:if="${tipo != null}" value="">Todos</option>
+                                                    <option th:each="tipo : ${tipos}"
+                                                            th:value="${tipo.id}"
+                                                            th:text="${tipo.nombre}"/>
                                                 </select>
                                             </div>
                                             <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
@@ -104,10 +140,14 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr th:each="documento : ${entry.value}">
-                                                            <td class="text-center"><b><a id="dimgray" th:href="@{/documentacion/listarAdminAcoplado(id=${documento.id}, idAcoplado=${idAcoplado})}" th:text="${documento.acoplado.dominio}"></a></b></td>
+                                                            <td class="text-center"><b><a id="dimgray" th:href="@{/documentacion/listarAdminAcoplado(id=${documento.id}, idAcoplado=${idAcoplado})}" th:text="${documento.acoplado.dominio}"></a></b>
+                                                                <a href="#" th:attr="data-id=${documento.acoplado.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
+                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
+                                                                </a>
+                                                            </td>
                                                             <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
                                                             <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                                                            <td class="text-center" th:text="${documento.diasVigencia}+' días'"></td>
+                                                            <th class="text-center text-primary" th:text="${documento.diasVigencia}+' días'"></th>
                                                             <td class="text-center">
                                                                 <span th:switch="${documento.estado}">
                                                                     <span th:case="'VIGENTE'">✅ VIGENTE</span>
@@ -149,6 +189,22 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!-- Modal para mostrar historial -->
+                                                <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header position-relative modal-header-darkblue">
+                                                                <h4 class="modal-title mx-auto">Detalle de Acoplado</h4>
+                                                                <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body" id="historialContenido">
+                                                                <!-- Aquí se cargará el fragmento HTML con el historial -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <script>
                                                     document.addEventListener("DOMContentLoaded", function () {
                                                         const volverBtn = document.getElementById("ver");
@@ -157,7 +213,54 @@
                                                             document.getElementById("spinner").style.display = "block";
                                                         });
                                                     });
+                                                    function verHistorial(button) {
+                                                        const acopladoId = button.getAttribute('data-id');
 
+                                                        fetch(`/acoplado/detalle/${acopladoId}`)
+                                                                .then(response => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error("Error al obtener detalle");
+                                                                    }
+                                                                    return response.text();
+                                                                })
+                                                                .then(html => {
+                                                                    document.getElementById("historialContenido").innerHTML = html;
+                                                                    const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                                    modal.show();
+                                                                })
+                                                                .catch(error => {
+                                                                    console.error("Error:", error);
+                                                                    alert("No se pudo cargar el detalle del acoplado.");
+                                                                });
+                                                    }
+
+
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                            btn.addEventListener("click", function () {
+                                                                const id = this.getAttribute("data-id");
+
+                                                                fetch("/acoplado/detalle/" + id)
+                                                                        .then(response => response.text())
+                                                                        .then(html => {
+                                                                            document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                                            new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                                        })
+                                                                        .catch(error => console.error("Error al cargar detalle", error));
+                                                            });
+                                                        });
+                                                    });
+
+                                                    $(document).ready(function () {
+                                                        $('#filtroForm').on('submit', function () {
+                                                            $('#loadingModal').modal('show');
+                                                        });
+                                                    });
+                                                    $(document).ready(function () {
+                                                        $('#exportaForm').on('submit', function () {
+                                                            $('#loadingModal').modal('show');
+                                                        });
+                                                    });
                                                 </script>
                                                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>

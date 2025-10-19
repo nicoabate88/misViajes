@@ -79,6 +79,7 @@ public class NeumaticoControlador {
         modelo.addAttribute("marcas", marcaServicio.buscarMarcasAsc(logueado.getIdOrg()));
         modelo.addAttribute("proveedores", proveedorServicio.buscarProveedoresAsc(logueado.getIdOrg()));
         modelo.put("numero", neumaticoServicio.obtenerProximoNumero(logueado.getIdOrg()));
+        modelo.put("cantidad", 1);
 
         return "neumatico_registrar.html";
 
@@ -86,15 +87,15 @@ public class NeumaticoControlador {
 
     @PostMapping("/registro")
     public String registro(@RequestParam String fecha, @RequestParam Integer numero, @RequestParam Long idMarca, @RequestParam String modelo, @RequestParam Long idProveedor,
-            @RequestParam String estado, @RequestParam Integer km, @RequestParam Integer kmEstimado, @RequestParam List<Neumatico.AplicaA> aplicaA,
+            @RequestParam String estado, @RequestParam Integer km, @RequestParam Integer kmEstimado, @RequestParam List<Neumatico.AplicaA> aplicaA, @RequestParam Integer cantidad,
             @RequestParam String observacion, ModelMap model, HttpSession session) throws ParseException, MiException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         
         try {
-            neumaticoServicio.crearNeumatico(numero, idMarca, modelo, idProveedor, km, kmEstimado, fecha, aplicaA, observacion, estado, logueado);
+            neumaticoServicio.crearNeumatico(numero, idMarca, modelo, idProveedor, km, kmEstimado, fecha, aplicaA, cantidad, observacion, estado, logueado);
 
-            return "redirect:/neumatico/registrado";
+            return "redirect:/neumatico/registrado?cantidad=" + cantidad;
 
         } catch (MiException ex) {
 
@@ -109,6 +110,7 @@ public class NeumaticoControlador {
             model.put("estado", estado);
             model.put("km", km);
             model.put("kmEstimado", kmEstimado);
+            model.put("cantidad", cantidad);
             model.put("observacion", observacion);
             model.put("error", ex.getMessage());
 
@@ -119,12 +121,13 @@ public class NeumaticoControlador {
     }
 
     @GetMapping("/registrado")
-    public String registrado(ModelMap modelo, HttpSession session) {
+    public String registrado(@RequestParam Integer cantidad, ModelMap modelo, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.put("neumatico", neumaticoServicio.ultimoNeumatico(logueado.getIdOrg()));
         modelo.put("exito", "Neumático REGISTRADO con éxito");
+        modelo.put("cantidad", cantidad);
         modelo.put("ubicacion", "deposito");
         modelo.put("estado", "todos");
 
@@ -191,6 +194,7 @@ public class NeumaticoControlador {
         modelo.put("exito", "Neumático MODIFICADO con éxito");
         modelo.put("ubicacion", ubicacion);
         modelo.put("estado", estado);
+        modelo.put("cantidad", 1);
 
         return "neumatico_mostrar.html";
 
@@ -1062,6 +1066,120 @@ public class NeumaticoControlador {
         excelServicio.exportHtmlToExcelNeumaticos(htmlContent, response);
 
     }
+    
+    @GetMapping("/imprimir")
+    public String imprimir(@RequestParam String ubicacion, @RequestParam String estado, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Neumatico> neumaticos = new ArrayList();
+
+        if (ubicacion.equalsIgnoreCase("todos") && estado.equalsIgnoreCase("todos")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticos(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("todos") && estado.equalsIgnoreCase("nuevo")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosNuevo(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("todos") && estado.equalsIgnoreCase("usado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosUsado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("todos") && estado.equalsIgnoreCase("recapado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosRecapado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("deposito") && estado.equalsIgnoreCase("todos")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosDeposito(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("deposito") && estado.equalsIgnoreCase("nuevo")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosDepositoNuevo(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("deposito") && estado.equalsIgnoreCase("usado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosDepositoUsado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("deposito") && estado.equalsIgnoreCase("recapado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosDepositoRecapado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("colocado") && estado.equalsIgnoreCase("todos")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosColocado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("colocado") && estado.equalsIgnoreCase("nuevo")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosColocadoNuevo(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("colocado") && estado.equalsIgnoreCase("usado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosColocadoUsado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("colocado") && estado.equalsIgnoreCase("recapado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosColocadoRecapado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("auxilio") && estado.equalsIgnoreCase("todos")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosAuxilio(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("auxilio") && estado.equalsIgnoreCase("nuevo")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosAuxilioNuevo(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("auxilio") && estado.equalsIgnoreCase("usado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosAuxilioUsado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("auxilio") && estado.equalsIgnoreCase("recapado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosAuxilioRecapado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("recapado") && estado.equalsIgnoreCase("todos")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosEnRecapado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("recapado") && estado.equalsIgnoreCase("nuevo")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosEnRecapadoNuevo(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("recapado") && estado.equalsIgnoreCase("usado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosEnRecapadoUsado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("recapado") && estado.equalsIgnoreCase("recapado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosEnRecapadoRecapado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("fueraServicio") && estado.equalsIgnoreCase("todos")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosFueraServicio(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("fueraServicio") && estado.equalsIgnoreCase("nuevo")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosFueraServicioNuevo(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("fueraServicio") && estado.equalsIgnoreCase("usado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosFueraServicioUsado(logueado.getIdOrg());
+
+        } else if (ubicacion.equalsIgnoreCase("fueraServicio") && estado.equalsIgnoreCase("recapado")) {
+
+            neumaticos = neumaticoServicio.buscarNeumaticosFueraServicioRecapado(logueado.getIdOrg());
+
+        }
+
+        Collections.sort(neumaticos, NeumaticoComparador.ordenarNumAsc);
+        
+        modelo.addAttribute("neumaticos", neumaticos);
+        modelo.put("estado", estado);
+        modelo.put("ubicacion", ubicacion);
+
+        return "neumatico_imprimir.html";
+    }
 
     private String generateHtmlFromObjects(List<Neumatico> objects) {
         StringBuilder sb = new StringBuilder();
@@ -1110,7 +1228,7 @@ public class NeumaticoControlador {
             e.printStackTrace();
             return null; // o lanzar una excepción personalizada
         }
-    }
+    }       
 
 
 }

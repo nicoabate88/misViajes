@@ -105,9 +105,15 @@ th {
     
 }
 
+#card-index {
+    background-color : 	#e0e4e9;
+     border-width: 2px !important;
+}
+
 #color-card {
 
     background: whitesmoke;
+    
 }
 
 #color-card-chofer {
@@ -130,6 +136,12 @@ th {
 #imprimir {
 
     color: dimgray;
+    font-size: 12px;
+}
+
+#imprimirExporta {
+
+    color: white;
     font-size: 12px;
 }
 

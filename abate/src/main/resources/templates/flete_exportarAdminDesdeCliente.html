@@ -74,6 +74,7 @@
                                                                             <th class="text-center">CP</th>
                                                                             <th class="text-center">CTG</th>
                                                                             <th class="text-center">Tarifa</th>
+                                                                            <th class="text-center">Comisión</th>
                                                                             <th class="text-center">KG</th>
                                                                             <th class="text-center">Neto</th>
                                                                             <th class="text-center">Iva</th>
@@ -96,6 +97,7 @@
                                                                             <td class="text-center" th:text="${flete.cartaPorte}"></td>
                                                                             <td class="text-center" th:text="${flete.ctg}"></td>
                                                                             <td class="text-center" th:text="'$'+${flete.tarifa}"></td>
+                                                                            <td class="text-center" th:text="${flete.comisionTpte}"></td>
                                                                             <td class="text-center" th:text="${flete.kgFlete}"></td>
                                                                             <td class="text-center" th:text="'$'+${flete.neto}"></td>
                                                                             <td class="text-center" th:text="'$'+${flete.iva}"></td>
@@ -104,7 +106,7 @@
                                                                 </table>
                                                             </div>
                                                             <br>
-                                                                <div class="text-center mb-2">
+                                                                <div class="container text-center mb-2">
                                                                     <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/listarIdCliente/__${id}__}">Volver</a>
                                                                 </div>
                                                                 </section>

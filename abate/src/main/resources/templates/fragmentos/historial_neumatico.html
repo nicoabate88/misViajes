@@ -32,7 +32,8 @@
                     </p>
                     <p id="dimgray" class="mb-1" th:text="'Fecha de Ingreso '+${#dates.format(neumatico.fechaIngreso, 'dd-MM-yyyy')}+' (KM '+${#numbers.formatDecimal(neumatico.kmIngreso, 0, 'POINT', 0, 'POINT')}+') - Proveedor '+${neumatico.proveedor.nombre}"></p>
                     <p th:if="${neumatico.fechaEgreso != null}" id="dimgray" class="mb-1" th:text="'Fecha de Egreso '+${#dates.format(neumatico.fechaEgreso, 'dd-MM-yyyy')}"></p>
-                    <p th:if="${neumatico.observacion != ''}" id="dimgray" class="mb-1" th:text="'Observación '+${neumatico.observacion}"></p>  
+                    <p th:if="${neumatico.observacion != ''}" id="dimgray" class="mb-1" th:text="'Observación '+${neumatico.observacion}"></p> 
+                    <p class='mb-0' id="darkgray" th:text="'Usuario '+${neumatico.usuario.nombre}"></p>
                 </div>
                 <div th:if="${!recapados.isEmpty()}">
                     <div class="card p-3 mb-0" th:each="recapado : ${recapados}" th:if="${recapado.estado != 'EN RECAPADO'}">
@@ -41,7 +42,8 @@
                         <h6 class="mb-1" id="dimgray" th:text="'KM Rodado Recapado '+${#numbers.formatDecimal(recapado.kmRecapado, 0, 'POINT', 0, 'POINT')}"></h6>
                         <p id="dimgray" class="mb-1" th:text="'Proveedor '+${recapado.proveedor.nombre}"></p>
                         <p th:if="${recapado.estado == 'FINALIZADO'}" class="mb-1" id="dimgray" th:text="'Km final Recapado '+${#numbers.formatDecimal(recapado.kmFinalRecapado, 0, 'POINT', 0, 'POINT')}+' - Km rodado Recapado '+${#numbers.formatDecimal(recapado.kmRecapado, 0, 'POINT', 0, 'POINT')}"></p>
-                        <p th:if="${recapado.observacion != ''}" id="dimgray" th:text="'Observación '+${recapado.observacion}"></p>
+                        <p class="mb-0" th:if="${recapado.observacion != ''}" id="dimgray" th:text="'Observación '+${recapado.observacion}"></p>
+                        <p class='mb-0' id="darkgray" th:text="'Usuario '+${recapado.usuario.nombre}"></p>
                     </div>
                 </div>
             </div>

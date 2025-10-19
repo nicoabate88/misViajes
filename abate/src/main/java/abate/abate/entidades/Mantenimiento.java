@@ -29,6 +29,8 @@ public class Mantenimiento {
     private String observacion;
     @Temporal(TemporalType.DATE)
     private Date fecha;
+    @Temporal(TemporalType.DATE)
+    private Date fechaActualizado;
     private Integer km;
     private Integer kmProximo;
     private Integer kmAlarma;
@@ -45,13 +47,14 @@ public class Mantenimiento {
     public Mantenimiento() {
     }
 
-    public Mantenimiento(Long id, Long idOrg, TipoMantenimiento tipoMantenimiento, TipoMantenimiento.AplicaA aplicaA, String observacion, Date fecha, Integer km, Integer kmProximo, Integer kmAlarma, Integer kmActual, Integer kmVigencia, String estado, Usuario usuario, Camion camion, Acoplado acoplado) {
+    public Mantenimiento(Long id, Long idOrg, TipoMantenimiento tipoMantenimiento, TipoMantenimiento.AplicaA aplicaA, String observacion, Date fecha, Date fechaActualizado, Integer km, Integer kmProximo, Integer kmAlarma, Integer kmActual, Integer kmVigencia, String estado, Usuario usuario, Camion camion, Acoplado acoplado) {
         this.id = id;
         this.idOrg = idOrg;
         this.tipoMantenimiento = tipoMantenimiento;
         this.aplicaA = aplicaA;
         this.observacion = observacion;
         this.fecha = fecha;
+        this.fechaActualizado = fechaActualizado;
         this.km = km;
         this.kmProximo = kmProximo;
         this.kmAlarma = kmAlarma;
@@ -62,8 +65,6 @@ public class Mantenimiento {
         this.camion = camion;
         this.acoplado = acoplado;
     }
-    
-    
 
     public Long getId() {
         return id;
@@ -111,6 +112,14 @@ public class Mantenimiento {
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;
+    }
+
+    public Date getFechaActualizado() {
+        return fechaActualizado;
+    }
+
+    public void setFechaActualizado(Date fechaActualizado) {
+        this.fechaActualizado = fechaActualizado;
     }
 
     public Integer getKm() {
@@ -184,7 +193,7 @@ public class Mantenimiento {
     public void setAcoplado(Acoplado acoplado) {
         this.acoplado = acoplado;
     }
-    
+
     
     
 }

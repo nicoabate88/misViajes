@@ -105,6 +105,8 @@ public class TipoMantenimientoServicio {
     public List<TipoMantenimiento> buscarTiposAplicaA(Long idOrg, TipoMantenimiento.AplicaA aplicaA) {
 
         List<TipoMantenimiento> lista = tipoMantenimientoRepositorio.findByAplicaA(idOrg, aplicaA);
+        
+        Collections.sort(lista, TipoMantenimientoComparador.ordenarNombreAsc); 
 
         return lista;
 

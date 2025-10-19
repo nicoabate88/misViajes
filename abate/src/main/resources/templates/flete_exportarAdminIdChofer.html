@@ -73,6 +73,7 @@
                                                                         <th>CP</th>
                                                                         <th>CTG</th>
                                                                         <th>Tarifa</th>
+                                                                        <th>Comisión</th>
                                                                         <th>KG</th>
                                                                         <th>Neto</th>
                                                                         <th>Iva</th>
@@ -93,13 +94,14 @@
                                                                         <td th:text="${flete.cartaPorte}"></td>
                                                                         <td th:text="${flete.ctg}"></td>
                                                                         <td th:text="'$'+${flete.tarifa}"></td>
+                                                                        <td class="text-center" th:text="${flete.comisionTpte}"></td>
                                                                         <td th:text="${flete.kgFlete}"></td>
                                                                         <td th:text="'$'+${flete.neto}"></td>
                                                                         <td th:text="'$'+${flete.iva}"></td>
                                                                         <td th:text="'$'+${flete.total}"></td>
                                                                 </tbody>
                                                             </table>
-                                                            <div class="text-center mb-2">
+                                                            <div class="container text-center mb-2">
                                                                 <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/flete/listarTodo}">Volver</a>
                                                             </div>
                                                             </section>

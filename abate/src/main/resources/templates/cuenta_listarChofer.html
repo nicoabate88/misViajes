@@ -16,8 +16,15 @@
                                             </svg> 
                                         </a>   
                                     </div>
-                                    <div  class="col-8 text-center">
+                                    <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
                                         <h4>Cuentas de Choferes</h4>
+                                    </div>
+                                    <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
+                                        <form th:action="@{/cuenta/exportarChofer}" method="POST">       
+                                                <button class="btn btn-light" type="submit">
+                                                    <h6 id="icono">Exportar</h6> 
+                                                </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

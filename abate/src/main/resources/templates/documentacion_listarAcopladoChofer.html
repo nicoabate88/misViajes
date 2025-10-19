@@ -47,11 +47,12 @@
                                                         <p class="mb-1" id="dimgray" th:text="'Vigencia Desde ' + ${#dates.format(docu.fechaAlta, 'dd-MM-yyyy')}"></p>
                                                         <p class="mb-1" id="dimgray" th:text="'Vencimiento ' + ${#dates.format(docu.fechaVencimiento, 'dd-MM-yyyy')}"></p>
                                                         <div class="mb-2">
-                                                            <span th:switch="${docu.estado}">
-                                                                <span th:case="'VIGENTE'" th:text="'Estado ✅ VIGENTE - '+${docu.diasVigencia}+' días'"></span>
-                                                                <span th:case="'PRÓXIMO A VENCER'" th:text="'Estado 🟡 PRÓXIMO A VENCER - '+${docu.diasVigencia}+' días'"></span>
-                                                                <span th:case="'VENCIDO'" th:text="'Estado ❌ VENCIDO - '+${docu.diasVigencia}+' días'"></span>
-                                                            </span> </div>
+                                                            <span th:switch="${docu.estado}"><strong>
+                                                                <span th:case="'VIGENTE'" th:text="'Estado ✅ VIGENTE '"></span>
+                                                                <span th:case="'PRÓXIMO A VENCER'" th:text="'Estado 🟡 PRÓXIMO A VENCER '"></span>
+                                                                <span th:case="'VENCIDO'" th:text="'Estado ❌ VENCIDO '"></span>
+                                                                <span class="text-primary" th:text="${docu.diasVigencia}+' días'"></span>
+                                                                </strong></span> </div>
                                                         <p th:if="${docu.observacion != ''}" id="dimgray" th:text="'Observación '+${docu.observacion}"></p> 
                                                     </div>
                                                     <div class="col-3 col-md-3">

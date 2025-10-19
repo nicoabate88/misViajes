@@ -115,7 +115,7 @@
                                                                     <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-5">
                                                                         <label for="obs" class="form-label text-secondary">Observación</label>
                                                                         <textarea class="form-control text-secondary" id="obs" name="observacion" rows="2" 
-                                                                                  th:value="${neumatico.observacion}" maxlength="150" size="150"></textarea>
+                                                                                  th:text="${neumatico.observacion}" maxlength="150" size="150"></textarea>
                                                                     </div> 
                                                                 </div> 
                                                                 <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        

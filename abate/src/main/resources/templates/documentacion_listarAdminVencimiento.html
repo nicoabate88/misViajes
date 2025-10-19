@@ -7,7 +7,17 @@
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                         <link rel="stylesheet" href="/css/medidas_container.css">   
                             <style>
-
+                                .link-historial {
+                                    color: darkgrey;
+                                    background: none;
+                                    border: none;
+                                    padding: 0;
+                                    cursor: pointer;
+                                }
+                                .modal-header-darkblue {
+                                    background-color: darkblue;
+                                    color: white;
+                                }
                                 /* Estilo para pantallas md */
                                 @media (max-width: 991.98px) {
                                     .table {
@@ -52,8 +62,16 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-8 text-center">
+                                        <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
                                             <h4>Documentación Próximo a Vencer</h4>
+                                        </div>
+                                        <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
+                                            <form th:action="@{/documentacion/exportarVencimiento}" method="POST">      
+                                                <input hidden id="dias" th:value="${dias}" name="dias">
+                                                    <button id="exportar" class="btn btn-light" type="submit">
+                                                        <h6 id="icono">Exportar</h6> 
+                                                    </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -91,12 +109,27 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr th:each="documento : ${entry.value}">
-                                                            <td class="text-center" th:if="${documento.camion != null}" th:text="${documento.camion.dominio}"></td>
-                                                            <td class="text-center" th:if="${documento.acoplado != null}" th:text="${documento.acoplado.dominio}"></td>
-                                                            <td class="text-center" th:if="${documento.chofer != null}" th:text="${documento.chofer.nombre}"></td>
+                                                            <td class="text-center" th:if="${documento.camion != null}">
+                                                                <span th:text="${documento.camion.dominio}"></span>
+                                                                <a href="#" th:attr="data-id=${documento.camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
+                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-center" th:if="${documento.acoplado != null}">
+                                                                <span th:text="${documento.acoplado.dominio}"></span>
+                                                                <a href="#" th:attr="data-idA=${documento.acoplado.id}" onclick="verHistorialA(this)" class="link-historial" title="Ver Detalle">
+                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-center" th:if="${documento.chofer != null}">
+                                                                <span th:text="${documento.chofer.nombre}"></span>
+                                                                <a href="#" th:attr="data-idC=${documento.chofer.id}" onclick="verHistorialC(this)" class="link-historial" title="Ver Detalle">
+                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
+                                                                </a>
+                                                            </td>
                                                             <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
                                                             <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                                                            <td class="text-center" th:text="${documento.diasVigencia}+' días'"></td>
+                                                            <th class="text-center text-primary" th:text="${documento.diasVigencia}+' días'"></th>
                                                             <td class="text-center">
                                                                 <span th:switch="${documento.estado}">
                                                                     <span th:case="'VIGENTE'">✅ VIGENTE</span>
@@ -132,12 +165,153 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!-- Modal para mostrar historial -->
+                                                <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header position-relative modal-header-darkblue">
+                                                                <h4 class="modal-title mx-auto">Detalle</h4>
+                                                                <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body" id="historialContenido">
+                                                                <!-- Aquí se cargará el fragmento HTML con el historial -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <script>
                                                     document.addEventListener("DOMContentLoaded", function () {
                                                         const volverBtn = document.getElementById("ver");
                                                         volverBtn.addEventListener("click", function (e) {
                                                             // Mostrar spinner
                                                             document.getElementById("spinner").style.display = "block";
+                                                        });
+                                                    });
+
+                                                    function verHistorial(button) {
+                                                        const camionId = button.getAttribute('data-id');
+
+                                                        fetch(`/camion/detalle/${camionId}`)
+                                                                .then(response => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error("Error al obtener detalle");
+                                                                    }
+                                                                    return response.text();
+                                                                })
+                                                                .then(html => {
+                                                                    document.getElementById("historialContenido").innerHTML = html;
+                                                                    const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                                    modal.show();
+                                                                })
+                                                                .catch(error => {
+                                                                    console.error("Error:", error);
+                                                                    alert("No se pudo cargar el detalle del camión.");
+                                                                });
+                                                    }
+
+
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                            btn.addEventListener("click", function () {
+                                                                const id = this.getAttribute("data-id");
+
+                                                                fetch("/camion/detalle/" + id)
+                                                                        .then(response => response.text())
+                                                                        .then(html => {
+                                                                            document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                                            new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                                        })
+                                                                        .catch(error => console.error("Error al cargar detalle", error));
+                                                            });
+                                                        });
+                                                    });
+
+                                                    $(document).ready(function () {
+                                                        $('#filtroForm').on('submit', function () {
+                                                            $('#loadingModal').modal('show');
+                                                        });
+                                                    });
+                                                    $(document).ready(function () {
+                                                        $('#exportaForm').on('submit', function () {
+                                                            $('#loadingModal').modal('show');
+                                                        });
+                                                    });
+
+                                                    function verHistorialA(button) {
+                                                        const acopladoId = button.getAttribute('data-idA');
+
+                                                        fetch(`/acoplado/detalle/${acopladoId}`)
+                                                                .then(response => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error("Error al obtener detalle");
+                                                                    }
+                                                                    return response.text();
+                                                                })
+                                                                .then(html => {
+                                                                    document.getElementById("historialContenido").innerHTML = html;
+                                                                    const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                                    modal.show();
+                                                                })
+                                                                .catch(error => {
+                                                                    console.error("Error:", error);
+                                                                    alert("No se pudo cargar el detalle del acoplado.");
+                                                                });
+                                                    }
+
+
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                            btn.addEventListener("click", function () {
+                                                                const id = this.getAttribute("data-id");
+
+                                                                fetch("/acoplado/detalle/" + id)
+                                                                        .then(response => response.text())
+                                                                        .then(html => {
+                                                                            document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                                            new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                                        })
+                                                                        .catch(error => console.error("Error al cargar detalle", error));
+                                                            });
+                                                        });
+                                                    });
+
+                                                    function verHistorialC(button) {
+                                                        const choferId = button.getAttribute('data-idC');
+
+                                                        fetch(`/chofer/detalle/${choferId}`)
+                                                                .then(response => {
+                                                                    if (!response.ok) {
+                                                                        throw new Error("Error al obtener detalle");
+                                                                    }
+                                                                    return response.text();
+                                                                })
+                                                                .then(html => {
+                                                                    document.getElementById("historialContenido").innerHTML = html;
+                                                                    const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                                    modal.show();
+                                                                })
+                                                                .catch(error => {
+                                                                    console.error("Error:", error);
+                                                                    alert("No se pudo cargar el detalle del chofer.");
+                                                                });
+                                                    }
+
+
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                            btn.addEventListener("click", function () {
+                                                                const id = this.getAttribute("data-idC");
+
+                                                                fetch("/chofer/detalle/" + id)
+                                                                        .then(response => response.text())
+                                                                        .then(html => {
+                                                                            document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                                            new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                                        })
+                                                                        .catch(error => console.error("Error al cargar detalle", error));
+                                                            });
                                                         });
                                                     });
 

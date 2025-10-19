@@ -630,11 +630,16 @@ public class CombustibleControlador {
     @GetMapping("/mostrarConsumoAdmin/{id}")
     public String mostrarConsumoAdmin(@PathVariable Long id, ModelMap modelo) {
 
+        Boolean flag = false;
         ArrayList<Combustible> cargas = combustibleServicio.buscarCargasCamion(id);
+        if(!cargas.isEmpty()){
+            flag = true;
+        }
 
         modelo.put("consumo", combustibleServicio.consumoPromedioCamion(id));
         modelo.addAttribute("cargas", cargas);
         modelo.put("camion", camionServicio.buscarCamion(id));
+        modelo.put("flag", flag);
 
         return "combustible_mostrarConsumoAdmin.html";
 
@@ -917,6 +922,77 @@ public class CombustibleControlador {
         String htmlContent = generateHtmlFromObjects(cargas);
         excelServicio.exportHtmlToExcelCombustible(htmlContent, response);
 
+    }
+    
+    @PostMapping("/exportarConsumo")
+    public String exportarConsumo(@RequestParam Long idCamion, ModelMap modelo, HttpSession session) throws ParseException {
+
+        ArrayList<Combustible> cargas = combustibleServicio.buscarCargasCamion(idCamion);
+        
+        modelo.put("consumo", combustibleServicio.consumoPromedioCamion(idCamion));
+        modelo.addAttribute("cargas", cargas);
+        modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        return "combustible_exportarConsumoAdmin.html";
+        
+    }
+
+    @PostMapping("/exportaConsumo")
+    public void exportaConsumo(@RequestParam Long idCamion, HttpServletResponse response) throws IOException, ParseException {
+
+        ArrayList<Combustible> cargas = combustibleServicio.buscarCargasCamion(idCamion);
+        
+        Double consumo = combustibleServicio.consumoPromedioCamion(idCamion);
+        Camion camion = camionServicio.buscarCamion(idCamion);
+        
+        String htmlContent = generateHtmlFromObjects(cargas);
+        excelServicio.exportHtmlToExcelConsumoCombustible(htmlContent, response, camion, consumo);
+
+    }
+    
+    @GetMapping("/imprimirAdmin")
+    public String imprimirAdmin(@RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+            @RequestParam(required = false) Long idCamion, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ArrayList<Combustible> cargas = new ArrayList();
+
+        if (idCamion != null && idChofer == null) {
+
+            cargas = combustibleServicio.buscarCargasIdCamionFechaAsc(idCamion, desde, hasta);
+
+        } else if (idCamion == null && idChofer != null) {
+
+            cargas = combustibleServicio.buscarCargasIdChoferFechaAsc(idChofer, desde, hasta);
+
+        } else if (idCamion == null && idChofer == null) {
+
+            cargas = combustibleServicio.buscarCargasFechaAsc(logueado.getIdOrg(), desde, hasta);
+
+        } else {
+
+            cargas = combustibleServicio.buscarCargasCamionChoferFechaAsc(idCamion, idChofer, desde, hasta);
+
+        }
+
+        modelo.addAttribute("cargas", cargas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+
+        return "combustible_imprimirAdmin.html";
+    }
+    
+    @GetMapping("/imprimirConsumo")
+    public String imprimirConsumo(@RequestParam Long idCamion, ModelMap modelo) throws ParseException {
+
+        ArrayList<Combustible> cargas = combustibleServicio.buscarCargasCamion(idCamion);
+        
+        modelo.put("consumo", combustibleServicio.consumoPromedioCamion(idCamion));
+        modelo.addAttribute("cargas", cargas);
+        modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        return "combustible_imprimirConsumoAdmin.html";
+        
     }
 
        public String obtenerFechaDesde() {

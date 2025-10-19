@@ -55,8 +55,16 @@
                                             </button>
                                         </form>
                                         </div>
-                                        <div  class="col-8 text-center">
+                                        <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
                                             <h4>Historial de Mantenimientos</h4>
+                                        </div>
+                                         <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center">
+                                            <form th:action="@{/mantenimiento/exportarHistorialAcoplado}" method="POST">      
+                                                <input hidden th:value="${idAcoplado}" name="idAcoplado">   
+                                                    <button id="exportar" class="btn btn-light" type="submit">
+                                                        <h6 id="icono">Exportar</h6> 
+                                                    </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -73,6 +81,7 @@
                                                     <tr>
                                                         <th class="text-center">Fecha</th>
                                                         <th class="text-center">Km Mantenimiento</th>
+                                                        <th class="text-center">Fecha Actualizado</th>
                                                         <th class="text-center">Km Actualizado</th>
                                                         <th class="text-center">Km Recorrido</th>
                                                         <th class="text-center">Observación</th>
@@ -82,8 +91,9 @@
                                                     <tr th:each="mantenimiento : ${entry.value}">
                                                         <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
                                                         <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
+                                                        <td class="text-center" th:text="${#dates.format(mantenimiento.fechaActualizado, 'dd-MM-yyyy')}"></td>
                                                         <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></td>
-                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                        <th class="text-center text-primary" th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></th>
                                                         <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
                                                             <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
                                                                th:attr="data-observacion=${mantenimiento.observacion}" 

@@ -984,7 +984,13 @@ public class FleteControlador {
     public void exporta(@RequestParam Long idChofer, @RequestParam String desde, @RequestParam String hasta, HttpServletResponse response) throws IOException, ParseException {
 
         ArrayList<Flete> myObjects = fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta);
-        String htmlContent = generateHtmlFromObjects(myObjects);
+        int cont = 0; 
+        for(Flete flete : myObjects){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+        String htmlContent = generateHtmlFromObjects(myObjects, cont);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
     }
@@ -1005,7 +1011,13 @@ public class FleteControlador {
     public void exportaIdCliente(@RequestParam Long idCliente, @RequestParam String desde, @RequestParam String hasta, HttpServletResponse response) throws IOException, ParseException {
 
         ArrayList<Flete> myObjects = fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta);
-        String htmlContent = generateHtmlFromObjects(myObjects);
+        int cont = 0; 
+        for(Flete flete : myObjects){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+        String htmlContent = generateHtmlFromObjects(myObjects, cont);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
     }
@@ -1027,7 +1039,13 @@ public class FleteControlador {
     public void exportaIdChoferCliente(@RequestParam Long idChofer, @RequestParam Long idCliente, @RequestParam String desde, @RequestParam String hasta, HttpServletResponse response) throws IOException, ParseException {
 
         ArrayList<Flete> myObjects = fleteServicio.buscarFletesIdChoferClienteFechaAsc(idChofer, idCliente, desde, hasta);
-        String htmlContent = generateHtmlFromObjects(myObjects);
+        int cont = 0; 
+        for(Flete flete : myObjects){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+        String htmlContent = generateHtmlFromObjects(myObjects, cont);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
     }
@@ -1038,40 +1056,51 @@ public class FleteControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         
+        ArrayList<Flete> fletes = new ArrayList();
+        
          if (idChofer == null && idCliente == null && idCamion == null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesRangoFechaAsc(logueado.getIdOrg(), desde, hasta));
+            fletes = fleteServicio.buscarFletesRangoFechaAsc(logueado.getIdOrg(), desde, hasta);
 
         } else if (idChofer != null && idCliente == null && idCamion == null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta);
 
         } else if (idChofer == null && idCliente != null && idCamion == null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta);
             
         } else if (idChofer == null && idCliente == null && idCamion != null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdCamionFechaAsc(idCamion, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdCamionFechaAsc(idCamion, desde, hasta);
         
         }  else if (idChofer != null && idCliente != null && idCamion == null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferClienteFechaAsc(idChofer, idCliente, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdChoferClienteFechaAsc(idChofer, idCliente, desde, hasta);
             
         } else if (idChofer != null && idCliente == null && idCamion != null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferCamionFechaAsc(idChofer, idCamion, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdChoferCamionFechaAsc(idChofer, idCamion, desde, hasta);
             
         } else if (idChofer == null && idCliente != null && idCamion != null) {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdClienteCamionFechaAsc(idCliente, idCamion, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdClienteCamionFechaAsc(idCliente, idCamion, desde, hasta);
             
         } else {
 
-            modelo.addAttribute("fletes", fleteServicio.buscarFletesIdChoferClienteCamionFechaAsc(idChofer, idCliente, idCamion, desde, hasta));
+            fletes = fleteServicio.buscarFletesIdChoferClienteCamionFechaAsc(idChofer, idCliente, idCamion, desde, hasta);
             
         }
+         
+        int cont = 0; 
+        for(Flete flete : fletes){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
         
+        modelo.put("cont", cont);
+        modelo.addAttribute("fletes", fletes);
         modelo.put("idOrg", logueado.getIdOrg());
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
@@ -1123,11 +1152,73 @@ public class FleteControlador {
             
         }
         
-        String htmlContent = generateHtmlFromObjects(myObjects);
+        int cont = 0; 
+        for(Flete flete : myObjects){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+        
+        String htmlContent = generateHtmlFromObjects(myObjects, cont);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
     }
 
+    @GetMapping("/imprimirAdmin")
+    public String imprimirAdmin(@RequestParam(required = false) Long idOrg, @RequestParam String desde, @RequestParam String hasta, @RequestParam(required = false) Long idChofer,
+           @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idCliente, ModelMap modelo) throws ParseException {
+        
+        ArrayList<Flete> fletes = new ArrayList();
+        
+         if (idChofer == null && idCliente == null && idCamion == null) {
+
+            fletes = fleteServicio.buscarFletesRangoFechaAsc(idOrg, desde, hasta);
+
+        } else if (idChofer != null && idCliente == null && idCamion == null) {
+
+            fletes = fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta);
+
+        } else if (idChofer == null && idCliente != null && idCamion == null) {
+
+            fletes = fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta);
+            
+        } else if (idChofer == null && idCliente == null && idCamion != null) {
+
+            fletes = fleteServicio.buscarFletesIdCamionFechaAsc(idCamion, desde, hasta);
+        
+        }  else if (idChofer != null && idCliente != null && idCamion == null) {
+
+            fletes = fleteServicio.buscarFletesIdChoferClienteFechaAsc(idChofer, idCliente, desde, hasta);
+            
+        } else if (idChofer != null && idCliente == null && idCamion != null) {
+
+            fletes = fleteServicio.buscarFletesIdChoferCamionFechaAsc(idChofer, idCamion, desde, hasta);
+            
+        } else if (idChofer == null && idCliente != null && idCamion != null) {
+
+            fletes = fleteServicio.buscarFletesIdClienteCamionFechaAsc(idCliente, idCamion, desde, hasta);
+            
+        } else {
+
+            fletes = fleteServicio.buscarFletesIdChoferClienteCamionFechaAsc(idChofer, idCliente, idCamion, desde, hasta);
+        
+    }
+         
+         int cont = 0; 
+        for(Flete flete : fletes){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+         
+         modelo.addAttribute("fletes", fletes);
+         modelo.put("cont", cont);
+         modelo.put("desde", desde);
+         modelo.put("hasta", hasta);
+         
+         return "flete_imprimirAdmin.html";
+    }
+    
     @PostMapping("/exportarAdminDesdeChofer")
     public String exportarDesdeChofer(@RequestParam String desde, @RequestParam String hasta, @RequestParam Long idChofer, ModelMap modelo) throws ParseException {
 
@@ -1144,7 +1235,15 @@ public class FleteControlador {
     public void exportaAdminDesdeChofer(@RequestParam Long idChofer, @RequestParam String desde, @RequestParam String hasta, HttpServletResponse response) throws IOException, ParseException {
 
         ArrayList<Flete> myObjects = fleteServicio.buscarFletesIdChoferFechaAsc(idChofer, desde, hasta);
-        String htmlContent = generateHtmlFromObjects(myObjects);
+        
+        int cont = 0; 
+        for(Flete flete : myObjects){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+        
+        String htmlContent = generateHtmlFromObjects(myObjects, cont);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
     }
@@ -1165,7 +1264,15 @@ public class FleteControlador {
     public void exportaAdminDesdeCliente(@RequestParam Long idCliente, @RequestParam String desde, @RequestParam String hasta, HttpServletResponse response) throws IOException, ParseException {
 
         ArrayList<Flete> myObjects = fleteServicio.buscarFletesIdClienteFechaAsc(idCliente, desde, hasta);
-        String htmlContent = generateHtmlFromObjects(myObjects);
+        
+        int cont = 0; 
+        for(Flete flete : myObjects){
+            if(flete.getGasto() != null){
+                cont = cont + 1;
+            }
+        }
+        
+        String htmlContent = generateHtmlFromObjects(myObjects, cont);
         excelServicio.exportHtmlToExcel(htmlContent, response);
 
     }
@@ -1191,7 +1298,7 @@ public class FleteControlador {
 
     }
 
-    private String generateHtmlFromObjects(ArrayList<Flete> objects) {
+    private String generateHtmlFromObjects(ArrayList<Flete> objects, int cont) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         sb.append("<thead><tr>"
@@ -1210,11 +1317,15 @@ public class FleteControlador {
                 + "<th>CP</th>"
                 + "<th>CTG</th>"
                 + "<th>Tarifa</th>"
+                + "<th>Comisión</th>"
                 + "<th>Kg</th>"
                 + "<th>Neto</th>"
                 + "<th>IVA</th>"
-                + "<th>Total</th>"
-                + "</tr></thead>");
+                + "<th>Total</th>");
+        if (cont != 0) {
+            sb.append("<th>Gasto</th>");
+        }
+                sb.append("</tr></thead>");
         sb.append("<tbody>");
         for (Flete flete : objects) {
             sb.append("<tr><td>").append(flete.getIdFlete()).append("</td>"
@@ -1232,11 +1343,15 @@ public class FleteControlador {
                     + "<td>").append(flete.getCartaPorte()).append("</td>"
                     + "<td>").append(flete.getCtg()).append("</td>"
                     + "<td>").append(flete.getTarifa()).append("</td>"
+                    + "<td>").append(flete.getComisionTpte()).append("</td>"
                     + "<td>").append(flete.getKgFlete()).append("</td>"
                     + "<td>").append(flete.getNeto()).append("</td>"
                     + "<td>").append(flete.getIva()).append("</td>"
-                    + "<td>").append(flete.getTotal()).append("</td>"
-                    + "</tr>");
+                    + "<td>").append(flete.getTotal()).append("</td>");
+              if (flete.getGasto() != null) {
+                sb.append("<td>").append(flete.getGasto().getImporte()).append("</td>");
+            }
+                    sb.append("</tr>");
         }
         sb.append("</tbody></table>");
         return sb.toString();

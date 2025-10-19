@@ -50,7 +50,7 @@
                                                                     <span th:case="'VIGENTE'">✅ VIGENTE</span>
                                                                     <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
                                                                     <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                                    <span th:text="' '+${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
+                                                                    <span class="text-primary" th:text="' '+${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
                                                                 </strong></span>
                                                         </div>
                                                         <h6 class="mb-2 text-dark" th:text="'🔧 Próximo Mantenimiento '+${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}"></h6>

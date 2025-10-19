@@ -25,16 +25,16 @@
                                 <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a id="volver1" title="Volver" th:href="@{/neumatico/listarFiltro(ubicacion=${ubicacion}, estado=${estado})}" type="button">
+                                            <a id="volver1" title="Volver" th:href="@{/neumatico/listar}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                        <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center">
                                             <h4>Exportar Lista de Neumáticos</h4>
                                         </div>
-                                        <div class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                        <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
                                             <form>
                                                 <input id="ubicacion" hidden th:value="${ubicacion}" name="ubicacion">
                                                     <input id="estado" hidden th:value="${estado}" name="estado">
@@ -42,6 +42,14 @@
                                                             <h6 id="icono">Excel</h6>
                                                         </button>
                                                         </form>
+                                                        </div>
+                                                        <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                                            <a title="Ir a Imprimir Mantenimiento" target="_blank" th:href="@{/neumatico/imprimir(ubicacion=${ubicacion}, estado=${estado})}">
+                                                                <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                                                </svg><p id="imprimirExporta">Imprimir</p>
+                                                            </a>
                                                         </div>
                                                         </div>
                                                         </div>
@@ -87,9 +95,9 @@
                                                                             <td class="text-center" th:text="${#dates.format(neumatico.fechaIngreso, 'dd-MM-yyyy')}"></td>
                                                                             <td class="text-center" th:text="${neumatico.estado}"></td>
                                                                             <td class="text-center" th:text="${neumatico.ubicacion}"></td>
-                                                                            <td class="text-center" th:text="${#numbers.formatDecimal(neumatico.km, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                            <th class="text-center text-primary" th:text="${#numbers.formatDecimal(neumatico.km, 0, 'POINT', 0, 'POINT')}"></th>
                                                                             <td class="text-center" th:text="${#numbers.formatDecimal(neumatico.kmEstimado, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                            <td  class="text-center"th:text="${#numbers.formatDecimal(neumatico.kmUtil, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                            <td  class="text-center text-primary"th:text="${#numbers.formatDecimal(neumatico.kmUtil, 0, 'POINT', 0, 'POINT')}"></td>
                                                                             <td class="text-center" th:text="${neumatico.observacion}"></td>
                                                                             <td class="text-center" th:text="${#dates.format(neumatico.fechaEgreso, 'dd-MM-yyyy')}"></td>
                                                                         </tr>
@@ -97,8 +105,8 @@
                                                                 </table>
                                                             </div>
                                                             <br>
-                                                                <div class="text-center mb-2">
-                                                                    <a id="volver2" class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/neumatico/listarFiltro(ubicacion=${ubicacion}, estado=${estado})}">Volver</a>
+                                                                <div class="container text-center mb-2">
+                                                                    <a id="volver2" class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/neumatico/listar}">Volver</a>
                                                                 </div>
                                                         </div>
                                                         <div id="spinner" class="modal" style="display: none;">

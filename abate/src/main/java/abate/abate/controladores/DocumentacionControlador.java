@@ -11,12 +11,16 @@ import abate.abate.servicios.AcopladoServicio;
 import abate.abate.servicios.CamionServicio;
 import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.DocumentacionServicio;
+import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.TipoDocumentacionServicio;
+import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,6 +48,8 @@ public class DocumentacionControlador {
     private AcopladoServicio acopladoServicio;
     @Autowired
     private ChoferServicio choferServicio;
+    @Autowired
+    private ExcelServicio excelServicio;
     
     @GetMapping("/registrar/{aplicaA}")
     public String registrar(@PathVariable TipoDocumentacion.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
@@ -513,6 +519,7 @@ public class DocumentacionControlador {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         int dias = 30;
+        Boolean flag = false;
         
         List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
 
@@ -520,8 +527,13 @@ public class DocumentacionControlador {
     .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
     .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
         
+        if(!documentaciones.isEmpty()){
+            flag = true;
+        }
+        
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("dias", dias);
+        modelo.put("flag", flag);
         
         return "documentacion_listarAdminVencimiento.html";
         
@@ -531,77 +543,135 @@ public class DocumentacionControlador {
     public String listarAdminVencimientoFiltro(@RequestParam int dias, ModelMap modelo, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
+        Boolean flag = false;
+
         List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+        if (!documentaciones.isEmpty()) {
+            flag = true;
+        }
+
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("dias", dias);
-        
+        modelo.put("flag", flag);
+
         return "documentacion_listarAdminVencimiento.html";
-        
+
     }
-    
+
     @GetMapping("/listarAdminCamiones")
     public String listarAdminCamiones(ModelMap modelo, HttpSession session) {
-        
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-    List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
 
-        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        modelo.put("camion", null);
-        modelo.put("idCamion", null);
-        
-        return "documentacion_listarAdminCamiones.html";
-        
-    }
-    
-    @PostMapping("/listarAdminCamionesFiltro")
-    public String listarAdminCamionesFiltro(@RequestParam(required = false) Long idCamion, ModelMap modelo, HttpSession session) {
-        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        if(idCamion != null){
-        
-        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
 
-        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("camion", camionServicio.buscarCamion(idCamion));
-        modelo.put("idCamion", idCamion);
-        
-        } else {
-            
+        Boolean flag = false;
+
         List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("camion", null);
-        modelo.put("idCamion", null);
-            
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+        if (!documentaciones.isEmpty()) {
+            flag = true;
         }
-        
+
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.put("camion", null);
+        modelo.put("tipo", null);
+        modelo.put("idCamion", null);
+        modelo.put("idTipo", null);
+        modelo.put("flag", flag);
+
+        return "documentacion_listarAdminCamiones.html";
+
+    }
+
+    @PostMapping("/listarAdminCamionesFiltro")
+    public String listarAdminCamionesFiltro(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Boolean flag = false;
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idCamion != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("tipo", null);
+
+        } else if (idCamion == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("camion", null);
+            modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+
+        } else if (idCamion != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionIdTipo(idCamion, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("camion", null);
+            modelo.put("tipo", null);
+
+        }
+
         modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
+        modelo.put("flag", flag);
+        modelo.put("idCamion", idCamion);
+        modelo.put("idTipo", idTipo);
+
         return "documentacion_listarAdminCamiones.html";
-        
+
     }
     
     @GetMapping("/listarAdminCamion")
@@ -618,6 +688,7 @@ public class DocumentacionControlador {
     public String listarAdminAcoplados(ModelMap modelo, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Boolean flag = false;
         
         List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
 
@@ -625,49 +696,99 @@ public class DocumentacionControlador {
     .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
     .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
         
+         if(!documentaciones.isEmpty()){
+            flag = true;
+        }
+        
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
         modelo.put("acoplado", null);
         modelo.put("idAcoplado", null);
+        modelo.put("idTipo", null);
+        modelo.put("tipo", null);
+        modelo.put("flag", flag);
         
         return "documentacion_listarAdminAcoplados.html";
         
     }
     
     @PostMapping("/listarAdminAcopladosFiltro")
-    public String listarAdminAcopladosFiltro(@RequestParam(required = false) Long idAcoplado, ModelMap modelo, HttpSession session) {
+    public String listarAdminAcopladosFiltro(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
         
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        if(idAcoplado != null){
-        
-        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado);
+       Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Boolean flag = false;
+        List<Documentacion> documentaciones = new ArrayList();
 
-        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
-        modelo.put("idAcoplado", idAcoplado);
-        
+        if (idAcoplado != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+            modelo.put("tipo", null);
+
+        } else if (idAcoplado == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladosIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("acoplado", null);
+            modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+
+        } else if (idAcoplado != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladoIdTipo(idAcoplado, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+            modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+
         } else {
-            
-        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
 
-        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("acoplado", null);
-        modelo.put("idAcoplado", null);
-            
+            documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("acoplado", null);
+            modelo.put("tipo", null);
+
         }
-        
+
         modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
+        modelo.put("flag", flag);
+        modelo.put("idAcoplado", idAcoplado);
+        modelo.put("idTipo", idTipo);
         
         return "documentacion_listarAdminAcoplados.html";
         
@@ -687,6 +808,7 @@ public class DocumentacionControlador {
     public String listarAdminChoferes(ModelMap modelo, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Boolean flag = false;
         
         List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
 
@@ -694,49 +816,99 @@ public class DocumentacionControlador {
     .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
     .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
         
+        if(!documentaciones.isEmpty()){
+            flag = true;
+        }
+        
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
         modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         modelo.put("chofer", null);
         modelo.put("idChofer", null);
+        modelo.put("idTipo", null);
+        modelo.put("tipo", null);
+        modelo.put("flag", flag);
         
         return "documentacion_listarAdminChoferes.html";
         
     }
     
     @PostMapping("/listarAdminChoferesFiltro")
-    public String listarAdminChoferesFiltro(@RequestParam(required = false) Long idChofer, ModelMap modelo, HttpSession session) {
+    public String listarAdminChoferesFiltro(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        if(idChofer != null){
-        
-        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionIdChofer(idChofer);
+        Boolean flag = false;
+        List<Documentacion> documentaciones = new ArrayList();
 
-        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("chofer", choferServicio.buscarChofer(idChofer));
-        modelo.put("idChofer", idChofer);
-        
+        if (idChofer != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdChofer(idChofer);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("tipo", null);
+
+        } else if (idChofer == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("chofer", null);
+            modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+
+        } else if (idChofer != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferIdTipo(idChofer, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+            modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
+
         } else {
-            
-        List<Documentacion> documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
 
-        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        modelo.put("documentacion", documentacionPorTipo);
-        modelo.put("chofer", null);
-        modelo.put("idChofer", null);
-            
+            documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            if (!documentaciones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("chofer", null);
+            modelo.put("tipo", null);
+
         }
-        
+
         modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
         modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
+        modelo.put("flag", flag);
+        modelo.put("idChofer", idChofer);
+        modelo.put("idTipo", idTipo);
         
         return "documentacion_listarAdminChoferes.html";
         
@@ -750,6 +922,588 @@ public class DocumentacionControlador {
         
         return "documentacion_listarAdminChofer.html";
         
+    }
+    
+      @PostMapping("/exportarVencimiento")
+    public String exportarVencimiento(@RequestParam Integer dias, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("dias", dias);
+        
+        return "documentacion_exportarVencimientos.html";
+
+    }
+    
+     @PostMapping("/exportaVencimiento")
+    public void exportaVencimiento(@RequestParam Integer dias, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+    }
+    
+    @PostMapping("/exportarCamiones")
+    public String exportarCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
+
+       Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idCamion != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
+
+        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idCamion == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idCamion != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionIdTipo(idCamion, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        }
+
+        modelo.put("idCamion", idCamion);
+        modelo.put("idTipo", idTipo);
+        
+        return "documentacion_exportarCamiones.html";
+
+    }
+    
+     @PostMapping("/exportaCamiones")
+    public void exportaCamion(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idCamion != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
+
+        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else if (idCamion == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else if (idCamion != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionIdTipo(idCamion, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
+
+        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        }
+    }
+    
+    @PostMapping("/exportarAcoplados")
+    public String exportarAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idAcoplado != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idAcoplado == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladosIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idAcoplado != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladoIdTipo(idAcoplado, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        }
+        
+        modelo.put("idAcoplado", idAcoplado);
+        modelo.put("idTipo", idTipo);
+        
+        return "documentacion_exportarAcoplados.html";
+
+    }
+    
+     @PostMapping("/exportaAcoplados")
+    public void exportaAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idAcoplado != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladosIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else if (idAcoplado != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladoIdTipo(idAcoplado, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        }
+
+    }
+    
+    @PostMapping("/exportarChoferes")
+    public String exportarChoferes(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idChofer != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdChofer(idChofer);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idChofer == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idChofer != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferIdTipo(idChofer, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        }
+
+        modelo.put("idChofer", idChofer);
+        modelo.put("idTipo", idTipo);
+        
+        return "documentacion_exportarChoferes.html";
+
+    }
+    
+     @PostMapping("/exportaChoferes")
+    public void exportaChoferes(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idChofer != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdChofer(idChofer);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else if (idChofer == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else if (idChofer != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferIdTipo(idChofer, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
+            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+
+        }
+        
+    }
+    
+        private String generateHtmlFromObjects(Map<String, List<Documentacion>> objects) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table>");
+        sb.append("<thead><tr>"
+                + "<th>Entidad</th>"
+                + "<th>Tipo de Documentación</th>"
+                + "<th>Fecha de Alta</th>"
+                + "<th>Vencimiento</th>"
+                + "<th>Vigencia</th>"
+                + "<th>Estado</th>"
+                + "<th>Observación</th>"
+                + "</tr></thead>");
+        sb.append("<tbody>");
+        for (Map.Entry<String, List<Documentacion>> entry : objects.entrySet()) {
+            List<Documentacion> documentos = entry.getValue(); // lista de valores
+            for (Documentacion documento : documentos) {
+                String dominio = "";
+                if (documento.getAcoplado() != null) {
+                    dominio = documento.getAcoplado().getDominio();
+                } else if (documento.getCamion() != null) {
+                    dominio = documento.getCamion().getDominio();
+                } else if (documento.getChofer() != null) {
+                    dominio = documento.getChofer().getNombre();
+                }
+                sb.append("<tr><td>").append(dominio).append("</td>"
+                        + "<td>").append(documento.getTipoDocumentacion().getNombre()).append("</td>"
+                        + "<td>").append(documento.getFechaAlta()).append("</td>"
+                        + "<td>").append(documento.getFechaVencimiento()).append("</td>"
+                        + "<td>").append(documento.getDiasVigencia()).append("</td>"
+                        + "<td>").append(documento.getEstado()).append("</td>"
+                        + "<td>").append(documento.getObservacion()).append("</td>"
+                        + "</tr>");
+            }
+        }
+        sb.append("</tbody></table>");
+        return sb.toString();
+    }
+        
+    @GetMapping("/imprimirCamiones")
+    public String imprimirCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idCamion != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        } else if (idCamion == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idCamion != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamionIdTipo(idCamion, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        }
+        
+        modelo.put("idCamion", idCamion);
+
+        return "documentacion_imprimirCamiones.html";
+    }
+    
+    @GetMapping("/imprimirAcoplados")
+    public String imprimirAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idAcoplado != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else if (idAcoplado == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladosIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idAcoplado != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcopladoIdTipo(idAcoplado, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        }
+        
+        modelo.put("idAcoplado", idAcoplado);
+
+        return "documentacion_imprimirAcoplados.html";
+    }
+    
+    @GetMapping("/imprimirChoferes")
+    public String imprimirChoferes(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Documentacion> documentaciones = new ArrayList();
+
+        if (idChofer != null && idTipo == null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionIdChofer(idChofer);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+
+        } else if (idChofer == null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferesIdTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        } else if (idChofer != null && idTipo != null) {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferIdTipo(idChofer, idTipo);
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+            modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+
+        } else {
+
+            documentaciones = documentacionServicio.buscarDocumentacionChoferes(logueado.getIdOrg());
+
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+            modelo.put("documentacion", documentacionesPorTipo);
+
+        }
+        
+        modelo.put("idChofer", idChofer);
+        modelo.put("idTipo", idTipo);
+
+        return "documentacion_imprimirChoferes.html";
+    }
+    
+    @GetMapping("/imprimirVencimiento/{dias}")
+    public String imprimirVencimiento(@PathVariable Integer dias, ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
+
+        Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
+    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
+    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+        
+        modelo.put("documentacion", documentacionPorTipo);
+        modelo.put("dias", dias);
+
+        return "documentacion_imprimirVencimientos.html";
     }
 
 }

@@ -218,10 +218,152 @@ public class DocumentacionServicio {
         return lista;
     }
     
+    public List<Documentacion> buscarDocumentacionCamionesIdTipo(Long idOrg, Long idTipo) {
+        
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionCamionesPorTipo(idOrg, idTipo);
+        
+        if(!lista.isEmpty()){
+        for(Documentacion d : lista){
+            
+        Date fechaActual = new Date();
+        long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+        int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);  
+        d.setDiasVigencia(diasVigencia);
+        
+        if(diasVigencia <= 30 && diasVigencia > 0){
+            d.setEstado("PRÓXIMO A VENCER");
+        } if(diasVigencia <= 0){
+            d.setEstado("VENCIDO");
+        }
+        }    
+        }
+
+        return lista;
+    }
+    
+    public List<Documentacion> buscarDocumentacionCamionIdTipo(Long idCamion, Long idTipo) {
+        
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionCamionPorTipo(idCamion, idTipo);
+        
+        if(!lista.isEmpty()){
+        for(Documentacion d : lista){
+            
+        Date fechaActual = new Date();
+        long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+        int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);  
+        d.setDiasVigencia(diasVigencia);
+        
+        if(diasVigencia <= 30 && diasVigencia > 0){
+            d.setEstado("PRÓXIMO A VENCER");
+        } if(diasVigencia <= 0){
+            d.setEstado("VENCIDO");
+        }
+        }    
+        }
+
+        return lista;
+    }
+    
     public List<Documentacion> buscarDocumentacionIdAcoplado(Long id) {
         
         List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionIdAcoplado(id);
         
+        if(!lista.isEmpty()){
+        for(Documentacion d : lista){
+            
+        Date fechaActual = new Date();
+        long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+        int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);  
+        d.setDiasVigencia(diasVigencia);
+        
+        if(diasVigencia <= 30 && diasVigencia > 0){
+            d.setEstado("PRÓXIMO A VENCER");
+        } if(diasVigencia <= 0){
+            d.setEstado("VENCIDO");
+        }
+        
+        }    
+        }
+
+        return lista;
+    }
+    
+    public List<Documentacion> buscarDocumentacionAcopladosIdTipo(Long idOrg, Long idTipo) {
+        
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionAcopladosPorTipo(idOrg, idTipo);
+        
+        if(!lista.isEmpty()){
+        for(Documentacion d : lista){
+            
+        Date fechaActual = new Date();
+        long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+        int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);  
+        d.setDiasVigencia(diasVigencia);
+        
+        if(diasVigencia <= 30 && diasVigencia > 0){
+            d.setEstado("PRÓXIMO A VENCER");
+        } if(diasVigencia <= 0){
+            d.setEstado("VENCIDO");
+        }
+        
+        }    
+        }
+
+        return lista;
+    }
+    
+    public List<Documentacion> buscarDocumentacionAcopladoIdTipo(Long idAcoplado, Long idTipo) {
+        
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionAcopladoPorTipo(idAcoplado, idTipo);
+            
+        if(!lista.isEmpty()){
+        for(Documentacion d : lista){
+            
+        Date fechaActual = new Date();
+        long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+        int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);  
+        d.setDiasVigencia(diasVigencia);
+        
+        if(diasVigencia <= 30 && diasVigencia > 0){
+            d.setEstado("PRÓXIMO A VENCER");
+        } if(diasVigencia <= 0){
+            d.setEstado("VENCIDO");
+        }
+        
+        }    
+        }
+
+        return lista;
+    }
+    
+    public List<Documentacion> buscarDocumentacionChoferesIdTipo(Long idOrg, Long idTipo) {
+        
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionChoferesPorTipo(idOrg, idTipo);
+        
+        if(!lista.isEmpty()){
+        for(Documentacion d : lista){
+            
+        Date fechaActual = new Date();
+        long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+        int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);  
+        d.setDiasVigencia(diasVigencia);
+        
+        if(diasVigencia <= 30 && diasVigencia > 0){
+            d.setEstado("PRÓXIMO A VENCER");
+        } if(diasVigencia <= 0){
+            d.setEstado("VENCIDO");
+        }
+        
+        }    
+        }
+
+        return lista;
+    }
+    
+    public List<Documentacion> buscarDocumentacionChoferIdTipo(Long idChofer, Long idTipo) {
+        
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionChoferPorTipo(idChofer, idTipo);
+            
         if(!lista.isEmpty()){
         for(Documentacion d : lista){
             

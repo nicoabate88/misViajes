@@ -24,7 +24,8 @@
                             <div class="container mb-2"> 
                                 <div class="card border-secondary p-3 mb-2" id="color-card">
                                     <h6>
-                                        <span th:text="'N° '+${neumatico.numero}+' - '+${neumatico.marca.marca}+' '+${neumatico.modelo}"></span>
+                                        <span th:if="${cantidad == 1}" th:text="'N° '+${neumatico.numero}+' - '+${neumatico.marca.marca}+' '+${neumatico.modelo}"></span>
+                                        <span th:if="${cantidad != 1}" th:text="${cantidad}+' Neumáticos Registrados '+${neumatico.marca.marca}+' '+${neumatico.modelo}"></span>
                                         <span id="darkgray" th:text="${neumatico.aplicaA}"></span>
                                     </h6>
                                     <h6 id="dimgray" th:text="'Estado '+${neumatico.estado}"></h6>

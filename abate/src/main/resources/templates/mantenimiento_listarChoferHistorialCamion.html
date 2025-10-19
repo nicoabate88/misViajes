@@ -65,8 +65,9 @@
                                             <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-center">Fecha</th>
+                                                        <th class="text-center">Fecha Mantenimiento</th>
                                                         <th class="text-center">Km Mantenimiento</th>
+                                                        <th class="text-center">Fecha Actualizado</th>
                                                         <th class="text-center">Km Actualizado</th>
                                                         <th class="text-center">Km Recorrido</th>
                                                         <th class="text-center">Observación</th>
@@ -76,8 +77,9 @@
                                                     <tr th:each="mantenimiento : ${entry.value}">
                                                         <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
                                                         <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
+                                                        <td class="text-center" th:text="${#dates.format(mantenimiento.fechaActualizado, 'dd-MM-yyyy')}"></td>
                                                         <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></td>
-                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                        <td class="text-center text-primary"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
                                                         <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 10 ? #strings.substring(mantenimiento.observacion, 0, 10) + '...' : mantenimiento.observacion}"></span>
                                                             <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 10}" 
                                                                th:attr="data-observacion=${mantenimiento.observacion}" 

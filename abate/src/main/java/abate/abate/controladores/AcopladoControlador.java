@@ -327,6 +327,37 @@ public class AcopladoControlador {
         excelServicio.exportHtmlToExcelEstadisticaAcoplados(htmlContent, response);
     }
     
+    @GetMapping("/imprimirEstadistica")
+    public String imprimirEstadistica(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Acoplado, AcopladosEstadistica> estadisticasPorAcoplado = acopladoServicio.estadisticaAcoplados(desde, hasta, logueado.getIdOrg());
+
+        modelo.addAttribute("estadistica", estadisticasPorAcoplado);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+
+        return "acoplado_imprimirEstadistica.html";
+        
+    }
+    
+    @GetMapping("/imprimirEstadisticaAcoplado")
+    public String imprimirEstadisticaAcoplado(@RequestParam Long idAcoplado, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+        
+        List<AcopladoEstadistica> lista = acopladoServicio.estadisticaAcoplado(desde, hasta, idAcoplado);
+
+        Collections.sort(lista, AcopladoEstadisticaComparador.ordenarMes);
+
+        modelo.addAttribute("estadistica", lista);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        return "acoplado_imprimirEstadisticaAcoplado.html";
+          
+    }
+    
     private String generateHtmlFromObjects(List<AcopladoEstadistica> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");

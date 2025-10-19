@@ -47,16 +47,24 @@
                                     <div class="row">
                                         <div class="col-2">    
                                             <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
-                                            <input hidden th:value="${idCamion}" name="idCamion">
-                                            <button type="submit" class="border-0 bg-transparent shadow-none" title="Volver">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </button>
-                                        </form>
+                                                <input hidden th:value="${idCamion}" name="idCamion">
+                                                    <button type="submit" class="border-0 bg-transparent shadow-none" title="Volver">
+                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                            <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                        </svg> 
+                                                    </button>
+                                            </form>
                                         </div>
-                                        <div  class="col-8 text-center">
+                                        <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
                                             <h4>Historial de Mantenimientos</h4>
+                                        </div>
+                                        <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center">
+                                            <form th:action="@{/mantenimiento/exportarHistorialCamion}" method="POST">      
+                                                <input hidden th:value="${idCamion}" name="idCamion">   
+                                                    <button id="exportar" class="btn btn-light" type="submit">
+                                                        <h6 id="icono">Exportar</h6> 
+                                                    </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -68,38 +76,41 @@
                                         <div class="mb-4" th:each="entry : ${mantenimientos}">
                                             <h6 class="text-dark p-1 text-center"><strong th:text="${entry.key}"></strong></h6> 
                                             <div class="table-responsive border border-secondary rounded">
-                                            <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="text-center">Fecha</th>
-                                                        <th class="text-center">Km Mantenimiento</th>
-                                                        <th class="text-center">Km Actualizado</th>
-                                                        <th class="text-center">Km Recorrido</th>
-                                                        <th class="text-center">Observación</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr th:each="mantenimiento : ${entry.value}">
-                                                        <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
-                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
-                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></td>
-                                                        <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
-                                                        <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
-                                                            <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
-                                                               th:attr="data-observacion=${mantenimiento.observacion}" 
-                                                               class="text-primary ver-mas">Ver</a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                                <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center">Fecha</th>
+                                                            <th class="text-center">Km Mantenimiento</th>
+                                                            <th class="text-center">Fecha Actualizado</th>
+                                                            <th class="text-center">Km Actualizado</th>
+                                                            <th class="text-center">Km Recorrido</th>
+                                                            <th class="text-center">Observación</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="mantenimiento : ${entry.value}">
+                                                            <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
+                                                            <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
+                                                            <td class="text-center" th:text="${#dates.format(mantenimiento.fechaActualizado, 'dd-MM-yyyy')}"></td>
+                                                            <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></td>
+                                                            <th class="text-center text-primary" th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></th>
+                                                            <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
+                                                                <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
+                                                                   th:attr="data-observacion=${mantenimiento.observacion}" 
+                                                                   class="text-primary ver-mas">Ver</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
-                                        <div class="text-center">
-                                        <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
-                                        <input hidden th:value="${idCamion}" name="idCamion">
-                                        <button title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
-                                        </form>
-                                        </div>
+                                        <br>
+                                            <div class="text-center">
+                                                <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
+                                                    <input hidden th:value="${idCamion}" name="idCamion">
+                                                        <button title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
+                                                </form>
+                                            </div>
                                     </div>
                                     <div th:if="${mantenimientos.size < 1}">
                                         <br>
@@ -108,11 +119,11 @@
                                             </div>
                                             <br>
                                                 <div class="text-center">
-                                        <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
-                                        <input hidden th:value="${idCamion}" name="idCamion">
-                                        <button title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
-                                        </form>
-                                        </div>
+                                                    <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
+                                                        <input hidden th:value="${idCamion}" name="idCamion">
+                                                            <button title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
+                                                    </form>
+                                                </div>
                                                 </div>
                                                 </div>
                                                 <script>

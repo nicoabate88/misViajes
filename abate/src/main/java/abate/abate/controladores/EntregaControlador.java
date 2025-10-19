@@ -100,24 +100,42 @@ public class EntregaControlador {
             total = e.getImporte() + total;
         }
 
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         modelo.addAttribute("entregas", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.put("id", logueado.getIdOrg());
         modelo.put("total", total);
+        modelo.put("chofer", null);
 
         return "entrega_listar.html";
     }
 
     @PostMapping("/listarFiltro")
-    public String listarFiltro(Long id, String desde, String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+    public String listarFiltro(Long id, String desde, String hasta, @RequestParam(required = false) Long idChofer,
+            ModelMap modelo, HttpSession session) throws ParseException {
 
-        ArrayList<Entrega> lista = entregaServicio.buscarEntregas(id, desde, hasta);
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Double total = 0.0;
+        ArrayList<Entrega> lista = new ArrayList();
+        
+        if(idChofer == null) {
+        
+        lista = entregaServicio.buscarEntregas(id, desde, hasta);
+        modelo.put("chofer", null);
+            
+        } else {
+            
+        lista = entregaServicio.buscarEntregasIdChofer(idChofer, desde, hasta);
+        modelo.put("chofer", choferServicio.buscarChofer(idChofer));
+        
+        }
+        
         for (Entrega e : lista) {
             total = e.getImporte() + total;
         }
 
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         modelo.addAttribute("entregas", lista);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
@@ -125,6 +143,7 @@ public class EntregaControlador {
         modelo.put("total", total);
 
         return "entrega_listar.html";
+    
     }
 
     @GetMapping("/listarIdChofer/{id}")

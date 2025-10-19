@@ -47,7 +47,8 @@
                                                 </div>
                                                 <h6 class="mb-2 text-dark" th:text="'🔧 Próximo Mantenimiento '+${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}+' Km'"></h6>
                                                 <h6 class="mb-2 text-dark" th:text="'🔔 Alarma '+${#numbers.formatDecimal(mantenimiento.kmAlarma, 0, 'POINT', 0, 'POINT')}+' Km'"></h6>
-                                                <p id="dimgray" th:text="'Observación '+${mantenimiento.observacion}"></p> 
+                                                <p class='mb-0' id="dimgray" th:text="'Observación '+${mantenimiento.observacion}"></p> 
+                                                <p class='mb-0' id="darkgray" th:text="'Usuario '+${mantenimiento.usuario.nombre}"></p>
                                             </div>
                                             <div class="col-3 col-md-3 text-center">
                                                 <div title="Ir a Modificar Documentación">

@@ -57,12 +57,18 @@ public class CuentaControlador {
     public String listarChofer(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Boolean flag = false;
 
         Double saldo = 0.0;
         ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
         for (Cuenta c : cuentas) {
             saldo = saldo + c.getSaldo();
         }
+        if(!cuentas.isEmpty()){
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
 
         modelo.addAttribute("cuentas", cuentas);
         modelo.put("saldo", saldo);
@@ -221,13 +227,18 @@ public class CuentaControlador {
     public String listarCliente(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Boolean flag = false;
 
         Double saldo = 0.0;
         ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
         for (Cuenta c : cuentas) {
             saldo = saldo + c.getSaldo();
         }
+        if(!cuentas.isEmpty()){
+            flag = true;
+        }
 
+        modelo.put("flag", flag);
         modelo.addAttribute("cuentas", cuentas);
         modelo.put("saldo", saldo);
 
@@ -594,6 +605,20 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuenta(htmlContent, response, cuenta.getChofer().getNombre(), cuenta.getSaldo());
 
     }
+    
+    @GetMapping("/imprimirTodoAdmin")
+    public String imprimirTodoAdmin(@RequestParam Long idCuenta, ModelMap modelo) throws ParseException {
+        
+        Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
+        String desde = obtenerFechaDesde();
+        String hasta = obtenerFechaHasta();
+
+        modelo.put("cuenta", cuenta);
+        modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta));
+
+        return "cuenta_imprimirTodoAdmin.html";   
+        
+    }
 
     @PostMapping("/exportarFiltroAdmin")
     public String exportarFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
@@ -635,6 +660,22 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuentaMovimiento(htmlContent, response, cuenta.getChofer().getNombre(), desde, hasta);
 
     }
+    
+    @GetMapping("/imprimirFiltroAdmin")
+    public String imprimirFiltroAdmin(@RequestParam Long idCuenta, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+        
+        Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
+
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta);
+
+        modelo.put("cuenta", cuenta);
+        modelo.addAttribute("transacciones", lista);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+
+        return "cuenta_imprimirFiltroAdmin.html";   
+        
+    }
 
     @PostMapping("/exportarTodoCliente")
     public String exportarTodoCliente(@RequestParam Long id, ModelMap modelo) throws ParseException {
@@ -661,6 +702,20 @@ public class CuentaControlador {
         String htmlContent = generateHtmlFromObjects(myObjects);
         excelServicio.exportHtmlToExcelCuenta(htmlContent, response, cuenta.getCliente().getNombre(), cuenta.getSaldo());
 
+    }
+    
+    @GetMapping("/imprimirTodoCliente")
+    public String imprimirTodoCliente(@RequestParam Long idCuenta, ModelMap modelo) throws ParseException {
+        
+        Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
+        String desde = obtenerFechaDesde();
+        String hasta = obtenerFechaHasta();
+
+        modelo.put("cuenta", cuenta);
+        modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta));
+
+        return "cuenta_imprimirTodoCliente.html";   
+        
     }
 
     @PostMapping("/exportarFiltroCliente")
@@ -703,6 +758,96 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuentaMovimiento(htmlContent, response, cuenta.getCliente().getNombre(), desde, hasta);
 
     }
+    
+    @GetMapping("/imprimirFiltroCliente")
+    public String imprimirFIltroCliente(@RequestParam Long idCuenta, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+        
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta);
+
+        modelo.put("cuenta", cuentaServicio.buscarCuenta(idCuenta));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.addAttribute("transacciones", lista);
+
+        return "cuenta_imprimirFiltroCliente.html";   
+        
+    }
+    
+    @PostMapping("/exportarCliente")
+    public String exportarCliente(ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+
+        modelo.addAttribute("cuentas", cuentas);
+
+        return "cuenta_exportarCliente.html";
+
+    }
+
+    @PostMapping("/exportaCliente")
+    public void exportaCliente(HttpServletResponse response, HttpSession session) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+        
+        String htmlContent = generateHtmlFromObjectsClientes(cuentas);
+        excelServicio.exportHtmlToExcelClientes(htmlContent, response);
+
+    }
+    
+    @GetMapping("/imprimirCliente")
+    public String imprimirCliente(ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+
+        modelo.addAttribute("cuentas", cuentas);
+
+        return "cuenta_imprimirCliente.html";
+        
+    }
+    
+    @PostMapping("/exportarChofer")
+    public String exportarChofer(ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+
+        modelo.addAttribute("cuentas", cuentas);
+
+        return "cuenta_exportarChofer.html";
+
+    }
+
+    @PostMapping("/exportaChofer")
+    public void exportaChofer(HttpServletResponse response, HttpSession session) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+        
+        String htmlContent = generateHtmlFromObjectsChoferes(cuentas);
+        excelServicio.exportHtmlToExcelChoferes(htmlContent, response);
+
+    }
+    
+    @GetMapping("/imprimirChofer")
+    public String imprimirChofer(ModelMap modelo, HttpSession session) throws ParseException {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+
+        modelo.addAttribute("cuentas", cuentas);
+
+        return "cuenta_imprimirChofer.html";
+        
+    }
 
     private String generateHtmlFromObjects(ArrayList<Transaccion> objects) {
         StringBuilder sb = new StringBuilder();
@@ -719,6 +864,40 @@ public class CuentaControlador {
                     + "<td>").append(transaccion.getObservacion()).append("</td>"
                     + "<td>").append(transaccion.getImporte()).append("</td>"
                     + "<td>").append(transaccion.getSaldoAcumulado()).append("</td>"
+                    + "</tr>");
+        }
+        sb.append("</tbody></table>");
+        return sb.toString();
+    }
+    
+    private String generateHtmlFromObjectsClientes(ArrayList<Cuenta> objects) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table>");
+        sb.append("<thead><tr>"
+                + "<th>Cliente</th>"
+                + "<th>Saldo</th>"
+                + "</tr></thead>");
+        sb.append("<tbody>");
+        for (Cuenta cuenta : objects) {
+            sb.append("<tr><td>").append(cuenta.getCliente().getNombre()).append("</td>"
+                    + "<td>").append(cuenta.getSaldo()).append("</td>"
+                    + "</tr>");
+        }
+        sb.append("</tbody></table>");
+        return sb.toString();
+    }
+    
+    private String generateHtmlFromObjectsChoferes(ArrayList<Cuenta> objects) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table>");
+        sb.append("<thead><tr>"
+                + "<th>Chofer</th>"
+                + "<th>Saldo</th>"
+                + "</tr></thead>");
+        sb.append("<tbody>");
+        for (Cuenta cuenta : objects) {
+            sb.append("<tr><td>").append(cuenta.getChofer().getNombre()).append("</td>"
+                    + "<td>").append(cuenta.getSaldo()).append("</td>"
                     + "</tr>");
         }
         sb.append("</tbody></table>");

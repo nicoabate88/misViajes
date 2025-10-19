@@ -28,8 +28,16 @@
                                             </svg> 
                                         </a>   
                                     </div>
-                                    <div  class="col-8 text-center">
+                                    <div  class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-8 text-center">
                                         <h4>Consumo de Combustible</h4>
+                                    </div>
+                                    <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == true}">
+                                        <form th:action="@{/combustible/exportarConsumo}" method="POST">   
+                                            <input hidden th:value="${camion.id}" name="idCamion">        
+                                                <button id="exportar" class="btn btn-light" type="submit">
+                                                    <h6 id="icono">Exportar</h6> 
+                                                </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -40,28 +48,28 @@
                                         <h6 id="dimgray" th:text="'Consumo '+${consumo}+' L / 100 Km'"></h6>
                                     </div>
                                     <div class="table-responsive border border-secondary rounded">
-                                    <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center">Fecha</th>                                          
-                                                <th class="text-center">Km Carga</th>
-                                                <th class="text-center">Km Recorrido</th>
-                                                <th class="text-center">Litros</th>
-                                                <th class="text-center">Consumo Carga</th>
-                                                <th class="text-center">Consumo Tanque</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody th:each="carga : ${cargas}">
-                                            <tr>
-                                                <td class="text-center" th:text="${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></td>
-                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmCarga, 1, 'POINT', 1, 'COMMA')}"></td>
-                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmRecorrido, 1, 'POINT', 1, 'COMMA')}"></td>
-                                                <td class="text-center" th:text="${#numbers.formatDecimal(carga.litro, 1, 'POINT', 1, 'COMMA')}"></td>
-                                                <th id="dimgray" class="text-center" th:text="${carga.consumo}"></th>
-                                                <th id="dimgray" class="text-center" th:text="${carga.consumoPromedio}" th:if="${carga.completo == 'SI'}"></th>
-                                            </tr>     
-                                        </tbody>
-                                    </table>
+                                        <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">Fecha</th>                                          
+                                                    <th class="text-center">Km Carga</th>
+                                                    <th class="text-center">Km Recorrido</th>
+                                                    <th class="text-center">Litros</th>
+                                                    <th class="text-center">Consumo Carga</th>
+                                                    <th class="text-center">Consumo Tanque</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody th:each="carga : ${cargas}">
+                                                <tr>
+                                                    <td class="text-center" th:text="${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></td>
+                                                    <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmCarga, 1, 'POINT', 1, 'COMMA')}"></td>
+                                                    <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmRecorrido, 1, 'POINT', 1, 'COMMA')}"></td>
+                                                    <td class="text-center" th:text="${#numbers.formatDecimal(carga.litro, 1, 'POINT', 1, 'COMMA')}"></td>
+                                                    <th id="dimgray" class="text-center" th:text="${carga.consumo}"></th>
+                                                    <th id="dimgray" class="text-center" th:text="${carga.consumoPromedio}" th:if="${carga.completo == 'SI'}"></th>
+                                                </tr>     
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <br>
                                         <div class="text-center mb-2">

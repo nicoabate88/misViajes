@@ -45,6 +45,24 @@ public interface DocumentacionRepositorio extends JpaRepository<Documentacion, L
     
     @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :id AND d.fechaVencimiento <= :fechaLimite")
     List<Documentacion> findDocumentacionesPorVencer(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite);
+    
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND camion_id != null AND tipo_documentacion_id = :idTipo")
+    List<Documentacion> buscarDocumentacionCamionesPorTipo(@Param("idOrg") Long idOrg, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE camion_id = :id AND tipo_documentacion_id = :idTipo")
+    List<Documentacion> buscarDocumentacionCamionPorTipo(@Param("id") Long id, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND acoplado_id != null AND tipo_documentacion_id = :idTipo")
+    List<Documentacion> buscarDocumentacionAcopladosPorTipo(@Param("idOrg") Long idOrg, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id AND tipo_documentacion_id = :idTipo")
+    List<Documentacion> buscarDocumentacionAcopladoPorTipo(@Param("id") Long id, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND chofer_id != null AND tipo_documentacion_id = :idTipo")
+    List<Documentacion> buscarDocumentacionChoferesPorTipo(@Param("idOrg") Long idOrg, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND tipo_documentacion_id = :idTipo")
+    List<Documentacion> buscarDocumentacionChoferPorTipo(@Param("id") Long id, @Param("idTipo") Long idTipo);
 
     
 }

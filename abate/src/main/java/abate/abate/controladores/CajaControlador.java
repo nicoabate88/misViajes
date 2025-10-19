@@ -332,6 +332,20 @@ public class CajaControlador {
         excelServicio.exportHtmlToExcelCaja(htmlContent, response, caja.getChofer().getNombre(), caja.getSaldo());
 
     }
+    
+    @GetMapping("/imprimirAdmin")
+    public String imprimirAdmin(@RequestParam Long idCaja, ModelMap modelo) throws ParseException {
+        
+        Caja caja = cajaServicio.buscarCaja(idCaja);
+        String desde = obtenerFechaDesde();
+        String hasta = obtenerFechaHasta();
+
+        modelo.put("caja", caja);
+        modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCajaFecha(idCaja, desde, hasta));
+
+        return "caja_imprimirAdmin.html";  
+        
+    }
 
     @PostMapping("/exportarFiltroChofer")
     public String exportarFiltroChofer(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
@@ -372,6 +386,20 @@ public class CajaControlador {
         String htmlContent = generateHtmlFromObjects(myObjects);
         excelServicio.exportHtmlToExcelCajaMovimiento(htmlContent, response, caja.getChofer().getNombre(), desde, hasta);
 
+    }
+    
+    @GetMapping("/imprimirFiltroAdmin")
+    public String imprimirFiltroAdmin(@RequestParam Long idCaja, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+        
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(idCaja, desde, hasta);
+
+        modelo.put("caja", cajaServicio.buscarCaja(idCaja));
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.addAttribute("transacciones", lista);
+
+        return "caja_imprimirFiltroAdmin.html";  
+        
     }
 
     private String generateHtmlFromObjects(ArrayList<Transaccion> objects) {
