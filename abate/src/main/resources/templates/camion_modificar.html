@@ -78,6 +78,18 @@
                                                     <input type="text" class="form-control" id="modelo" name="modelo" th:value="${camion.modelo}" 
                                                            required minlength="1" maxlength="30" size="30">
                                                 </div>
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                <label for="acoplado" class="form-floting text-secondary">Asocia Acoplado*</label>
+                                                <select class="form-control" id="acoplado" name="idAcoplado" th:value="${idAcoplado}">
+                                                    <option th:if="${camion.acoplado} != null" selected th:text="${camion.acoplado.dominio}+' - '+${camion.acoplado.marca}+' '+${camion.acoplado.modelo}" 
+                                                            th:value="${camion.acoplado.id}"></option>
+                                                    <option th:if="${camion.acoplado} == null" selected th:value="0">Sin Acoplado</option>
+                                                    <option th:if="${camion.acoplado} != null" th:value="0">Sin Acoplado</option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">

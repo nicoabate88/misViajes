@@ -152,6 +152,11 @@ public class CombustibleControlador {
             modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(idOrg));
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
+            if(camion.getAcoplado() != null){
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(camion.getAcoplado().getId()));
+            } else {
+                modelo.put("acoplado", null);
+            }
 
             return "combustible_registrarAdmin.html";
 
@@ -171,6 +176,7 @@ public class CombustibleControlador {
             modelo.put("choferes", null);
             modelo.put("kmAnterior", null);
             modelo.put("fechaAnterior", null);
+            modelo.put("acoplado", null);
 
             return "combustible_registrarAdmin.html";
             
@@ -194,6 +200,12 @@ public class CombustibleControlador {
         if (flag == true) {
 
             Combustible carga = combustibleServicio.cargaAnterior(camion);
+            
+            if(camion.getAcoplado() != null){
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(camion.getAcoplado().getId()));
+            } else {
+                modelo.put("acoplado", null);
+            }
 
             modelo.put("kmAnterior", carga.getKmCarga());
             modelo.put("fechaAnterior", carga.getFechaCarga());

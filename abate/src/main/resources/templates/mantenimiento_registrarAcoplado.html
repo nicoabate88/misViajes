@@ -55,16 +55,6 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
-                                                <label for="tipo" class="form-floting text-secondary">Tipo*</label>
-                                                <select class="form-control text-secondary" id="tipo" name="idTipo" required>
-                                                    <option th:if="${tipo == null}" selected disabled value="">Seleccione Tipo</option>
-                                                    <option th:if="${tipo != null}" selected th:value="${tipo.id}" th:text="${tipo.nombre}"></option>
-                                                    <option th:each="tipo : ${tipos}"
-                                                            th:value="${tipo.id}"
-                                                            th:text="${tipo.nombre}"/>
-                                                </select>
-                                            </div>                         
-                                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
                                                 <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
                                                 <select class="form-control text-secondary" id="idAcoplado" name="idEntidad" required onchange="enviarRegistroAcoplado()">
                                                     <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
@@ -75,6 +65,16 @@
                                                             th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
                                                 </select>
                                             </div>
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                                <label for="tipo" class="form-floting text-secondary">Tipo*</label>
+                                                <select class="form-control text-secondary" id="tipo" name="idTipo" required>
+                                                    <option th:if="${tipo == null}" selected disabled value="">Seleccione Tipo</option>
+                                                    <option th:if="${tipo != null}" selected th:value="${tipo.id}" th:text="${tipo.nombre}"></option>
+                                                    <option th:each="tipo : ${tipos}"
+                                                            th:value="${tipo.id}"
+                                                            th:text="${tipo.nombre}"/>
+                                                </select>
+                                            </div>                         
                                         </div>
                                         <div class="row">
                                             <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-3">
@@ -97,20 +97,20 @@
                                                            th:value=${km} name="km" required oninput="calcularKm()"> 
                                                 </div> 
                                             </div> 
-
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                                <label for="kmVigencia" class="form-label text-secondary">Km Vigencia*</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light text-success">km</span>
+                                                    <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${kmVigencia}
+                                                           oninput="calcularKmAlarma()" required>
+                                                </div>
+                                            </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
                                                 <label for="kmProximo" class="form-label text-secondary">Km Próximo*</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text text-secondary">km</span>
                                                     <input type="number" class="form-control text-secondary" id="kmProximo" 
                                                            th:value=${kmProximo} name="kmProximo" required oninput="calcularKmAlarma()">
-                                                </div>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
-                                                <label for="kmVigencia" class="form-label text-secondary">Km Vigencia</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light text-success">km</span>
-                                                    <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${kmVigencia} disabled>
                                                 </div>
                                             </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
@@ -201,12 +201,12 @@
 
                                 function calcularKmAlarma() {
                                     const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
-                                    const kmProximo = parseInt(document.getElementById('kmProximo').value) || 0;
+                                    const kmVigencia = parseInt(document.getElementById('kmVigencia').value) || 0;
+                                    const kmProximo = kmInicial + kmVigencia;
                                     const kmAlarma = kmProximo - 1000;
-                                    const kmVigencia = kmProximo - kmInicial;
 
                                     document.getElementById('kmAlarma').value = kmAlarma >= 0 ? kmAlarma : '';
-                                    document.getElementById('kmVigencia').value = kmVigencia >= 0 ? kmVigencia : '';
+                                    document.getElementById('kmProximo').value = kmProximo >= 0 ? kmProximo : '';
                                 }
 
                                 document.getElementById('formulario').addEventListener('submit', function (event) {

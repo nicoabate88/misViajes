@@ -1,5 +1,6 @@
 package abate.abate.servicios;
 
+import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.CamionEstadistica;
 import abate.abate.entidades.CamionesEstadistica;
@@ -9,6 +10,7 @@ import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Usuario;
 import abate.abate.excepciones.MiException;
+import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
 import abate.abate.repositorios.EjeRepositorio;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +41,8 @@ public class CamionServicio {
 
     @Autowired
     private CamionRepositorio camionRepositorio;
+    @Autowired
+    private AcopladoRepositorio acopladoRepositorio;
     @Autowired
     private CombustibleRepositorio combustibleRepositorio;
     @Autowired
@@ -78,7 +83,7 @@ public class CamionServicio {
     }
     
     @Transactional
-    public void modificarCamion(Camion camionModificado, Usuario usuario) throws MiException {
+    public void modificarCamion(Camion camionModificado, Long idAcoplado, Usuario usuario) throws MiException {
     
     Camion camionOriginal = camionRepositorio.getById(camionModificado.getId());
 
@@ -95,6 +100,17 @@ public class CamionServicio {
     
     String marcaMay = camionModificado.getMarca().toUpperCase();
     String modeloMay = camionModificado.getModelo().toUpperCase();
+    
+    if (idAcoplado != 0) {
+            Acoplado acoplado = new Acoplado();
+            Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
+            if (acop.isPresent()) {
+                acoplado = acop.get();
+            }
+            camionOriginal.setAcoplado(acoplado);
+        } else {
+            camionOriginal.setAcoplado(null);
+        }
     
     camionOriginal.setDominio(dominioMay);
     camionOriginal.setMarca(marcaMay);

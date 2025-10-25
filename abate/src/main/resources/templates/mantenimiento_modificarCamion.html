@@ -88,19 +88,20 @@
                                                                    th:value="${mantenimiento.km}" name="km" required oninput="calcularKm()"> 
                                                         </div> 
                                                     </div> 
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                                        <label for="kmVigencia" class="form-label text-secondary">Km Vigencia*</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text bg-light text-success">km</span>
+                                                            <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${mantenimiento.kmVigencia}
+                                                                   oninput="calcularKmAlarma()" required>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
                                                         <label for="kmProximo" class="form-label text-secondary">Km Próximo*</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text text-secondary">km</span>
                                                             <input type="number" class="form-control text-secondary" id="kmProximo" th:value="${mantenimiento.kmProximo}"
                                                                    name="kmProximo" oninput="calcularKmAlarma()" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
-                                                        <label for="kmVigencia" class="form-label text-secondary">Km Vigencia</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text bg-light text-success">km</span>
-                                                            <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${mantenimiento.kmVigencia} disabled>
                                                         </div>
                                                     </div>
                                                     <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
@@ -170,12 +171,12 @@
 
                                                     function calcularKmAlarma() {
                                                         const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
-                                                        const kmProximo = parseInt(document.getElementById('kmProximo').value) || 0;
+                                                        const kmVigencia = parseInt(document.getElementById('kmVigencia').value) || 0;
+                                                        const kmProximo = kmInicial + kmVigencia;
                                                         const kmAlarma = kmProximo - 1000;
-                                                        const kmVigencia = kmProximo - kmInicial;
 
                                                         document.getElementById('kmAlarma').value = kmAlarma >= 0 ? kmAlarma : '';
-                                                        document.getElementById('kmVigencia').value = kmVigencia >= 0 ? kmVigencia : '';
+                                                        document.getElementById('kmProximo').value = kmProximo >= 0 ? kmProximo : '';
                                                     }
 
                                                     document.getElementById('formulario').addEventListener('submit', function (event) {

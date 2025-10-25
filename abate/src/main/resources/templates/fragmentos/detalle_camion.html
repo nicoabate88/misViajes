@@ -7,6 +7,8 @@
                 <div class="card p-3 mb-0">
                     <h6 th:text="'Dominio '+${camion.dominio}"></h6>
                     <h6 class='mb-2' id="dimgray" th:text="'Marca '+${camion.marca}+' Modelo '+${camion.modelo}"></h6>
+                    <p class="mb-1" th:if="${camion.acoplado} != null" id="dimgray" th:text="'Acoplado '+${camion.acoplado.dominio}+' - '+${camion.acoplado.marca}+' '+${camion.acoplado.modelo}"></p>
+                    <p class="mb-1 text-danger" th:if="${camion.acoplado} == null" th:text="'Sin Acoplado Asociado'"></p>
                     <h6 class='mb-2' id="dimgray" th:text="'Estado '+${camion.estado}"></h6>
                     <p id="dimgray" class="mb-1" th:text="'Carga de Úrea '+${camion.azul}"></p>
                     <p th:if="${camion.cantidadAuxilio != 0}" id="dimgray" class="mb-2" th:text="'Neumáticos de Auxilio '+${camion.cantidadAuxilio}"></p>

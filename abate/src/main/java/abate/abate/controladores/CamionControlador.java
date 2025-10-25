@@ -5,6 +5,7 @@ import abate.abate.entidades.CamionEstadistica;
 import abate.abate.entidades.CamionesEstadistica;
 import abate.abate.entidades.Usuario;
 import abate.abate.excepciones.MiException;
+import abate.abate.servicios.AcopladoServicio;
 import abate.abate.servicios.CamionServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.util.CamionEstadisticaComparador;
@@ -36,12 +37,16 @@ public class CamionControlador {
     @Autowired
     private CamionServicio camionServicio;
     @Autowired
+    private AcopladoServicio acopladoServicio;
+    @Autowired
     private ExcelServicio excelServicio;
     
     @GetMapping("/registrar")
-    public String registrarCamion(ModelMap modelo) {
-        
+    public String registrarCamion(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         modelo.put("camion", new Camion());
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         
         return "camion_registrar.html";
     }
@@ -60,6 +65,10 @@ public class CamionControlador {
         } catch (MiException ex) {
             
             model.addAttribute("camion", camion);
+            if(camion.getAcoplado() != null){
+                model.put("acoplado", acopladoServicio.buscarAcoplado(camion.getAcoplado().getId()));
+            }
+            model.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             model.addAttribute("error", ex.getMessage());
             
             return "camion_registrar.html";
@@ -243,28 +252,31 @@ public class CamionControlador {
     }
     
     @GetMapping("/modificar/{id}")
-    public String modificar(@PathVariable Long id, ModelMap modelo) {
+    public String modificar(@PathVariable Long id, ModelMap modelo, HttpSession session) {
 
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         modelo.put("camion", camionServicio.buscarCamion(id));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
         return "camion_modificar.html";
 
     }
 
     @PostMapping("/modifica")
-    public String modifica(@ModelAttribute Camion camion, ModelMap model, HttpSession session) {
+    public String modifica(@ModelAttribute Camion camion, @RequestParam Long idAcoplado, ModelMap model, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            camionServicio.modificarCamion(camion, logueado);
+            camionServicio.modificarCamion(camion, idAcoplado, logueado);
 
             return "redirect:/camion/modificado/" + camion.getId();
 
         } catch (MiException ex) {
 
             model.put("camion", camionServicio.buscarCamion(camion.getId()));
+            model.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             model.put("error", ex.getMessage());
 
             return "camion_modificar.html";

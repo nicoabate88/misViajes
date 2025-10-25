@@ -44,16 +44,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="tipo" class="form-floting text-secondary">Tipo de Documentación*</label>
-                                                <select class="form-control text-secondary" id="tipo" name="idTipo" required>
-                                                    <option selected disabled value="">Seleccione Tipo</option>
-                                                    <option th:each="tipo : ${tipos}"
-                                                            th:value="${tipo.id}"
-                                                            th:text="${tipo.nombre}"/>
-                                                </select>
-                                            </div>                         
+                                        <div class="row">          
                                             <div th:if="${choferes != null}" class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="tipo" class="form-floting text-secondary">Chofer*</label>
                                                 <select class="form-control text-secondary" id="tipo" name="idEntidad" required>
@@ -79,6 +70,15 @@
                                                     <option th:each="acoplado : ${acoplados}"
                                                             th:value="${acoplado.id}"
                                                             th:text="${acoplado.dominio}+' '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="tipo" class="form-floting text-secondary">Tipo de Documentación*</label>
+                                                <select class="form-control text-secondary" id="tipo" name="idTipo" required>
+                                                    <option selected disabled value="">Seleccione Tipo</option>
+                                                    <option th:each="tipo : ${tipos}"
+                                                            th:value="${tipo.id}"
+                                                            th:text="${tipo.nombre}"/>
                                                 </select>
                                             </div>
                                         </div>

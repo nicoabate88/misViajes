@@ -23,6 +23,8 @@ public class Camion {
     private String azul;
     private String estado;
     @OneToOne
+    private Acoplado acoplado;
+    @OneToOne
     private Usuario usuario;
     @OneToMany(mappedBy = "camion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Eje> ejes = new ArrayList<>();
@@ -31,7 +33,7 @@ public class Camion {
     public Camion() {
     }
 
-    public Camion(Long id, Long idOrg, String marca, String modelo, String dominio, String azul, String estado, Usuario usuario, Integer cantidadAuxilio) {
+    public Camion(Long id, Long idOrg, String marca, String modelo, String dominio, String azul, String estado, Acoplado acoplado, Usuario usuario, Integer cantidadAuxilio) {
         this.id = id;
         this.idOrg = idOrg;
         this.marca = marca;
@@ -39,6 +41,7 @@ public class Camion {
         this.dominio = dominio;
         this.azul = azul;
         this.estado = estado;
+        this.acoplado = acoplado;
         this.usuario = usuario;
         this.cantidadAuxilio = cantidadAuxilio;
     }
@@ -99,6 +102,14 @@ public class Camion {
         this.estado = estado;
     }
 
+    public Acoplado getAcoplado() {
+        return acoplado;
+    }
+
+    public void setAcoplado(Acoplado acoplado) {
+        this.acoplado = acoplado;
+    }
+
     public Usuario getUsuario() {
         return usuario;
     }
@@ -122,9 +133,7 @@ public class Camion {
     public void setCantidadAuxilio(Integer cantidadAuxilio) {
         this.cantidadAuxilio = cantidadAuxilio;
     }
-
     
-
-
     
+   
 }

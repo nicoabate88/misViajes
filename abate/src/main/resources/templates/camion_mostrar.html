@@ -25,6 +25,7 @@
                                 <div class="card border-secondary p-3 mb-2" id="color-card">
                                     <h6 th:text="'Dominio '+${camion.dominio}"></h6>
                                     <h6 class='mb-2' id="dimgray" th:text="'Marca '+${camion.marca}+' Modelo '+${camion.modelo}"></h6>
+                                    <p class="mb-1" th:if="${camion.acoplado} != null" id="dimgray" th:text="'Acoplado '+${camion.acoplado.dominio}+' - '+${camion.acoplado.marca}+' '+${camion.acoplado.modelo}"></p>
                                     <h6 class='mb-2' id="dimgray" th:text="'Estado '+${camion.estado}"></h6>
                                     <p id="dimgray" class="mb-1" th:text="'Carga de Úrea '+${camion.azul}"></p>
                                     <p th:if="${camion.cantidadAuxilio != 0}" id="dimgray" class="mb-2" th:text="'Neumáticos de Auxilio '+${camion.cantidadAuxilio}"></p>

@@ -35,19 +35,28 @@
                                                 <input type="text" class="form-control" id="marca" placeholder="Ingrese Marca" th:field="*{marca}" required
                                                        minlength="1" maxlength="30" size="30">
                                             </div>
-
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
                                                 <label for="modelo" class="form-label text-secondary">Modelo de Camión*</label>
                                                 <input type="text" class="form-control" id="modelo" placeholder="Ingrese Modelo" th:field="*{modelo}" required
                                                        minlength="1" maxlength="30" size="30">
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                <label for="acoplado" class="form-floting text-secondary">Asocia Acoplado*</label>
+                                                <select class="form-control" id="acoplado" th:field="*{acoplado.id}">
+                                                    <option th:if="${acoplado} != null" selected th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}" 
+                                                            th:value="${acoplado.id}"></option>
+                                                    <option th:if="${acoplado} == null" selected value="">Sin Acoplado</option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
                                                 <label for="estado" class="form-floting text-secondary">Habilitar Camión*</label>
                                                 <select class="form-control" id="estado" th:field="*{estado}" required>
-                                                    <option selected value="">Seleccione Opción</option>
-                                                    <option value="HABILITADO">HABILITADO</option>
+                                                    <option selected="" value="HABILITADO">HABILITADO</option>
                                                     <option value="INHABILITADO">INHABILITADO</option>
                                                 </select>
                                             </div>

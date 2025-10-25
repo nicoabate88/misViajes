@@ -79,7 +79,9 @@
                                                                     <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4  mb-2">
                                                                         <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
                                                                         <select class="form-control" id="idAcoplado" name="idAcoplado" required>
-                                                                            <option selected disabled value="">Seleccione Acoplado</option>
+                                                                            <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
+                                                                            <option th:if="${acoplado != null}" selected th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}" 
+                                                                               th:value="${acoplado.id}"></option>
                                                                             <option th:value=null>Sin Acoplado</option>
                                                                             <option th:each="acoplado : ${acoplados}"
                                                                                     th:value="${acoplado.id}"
