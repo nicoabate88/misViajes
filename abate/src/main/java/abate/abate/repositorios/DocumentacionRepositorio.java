@@ -63,6 +63,15 @@ public interface DocumentacionRepositorio extends JpaRepository<Documentacion, L
     
     @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND tipo_documentacion_id = :idTipo")
     List<Documentacion> buscarDocumentacionChoferPorTipo(@Param("id") Long id, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE camion_id = :id AND tipo_documentacion_id = :idTipo")
+    Optional<Documentacion> buscarDocumentacionCamion(@Param("id") Long id, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id AND tipo_documentacion_id = :idTipo")
+    Optional<Documentacion> buscarDocumentacionAcoplado(@Param("id") Long id, @Param("idTipo") Long idTipo);
+    
+    @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND tipo_documentacion_id = :idTipo")
+    Optional<Documentacion> buscarDocumentacionChofer(@Param("id") Long id, @Param("idTipo") Long idTipo);
 
     
 }

@@ -1,5 +1,6 @@
 package abate.abate.controladores;
 
+import abate.abate.dto.MantenimientoDTO;
 import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Mantenimiento;
@@ -11,10 +12,13 @@ import abate.abate.servicios.CombustibleServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.MantenimientoServicio;
 import abate.abate.servicios.TipoMantenimientoServicio;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -27,10 +31,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/mantenimiento")
@@ -646,15 +652,11 @@ public class MantenimientoControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
 
-        List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosCamiones(logueado.getIdOrg());
+        List<Mantenimiento> mantenimientos = new ArrayList();
 
         Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                 .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
                 .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-        if (!mantenimientos.isEmpty()) {
-            flag = true;
-        }
 
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
@@ -665,6 +667,8 @@ public class MantenimientoControlador {
         modelo.put("camion", null);
         modelo.put("idTipo", null);
         modelo.put("tipo", null);
+        modelo.put("seleccioneC", "seleccione");
+        modelo.put("seleccioneT", "seleccione");
 
         return "mantenimiento_listarAdminCamiones.html";
 
@@ -748,6 +752,8 @@ public class MantenimientoControlador {
             modelo.put("idCamion", null);
             modelo.put("tipo", null);
             modelo.put("idTipo", null);
+            modelo.put("seleccioneC", null);
+            modelo.put("seleccioneT", null);
 
         }
 
@@ -777,15 +783,11 @@ public class MantenimientoControlador {
 
         Boolean flag = false;
 
-        List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosAcoplados(logueado.getIdOrg());
+        List<Mantenimiento> mantenimientos = new ArrayList();
 
         Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                 .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
                 .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-        if (!mantenimientos.isEmpty()) {
-            flag = true;
-        }
 
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
@@ -796,6 +798,8 @@ public class MantenimientoControlador {
         modelo.put("acoplado", null);
         modelo.put("idTipo", null);
         modelo.put("tipo", null);
+        modelo.put("seleccioneA", "seleccione");
+        modelo.put("seleccioneT", "seleccione");
 
         return "mantenimiento_listarAdminAcoplados.html";
 
@@ -879,6 +883,8 @@ public class MantenimientoControlador {
             modelo.put("idAcoplado", null);
             modelo.put("tipo", null);
             modelo.put("idTipo", null);
+            modelo.put("seleccioneA", null);
+            modelo.put("seleccioneT", null);
 
         }
 
@@ -933,6 +939,275 @@ public class MantenimientoControlador {
 
         return "mantenimiento_listarHistorialAcopladoAdmin.html";
 
+    }
+    
+    @GetMapping("/registrarMasivo")
+    public String registrarMasivo(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.put("camion", null);
+        modelo.put("idOrg", logueado.getIdOrg());
+        
+        return "mantenimiento_registrarMasivo.html"; 
+    }
+    
+    @GetMapping("/registrarMasivo1")
+    public String registrarMasivo1(@RequestParam Long idOrg, @RequestParam(required = false) Long idCamion, 
+            @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
+        
+        if(idCamion != null){
+        Camion camion = camionServicio.buscarCamion(idCamion);
+        int kmCamion = combustibleServicio.kmUltimaCarga(camion);
+
+        modelo.put("kmCamion", kmCamion);
+        modelo.put("kmProximoCamion", kmCamion + 10000);
+        modelo.put("kmAlarmaCamion", kmCamion + 9000);
+        modelo.put("kmVigenciaCamion", 10000);
+        modelo.put("camion", camion);
+        
+        if(camion.getAcoplado() != null && idAcoplado == null){
+            Acoplado acoplado = camion.getAcoplado();
+            int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
+            modelo.put("acoplado", acoplado);
+            modelo.put("kmAcoplado", km);
+            modelo.put("kmProximoAcoplado", km + 10000);
+            modelo.put("kmAlarmaAcoplado", km + 9000);
+            modelo.put("kmVigenciaAcoplado", 10000);
+        } else {
+            modelo.put("acoplado", null);
+            modelo.put("kmAcoplado", null);
+        }
+        }
+        
+        if(idAcoplado != null){
+            
+            Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+            int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
+            modelo.put("acoplado", acoplado);
+            modelo.put("kmAcoplado", km);
+            modelo.put("kmProximoAcoplado", km + 10000);
+            modelo.put("kmAlarmaAcoplado", km + 9000);
+            modelo.put("kmVigenciaAcoplado", 10000);
+            
+        }
+        
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
+        modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposAplicaA(idOrg, TipoMantenimiento.AplicaA.CAMION));
+        modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposAplicaA(idOrg, TipoMantenimiento.AplicaA.ACOPLADO));
+        modelo.put("idOrg", idOrg);
+        
+        return "mantenimiento_registrarMasivo.html"; 
+    }
+
+    @PostMapping("/registroMasivo")
+    public String registroMasivo(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
+                             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson,
+                             @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam String fecha,
+                             @RequestParam(required = false) String observacion, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+    
+    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    ObjectMapper mapper = new ObjectMapper();
+    Date fechaOt = convertirFecha(fecha);
+    String obsMayusculas = observacion.toUpperCase();
+    
+    List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
+    List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
+    
+    List<Mantenimiento> mantenimientosCamion = new ArrayList<>();
+    for (MantenimientoDTO dto : mantenimientosCamionDTO) {
+    Mantenimiento m = new Mantenimiento();
+    TipoMantenimiento tipo = new TipoMantenimiento();
+    tipo.setId(dto.getTipoMantenimiento());
+    m.setTipoMantenimiento(tipo);
+    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+    m.setKm(dto.getKm());
+    m.setKmVigencia(dto.getKmVigencia());
+    m.setKmProximo(dto.getKmProximo());
+    m.setKmAlarma(dto.getKmAlarma());
+    mantenimientosCamion.add(m);
+    }
+    
+    
+    List<Mantenimiento> mantenimientosAcoplado = new ArrayList<>();
+    for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
+    Mantenimiento m = new Mantenimiento();
+    TipoMantenimiento tipo = new TipoMantenimiento();
+    tipo.setId(dto.getTipoMantenimiento());
+    m.setTipoMantenimiento(tipo);
+    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+    m.setKm(dto.getKm());
+    m.setKmVigencia(dto.getKmVigencia());
+    m.setKmProximo(dto.getKmProximo());
+    m.setKmAlarma(dto.getKmAlarma());
+    mantenimientosCamion.add(m);
+    }
+
+    List<Mantenimiento> mantenimientosTotales = new ArrayList<>();
+    mantenimientosTotales.addAll(mantenimientosCamion);
+    mantenimientosTotales.addAll(mantenimientosAcoplado);
+    
+    for (Mantenimiento m : mantenimientosTotales) {
+        m.setEstado("VIGENTE");
+        m.setIdOrg(logueado.getIdOrg());
+        m.setUsuario(logueado);
+        m.setFecha(fechaOt);
+        m.setObservacion(obsMayusculas);
+
+        if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
+            Camion camion = camionServicio.buscarCamion(idCamion);
+            m.setCamion(camion);
+        } else if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.ACOPLADO)) {
+            Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+            m.setAcoplado(acoplado);
+        }
+        
+        Mantenimiento mantenimientoVigente = mantenimientoServicio.buscarExistenteMasivo(m);
+            
+        mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+            
+        }
+
+    redirectAttributes.addFlashAttribute("mantenimientosC", mantenimientosCamionDTO);
+    redirectAttributes.addFlashAttribute("mantenimientosA", mantenimientosAcopladoDTO);
+
+    return "redirect:/mantenimiento/registradoMasivo";
+
+}
+    
+    @GetMapping("/registradoMasivo")
+    public String registradoMasivo(@ModelAttribute("mantenimientosC") List<Mantenimiento> mantenimientosC,
+            @ModelAttribute("mantenimientosA") List<Mantenimiento> mantenimientosA, ModelMap modelo) {
+
+         modelo.put("exito", "La carga de Mantenimientos se ha REGISTRADO con éxito");
+         modelo.addAttribute("mantenimientosC", mantenimientosC);
+         modelo.addAttribute("mantenimientosA", mantenimientosA);
+        
+        return "mantenimiento_mostrarMasivo.html";
+    }
+    
+    @GetMapping("/registrarMasivoChofer")
+    public String registrarMasivoChofer(ModelMap modelo, HttpSession session) {
+
+        Usuario chofer = (Usuario) session.getAttribute("usuariosession");
+        
+        Camion camion = null;
+        Acoplado acoplado = null;
+
+        if(chofer.getCamion() != null){
+            
+        camion = chofer.getCamion();
+        int kmCamion = combustibleServicio.kmUltimaCarga(camion);
+        modelo.put("kmCamion", kmCamion);
+        modelo.put("kmProximoCamion", kmCamion + 10000);
+        modelo.put("kmAlarmaCamion", kmCamion + 9000);
+        modelo.put("kmVigenciaCamion", 10000);
+            
+        } if(chofer.getAcoplado() != null){
+            
+            acoplado = chofer.getAcoplado();
+            int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
+            modelo.put("kmAcoplado", km);
+            modelo.put("kmProximoAcoplado", km + 10000);
+            modelo.put("kmAlarmaAcoplado", km + 9000);
+            modelo.put("kmVigenciaAcoplado", 10000);
+            
+        } 
+        
+        modelo.put("camion", camion);
+        modelo.put("acoplado", acoplado);
+        modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoMantenimiento.AplicaA.CAMION));
+        modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
+        
+        return "mantenimiento_registrarMasivoChofer.html"; 
+    }
+    
+    @PostMapping("/registroMasivoChofer")
+    public String registroMasivoChofer(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
+                             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson, @RequestParam String fecha,
+                             @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session, RedirectAttributes redirectAttributes) 
+                             throws JsonProcessingException, ParseException {
+    
+    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    ObjectMapper mapper = new ObjectMapper();
+    Date fechaOt = convertirFecha(fecha);
+    String obsMayusculas = observacion.toUpperCase();
+    
+    List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
+    List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
+    
+    List<Mantenimiento> mantenimientosCamion = new ArrayList<>();
+    for (MantenimientoDTO dto : mantenimientosCamionDTO) {
+    Mantenimiento m = new Mantenimiento();
+    TipoMantenimiento tipo = new TipoMantenimiento();
+    tipo.setId(dto.getTipoMantenimiento());
+    m.setTipoMantenimiento(tipo);
+    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+    m.setKm(dto.getKm());
+    m.setKmVigencia(dto.getKmVigencia());
+    m.setKmProximo(dto.getKmProximo());
+    m.setKmAlarma(dto.getKmAlarma());
+    mantenimientosCamion.add(m);
+    }
+    
+    
+    List<Mantenimiento> mantenimientosAcoplado = new ArrayList<>();
+    for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
+    Mantenimiento m = new Mantenimiento();
+    TipoMantenimiento tipo = new TipoMantenimiento();
+    tipo.setId(dto.getTipoMantenimiento());
+    m.setTipoMantenimiento(tipo);
+    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+    m.setKm(dto.getKm());
+    m.setKmVigencia(dto.getKmVigencia());
+    m.setKmProximo(dto.getKmProximo());
+    m.setKmAlarma(dto.getKmAlarma());
+    mantenimientosCamion.add(m);
+    }
+
+    List<Mantenimiento> mantenimientosTotales = new ArrayList<>();
+    mantenimientosTotales.addAll(mantenimientosCamion);
+    mantenimientosTotales.addAll(mantenimientosAcoplado);
+    
+    for (Mantenimiento m : mantenimientosTotales) {
+        m.setEstado("VIGENTE");
+        m.setIdOrg(logueado.getIdOrg());
+        m.setUsuario(logueado);
+        m.setFecha(fechaOt);
+        m.setObservacion(obsMayusculas);
+
+        if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
+            Camion camion = logueado.getCamion();
+            m.setCamion(camion);
+        } else if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.ACOPLADO)) {
+            Acoplado acoplado = logueado.getAcoplado();
+            m.setAcoplado(acoplado);
+        }
+        
+        Mantenimiento mantenimientoVigente = mantenimientoServicio.buscarExistenteMasivo(m);
+            
+        mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+            
+        }
+    
+    redirectAttributes.addFlashAttribute("mantenimientosC", mantenimientosCamionDTO);
+    redirectAttributes.addFlashAttribute("mantenimientosA", mantenimientosAcopladoDTO);
+
+    return "redirect:/mantenimiento/registradoMasivoChofer";
+
+  }
+    
+    @GetMapping("/registradoMasivoChofer")
+    public String registradoMasivoChofer(@ModelAttribute("mantenimientosC") List<Mantenimiento> mantenimientosC,
+            @ModelAttribute("mantenimientosA") List<Mantenimiento> mantenimientosA, ModelMap modelo) {
+
+         modelo.put("exito", "La carga de Mantenimientos se ha REGISTRADO con éxito");
+         modelo.addAttribute("mantenimientosC", mantenimientosC);
+         modelo.addAttribute("mantenimientosA", mantenimientosA);
+        
+            return "mantenimiento_mostrarMasivoChofer.html";
     }
 
     @PostMapping("/exportarCamiones")

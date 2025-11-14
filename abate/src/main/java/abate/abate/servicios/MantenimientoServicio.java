@@ -89,6 +89,43 @@ public class MantenimientoServicio {
         return buscar;
             
         }
+
+    public Mantenimiento buscarExistenteMasivo(Mantenimiento mantenimiento) {
+
+        Mantenimiento buscar = null;
+
+        if (mantenimiento.getAplicaA() == TipoMantenimiento.AplicaA.CAMION) {
+            Optional<Mantenimiento> mant = mantenimientoRepositorio.buscarMantenimientoCamion(mantenimiento.getCamion().getId(), mantenimiento.getTipoMantenimiento().getId());
+            if (mant.isPresent()) {
+
+                buscar = mant.get();
+
+            }
+        }
+         else {
+
+            Optional<Mantenimiento> mant = mantenimientoRepositorio.buscarMantenimientoAcoplado(mantenimiento.getAcoplado().getId(), mantenimiento.getTipoMantenimiento().getId());
+            if (mant.isPresent()) {
+
+                buscar = mant.get();
+
+            }
+        }
+        
+         return buscar;
+    }
+    
+    @Transactional
+    public void modificarVigenteOt(Mantenimiento mantenimiento, Mantenimiento mantenimientoVigente) {
+            
+            mantenimientoVigente.setEstado("ACTUALIZADO");
+            mantenimientoVigente.setKmActual(mantenimiento.getKm());
+            mantenimientoVigente.setKmVigencia(mantenimiento.getKm() - mantenimientoVigente.getKm());
+            mantenimientoVigente.setFechaActualizado(mantenimiento.getFecha());
+            
+            mantenimientoRepositorio.save(mantenimientoVigente);
+            
+        }
     
     @Transactional
     public void modificarMantenimiento(Long id, String fecha, Integer km, Integer kmProximo, Integer kmAlarma, String observacion, Usuario usuario) throws ParseException {

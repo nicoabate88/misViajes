@@ -28,12 +28,19 @@ public class PortalControlador {
 
     @GetMapping("/index")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CHOFER', 'ROLE_CEO')")
-    public String index(HttpSession session, ModelMap modelo) {
+    public String index(@RequestParam(required = false) String mensaje, HttpSession session, ModelMap modelo) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
 
+            if (mensaje != null) {
+                if (mensaje.equalsIgnoreCase("exito")) {
+                    modelo.put("exito", "Las imágenes se han cargado correctamente.");
+                } else if (mensaje.equalsIgnoreCase("error")) {
+                    modelo.put("error", "Ocurrió un error al procesar las imagenes. No han sido cargadas.");
+                }
+            }
             modelo.put("chofer", logueado);
 
             return "index_chofer.html";

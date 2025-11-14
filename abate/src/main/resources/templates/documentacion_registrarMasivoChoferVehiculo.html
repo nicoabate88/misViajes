@@ -1,0 +1,391 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Registrar Masivo</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <style>
+                            .tabla-scroll {
+                                max-height: 190px;       /* altura total de unas dos filas */
+                                min-height: 190px;       /* fuerza que tenga esa altura aunque esté vacía */
+                                overflow-y: auto;        /* agrega scroll vertical si se pasa */
+                                border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
+                                border-radius: 0.25rem;
+                            }
+
+                            .tabla-scroll table {
+                                margin-bottom: 0;
+                            }
+
+                            .tabla-scroll thead th {
+                                top: 0;
+                                background-color: #f8f9fa;
+                                z-index: 1;
+                            }
+
+                            .tabla-scroll tbody:empty::before {
+                                content: "";
+                                display: block;
+                                height: 190px; 
+                            }
+                            .btn-eliminar {
+                                background: none;
+                                border: none;
+                                color: red;          /* podés ajustar el color si querés */
+                                font-size: 18px;     /* tamaño del ícono */
+                                cursor: pointer;
+                            }
+
+                            .btn-eliminar:hover {
+                                transform: scale(1.2);  /* efecto sutil al pasar el mouse */
+                            }
+                        </style>
+                        </head>
+                        <body>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/documentacion/camionChofer}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Documentación</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mb-2">  
+                                <form id="formulario" th:action="@{/documentacion/registroMasivoChoferVehiculo}" method="POST">
+                                    <div class="card border-secondary p-2 mb-1" id="color-card">
+                                        <div class="row mb-2">                                                                      
+                                            <div class="col-6 col-sm-6 col-md-5 col-lg-4 col-xl-4 mb-2">
+                                                <label for="idCamion" class="form-floting text-secondary">Camión*</label>
+                                                <input th:if="${camion != null}" class="form-control text-secondary" id="idCamion" name="idCamion"
+                                                       th:value="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" disabled>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 mb-2">
+                                                <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
+                                                <input th:if="${acoplado != null}" class="form-control text-secondary" id="idAcoplado"
+                                                       th:value="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}" disabled>
+                                            </div>
+                                        </div>
+                                        <h6 class="text-primary text-center">Documentación Camión</h6>
+                                        <div class="row mb-1">
+                                            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                <label for="tipoC" class="form-floting text-secondary">Tipo Documentación*</label>
+                                                <select class="form-control text-secondary" id="tipoC">
+                                                    <option selected disabled value="">Seleccione Tipo</option>
+                                                    <option th:each="tipo : ${tiposCamion}"
+                                                            th:value="${tipo.id}"
+                                                            th:text="${tipo.nombre}"/>
+                                                </select>
+                                            </div> 
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                <label for="fechaDesdeC" class="form-floting text-secondary">Fecha Desde*</label>
+                                                <input type="date" class="form-control text-secondary" id="fechaDesdeC">
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                <label for="fechaHastaC" class="form-floting text-secondary">Fecha Hasta*</label>
+                                                <input type="date" class="form-control text-secondary" id="fechaHastaC">
+                                            </div>
+                                            <div class="col-10 col-sm-10 col-md-11 col-lg-3 col-xl-3 mb-2">
+                                                <label for="observacionC" class="form-floting text-secondary">Observación</label>
+                                                <input type="text" class="form-control text-secondary" id="observacionC" placeholder="Ingrese Observación..." maxlength="30" size="30">
+                                            </div>
+                                            <div class="form-floating" >
+                                                <label class="form-label text-white"></label><br><br>
+                                                        <button type="button" class="btn btn-outline-primary border-primary p-1" id="addDocumentacionCamion" title="Agregar Documentación">
+                                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                            </svg>
+                                                        </button>
+                                                        </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="table-responsive tabla-scroll">
+                                                                    <table class="table table-sm table-bordered mb-0" id="tablaDocumentacionCamion">
+                                                                        <thead class="thead-light">
+                                                                            <tr class="text-center">
+                                                                                <th>Tipo</th>
+                                                                                <th>Fecha Desde</th>
+                                                                                <th>Fecha Hasta</th>
+                                                                                <th>Observación</th>
+                                                                                <th class="text-center" style="width: 50px;">Acción</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody></tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        </div>
+                                                        <div class="card border-secondary p-2 mb-2" id="color-card">
+                                                            <h6 class="text-primary text-center">Documentación Acoplado</h6>
+                                                            <div class="row mb-1">
+                                                                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                    <label for="tipoA" class="form-floting text-secondary">Tipo Documentación*</label>
+                                                                    <select class="form-control text-secondary" id="tipoA">
+                                                                        <option selected disabled value="">Seleccione Tipo</option>
+                                                                        <option th:each="tipo : ${tiposAcoplado}"
+                                                                                th:value="${tipo.id}"
+                                                                                th:text="${tipo.nombre}"/>
+                                                                    </select>
+                                                                </div> 
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                                    <label for="fechaDesdeA" class="form-floting text-secondary">Fecha Desde*</label>
+                                                                    <input type="date" class="form-control text-secondary" id="fechaDesdeA">
+                                                                </div>
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                                    <label for="fechaHastaA" class="form-floting text-secondary">Fecha Hasta*</label>
+                                                                    <input type="date" class="form-control text-secondary" id="fechaHastaA">
+                                                                </div>
+                                                                <div class="col-10 col-sm-10 col-md-11 col-lg-3 col-xl-3 mb-2">
+                                                                    <label for="observacionA" class="form-floting text-secondary">Observación</label>
+                                                                    <input type="text" class="form-control text-secondary" id="observacionA" placeholder="Ingrese Observación..." maxlength="30" size="30">
+                                                                </div>
+                                                                <div class="form-floating" >
+                                                                    <label class="form-label text-white"></label><br><br>
+                                                                            <button type="button" class="btn btn-outline-primary border-primary p-1" id="addDocumentacionAcoplado" title="Agregar Documentación">
+                                                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                                </svg>
+                                                                            </button>
+                                                                            </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col-12">
+                                                                                    <div class="table-responsive tabla-scroll">
+                                                                                        <table class="table table-sm table-bordered mb-0" id="tablaDocumentacionAcoplado">
+                                                                                            <thead class="thead-light">
+                                                                                                <tr class="text-center">
+                                                                                                    <th>Tipo</th>
+                                                                                                    <th>Fecha Desde</th>
+                                                                                                    <th>Fecha Hasta</th>
+                                                                                                    <th>Observación</th>
+                                                                                                    <th class="text-center" style="width: 50px;">Acción</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody></tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            </div>    
+                                                                            <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                                                                <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="text-center col-6 mb-0">
+                                                                                    <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/documentacion/camionChofer}" title="Cancelar">Cancelar</a>
+                                                                                </div> 
+                                                                                <div class="text-center col-6 mb-2 ">
+                                                                                    <button id="registrar" class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
+                                                                                </div>
+                                                                            </div>
+                                                                            </form>
+                                                                            </div>
+                                                                            <div id="spinner" class="modal" style="display: none;">
+                                                                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                        <span class="sr-only">Cargando...</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                            <script>
+                                                                                let documentacionCamion = [];
+                                                                                let documentacionAcoplado = [];
+
+                                                                                // --- CAMIÓN ---
+                                                                                $('#addDocumentacionCamion').click(function () {
+
+                                                                                    const tipo = $('#tipoC').val();
+                                                                                    const tipoTexto = $('#tipoC option:selected').text();
+                                                                                    const fechaDesde = $('#fechaDesdeC').val();
+                                                                                    const fechaHasta = $('#fechaHastaC').val();
+                                                                                    const observacion = $('#observacionC').val();
+
+                                                                                    if (!tipo || !fechaDesde || !fechaHasta) {
+                                                                                        alert("Debe completar todos los campos antes de agregar.");
+                                                                                        return;
+                                                                                    }
+
+                                                                                    var fechaAlta = new Date(document.getElementById('fechaDesdeC').value);
+                                                                                    var fechaVencimiento = new Date(document.getElementById('fechaHastaC').value);
+
+                                                                                    if (fechaVencimiento <= fechaAlta) {
+                                                                                        alert('Fecha Hasta debe ser mayor que Fecha Desde');
+                                                                                        event.preventDefault();
+                                                                                        return;
+                                                                                    }
+
+                                                                                    // 🔹 Validar si el tipo ya fue agregado para CAMIÓN
+                                                                                    const existe = documentacionCamion.some(d => d.tipoDocumentacion === tipo);
+                                                                                    if (existe) {
+                                                                                        alert("Ya se ha agregado este tipo de documentación para el camión.");
+                                                                                        return;
+                                                                                    }
+
+                                                                                    function formatearFecha(fechaISO) {
+                                                                                        if (!fechaISO)
+                                                                                            return "";
+                                                                                        const partes = fechaISO.split("-"); // ["yyyy", "mm", "dd"]
+                                                                                        return `${partes[2]}/${partes[1]}/${partes[0]}`; // dd/mm/yyyy
+                                                                                    }
+
+                                                                                    const fechaDesdeFormateada = formatearFecha(fechaDesde);
+                                                                                    const fechaHastaFormateada = formatearFecha(fechaHasta);
+
+                                                                                    function corregirFecha(fechaISO) {
+                                                                                        const fecha = new Date(fechaISO);
+                                                                                        fecha.setDate(fecha.getDate() + 1);
+                                                                                        return fecha.toISOString().substring(0, 10); // Devuelve "yyyy-MM-dd"
+                                                                                    }
+
+                                                                                    const fechaDesdeCorregida = corregirFecha($('#fechaDesdeC').val());
+                                                                                    const fechaHastaCorregida = corregirFecha($('#fechaHastaC').val());
+
+                                                                                    const documentacion = {
+                                                                                        tipoDocumentacion: tipo,
+                                                                                        aplicaA: "CAMION",
+                                                                                        fechaAlta: fechaDesdeCorregida,
+                                                                                        fechaVencimiento: fechaHastaCorregida,
+                                                                                        observacion: observacion,
+                                                                                        estado: tipoTexto
+                                                                                    };
+
+                                                                                    documentacionCamion.push(documentacion);
+
+                                                                                    const fila = `
+        <tr class="text-center text-secondary">
+            <td>${tipoTexto}</td>
+            <td>${fechaDesdeFormateada}</td>
+            <td>${fechaHastaFormateada}</td>
+            <td>${observacion}</td>
+            <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
+        </tr>`;
+                                                                                    $('#tablaDocumentacionCamion tbody').append(fila);
+
+                                                                                    document.getElementById("tipoC").value = "";
+                                                                                    document.getElementById("fechaDesdeC").value = "";
+                                                                                    document.getElementById("fechaHastaC").value = "";
+                                                                                    document.getElementById("observacionC").value = "";
+
+                                                                                });
+
+                                                                                $(document).on('click', '.eliminarFilaCamion', function () {
+                                                                                    const index = $(this).closest('tr').index();
+                                                                                    documentacionCamion.splice(index, 1);
+                                                                                    $(this).closest('tr').remove();
+                                                                                });
+
+                                                                                // --- ACOPLADO ---
+                                                                                $('#addDocumentacionAcoplado').click(function () {
+                                                                                    const tipo = $('#tipoA').val();
+                                                                                    const tipoTexto = $('#tipoA option:selected').text();
+                                                                                    const fechaDesde = $('#fechaDesdeA').val();
+                                                                                    const fechaHasta = $('#fechaHastaA').val();
+                                                                                    const observacion = $('#observacionA').val();
+
+                                                                                    if (!tipo || !fechaDesde || !fechaHasta) {
+                                                                                        alert("Debe completar todos los campos antes de agregar.");
+                                                                                        return;
+                                                                                    }
+
+                                                                                    var fechaAlta = new Date(document.getElementById('fechaDesdeA').value);
+                                                                                    var fechaVencimiento = new Date(document.getElementById('fechaHastaA').value);
+
+                                                                                    if (fechaVencimiento <= fechaAlta) {
+                                                                                        alert('Fecha Hasta debe ser mayor que Fecha Desde');
+                                                                                        event.preventDefault();
+                                                                                        return;
+                                                                                    }
+
+                                                                                    const existe = documentacionAcoplado.some(d => d.tipoDocumentacion === tipo);
+                                                                                    if (existe) {
+                                                                                        alert("Ya se ha agregado este tipo de documentación para el acoplado.");
+                                                                                        return;
+                                                                                    }
+
+                                                                                    function formatearFecha(fechaISO) {
+                                                                                        if (!fechaISO)
+                                                                                            return "";
+                                                                                        const partes = fechaISO.split("-"); // ["yyyy", "mm", "dd"]
+                                                                                        return `${partes[2]}/${partes[1]}/${partes[0]}`; // dd/mm/yyyy
+                                                                                    }
+
+                                                                                    const fechaDesdeFormateada = formatearFecha(fechaDesde);
+                                                                                    const fechaHastaFormateada = formatearFecha(fechaHasta);
+
+                                                                                    function corregirFecha(fechaISO) {
+                                                                                        const fecha = new Date(fechaISO);
+                                                                                        fecha.setDate(fecha.getDate() + 1);
+                                                                                        return fecha.toISOString().substring(0, 10); // Devuelve "yyyy-MM-dd"
+                                                                                    }
+
+                                                                                    const fechaDesdeCorregida = corregirFecha($('#fechaDesdeA').val());
+                                                                                    const fechaHastaCorregida = corregirFecha($('#fechaHastaA').val());
+
+                                                                                    const documentacion = {
+                                                                                        tipoDocumentacion: tipo,
+                                                                                        aplicaA: "ACOPLADO",
+                                                                                        fechaAlta: fechaDesdeCorregida,
+                                                                                        fechaVencimiento: fechaHastaCorregida,
+                                                                                        observacion: observacion,
+                                                                                        estado: tipoTexto
+                                                                                    };
+
+                                                                                    documentacionAcoplado.push(documentacion);
+
+                                                                                    const fila = `
+        <tr class="text-center text-secondary">
+            <td>${tipoTexto}</td>
+            <td>${fechaDesdeFormateada}</td>
+            <td>${fechaHastaFormateada}</td>
+            <td>${observacion}</td>
+            <td><button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button></td>
+        </tr>`;
+                                                                                    $('#tablaDocumentacionAcoplado tbody').append(fila);
+
+                                                                                    document.getElementById("tipoA").value = "";
+                                                                                    document.getElementById("fechaDesdeA").value = "";
+                                                                                    document.getElementById("fechaHastaA").value = "";
+                                                                                    document.getElementById("observacionA").value = "";
+                                                                                });
+
+                                                                                $(document).on('click', '.eliminarFilaAcoplado', function () {
+                                                                                    const index = $(this).closest('tr').index();
+                                                                                    documentacionAcoplado.splice(index, 1);
+                                                                                    $(this).closest('tr').remove();
+                                                                                });
+
+                                                                                $('#formulario').submit(function (event) {
+                                                                                    // 🔹 Validar que haya al menos un mantenimiento cargado
+                                                                                    if (documentacionCamion.length === 0 && documentacionAcoplado.length === 0) {
+                                                                                        alert("Debe agregar al menos un tipo de documentación para camión o acoplado antes de enviar el formulario.");
+                                                                                        event.preventDefault(); // Evita que se envíe
+                                                                                        return;
+                                                                                    }
+
+                                                                                    document.getElementById("spinner").style.display = "block";
+
+                                                                                    $('<input>').attr({
+                                                                                        type: 'hidden',
+                                                                                        name: 'documentacionCamionJson',
+                                                                                        value: JSON.stringify(documentacionCamion)
+                                                                                    }).appendTo('#formulario');
+
+                                                                                    $('<input>').attr({
+                                                                                        type: 'hidden',
+                                                                                        name: 'documentacionAcopladoJson',
+                                                                                        value: JSON.stringify(documentacionAcoplado)
+                                                                                    }).appendTo('#formulario');
+                                                                                });
+                                                                            </script>
+                                                                            </body>
+                                                                            </html>

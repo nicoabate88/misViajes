@@ -34,7 +34,7 @@
                                         <div class="row">
                                             <div class="col-9 col-md-9">
                                                 <p class="mb-1" id="dimgray" th:text="'Vigencia ' + ${#dates.format(documentacion.fechaAlta, 'dd-MM-yyyy')}"></p>
-                                                <p class="mb-2" id="dimgray" th:text="'Vencimiento ' + ${#dates.format(documentacion.fechaVencimiento, 'dd-MM-yyyy')}"></p>
+                                                <p class="mb-2 text-primary" th:text="'Vencimiento ' + ${#dates.format(documentacion.fechaVencimiento, 'dd-MM-yyyy')}"></p>
                                                 <div class="mb-2">
                                                     <span th:switch="${documentacion.estado}">
                                                         <span id="dimgray">Estado</span>
@@ -43,7 +43,7 @@
                                                         <span th:case="'VENCIDO'">❌ VENCIDO</span>
                                                     </span>
                                                 </div>
-                                                <p th:if="${documentacion.observacion != ''}" id="dimgray" th:text="'Observación '+${documentacion.observacion}"></p> 
+                                                <p class="mb-1" th:if="${documentacion.observacion != ''}" id="dimgray" th:text="'Observación '+${documentacion.observacion}"></p> 
                                                 <p class='mb-0' id="darkgray" th:text="'Usuario '+${documentacion.usuario.nombre}"></p>
                                             </div>
                                             <div class="col-3 col-md-3 text-center">

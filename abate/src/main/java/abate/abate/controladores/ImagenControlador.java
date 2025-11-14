@@ -13,8 +13,11 @@ import abate.abate.servicios.FleteServicio;
 import abate.abate.servicios.GastoServicio;
 import abate.abate.servicios.ImagenServicio;
 import abate.abate.servicios.UsuarioServicio;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.http.HttpSession;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -3058,6 +3061,482 @@ public class ImagenControlador {
         }
     }
     
+    @PostMapping("/subirImagenesDocumentacion")
+    public String subirImagenesDocumentacion(@RequestParam(value = "imagenesCamion", required = false) List<MultipartFile> imagenesCamion,
+        @RequestParam(value = "idsCamion", required = false) List<Long> idsCamion, ModelMap modelo) {
+        
+        Boolean flag = false;
+        
+    try {
+    
+        if (idsCamion != null && !idsCamion.isEmpty()) {
+            for (int i = 0; i < idsCamion.size(); i++) {
+                Long idDoc = idsCamion.get(i);
+
+                MultipartFile archivo = null;
+              
+                if (imagenesCamion != null && i < imagenesCamion.size()) {
+                    archivo = imagenesCamion.get(i);
+                }
+
+                if (archivo == null || archivo.isEmpty()) {
+                    continue;
+                }
+
+                Documentacion documentacion = documentacionServicio.buscarDocumentacion(idDoc);
+
+                Imagen imagen = new Imagen();
+                imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacion(documentacion.getId(), imagen);
+                
+                flag = true;
+            }
+        }
+        
+        if(flag == true){
+            
+        return "redirect:/documentacion/listarAdmin?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/documentacion/listarAdmin";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/documentacion/listarAdmin?mensaje=error";
+    }
+}
+    
+    @PostMapping("/subirImagenesDocumentacionA")
+    public String subirImagenesDocumentacionA(@RequestParam(value = "imagenesAcoplado", required = false) List<MultipartFile> imagenesAcoplado,
+        @RequestParam(value = "idsAcoplado", required = false) List<Long> idsAcoplado, ModelMap modelo) {
+        
+        Boolean flag = false;
+        
+    try {
+
+        if (idsAcoplado != null && !idsAcoplado.isEmpty()) {
+            for (int i = 0; i < idsAcoplado.size(); i++) {
+                Long idDocA = idsAcoplado.get(i);
+
+                MultipartFile archivoA = null;
+                if (imagenesAcoplado != null && i < imagenesAcoplado.size()) {
+                    archivoA = imagenesAcoplado.get(i);
+                }
+
+                if (archivoA == null || archivoA.isEmpty()) {
+                    continue;
+                }
+
+                Documentacion documentacionA = documentacionServicio.buscarDocumentacion(idDocA);
+
+                Imagen imagenA = new Imagen();
+                imagenA.setNombre(documentacionA.getTipoDocumentacion().getNombre());
+                imagenA.setTipo(archivoA.getContentType());
+
+                if ("application/pdf".equals(archivoA.getContentType())) {
+                    imagenA.setDatos(archivoA.getBytes());
+                } else {
+                    imagenA.setDatos(optimizeImage(archivoA));
+                }
+
+                imagenServicio.crearImagenDocumentacion(documentacionA.getId(), imagenA);
+                
+                flag = true;
+                
+            }
+        }
+        
+        if(flag == true){
+            
+        return "redirect:/documentacion/listarAdmin?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/documentacion/listarAdmin";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/documentacion/listarAdmin?mensaje=error";
+    }
+}
+    
+    @PostMapping("/subirImagenesDocumentacionTipo") 
+    public String subirImagenesDocumentacionTipo(@RequestParam("documentacionCamionJson") String documentacionCamionJson,
+        @RequestParam(required = false) MultipartFile imagenCamion,
+        @RequestParam(required = false) Long tipoCamion, ModelMap modelo) throws JsonProcessingException {
+        
+    ObjectMapper mapper = new ObjectMapper();
+    List<Long> ids = mapper.readValue(documentacionCamionJson,
+        new com.fasterxml.jackson.core.type.TypeReference<List<Long>>() {});
+    
+    Boolean flag = false;
+
+    try {
+  
+        if (imagenCamion != null && !imagenCamion.isEmpty()) {
+
+                MultipartFile archivo = null;
+
+                archivo = imagenCamion;
+                
+                Imagen imagen = new Imagen();
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacionTipo(ids, imagen);
+                
+                flag = true;
+
+        }
+
+        if(flag == true){
+            
+        return "redirect:/documentacion/listarAdmin?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/documentacion/listarAdmin";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/documentacion/listarAdmin?mensaje=error";
+    }
+
+    }
+    
+     @PostMapping("/subirImagenesDocumentacionTipoA") 
+    public String subirImagenesDocumentacionTipoA(@RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
+        @RequestParam(required = false) MultipartFile imagenAcoplado,
+        @RequestParam(required = false) Long tipoAcoplado, ModelMap modelo) throws JsonProcessingException {
+        
+    ObjectMapper mapper = new ObjectMapper();
+    List<Long> idsA = mapper.readValue(documentacionAcopladoJson,
+        new com.fasterxml.jackson.core.type.TypeReference<List<Long>>() {});
+    
+    Boolean flag = false;
+
+    try {
+        
+        if (imagenAcoplado != null && !imagenAcoplado.isEmpty()) {
+
+                MultipartFile archivo = null;
+                
+                    archivo = imagenAcoplado;
+                
+                Imagen imagen = new Imagen();
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacionTipo(idsA, imagen);
+                
+                flag = true;
+            
+        }
+
+        if(flag == true){
+            
+        return "redirect:/documentacion/listarAdmin?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/documentacion/listarAdmin";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/documentacion/listarAdmin?mensaje=error";
+    }
+
+    }
+    
+    @PostMapping("/subirImagenesDocumentacionTipoChofer") 
+    public String subirImagenesDocumentacionTipoChofer(@RequestParam("documentacionChoferJson") String documentacionChoferJson,
+        @RequestParam(required = false) MultipartFile imagenChofer,
+        @RequestParam(required = false) Long tipoChofer, ModelMap modelo) throws JsonProcessingException {
+        
+    ObjectMapper mapper = new ObjectMapper();
+    List<Long> ids = mapper.readValue(documentacionChoferJson,
+        new com.fasterxml.jackson.core.type.TypeReference<List<Long>>() {});
+    
+    Boolean flag = false;
+
+    try {
+        // === Procesar imágenes de Camión ===
+        if (imagenChofer != null && !imagenChofer.isEmpty()) {
+
+                MultipartFile archivo = null;
+
+                    archivo = imagenChofer;
+
+                Imagen imagen = new Imagen();
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacionTipo(ids, imagen);
+                
+                flag = true;
+            
+        }
+
+        if(flag == true){
+            
+        return "redirect:/documentacion/listarAdmin?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/documentacion/listarAdmin";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/documentacion/listarAdmin?mensaje=error";
+    }
+
+    }
+    
+     @PostMapping("/subirImagenesDocumentacionAdmin")
+      public String subirImagenesDocumentacionAdmin(@RequestParam(value = "imagenesChofer", required = false) List<MultipartFile> imagenesChofer,
+        @RequestParam(value = "idsChofer", required = false) List<Long> idsChofer, ModelMap modelo) {
+          
+          Boolean flag = false;
+
+    try {
+
+        if (idsChofer != null && !idsChofer.isEmpty()) {
+            for (int i = 0; i < idsChofer.size(); i++) {
+                Long idDoc = idsChofer.get(i);
+
+                MultipartFile archivo = null;
+                // Verificar si existe un archivo correspondiente
+                if (imagenesChofer != null && i < imagenesChofer.size()) {
+                    archivo = imagenesChofer.get(i);
+                }
+
+                // Si no se subió archivo, continuar sin error
+                if (archivo == null || archivo.isEmpty()) {
+                    continue;
+                }
+
+                Documentacion documentacion = documentacionServicio.buscarDocumentacion(idDoc);
+
+                Imagen imagen = new Imagen();
+                imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacion(documentacion.getId(), imagen);
+                
+                flag = true;
+                
+            }
+        }
+
+        if(flag == true){
+            
+        return "redirect:/documentacion/listarAdmin?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/documentacion/listarAdmin";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/documentacion/listarAdmin?mensaje=error";
+    }
+}
+      
+       @PostMapping("/subirImagenesDocumentacionChofer")
+      public String subirImagenesDocumentacionChofer(@RequestParam(value = "imagenesChofer", required = false) List<MultipartFile> imagenesChofer,
+        @RequestParam(value = "idsChofer", required = false) List<Long> idsChofer, ModelMap modelo) {
+          
+          Boolean flag = false;
+
+    try {
+
+        if (idsChofer != null && !idsChofer.isEmpty()) {
+            for (int i = 0; i < idsChofer.size(); i++) {
+                Long idDoc = idsChofer.get(i);
+
+                MultipartFile archivo = null;
+                // Verificar si existe un archivo correspondiente
+                if (imagenesChofer != null && i < imagenesChofer.size()) {
+                    archivo = imagenesChofer.get(i);
+                }
+
+                // Si no se subió archivo, continuar sin error
+                if (archivo == null || archivo.isEmpty()) {
+                    continue;
+                }
+
+                Documentacion documentacion = documentacionServicio.buscarDocumentacion(idDoc);
+
+                Imagen imagen = new Imagen();
+                imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacion(documentacion.getId(), imagen);
+                
+                flag = true;
+                
+            }
+        }
+        
+        if(flag == true){
+            
+        return "redirect:/index?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/index";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/index?mensaje=error";
+    }
+}
+      
+      @PostMapping("/subirImagenesDocumentacionChoferVehiculo")
+    public String subirImagenesDocumentacionChoferVehiculo(@RequestParam(value = "imagenesCamion", required = false) List<MultipartFile> imagenesCamion,
+        @RequestParam(value = "idsCamion", required = false) List<Long> idsCamion,
+        @RequestParam(value = "imagenesAcoplado", required = false) List<MultipartFile> imagenesAcoplado,
+        @RequestParam(value = "idsAcoplado", required = false) List<Long> idsAcoplado,
+        ModelMap modelo) {
+        
+        Boolean flag = false;
+
+    try {
+        // === Procesar imágenes de Camión ===
+        if (idsCamion != null && !idsCamion.isEmpty()) {
+            for (int i = 0; i < idsCamion.size(); i++) {
+                Long idDoc = idsCamion.get(i);
+
+                MultipartFile archivo = null;
+                // Verificar si existe un archivo correspondiente
+                if (imagenesCamion != null && i < imagenesCamion.size()) {
+                    archivo = imagenesCamion.get(i);
+                }
+
+                // Si no se subió archivo, continuar sin error
+                if (archivo == null || archivo.isEmpty()) {
+                    continue;
+                }
+
+                Documentacion documentacion = documentacionServicio.buscarDocumentacion(idDoc);
+
+                Imagen imagen = new Imagen();
+                imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
+                imagen.setTipo(archivo.getContentType());
+
+                if ("application/pdf".equals(archivo.getContentType())) {
+                    imagen.setDatos(archivo.getBytes());
+                } else {
+                    imagen.setDatos(optimizeImage(archivo));
+                }
+
+                imagenServicio.crearImagenDocumentacion(documentacion.getId(), imagen);
+                
+                
+                flag = true;
+                
+            }
+        }
+
+        // === Procesar imágenes de Acoplado ===
+        if (idsAcoplado != null && !idsAcoplado.isEmpty()) {
+            for (int i = 0; i < idsAcoplado.size(); i++) {
+                Long idDocA = idsAcoplado.get(i);
+
+                MultipartFile archivoA = null;
+                if (imagenesAcoplado != null && i < imagenesAcoplado.size()) {
+                    archivoA = imagenesAcoplado.get(i);
+                }
+
+                if (archivoA == null || archivoA.isEmpty()) {
+                    continue;
+                }
+
+                Documentacion documentacionA = documentacionServicio.buscarDocumentacion(idDocA);
+
+                Imagen imagenA = new Imagen();
+                imagenA.setNombre(documentacionA.getTipoDocumentacion().getNombre());
+                imagenA.setTipo(archivoA.getContentType());
+
+                if ("application/pdf".equals(archivoA.getContentType())) {
+                    imagenA.setDatos(archivoA.getBytes());
+                } else {
+                    imagenA.setDatos(optimizeImage(archivoA));
+                }
+
+                imagenServicio.crearImagenDocumentacion(documentacionA.getId(), imagenA);
+                
+                flag = true;
+                
+            }
+        }
+
+        if(flag == true){
+            
+        return "redirect:/index?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/index";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/index?mensaje=error";
+    }
+}
+
     @PostMapping("/cargaDocumentacion")
     public String cargaDocumentacion(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo, HttpSession session) throws IOException {
 
@@ -3065,7 +3544,6 @@ public class ImagenControlador {
 
         try {
             Imagen imagen = new Imagen();
-            
             imagen.setNombre(documentacion.getTipoDocumentacion().getNombre());
             imagen.setTipo(file.getContentType());
             

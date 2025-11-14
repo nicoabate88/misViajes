@@ -174,6 +174,21 @@ public class ImagenServicio {
     }
     
     @Transactional
+    public void crearImagenDocumentacionTipo(List<Long> ids, Imagen imagen) {
+        
+        imagenRepositorio.save(imagen);
+        Long idImg = buscarUltimo();
+        Imagen img = imagenRepositorio.getById(idImg);
+        
+        for(Long id : ids){
+        Documentacion documentacion = documentacionRepositorio.getById(id);
+        documentacion.setImagen(img);
+        documentacionRepositorio.save(documentacion);
+        }
+
+    }
+    
+    @Transactional
     public void crearImagenLogo(Long idOrg, Imagen imagen) {
 
         imagenRepositorio.save(imagen);

@@ -1,0 +1,206 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Documentacion Mostrar</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+                <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+                        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+                crossorigin="anonymous"></script>
+
+                <link rel="stylesheet"
+                      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+                      integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
+                      crossorigin="anonymous">
+
+                    <link rel="stylesheet" href="/css/medidas_container.css">
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+                            <style>
+                                .upload-icon {
+                                    position: relative;
+                                    display: inline-block;
+                                    cursor: pointer;
+                                    background-color: #e9ecef;
+                                    border-radius: 50%;
+                                    width: 20px;
+                                    height: 20px;
+                                    line-height: 20px;
+                                    text-align: center;
+                                    transition: all 0.3s ease;
+                                }
+
+                                .upload-icon i {
+                                    font-size: 15px;
+                                    color: dimgray;
+                                    transition: color 0.3s ease, transform 0.3s ease;
+                                }
+
+                                /* Oculta el input nativo */
+                                .upload-icon input[type="file"] {
+                                    position: absolute;
+                                    width: 100%;
+                                    height: 100%;
+                                    opacity: 0;
+                                    cursor: pointer;
+                                    top: 0;
+                                    left: 0;
+                                }
+
+                                /* Efecto hover */
+                                .upload-icon:hover {
+                                    background-color: #007bff1a;
+                                }
+
+                                /* Estado con archivo cargado */
+                                .upload-icon.cargado {
+                                    background-color: #28a7452b;
+                                }
+
+                                .upload-icon.cargado i {
+                                    color: #28a745;
+                                    transform: scale(1.2);
+                                }
+                            </style>
+                            </head>
+
+                            <body>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <a title="Volver" th:href="@{/documentacion/listarAdmin}" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                                                     class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                        <div class="col-8 text-center">
+                                            <h4>Detalle de Documentación</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form id="formImagenes"
+                                      th:action="@{/imagen/subirImagenesDocumentacion}"
+                                      method="post"
+                                      enctype="multipart/form-data"
+                                      onsubmit="return validarYEnviar();">
+                                    <div class="container mb-2">
+                                        <h6 class="text-primary text-center">Documentación Camión</h6>
+                                        <div class="row mb-2">
+                                            <div class="table-responsive tabla-scroll border border-secondary rounded">
+                                                <table class="table table-hover table-sm table-bordered mb-2">
+                                                    <thead class="thead-light">
+                                                        <tr class="text-center">
+                                                            <th>Tipo</th>
+                                                            <th>Fecha Desde</th>
+                                                            <th>Fecha Hasta</th>
+                                                            <th>Observación</th>
+                                                            <th>Imagen</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody th:each="d, iterStat : ${documentacionC}">
+                                                        <tr class="text-center text-secondary">
+                                                            <td th:text="${d.tipoDocumentacion.nombre}"></td>
+                                                            <td th:text="${#dates.format(d.fechaAlta, 'dd-MM-yyyy')}"></td>
+                                                            <td th:text="${#dates.format(d.fechaVencimiento, 'dd-MM-yyyy')}"></td>
+                                                            <td th:text="${d.observacion}"></td>
+                                                            <td class="text-center">
+                                                                <input type="hidden" name="idsCamion" th:value="${d.id}">
+                                                                    <label class="upload-icon">
+                                                                        <input type="file" name="imagenesCamion"
+                                                                               accept="image/jpeg,image/png,image/gif,application/pdf"
+                                                                               class="input-imagen"
+                                                                               onchange="cambiarIcono(this)">
+                                                                            <i class="fas fa-upload"></i>
+                                                                    </label>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div th:if="${exito != null}"
+                                             class="card bg-secondary mb-4 p-3 border-secondary text-center border border-secondary rounded">
+                                            <h6 id="white" th:text="${exito}"></h6>
+                                        </div>
+
+                                        <div class="text-center mb-2">
+                                            <button id="btnFinalizar" type="submit" class="btn btn-primary bg-primary btn-lg w-50">
+                                                Finalizar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div id="loading-overlay"
+                                     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+                                     background:rgba(0,0,0,0.5); z-index:9999; text-align:center; color:white;">
+                                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                        <div class="spinner-border text-light" role="status">
+                                            <span class="sr-only">Cargando...</span>
+                                        </div>
+                                        <p>Subiendo imagen, por favor espere...</p>
+                                    </div>
+                                </div>
+                                <script>
+                                    function cambiarIcono(input) {
+                                        const label = input.closest('.upload-icon');
+                                        if (input.files && input.files.length > 0) {
+                                            label.classList.add('cargado');
+                                            label.querySelector('i').classList.replace('fa-upload', 'fa-check-circle');
+                                        } else {
+                                            label.classList.remove('cargado');
+                                            label.querySelector('i').classList.replace('fa-check-circle', 'fa-upload');
+                                        }
+                                    }
+
+                                    const MAX_SIZE = 5 * 1024 * 1024;
+                                    const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/gif", "application/pdf"];
+
+                                    function validarArchivo(archivo) {
+                                        if (!archivo)
+                                            return true;
+                                        if (!TIPOS_PERMITIDOS.includes(archivo.type)) {
+                                            alert("El archivo debe ser de tipo JPEG, PNG, GIF o PDF.");
+                                            return false;
+                                        }
+                                        if (archivo.size > MAX_SIZE) {
+                                            alert("La imagen es demasiado grande. El tamaño máximo permitido es 5MB.");
+                                            return false;
+                                        }
+                                        return true;
+                                    }
+
+                                    function validarYEnviar() {
+                                        const inputs = document.querySelectorAll(".input-imagen");
+                                        let hayArchivo = false;
+
+                                        for (const input of inputs) {
+                                            const archivo = input.files[0];
+                                            if (archivo) {
+                                                hayArchivo = true;
+                                                if (!validarArchivo(archivo)) {
+                                                    input.value = "";
+                                                    return false; 
+                                                }
+                                            }
+                                        }
+
+                                        if (!hayArchivo) {
+                                            const continuar = confirm("⚠️ No ha cargado ninguna imagen.\n¿Seguro desea continuar sin cargar imagen?");
+                                            if (!continuar) {
+                                                return false; 
+                                            }
+                                        }
+
+                                        document.getElementById("loading-overlay").style.display = "block";
+                                        return true; 
+                                    }
+                                </script>
+                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+                                        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+                                crossorigin="anonymous"></script>
+                            </body>
+                            </html>
+

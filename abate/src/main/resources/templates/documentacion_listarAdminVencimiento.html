@@ -111,21 +111,15 @@
                                                         <tr th:each="documento : ${entry.value}">
                                                             <td class="text-center" th:if="${documento.camion != null}">
                                                                 <span th:text="${documento.camion.dominio}"></span>
-                                                                <a href="#" th:attr="data-id=${documento.camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
-                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
-                                                                </a>
+                                                              
                                                             </td>
                                                             <td class="text-center" th:if="${documento.acoplado != null}">
                                                                 <span th:text="${documento.acoplado.dominio}"></span>
-                                                                <a href="#" th:attr="data-idA=${documento.acoplado.id}" onclick="verHistorialA(this)" class="link-historial" title="Ver Detalle">
-                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
-                                                                </a>
+                                                               
                                                             </td>
                                                             <td class="text-center" th:if="${documento.chofer != null}">
                                                                 <span th:text="${documento.chofer.nombre}"></span>
-                                                                <a href="#" th:attr="data-idC=${documento.chofer.id}" onclick="verHistorialC(this)" class="link-historial" title="Ver Detalle">
-                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
-                                                                </a>
+                                                                
                                                             </td>
                                                             <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
                                                             <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>

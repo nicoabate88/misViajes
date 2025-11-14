@@ -7,28 +7,33 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>                       
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/index}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
-                                            <h4>Mantenimiento</h4>
-                                        </div>
-                                        <div title="Ir a Registrar Tipo" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
-                                            <a th:href="@{/tipoMantenimiento/listar}">
-                                                <svg width="20" height="20" viewBox="0 0 511.99842 511" xmlns="http://www.w3.org/2000/svg"><path d="m371.53125 204.308594c37.8125 13.46875 80.636719 4.160156 109.460938-24.664063 31.402343-31.402343 39.644531-79.40625 20.511718-119.457031l-9.140625-19.128906-64.375 64.375-21.207031-21.199219 64.378906-64.378906-19.128906-9.140625c-40.050781-19.132813-88.058594-10.890625-119.457031 20.511718-28.835938 28.835938-38.140625 71.667969-24.65625 109.492188-1.316407 1.320312 11.335937-11.371094-73.132813 73.363281l-79.878906-79.882812-.003906-56.371094-106.511719-76.984375-48.046875 48.050781 76.996094 106.515625h56.375l79.871094 79.875c-30.265626 30.214844-41.328126 41.441406-73.332032 73.148438-37.828125-13.503906-80.683594-4.203125-109.527344 24.640625-31.402343 31.402343-39.644531 79.40625-20.507812 119.457031l9.136719 19.128906 64.378906-64.375 21.203125 21.203125-64.378906 64.375 19.128906 9.140625c40.050781 19.132813 88.058594 10.890625 119.457031-20.511718 28.824219-28.824219 38.136719-71.640626 24.667969-109.453126l40.65625-40.5 182.726562 180.851563 84.804688-84.804687-182.765625-180.890626zm-278.871094-78.882813-53.050781-73.394531 11.921875-11.921875 73.398438 53.046875.003906 32.269531zm251.019532 21.878907-4.558594-9.546876c-13.667969-28.605468-7.777344-62.898437 14.65625-85.332031 16.957031-16.953125 40.6875-24.460937 63.617187-21.210937l-53.015625 53.019531 63.605469 63.605469 53.015625-53.015625c3.25 22.929687-4.253906 46.660156-21.210938 63.617187-22.429687 22.433594-56.722656 28.320313-85.328124 14.65625l-9.578126-4.574218-87.738281 87.917968-21.15625-21.15625c99.164063-99.488281 86.601563-86.882812 87.691407-87.980468zm-175.664063 218.070312 4.582031 9.585938c13.664063 28.605468 7.773438 62.898437-14.65625 85.328124-16.957031 16.957032-40.6875 24.460938-63.617187 21.214844l53.015625-53.015625-63.609375-63.609375-53.015625 53.015625c-3.246094-22.929687 4.257812-46.660156 21.214844-63.617187 22.429687-22.429688 56.722656-28.320313 85.328124-14.65625l9.507813 4.542968 7.496094-7.40625c39.035156-38.605468 57.058593-56.878906 80.523437-80.269531l21.179688 21.179688c-99.460938 99.191406-86.851563 86.613281-87.949219 87.707031zm259.070313 104.71875-118.753907-117.535156 42.398438-42.398438 118.753906 117.535156zm-97.667969-181.027344-42.394531 42.398438-21.324219-21.101563 42.351562-42.445312zm0 0" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>
-                                                     <h6 id="icono">Tipo</h6> </a>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/index}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
+                                        <h4>Mantenimiento</h4>
+                                    </div>
+                                    <div title="Ir a Registrar Tipo" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">
+                                        <a th:href="@{/tipoMantenimiento/listar}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-justify" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                            </svg>
+                                            <h6 id="icono">Tipo</h6> </a>
                                     </div>
                                 </div>
+                            </div>
                             <div class="container mb-2">  
-                                <div th:if="${exito != null}" class="card bg-secondary mb-2 p-3 border-secondary text-center">                        
-                                    <h6 id="white" th:text="${exito}"></h6>                                                                             
+                                <div th:if="${exito != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">                        
+                                    <h6 id="white" th:text="${exito}"></h6>  
+                                    <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                 </div>
                                 <div class="row mb-2">
                                     <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
@@ -36,14 +41,14 @@
                                             <div class="row mb-5">
                                                 <div  class="col-6 text-center">
                                                     <a id="camiones" th:href="@{/mantenimiento/listarAdminCamiones}">
-                                                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 -15 60 65"><path d="M57.942,28.151l-.832-11.63a3.337,3.337,0,0,0-2.535-3.083l-22.119-3.4A3,3,0,0,0,29,13V38H6a6,6,0,1,0,5.91,7h2.274A3,3,0,0,0,17,47H32a3,3,0,0,0,2.816-2H37.09a5.986,5.986,0,0,0,10.37,3H57a3,3,0,0,0,3-3V31A3.007,3.007,0,0,0,57.942,28.151ZM58,31v5.184A2.966,2.966,0,0,0,57,36H56V30h1A1,1,0,0,1,58,31Zm-2.074-3H48a2,2,0,0,1-2-2V23a1,1,0,0,1,1-1h8.5ZM46,29.444A3.959,3.959,0,0,0,48,30h6v6H46ZM31,13a1,1,0,0,1,1.151-.988l22.12,3.4c.372.057.8.7.845,1.248L55.355,20H47a3,3,0,0,0-3,3V38.09A6,6,0,0,0,43,38H31Zm3.816,27H38.54a5.979,5.979,0,0,0-1.45,3H35V41A2.966,2.966,0,0,0,34.816,40ZM28,40v5H21V40ZM14,43H11.91a5.979,5.979,0,0,0-1.45-3h3.724A2.966,2.966,0,0,0,14,41ZM6,48a4,4,0,1,1,4-4A4,4,0,0,1,6,48Zm10-4V41a1,1,0,0,1,1-1h2v5H17A1,1,0,0,1,16,44Zm17,0a1,1,0,0,1-1,1H30V40h2a1,1,0,0,1,1,1Zm10,4a4,4,0,1,1,4-4A4,4,0,0,1,43,48Zm15-3a1,1,0,0,1-1,1H48.65A5.963,5.963,0,0,0,46,38.812V38H57a1,1,0,0,1,1,1Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M35,28h4a2,2,0,0,0,2-2V22a2,2,0,0,0-2-2H35a2,2,0,0,0-2,2v4A2,2,0,0,0,35,28Zm0-6h4l0,4H35Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
-                                                           <h6 id="dimgray">Camiones</h6>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 -15 60 65"><path d="M57.942,28.151l-.832-11.63a3.337,3.337,0,0,0-2.535-3.083l-22.119-3.4A3,3,0,0,0,29,13V38H6a6,6,0,1,0,5.91,7h2.274A3,3,0,0,0,17,47H32a3,3,0,0,0,2.816-2H37.09a5.986,5.986,0,0,0,10.37,3H57a3,3,0,0,0,3-3V31A3.007,3.007,0,0,0,57.942,28.151ZM58,31v5.184A2.966,2.966,0,0,0,57,36H56V30h1A1,1,0,0,1,58,31Zm-2.074-3H48a2,2,0,0,1-2-2V23a1,1,0,0,1,1-1h8.5ZM46,29.444A3.959,3.959,0,0,0,48,30h6v6H46ZM31,13a1,1,0,0,1,1.151-.988l22.12,3.4c.372.057.8.7.845,1.248L55.355,20H47a3,3,0,0,0-3,3V38.09A6,6,0,0,0,43,38H31Zm3.816,27H38.54a5.979,5.979,0,0,0-1.45,3H35V41A2.966,2.966,0,0,0,34.816,40ZM28,40v5H21V40ZM14,43H11.91a5.979,5.979,0,0,0-1.45-3h3.724A2.966,2.966,0,0,0,14,41ZM6,48a4,4,0,1,1,4-4A4,4,0,0,1,6,48Zm10-4V41a1,1,0,0,1,1-1h2v5H17A1,1,0,0,1,16,44Zm17,0a1,1,0,0,1-1,1H30V40h2a1,1,0,0,1,1,1Zm10,4a4,4,0,1,1,4-4A4,4,0,0,1,43,48Zm15-3a1,1,0,0,1-1,1H48.65A5.963,5.963,0,0,0,46,38.812V38H57a1,1,0,0,1,1,1Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M35,28h4a2,2,0,0,0,2-2V22a2,2,0,0,0-2-2H35a2,2,0,0,0-2,2v4A2,2,0,0,0,35,28Zm0-6h4l0,4H35Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
+                                                        <h6 id="dimgray">Camiones</h6>
                                                     </a>
                                                 </div>
                                                 <div  class="col-6 text-center">
                                                     <a id="acoplados" th:href= "@{/mantenimiento/listarAdminAcoplados}">
                                                         <svg width="50" height="50" viewBox="27 10 50 52" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="m26 54c0 1.1.9 2 2 2h3.5c-.3.6-.5 1.3-.5 2 0 2.2 1.8 4 4 4 1.5 0 2.8-.8 3.5-2h3.1c.7 1.2 2 2 3.5 2s2.8-.8 3.5-2h3.1c.7 1.2 2 2 3.5 2 2.2 0 4-1.8 4-4 0-.7-.2-1.4-.5-2h18.3c.6 0 1-.5 1-1v-16c0-.6-.4-1-1-1h-2c-.2 0-.6.2-1 .5s-.8.5-1 .5h-42c-.2 0-.6-.2-1-.5s-.8-.5-1-.5h-2c-.6 0-1 .4-1 1zm25.5 2c-.3.6-.5 1.3-.5 2h-2c0-.7-.2-1.4-.5-2zm1.5 2c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm23-18v14h-48v-14h1c.2 0 .6.2 1 .5s.8.5 1 .5h42c.2 0 .6-.2 1-.5s.8-.5 1-.5zm-34.5 16c-.3.6-.5 1.3-.5 2h-2c0-.7-.2-1.4-.5-2zm3.5 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-12 2c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm1-6c-.6 0-1-.5-1-1v-7c0-.5.4-1 1-1s1 .5 1 1v7c0 .5-.4 1-1 1zm6 0c-.6 0-1-.5-1-1v-7c0-.5.4-1 1-1s1 .5 1 1v7c0 .5-.4 1-1 1zm5-1c0 .5.4 1 1 1s1-.5 1-1v-7c0-.5-.4-1-1-1s-1 .5-1 1zm7 1c-.6 0-1-.5-1-1v-7c0-.5.4-1 1-1s1 .5 1 1v7c0 .5-.4 1-1 1zm5-1c0 .5.4 1 1 1s1-.5 1-1v-7c0-.5-.4-1-1-1s-1 .5-1 1zm7 1c-.6 0-1-.5-1-1v-7c0-.5.4-1 1-1s1 .5 1 1v7c0 .5-.4 1-1 1zm5-1c0 .5.4 1 1 1s1-.5 1-1v-7c0-.5-.4-1-1-1s-1 .5-1 1z" fill-rule="evenodd" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
-                                                         <h6 id="dimgray">Acoplados</h6>
+                                                        <h6 id="dimgray">Acoplados</h6>
                                                     </a>
                                                 </div>
                                             </div>
@@ -61,40 +66,40 @@
                                     </div>
                                 </div>
                                 <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/index}">Volver</a>
-                                    </div>
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/index}">Volver</a>
+                                </div>
                             </div>
                             <div id="spinner" class="modal" style="display: none;">
-                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                            <span class="sr-only">Cargando...</span>
-                                        </div>
+                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                        <span class="sr-only">Cargando...</span>
                                     </div>
                                 </div>
+                            </div>
                             <script>
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        const volverBtn = document.getElementById("camiones");
-                                        volverBtn.addEventListener("click", function (e) {
-                                            // Mostrar spinner
-                                            document.getElementById("spinner").style.display = "block";
-                                        });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const volverBtn = document.getElementById("camiones");
+                                    volverBtn.addEventListener("click", function (e) {
+                                        // Mostrar spinner
+                                        document.getElementById("spinner").style.display = "block";
                                     });
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        const volverBtn = document.getElementById("acoplados");
-                                        volverBtn.addEventListener("click", function (e) {
-                                            // Mostrar spinner
-                                            document.getElementById("spinner").style.display = "block";
-                                        });
+                                });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const volverBtn = document.getElementById("acoplados");
+                                    volverBtn.addEventListener("click", function (e) {
+                                        // Mostrar spinner
+                                        document.getElementById("spinner").style.display = "block";
                                     });
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        const volverBtn = document.getElementById("proximos");
-                                        volverBtn.addEventListener("click", function (e) {
-                                            // Mostrar spinner
-                                            document.getElementById("spinner").style.display = "block";
-                                        });
+                                });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                    const volverBtn = document.getElementById("proximos");
+                                    volverBtn.addEventListener("click", function (e) {
+                                        // Mostrar spinner
+                                        document.getElementById("spinner").style.display = "block";
                                     });
-                                   
-                                </script>
+                                });
+
+                            </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                         </body>

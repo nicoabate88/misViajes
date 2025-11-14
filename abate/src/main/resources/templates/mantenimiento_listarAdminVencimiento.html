@@ -113,15 +113,9 @@
                                                         <tr th:each="mantenimiento : ${entry.value}">
                                                             <td class="text-center" th:if="${mantenimiento.camion != null}">
                                                                 <span th:text="${mantenimiento.camion.dominio}"></span>
-                                                                <a href="#" th:attr="data-id=${mantenimiento.camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
-                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
-                                                                </a>
                                                             </td>
                                                             <td class="text-center" th:if="${mantenimiento.acoplado != null}">
                                                                 <span th:text="${mantenimiento.acoplado.dominio}"></span>
-                                                                <a href="#" th:attr="data-idA=${mantenimiento.acoplado.id}" onclick="verHistorialA(this)" class="link-historial" title="Ver Detalle">
-                                                                    <i class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
-                                                                </a>
                                                             </td>
                                                             <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
                                                             <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>

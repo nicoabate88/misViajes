@@ -91,7 +91,6 @@
                                                             <th class="text-center">Fecha Actualizado</th>
                                                             <th class="text-center">Km Actualizado</th>
                                                             <th class="text-center">Km Recorrido</th>
-                                                            <th class="text-center">Observación</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -101,7 +100,6 @@
                                                             <td class="text-center" th:text="${#dates.format(mantenimiento.fechaActualizado, 'dd-MM-yyyy')}"></td>
                                                             <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></td>
                                                             <th class="text-center text-primary" th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></th>
-                                                            <td class="text-center" th:text="${mantenimiento.observacion}"></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

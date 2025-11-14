@@ -78,6 +78,100 @@ public class DocumentacionServicio {
     }
     
     @Transactional
+    public Documentacion crearDocumentacionMasivo(Documentacion documentacion) {
+        
+        Documentacion buscarVigente = null;
+
+        if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION) {
+            Optional<Documentacion> doc = documentacionRepositorio.buscarDocumentacionCamion(documentacion.getCamion().getId(), documentacion.getTipoDocumentacion().getId());
+            if (doc.isPresent()) {
+                buscarVigente = doc.get();
+            }
+            
+        } else if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO) {
+            Optional<Documentacion> doc = documentacionRepositorio.buscarDocumentacionAcoplado(documentacion.getAcoplado().getId(), documentacion.getTipoDocumentacion().getId());
+            if (doc.isPresent()) {
+                buscarVigente = doc.get();
+            }
+        } else {
+            Optional<Documentacion> doc = documentacionRepositorio.buscarDocumentacionChofer(documentacion.getChofer().getId(), documentacion.getTipoDocumentacion().getId());
+            if (doc.isPresent()) {
+                buscarVigente = doc.get();
+            }
+        }
+        
+        if(buscarVigente != null) {
+            
+            buscarVigente.setFechaAlta(documentacion.getFechaAlta());
+            buscarVigente.setFechaVencimiento(documentacion.getFechaVencimiento());
+            buscarVigente.setUsuario(documentacion.getUsuario());
+            buscarVigente.setObservacion(documentacion.getObservacion());
+
+            if(buscarVigente.getImagen() != null){
+                imagenServicio.eliminarImagenDocumentacion(buscarVigente.getImagen().getId(), buscarVigente.getId());
+            }
+            
+            documentacionRepositorio.save(buscarVigente);
+            
+            return buscarVigente;
+            
+        } else {
+            
+            documentacionRepositorio.save(documentacion);
+            
+            return documentacion;
+               
+        }
+
+    }
+    
+    @Transactional
+    public Documentacion crearDocumentacionMasivoTipo(Documentacion documentacion) {
+        
+        Documentacion buscarVigente = null;
+
+        if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION) {
+            Optional<Documentacion> doc = documentacionRepositorio.buscarDocumentacionCamion(documentacion.getCamion().getId(), documentacion.getTipoDocumentacion().getId());
+            if (doc.isPresent()) {
+                buscarVigente = doc.get();
+            }
+            
+        } else if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO) {
+            Optional<Documentacion> doc = documentacionRepositorio.buscarDocumentacionAcoplado(documentacion.getAcoplado().getId(), documentacion.getTipoDocumentacion().getId());
+            if (doc.isPresent()) {
+                buscarVigente = doc.get();
+            }
+        } else {
+            Optional<Documentacion> doc = documentacionRepositorio.buscarDocumentacionChofer(documentacion.getChofer().getId(), documentacion.getTipoDocumentacion().getId());
+            if (doc.isPresent()) {
+                buscarVigente = doc.get();
+            }
+        }
+        
+        if(buscarVigente != null) {
+            
+            buscarVigente.setFechaAlta(documentacion.getFechaAlta());
+            buscarVigente.setFechaVencimiento(documentacion.getFechaVencimiento());
+            buscarVigente.setUsuario(documentacion.getUsuario());
+            buscarVigente.setObservacion(documentacion.getObservacion());
+            buscarVigente.setImagen(null);
+
+            documentacionRepositorio.save(buscarVigente);
+            
+            return buscarVigente;
+            
+        } else {
+            
+            documentacionRepositorio.save(documentacion);
+            
+            return documentacion;
+               
+        }
+
+    }
+
+    
+    @Transactional
     public void modificarDocumentacion(Long id, Long tipoId, TipoDocumentacion.AplicaA aplicaA, Long idEntidad, String fechaAlta, 
             String fechaVencimiento, String observacion, Usuario usuario) throws ParseException, MiException {
         
