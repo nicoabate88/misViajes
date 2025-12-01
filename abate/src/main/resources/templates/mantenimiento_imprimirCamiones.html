@@ -23,16 +23,18 @@
                             <div class='col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1'></div>
                             <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10 text-center mb-4">
                                 <div class="form-floating">
-                                    <h5 class="text-primary" th:if="${idCamion == null}" th:text="'Lista de Mantenimiento de Camiones'"></h5>
-                                    <h5 th:if="${idCamion != null}" th:text="'Lista de Mantenimiento Camión '+${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h5>
+                                    <h5 class="text-primary" th:if="${idCamion == null && clase != 'TODOS'}" th:text="'Lista de Mantenimientos '+${clase}+' de Camiones'"></h5>
+                                    <h5 class="text-primary" th:if="${idCamion != null && clase != 'TODOS'}" th:text="'Lista de Mantenimientos '+${clase}+' Camión '+${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h5>
+                                    <h5 class="text-primary" th:if="${idCamion == null && clase == 'TODOS'}" th:text="'Lista de Mantenimientos de Camiones'"></h5>
+                                    <h5 class="text-primary" th:if="${idCamion != null && clase == 'TODOS'}" th:text="'Lista de Mantenimientos Camión '+${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></h5>
                                 </div>
                             </div>
                             <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 mt-2">
                                 <a href="#" class="boton-imprimir" onclick="window.print(); return false;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-                                                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
-                                                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
-                                                </svg>
+                                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                    </svg>
                                 </a>
                             </div>
                         </div>
@@ -61,10 +63,10 @@
                                             <td class="text-center text-primary"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
                                             <td class="text-center">
                                                 <span th:switch="${mantenimiento.estado}">
-                                                    <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                                    <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                                    <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                </span> 
+                                                    <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">✅ VIGENTE</span>
+                                                    <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).PROXIMO_A_VENCER}">🟡 PRÓXIMO A VENCER</span>
+                                                    <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VENCIDO}">❌ VENCIDO</span>
+                                                </span>
                                             </td>
                                         </tr>
                                     </tbody>

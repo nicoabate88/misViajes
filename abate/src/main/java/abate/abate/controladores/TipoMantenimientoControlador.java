@@ -35,20 +35,21 @@ public class TipoMantenimientoControlador {
     }
     
     @PostMapping("/registro")
-    public String registro(@RequestParam String nombre, @RequestParam List<TipoMantenimiento.AplicaA> aplicaA,  
+    public String registro(@RequestParam String nombre, @RequestParam String clase, @RequestParam List<TipoMantenimiento.AplicaA> aplicaA,  
             ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            tipoMantenimientoServicio.crearTipoMantenimiento(nombre, aplicaA, logueado);
+            tipoMantenimientoServicio.crearTipoMantenimiento(nombre, clase, aplicaA, logueado);
 
             return "redirect:/tipoMantenimiento/registrado/" + logueado.getIdOrg();
 
         } catch (MiException ex) {
 
             modelo.put("nombre", nombre);
+            modelo.put("clase", clase);
             modelo.addAttribute("aplicaA", TipoMantenimiento.AplicaA.values());
             modelo.put("error", ex.getMessage());
 
@@ -88,14 +89,14 @@ public class TipoMantenimientoControlador {
     }
 
     @PostMapping("/modifica")
-    public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam List<TipoMantenimiento.AplicaA> aplicaA,  
+    public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam String clase, @RequestParam List<TipoMantenimiento.AplicaA> aplicaA,  
             ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
             
-            tipoMantenimientoServicio.modificarTipoMantenimiento(id, nombre, aplicaA, logueado);
+            tipoMantenimientoServicio.modificarTipoMantenimiento(id, nombre, clase, aplicaA, logueado);
 
             return "redirect:/tipoMantenimiento/modificado/" + id;
 

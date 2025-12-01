@@ -25,10 +25,19 @@
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form id="formulario" th:action="@{/tipoMantenimiento/registro}" method="POST">
                                         <div class="row">
-                                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
+                                        <div class="col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6 mb-2">
                                             <label for="nombre" class="form-label text-secondary">Tipo de Mantenimiento*</label>                                
                                             <input type="text" class="form-control" id="nombre" placeholder="Ingrese Nombre" name="nombre" th:value="${nombre}" required maxlength="60" size="60">     
-                                        </div>    
+                                        </div> 
+                                        <div class="col-6 col-sm-6 col-md-5 col-lg-3 col-xl-3 mb-2">
+                                                <label for="clase" class="form-floting text-secondary">Clase*</label>
+                                                <select class="form-control" id="clase" name="clase" required>
+                                                    <option th:if="${clase} != null" selected th:text="${clase}" th:value="${clase}"></option>
+                                                    <option th:if="${clase} == null" selected disabled value="">Seleccione Opción</option>
+                                                    <option value="PREVENTIVO">PREVENTIVO</option>
+                                                    <option value="CORRECTIVO">CORRECTIVO</option>
+                                                </select>
+                                            </div>    
                                         </div>
                                         <div class="mb-5">
                                             <label>Aplica a*</label>

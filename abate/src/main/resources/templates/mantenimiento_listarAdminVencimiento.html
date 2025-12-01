@@ -124,10 +124,10 @@
                                                             <td class="text-center text-primary"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
                                                             <td class="text-center">
                                                                 <span th:switch="${mantenimiento.estado}">
-                                                                    <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                                                    <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                                                    <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                                </span> 
+                                                                    <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">✅ VIGENTE</span>
+                                                                    <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).PROXIMO_A_VENCER}">🟡 PRÓXIMO A VENCER</span>
+                                                                    <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VENCIDO}">❌ VENCIDO</span>
+                                                                </span>
                                                             </td>
                                                             <td class="text-center"><span th:text="${#strings.length(mantenimiento.observacion) > 20 ? #strings.substring(mantenimiento.observacion, 0, 20) + '...' : mantenimiento.observacion}"></span>
                                                                 <a href="#" th:if="${#strings.length(mantenimiento.observacion) > 20}" 
@@ -268,8 +268,8 @@
                                                             $('#loadingModal').modal('show');
                                                         });
                                                     });
-                                                    
-                                                     function verHistorialA(button) {
+
+                                                    function verHistorialA(button) {
                                                         const acopladoId = button.getAttribute('data-idA');
 
                                                         fetch(`/acoplado/detalle/${acopladoId}`)

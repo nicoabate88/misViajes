@@ -969,27 +969,19 @@ public class DocumentacionControlador {
     d.setFechaAlta(dto.getFechaAlta());
     d.setFechaVencimiento(dto.getFechaVencimiento());
     d.setObservacion(obsMayusculas);
-    documentacionCamion.add(d);
-    }
-
-    List<Documentacion> documentacionTotales = new ArrayList<>();
-    documentacionTotales.addAll(documentacionCamion);
-    List<Documentacion> documentacionNuevoCamion = new ArrayList<>();
-    
-    for (Documentacion d : documentacionTotales) {
-        d.setEstado("VIGENTE");
-        d.setIdOrg(logueado.getIdOrg());
-        d.setUsuario(logueado);
-            Camion camion = camionServicio.buscarCamion(idCamion);
-            d.setCamion(camion);
+    d.setEstado("VIGENTE");
+    d.setIdOrg(logueado.getIdOrg());
+    d.setUsuario(logueado);
+    Camion camion = camionServicio.buscarCamion(idCamion);
+    d.setCamion(camion);
             
-        d = documentacionServicio.crearDocumentacionMasivo(d);
-
-        documentacionNuevoCamion.add(d);        
-
+    d = documentacionServicio.crearDocumentacionMasivo(d);
+    
+    documentacionCamion.add(d);
+    
     }
     
-        redirectAttributes.addFlashAttribute("documentacionC", documentacionNuevoCamion);
+        redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
     
         return "redirect:/documentacion/registradoMasivo";
         
@@ -1035,26 +1027,19 @@ public class DocumentacionControlador {
     d.setFechaAlta(dto.getFechaAlta());
     d.setFechaVencimiento(dto.getFechaVencimiento());
     d.setObservacion(obsMayusculas);
+    d.setEstado("VIGENTE");
+    d.setIdOrg(logueado.getIdOrg());
+    d.setUsuario(logueado);
+    Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+    d.setAcoplado(acoplado);
+            
+    d = documentacionServicio.crearDocumentacionMasivo(d);
+
     documentacionAcoplado.add(d);
+    
     }
 
-
-    List<Documentacion> documentacionTotales = new ArrayList<>();
-    documentacionTotales.addAll(documentacionAcoplado);
-    List<Documentacion> documentacionNuevoAcoplado = new ArrayList<>();
-    
-    for (Documentacion d : documentacionTotales) {
-        d.setEstado("VIGENTE");
-        d.setIdOrg(logueado.getIdOrg());
-        d.setUsuario(logueado);
-            Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
-            d.setAcoplado(acoplado);
-            
-        d = documentacionServicio.crearDocumentacionMasivo(d);
-        documentacionNuevoAcoplado.add(d);
-        }
-
-    redirectAttributes.addFlashAttribute("documentacionA", documentacionNuevoAcoplado);
+    redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
 
     return "redirect:/documentacion/registradoMasivoA";
 
@@ -1295,23 +1280,18 @@ public class DocumentacionControlador {
     d.setFechaAlta(dto.getFechaAlta());
     d.setFechaVencimiento(dto.getFechaVencimiento());
     d.setObservacion(obsMayusculas);
+    d.setEstado("VIGENTE");
+    d.setIdOrg(logueado.getIdOrg());
+    d.setUsuario(logueado);
+    Usuario chofer = choferServicio.buscarChofer(idChofer);
+    d.setChofer(chofer);
+            
+    d = documentacionServicio.crearDocumentacionMasivo(d);
+        
     documentacionChofer.add(d);
     }
-    List<Documentacion> documentacionNuevoChofer = new ArrayList<>();
-    for (Documentacion d : documentacionChofer) {
-        d.setEstado("VIGENTE");
-        d.setIdOrg(logueado.getIdOrg());
-        d.setUsuario(logueado);
-        Usuario chofer = choferServicio.buscarChofer(idChofer);
-        d.setChofer(chofer);
-            
-        d = documentacionServicio.crearDocumentacionMasivo(d);
-        
-        documentacionNuevoChofer.add(d);
-
-    }
     
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionNuevoChofer);
+    redirectAttributes.addFlashAttribute("documentacionC", documentacionChofer);
 
     return "redirect:/documentacion/registradoMasivoAdmin";
 
@@ -1358,22 +1338,18 @@ public class DocumentacionControlador {
     d.setFechaAlta(dto.getFechaAlta());
     d.setFechaVencimiento(dto.getFechaVencimiento());
     d.setObservacion(obsMayusculas);
-    documentacionChofer.add(d);
-    }
-    List<Documentacion> documentacionNuevoChofer = new ArrayList<>();
-    for (Documentacion d : documentacionChofer) {
-        d.setEstado("VIGENTE");
-        d.setIdOrg(logueado.getIdOrg());
-        d.setUsuario(logueado);
-        d.setChofer(logueado);
+    d.setEstado("VIGENTE");
+    d.setIdOrg(logueado.getIdOrg());
+    d.setUsuario(logueado);
+    d.setChofer(logueado);
             
-        d = documentacionServicio.crearDocumentacionMasivo(d);
-        
-        documentacionNuevoChofer.add(d);
+    d = documentacionServicio.crearDocumentacionMasivo(d);
 
+    documentacionChofer.add(d);
+    
     }
     
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionNuevoChofer);
+    redirectAttributes.addFlashAttribute("documentacionC", documentacionChofer);
 
     return "redirect:/documentacion/registradoMasivoChofer";
 
@@ -1390,30 +1366,26 @@ public class DocumentacionControlador {
         return "documentacion_mostrarMasivoChofer.html";
     }
     
-    @GetMapping("/registrarMasivoChoferVehiculo")
-    public String registrarMasivoChoferVehiculo(ModelMap modelo, HttpSession session) {
+    @GetMapping("/registrarMasivoChoferCamion")
+    public String registrarMasivoChoferCamion(ModelMap modelo, HttpSession session) {
         
         Usuario chofer = (Usuario) session.getAttribute("usuariosession");
         
         modelo.put("camion", chofer.getCamion());
-        modelo.put("acoplado", chofer.getAcoplado());
         modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
-        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
         
-        return "documentacion_registrarMasivoChoferVehiculo.html"; 
+        return "documentacion_registrarMasivoChoferCamion.html"; 
         
     }
     
-    @PostMapping("/registroMasivoChoferVehiculo")
-    public String registroMasivoChoferVehiculo(@RequestParam("documentacionCamionJson") String documentacionCamionJson,
-                             @RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
-                             ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+    @PostMapping("/registroMasivoChoferCamion")
+    public String registroMasivoChoferCamion(@RequestParam("documentacionCamionJson") String documentacionCamionJson,
+    ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
     
     Usuario logueado = (Usuario) session.getAttribute("usuariosession");
     ObjectMapper mapper = new ObjectMapper();
     
     List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
-    List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
     
     List<Documentacion> documentacionCamion = new ArrayList<>();
     for (DocumentacionDTO dto : documentacionCamionDTO) {
@@ -1426,8 +1398,53 @@ public class DocumentacionControlador {
     d.setFechaAlta(dto.getFechaAlta());
     d.setFechaVencimiento(dto.getFechaVencimiento());
     d.setObservacion(obsMayusculas);
+    d.setEstado("VIGENTE");
+    d.setIdOrg(logueado.getIdOrg());
+    d.setUsuario(logueado);
+    Camion camion = logueado.getCamion();
+    d.setCamion(camion);
+            
+    d = documentacionServicio.crearDocumentacionMasivo(d);
+    
     documentacionCamion.add(d);
+    
     }
+    
+    redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
+
+    return "redirect:/documentacion/registradoMasivoChoferCamion";
+
+}
+    
+    @GetMapping("/registradoMasivoChoferCamion")
+    public String registradoMasivoChoferCamion(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
+        
+         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+         modelo.addAttribute("documentacionC", documentacionC);
+        
+        return "documentacion_mostrarMasivoChoferCamion.html";
+    }
+    
+     @GetMapping("/registrarMasivoChoferAcoplado")
+    public String registrarMasivoChoferAcoplado(ModelMap modelo, HttpSession session) {
+        
+        Usuario chofer = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.put("acoplado", chofer.getAcoplado());
+        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
+        
+        return "documentacion_registrarMasivoChoferAcoplado.html"; 
+        
+    }
+    
+    @PostMapping("/registroMasivoChoferAcoplado")
+    public String registroMasivoChoferAcoplado(@RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
+    ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+    
+    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    ObjectMapper mapper = new ObjectMapper();
+
+    List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
     
     List<Documentacion> documentacionAcoplado = new ArrayList<>();
     for (DocumentacionDTO dto : documentacionAcopladoDTO) {
@@ -1440,53 +1457,32 @@ public class DocumentacionControlador {
     d.setFechaAlta(dto.getFechaAlta());
     d.setFechaVencimiento(dto.getFechaVencimiento());
     d.setObservacion(obsMayusculas);
+    d.setEstado("VIGENTE");
+    d.setIdOrg(logueado.getIdOrg());
+    d.setUsuario(logueado);
+    Acoplado acoplado = logueado.getAcoplado();
+    d.setAcoplado(acoplado);
+        
+    d = documentacionServicio.crearDocumentacionMasivo(d);
+
     documentacionAcoplado.add(d);
+    
     }
 
+    redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
 
-    List<Documentacion> documentacionTotales = new ArrayList<>();
-    documentacionTotales.addAll(documentacionCamion);
-    documentacionTotales.addAll(documentacionAcoplado);
-    List<Documentacion> documentacionNuevoCamion = new ArrayList<>();
-    List<Documentacion> documentacionNuevoAcoplado = new ArrayList<>();
-    
-    for (Documentacion d : documentacionTotales) {
-        d.setEstado("VIGENTE");
-        d.setIdOrg(logueado.getIdOrg());
-        d.setUsuario(logueado);
-        if (d.getAplicaA().equals(TipoDocumentacion.AplicaA.CAMION)) {
-            Camion camion = logueado.getCamion();
-            d.setCamion(camion);
-        } else if (d.getAplicaA().equals(TipoDocumentacion.AplicaA.ACOPLADO)) {
-            Acoplado acoplado = logueado.getAcoplado();
-            d.setAcoplado(acoplado);
-        }
-            
-        d = documentacionServicio.crearDocumentacionMasivo(d);
-        
-        if(d.getCamion() != null){
-        documentacionNuevoCamion.add(d);
-        } else {
-        documentacionNuevoAcoplado.add(d);
-        }
-        }
-    
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionNuevoCamion);
-    redirectAttributes.addFlashAttribute("documentacionA", documentacionNuevoAcoplado);
-
-    return "redirect:/documentacion/registradoMasivoChoferVehiculo";
+    return "redirect:/documentacion/registradoMasivoChoferAcoplado";
 
 }
     
-    @GetMapping("/registradoMasivoChoferVehiculo")
-    public String registradoMasivoChoferVehiculo(@ModelAttribute("documentacionC") List<Documentacion> documentacionC,
-            @ModelAttribute("documentacionA") List<Documentacion> documentacionA, ModelMap modelo) {
+    @GetMapping("/registradoMasivoChoferAcoplado")
+    public String registradoMasivoChoferAcoplado(@ModelAttribute("documentacionA") List<Documentacion> documentacionA, ModelMap modelo) {
         
          modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionC", documentacionC);
          modelo.addAttribute("documentacionA", documentacionA);
         
-        return "documentacion_mostrarMasivoChoferVehiculo.html";
+        return "documentacion_mostrarMasivoChoferAcoplado.html";
+        
     }
     
     

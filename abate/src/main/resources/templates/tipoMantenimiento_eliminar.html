@@ -24,6 +24,7 @@
                                 <div class="container mb-2"> 
                                 <div class="card border-secondary p-3 mb-1" id="color-card">
                                     <h6 th:text="${tipo.nombre}"></h6>
+                                    <p class='mb-1' th:text="'Clase '+${tipo.clase}"></p>
                                     <span class="text-dark">Aplica a:</span>
                                     <span th:each="entidad : ${tipo.aplicaA}">
                                         <span id='darkgray' th:text="${entidad}"></span>

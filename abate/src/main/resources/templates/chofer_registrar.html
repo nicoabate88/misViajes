@@ -25,12 +25,12 @@
                                 <div class="card border-secondary p-2" id="color-card"> 
                                     <form id="form" th:action="@{/chofer/registro}" method="POST">
                                         <div class="row">
-                                            <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="nombre" class="form-label text-secondary">Apellido y Nombre de Chofer*</label>
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="nombre" class="form-label text-secondary">Apellido y Nombre Chofer*</label>
                                                 <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese Apellido y Nombre" th:value="${nombre}" required>
                                             </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="cuil" class="form-label text-secondary">CUIL de Chofer*</label>
+                                                <label for="cuil" class="form-label text-secondary">CUIL Chofer*</label>
                                                 <input type="number" class="form-control" id="cuil" min="10000000000" max="99999999999" oninput="checkLength(this)" placeholder="Ingrese CUIL" name="cuil" th:value="${cuil}" required>
                                                     <span id="error-message" style="color: red; display: none;">El CUIL debe tener 11 dígitos.</span>      
                                             </div>
@@ -120,19 +120,12 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                <label for="usuario" class="form-label text-secondary">Nombre de Usuario*</label>
-                                                <input type="text" class="form-control" id="usuario" placeholder="Ingrese Nombre de Usuario" name="nombreUsuario" th:value="${nombreUsuario}" required>
-                                                    <span id="errorUsuario" style="color: red; display: none;"></span>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="porcentaje" class="form-label text-secondary">Porcentaje de Chofer*</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text">%</span>
                                                     <input type="number" step="0.01" class="form-control" id="porcentaje" placeholder="Ingrese porcentaje" name="porcentaje" th:value="${porcentaje}" required>     
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
                                                 <label for="estado" class="form-floting text-secondary">Habilitar Chofer*</label>
                                                 <select class="form-control" id="estado" name="estado" required>
@@ -140,6 +133,13 @@
                                                     <option value="HABILITADO">HABILITADO</option>
                                                     <option value="INHABILITADO">INHABILITADO</option>
                                                 </select>
+                                            </div>    
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="usuario" class="form-label text-secondary">Nombre de Usuario*</label>
+                                                <input type="text" class="form-control" id="usuario" placeholder="Ingrese Nombre de Usuario" name="nombreUsuario" th:value="${nombreUsuario}" required>
+                                                    <span id="errorUsuario" style="color: red; display: none;"></span>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -286,7 +286,7 @@
 // Si todo está bien
                                     return true;
                                 }
-                                
+
                                 document.getElementById('form').addEventListener('submit', function (event) {
                                     const psw = document.getElementById('password').value;
                                     const psw2 = document.getElementById('password2').value;
@@ -296,9 +296,9 @@
                                         event.preventDefault();
                                         return;
                                     }
-                                    
+
                                     document.getElementById("spinner").style.display = "block";
-                                    
+
                                 });
 
                             </script> 

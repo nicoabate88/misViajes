@@ -59,8 +59,8 @@ public class ChoferControlador {
     @PostMapping("/registro")
     public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
             @RequestParam String cuenta, @RequestParam String caja, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
-            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, @RequestParam Double porcentaje, 
-            @RequestParam String estado, @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
+            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam Double porcentaje, @RequestParam String estado, 
+            @RequestParam String nombreUsuario, @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
@@ -183,8 +183,8 @@ public class ChoferControlador {
     @PostMapping("/modifica/{id}")
     public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, 
             @RequestParam(required = false) Long idAcoplado, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
-            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam String nombreUsuario, 
-            @RequestParam Double porcentaje, @RequestParam String estado,  ModelMap modelo, HttpSession session) {
+            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam Double porcentaje, @RequestParam String estado,  
+            @RequestParam String nombreUsuario, ModelMap modelo, HttpSession session) {
 
         try {
             

@@ -3442,12 +3442,9 @@ public class ImagenControlador {
     }
 }
       
-      @PostMapping("/subirImagenesDocumentacionChoferVehiculo")
-    public String subirImagenesDocumentacionChoferVehiculo(@RequestParam(value = "imagenesCamion", required = false) List<MultipartFile> imagenesCamion,
-        @RequestParam(value = "idsCamion", required = false) List<Long> idsCamion,
-        @RequestParam(value = "imagenesAcoplado", required = false) List<MultipartFile> imagenesAcoplado,
-        @RequestParam(value = "idsAcoplado", required = false) List<Long> idsAcoplado,
-        ModelMap modelo) {
+      @PostMapping("/subirImagenesDocumentacionChoferCamion")
+    public String subirImagenesDocumentacionChoferCamion(@RequestParam(value = "imagenesCamion", required = false) List<MultipartFile> imagenesCamion,
+        @RequestParam(value = "idsCamion", required = false) List<Long> idsCamion,ModelMap modelo) {
         
         Boolean flag = false;
 
@@ -3487,6 +3484,31 @@ public class ImagenControlador {
                 
             }
         }
+
+        if(flag == true){
+            
+        return "redirect:/index?mensaje=exito";
+        
+        } else {
+            
+        return "redirect:/index";
+        
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "redirect:/index?mensaje=error";
+    }
+}
+    
+          @PostMapping("/subirImagenesDocumentacionChoferAcoplado")
+    public String subirImagenesDocumentacionChoferAcoplado(@RequestParam(value = "imagenesAcoplado", required = false) List<MultipartFile> imagenesAcoplado,
+        @RequestParam(value = "idsAcoplado", required = false) List<Long> idsAcoplado,
+        ModelMap modelo) {
+        
+        Boolean flag = false;
+
+    try {
 
         // === Procesar imágenes de Acoplado ===
         if (idsAcoplado != null && !idsAcoplado.isEmpty()) {

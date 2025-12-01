@@ -40,10 +40,10 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center">
+                                        <div  class="col-6 col-sm-6 col-md-6 col-lg-8 col-xl-8 text-center">
                                             <h4>Exportar Mantenimiento</h4>
                                         </div>
-                                        <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
+                                        <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
                                             <form>
                                                 <button id="exportButton" onclick="startExport(event)" class="btn btn-light" type="button">
                                                     <input hidden id="km" th:value="${km}" name="km">
@@ -100,10 +100,10 @@
                                                         <td class="text-center text-primary"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
                                                         <td class="text-center">
                                                             <span th:switch="${mantenimiento.estado}">
-                                                                <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                                                <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                                                <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                            </span> 
+                                                                <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">✅ VIGENTE</span>
+                                                                <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).PROXIMO_A_VENCER}">🟡 PRÓXIMO A VENCER</span>
+                                                                <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VENCIDO}">❌ VENCIDO</span>
+                                                            </span>
                                                         </td>
                                                     </tr>
                                                 </tbody>

@@ -36,18 +36,26 @@ public class Mantenimiento {
     private Integer kmAlarma;
     private Integer kmActual;
     private Integer kmVigencia;
-    private String estado;
     @OneToOne
     private Usuario usuario;
     @ManyToOne
     private Camion camion;
     @ManyToOne
     private Acoplado acoplado;
-
+    @ManyToOne
+    @JoinColumn(name = "orden_trabajo_id")
+    private OrdenDeTrabajo ordenDeTrabajo;
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
+    
+    public enum Estado {
+    PENDIENTE, VIGENTE, ACTUALIZADO, PROXIMO_A_VENCER, VENCIDO
+    }
+    
     public Mantenimiento() {
     }
 
-    public Mantenimiento(Long id, Long idOrg, TipoMantenimiento tipoMantenimiento, TipoMantenimiento.AplicaA aplicaA, String observacion, Date fecha, Date fechaActualizado, Integer km, Integer kmProximo, Integer kmAlarma, Integer kmActual, Integer kmVigencia, String estado, Usuario usuario, Camion camion, Acoplado acoplado) {
+    public Mantenimiento(Long id, Long idOrg, TipoMantenimiento tipoMantenimiento, TipoMantenimiento.AplicaA aplicaA, String observacion, Date fecha, Date fechaActualizado, Integer km, Integer kmProximo, Integer kmAlarma, Integer kmActual, Integer kmVigencia, Usuario usuario, Camion camion, Acoplado acoplado, OrdenDeTrabajo ordenDeTrabajo, Estado estado) {
         this.id = id;
         this.idOrg = idOrg;
         this.tipoMantenimiento = tipoMantenimiento;
@@ -60,10 +68,11 @@ public class Mantenimiento {
         this.kmAlarma = kmAlarma;
         this.kmActual = kmActual;
         this.kmVigencia = kmVigencia;
-        this.estado = estado;
         this.usuario = usuario;
         this.camion = camion;
         this.acoplado = acoplado;
+        this.ordenDeTrabajo = ordenDeTrabajo;
+        this.estado = estado;
     }
 
     public Long getId() {
@@ -162,14 +171,6 @@ public class Mantenimiento {
         this.kmVigencia = kmVigencia;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -194,7 +195,21 @@ public class Mantenimiento {
         this.acoplado = acoplado;
     }
 
+    public OrdenDeTrabajo getOrdenDeTrabajo() {
+        return ordenDeTrabajo;
+    }
+
+    public void setOrdenDeTrabajo(OrdenDeTrabajo ordenDeTrabajo) {
+        this.ordenDeTrabajo = ordenDeTrabajo;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
     
-    
-   
 }

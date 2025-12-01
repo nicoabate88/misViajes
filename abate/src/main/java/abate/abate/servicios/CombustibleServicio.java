@@ -493,6 +493,37 @@ public class CombustibleServicio {
         }
 
     }
+    
+        public Double consumoPromedioFechasCamion(Long idCamion,  String desde, String hasta) throws ParseException {
+            
+        Date d = convertirFecha(desde);
+        Date h = convertirFecha(hasta);
+
+        Double litros = 0.0;
+        Double km = 0.0;
+        Double redondeado = 0.0;
+
+        ArrayList<Combustible> listaCargas = combustibleRepositorio.buscarCombustibleIdCamion(d, h, idCamion);
+
+        if (!listaCargas.isEmpty()) {
+
+            for (Combustible c : listaCargas) {
+                litros = litros + c.getLitro();
+                km = km + c.getKmRecorrido();
+            }
+
+            Double consumoPromedioCamion = (100 * litros) / km;
+            redondeado = Math.round(consumoPromedioCamion * 100.0) / 100.0;
+
+            return redondeado;
+
+        } else {
+
+            return redondeado;
+
+        }
+
+    }
 
     public Double consumoPromedioTanque(Double consumo, Double km, Double litros, Camion camion) {
 

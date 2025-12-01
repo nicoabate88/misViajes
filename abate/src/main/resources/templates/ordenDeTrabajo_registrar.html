@@ -1,0 +1,412 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Registrar Orden de Trabajo</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <style>
+                            .tabla-scroll {
+                                max-height: 190px;       /* altura total de unas dos filas */
+                                min-height: 190px;       /* fuerza que tenga esa altura aunque esté vacía */
+                                overflow-y: auto;        /* agrega scroll vertical si se pasa */
+                                border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
+                                border-radius: 0.25rem;
+                            }
+
+                            .tabla-scroll table {
+                                margin-bottom: 0;
+                            }
+
+                            .tabla-scroll thead th {
+                                top: 0;
+                                background-color: #f8f9fa;
+                                z-index: 1;
+                            }
+
+                            .tabla-scroll tbody:empty::before {
+                                content: "";
+                                display: block;
+                                height: 190px; 
+                            }
+                            .btn-eliminar {
+                                background: none;
+                                border: none;
+                                color: red;          /* podés ajustar el color si querés */
+                                font-size: 18px;     /* tamaño del ícono */
+                                cursor: pointer;
+                            }
+
+                            .btn-eliminar:hover {
+                                transform: scale(1.2);  /* efecto sutil al pasar el mouse */
+                            }
+                        </style>
+                        <script>
+                            window.onload = function () {
+                                var fechaActual = new Date();
+                                var dia = String(fechaActual.getDate()).padStart(2, '0');
+                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                                var anio = fechaActual.getFullYear();
+                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+
+                                document.getElementById('fecha').max = fechaFormateada;
+                            };
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const inputFecha = document.getElementById('fecha');
+                                const hoy = new Date();
+                                const dia = String(hoy.getDate()).padStart(2, '0');
+                                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                                const anio = hoy.getFullYear();
+                                inputFecha.value = `${anio}-${mes}-${dia}`;
+                            });
+                        </script>
+                        </head>
+                        <body>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/ordenDeTrabajo/listar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Orden de Trabajo</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container mb-2">  
+                                <form id="formulario" th:action="@{/ordenDeTrabajo/registro}" method="POST">
+                                    <div class="card border-secondary p-2 mb-1" id="color-card">
+                                        <div class="row">  
+                                            <div class="col-6 col-sm-6 col-md-5 col-lg-5 col-xl-5 mb-2">
+                                                <label for="idCamion" class="form-floting text-secondary">Camión*</label>
+                                                <select class="form-control text-secondary" id="idCamion" name="idCamion" required onchange="enviarRegistroCamion()">
+                                                    <option th:if="${camion == null}" selected disabled value="">Seleccione Camión</option>
+                                                    <option th:if="${camion != null}" selected th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-4 col-lg-5 col-xl-5 mb-2">
+                                                <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
+                                                <select class="form-control text-secondary" id="idAcoplado" name="idAcoplado" onchange="enviarRegistroCamion()">
+                                                    <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
+                                                    <option th:if="${acoplado != null}" selected th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"></option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                <input type="date" class="form-control text-secondary" id="fecha" name="fecha" required>
+                                            </div>
+                                        </div>
+                                        <div class="row">   
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                <label for="lugar" class="form-floting text-secondary">Lugar*</label>
+                                                <select class="form-control text-secondary" id="lugar" name="lugar">
+                                                    <option selected disabled value="">Seleccione Lugar</option>
+                                                    <option value="CAMILO ALDAO">CAMILO ALDAO</option>
+                                                    <option value="NOGOYA">NOGOYA</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                <label for="proveedor" class="form-floting text-secondary">Proveedor*</label>
+                                                <select class="form-control text-secondary" id="proveedor" name="proveedor">
+                                                    <option selected disabled value="">Seleccione Proveedor</option>
+                                                    <option value="CAMILO ALDAO">CAMILO ALDAO</option>
+                                                    <option value="NOGOYA">NOGOYA</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                <label for="responsable" class="form-floting text-secondary">Responsable*</label>
+                                                <select class="form-control text-secondary" id="responsable" name="responsable" required>
+                                                    <option selected disabled value="">Seleccione Responsable</option>
+                                                    <option value="MIRIANI MARIO">MIRIANI MARIO</option>
+                                                    <option value="DEMARZIANI MARCOS">DEMARZIANI MARCOS</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                <label for="idChofer" class="form-floting text-secondary">Chofer*</label>
+                                                <select class="form-control" id="idChofer" name="idChofer" required>
+                                                    <option selected disabled value="">Seleccione Chofer</option>
+                                                    <option th:each="chofer : ${choferes}"
+                                                            th:value="${chofer.id}"
+                                                            th:text="${chofer.nombre}"/>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <h6 class="text-primary text-center">Mantenimientos Camión</h6>
+                                        <div class="row mb-1">
+                                            <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5 mb-2">
+                                                <label for="tipo" class="form-floting text-secondary">Tipo Mantenimiento*</label>
+                                                <select class="form-control text-secondary" id="tipo">
+                                                    <option selected disabled value="">Seleccione Tipo</option>
+                                                    <option th:each="tipo : ${tiposCamion}"
+                                                            th:value="${tipo.id}"
+                                                            th:text="${tipo.nombre}"/>
+                                                </select>
+                                            </div> 
+                                            <div class="col-5 col-sm-5 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                                <label for="observacionC" class="form-floting text-secondary">Observación</label>
+                                                <input type="text" class="form-control text-secondary" id="observacionC" placeholder="Ingrese Observación..." maxlength="45" size="45">
+                                            </div>
+                                            <div class="form-floating" >
+                                                <label class="form-label text-white"></label><br><br>
+                                                        <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
+                                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                            </svg>
+                                                        </button>
+                                                        </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <div class="col-12">
+                                                                <div class="table-responsive tabla-scroll">
+                                                                    <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
+                                                                        <thead class="thead-light">
+                                                                            <tr class="text-center">
+                                                                                <th>Tipo</th>
+                                                                                <th>Observación</th>
+                                                                                <th class="text-center" style="width: 50px;">Acción</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody></tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>                                               
+                                                        <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
+                                                        <div class="row mb-1">
+                                                            <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5 mb-2">
+                                                                <label for="tipoA" class="form-floting text-secondary">Tipo Mantenimiento*</label>
+                                                                <select class="form-control text-secondary" id="tipoA">
+                                                                    <option selected disabled value="">Seleccione Tipo</option>
+                                                                    <option th:each="tipo : ${tiposAcoplado}"
+                                                                            th:value="${tipo.id}"
+                                                                            th:text="${tipo.nombre}"/>
+                                                                </select>
+                                                            </div> 
+                                                            <div class="col-5 col-sm-5 col-md-6 col-lg-6 col-xl-6 mb-2">
+                                                                <label for="observacionA" class="form-floting text-secondary">Observación</label>
+                                                                <input type="text" class="form-control text-secondary" id="observacionA" placeholder="Ingrese Observación..." maxlength="45" size="45">
+                                                            </div>
+                                                            <div class="form-floating" >
+                                                                <label class="form-label text-white"></label><br><br>
+                                                                        <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoAcoplado" title="Agregar Mantenimiento">
+                                                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                            </svg>
+                                                                        </button>
+                                                                        </div>
+                                                                        </div>
+                                                                        <div class="row mb-2">
+                                                                            <div class="col-12">
+                                                                                <div class="table-responsive tabla-scroll">
+                                                                                    <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosAcoplado">
+                                                                                        <thead class="thead-light">
+                                                                                            <tr class="text-center">
+                                                                                                <th>Tipo</th>
+                                                                                                <th>Observación</th>
+                                                                                                <th class="text-center" style="width: 50px;">Acción</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody></tbody>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-3">
+                                                                            <textarea class="form-control text-secondary" id="obs" name="observacion" rows="1" th:text="${obs}" placeholder="OBSERVACIÓN: Ingrese detalle de OT..." maxlength="500" size="500"  required=""></textarea>
+                                                                        </div>  
+                                                                        <div th:if="${error != null}" class="card bg-secondary mb-2 p-3 border-secondary text-center">                        
+                                                                            <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                                        </div>
+                                                                        <div class="text-center mb-2">
+                                                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/ordenDeTrabajo/listar}" title="Cancelar">Cancelar</a>
+                                                                        </div>
+                                                                        </div>
+                                                                        </form>
+                                                                        </div>
+                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <script>
+                                                                            function enviarRegistroCamion() {
+
+                                                                                let idCamion = document.getElementById("idCamion").value;
+                                                                                let idAcoplado = document.getElementById("idAcoplado").value;
+
+                                                                                window.location.href = `/ordenDeTrabajo/registrar1?idCamion=${idCamion}&idAcoplado=${idAcoplado}`;
+
+                                                                            }
+                                                                        </script>
+                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                        <script>
+                                                                            let mantenimientosCamion = [];
+                                                                            let mantenimientosAcoplado = [];
+
+// --- CAMIÓN ---
+                                                                            $('#addMantenimientoCamion').click(function () {
+
+                                                                                $('#idCamion').prop('disabled', true);
+
+                                                                                if ($('#idCamionHidden').length === 0) {
+                                                                                    $('<input>').attr({
+                                                                                        type: 'hidden',
+                                                                                        id: 'idCamionHidden',
+                                                                                        name: 'idCamion',
+                                                                                        value: $('#idCamion').val()
+                                                                                    }).appendTo('form');
+                                                                                } else {
+                                                                                    $('#idCamionHidden').val($('#idCamion').val());
+                                                                                }
+
+                                                                                const tipo = $('#tipo').val();
+                                                                                const tipoTexto = $('#tipo option:selected').text();
+                                                                                const observacion = $('#observacionC').val();
+
+                                                                                if (!tipo) {
+                                                                                    alert("Debe seleccionar Tipo antes de agregar.");
+                                                                                    return;
+                                                                                }
+
+// 🔹 Validar si el tipo ya fue agregado para CAMIÓN
+                                                                                const existe = mantenimientosCamion.some(m => m.tipoMantenimiento === tipo);
+                                                                                if (existe) {
+                                                                                    alert("Ya se ha agregado este tipo de mantenimiento para el camión.");
+                                                                                    return;
+                                                                                }
+
+                                                                                const mantenimiento = {
+                                                                                    tipoMantenimiento: tipo,
+                                                                                    aplicaA: "CAMION",
+                                                                                    observacion: observacion,
+                                                                                    estado: tipoTexto
+                                                                                };
+
+                                                                                mantenimientosCamion.push(mantenimiento);
+
+// Agregar fila visualmente
+                                                                                const fila = `
+    <tr class="text-center text-secondary">
+        <td>${tipoTexto}</td>
+        <td>${observacion}</td>
+        <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
+    </tr>`;
+                                                                                $('#tablaMantenimientosCamion tbody').append(fila);
+
+                                                                                document.getElementById("tipo").value = "";
+                                                                                document.getElementById("observacionC").value = "";
+
+                                                                            });
+
+                                                                            $(document).on('click', '.eliminarFilaCamion', function () {
+                                                                                const index = $(this).closest('tr').index();
+                                                                                mantenimientosCamion.splice(index, 1);
+                                                                                $(this).closest('tr').remove();
+                                                                            });
+
+// --- ACOPLADO ---
+                                                                            $('#addMantenimientoAcoplado').click(function () {
+
+                                                                                $('#idAcoplado').prop('disabled', true);
+
+                                                                                if ($('#idAcopladoHidden').length === 0) {
+                                                                                    $('<input>').attr({
+                                                                                        type: 'hidden',
+                                                                                        id: 'idAcopladoHidden',
+                                                                                        name: 'idAcoplado',
+                                                                                        value: $('#idAcoplado').val()
+                                                                                    }).appendTo('form');
+                                                                                } else {
+                                                                                    $('#idAcopladoHidden').val($('#idAcoplado').val());
+                                                                                }
+
+                                                                                const tipo = $('#tipoA').val();
+                                                                                const tipoTexto = $('#tipoA option:selected').text();
+                                                                                const observacion = $('#observacionA').val();
+
+                                                                                if (!tipo) {
+                                                                                    alert("Debe seleccionar Tipo antes de agregar.");
+                                                                                    return;
+                                                                                }
+
+// 🔹 Validar si el tipo ya fue agregado para ACOPLADO
+                                                                                const existe = mantenimientosAcoplado.some(m => m.tipoMantenimiento === tipo);
+                                                                                if (existe) {
+                                                                                    alert("Ya se ha agregado este tipo de mantenimiento para el acoplado.");
+                                                                                    return;
+                                                                                }
+
+                                                                                const mantenimiento = {
+                                                                                    tipoMantenimiento: tipo,
+                                                                                    aplicaA: "ACOPLADO",
+                                                                                    observacion: observacion,
+                                                                                    estado: tipoTexto
+                                                                                };
+
+                                                                                mantenimientosAcoplado.push(mantenimiento);
+
+                                                                                const fila = `
+    <tr class="text-center text-secondary">
+        <td>${tipoTexto}</td>
+        <td>${observacion}</td>
+        <td><button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button></td>
+    </tr>`;
+                                                                                $('#tablaMantenimientosAcoplado tbody').append(fila);
+
+                                                                                document.getElementById("tipoA").value = "";
+                                                                                document.getElementById("observacionA").value = "";
+
+                                                                            });
+
+                                                                            $(document).on('click', '.eliminarFilaAcoplado', function () {
+                                                                                const index = $(this).closest('tr').index();
+                                                                                mantenimientosAcoplado.splice(index, 1);
+                                                                                $(this).closest('tr').remove();
+                                                                            });
+
+// --- ENVIAR FORMULARIO ---
+                                                                            $('#formulario').submit(function (event) {
+// 🔹 Validar que haya al menos un mantenimiento cargado
+                                                                                if (mantenimientosCamion.length === 0 && mantenimientosAcoplado.length === 0) {
+                                                                                    alert("Debe agregar al menos un tipo de mantenimiento para camión o acoplado antes de enviar el formulario.");
+                                                                                    event.preventDefault(); // Evita que se envíe
+                                                                                    return;
+                                                                                }
+
+                                                                                document.getElementById("spinner").style.display = "block";
+
+// 🔹 Crear inputs ocultos con los JSON para enviar al backend
+                                                                                $('<input>').attr({
+                                                                                    type: 'hidden',
+                                                                                    name: 'mantenimientosCamionJson',
+                                                                                    value: JSON.stringify(mantenimientosCamion)
+                                                                                }).appendTo('#formulario');
+
+                                                                                $('<input>').attr({
+                                                                                    type: 'hidden',
+                                                                                    name: 'mantenimientosAcopladoJson',
+                                                                                    value: JSON.stringify(mantenimientosAcoplado)
+                                                                                }).appendTo('#formulario');
+                                                                            });
+
+                                                                        </script>
+                                                                        </body>
+                                                                        </html>
+

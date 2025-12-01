@@ -23,7 +23,7 @@ public class TipoMantenimientoServicio {
     private MantenimientoRepositorio mantenimientoRepositorio;
     
     @Transactional
-    public void crearTipoMantenimiento(String nombre, List<TipoMantenimiento.AplicaA> aplicaA, Usuario usuario) throws MiException {
+    public void crearTipoMantenimiento(String nombre, String clase, List<TipoMantenimiento.AplicaA> aplicaA, Usuario usuario) throws MiException {
 
         validarDatos(nombre, usuario.getIdOrg());
         
@@ -31,6 +31,11 @@ public class TipoMantenimientoServicio {
         
         TipoMantenimiento tipoMantenimiento = new TipoMantenimiento();
         tipoMantenimiento.setNombre(nombreMayusculas); 
+        if(clase.equalsIgnoreCase("CORRECTIVO")){
+        tipoMantenimiento.setClase(TipoMantenimiento.Clase.CORRECTIVO);
+        } else {
+        tipoMantenimiento.setClase(TipoMantenimiento.Clase.PREVENTIVO);    
+        }
         tipoMantenimiento.setAplicaA(aplicaA);
         tipoMantenimiento.setIdOrg(usuario.getIdOrg());
         tipoMantenimiento.setUsuario(usuario);
@@ -40,7 +45,7 @@ public class TipoMantenimientoServicio {
     }
     
     @Transactional
-    public void modificarTipoMantenimiento(Long id, String nombre, List<TipoMantenimiento.AplicaA> aplicaA, Usuario usuario) throws MiException {
+    public void modificarTipoMantenimiento(Long id, String nombre, String clase, List<TipoMantenimiento.AplicaA> aplicaA, Usuario usuario) throws MiException {
 
         TipoMantenimiento tipo = tipoMantenimientoRepositorio.getById(id);
         
@@ -50,7 +55,11 @@ public class TipoMantenimientoServicio {
 
         tipo.setNombre(nombreMayusculas); 
         tipo.setUsuario(usuario);
-
+        if(clase.equalsIgnoreCase("CORRECTIVO")){
+        tipo.setClase(TipoMantenimiento.Clase.CORRECTIVO);
+        } else {
+        tipo.setClase(TipoMantenimiento.Clase.PREVENTIVO);    
+        }
         tipo.getAplicaA().clear();
 
         tipo.getAplicaA().addAll(aplicaA);
@@ -92,6 +101,11 @@ public class TipoMantenimientoServicio {
         return tipoMantenimientoRepositorio.getById(id);
     }
     
+    public TipoMantenimiento buscarTipoPorNombre(Long id, String nombre) {
+
+        return tipoMantenimientoRepositorio.buscarTipoPorNombre(id, nombre);
+    }
+    
     public List<TipoMantenimiento> buscarTiposAsc(Long idOrg) {
 
         List<TipoMantenimiento> lista = tipoMantenimientoRepositorio.buscarTipos(idOrg);
@@ -105,6 +119,16 @@ public class TipoMantenimientoServicio {
     public List<TipoMantenimiento> buscarTiposAplicaA(Long idOrg, TipoMantenimiento.AplicaA aplicaA) {
 
         List<TipoMantenimiento> lista = tipoMantenimientoRepositorio.findByAplicaA(idOrg, aplicaA);
+        
+        Collections.sort(lista, TipoMantenimientoComparador.ordenarNombreAsc); 
+
+        return lista;
+
+    }
+    
+    public List<TipoMantenimiento> buscarTiposOrdenAplicaA(Long idOrg, TipoMantenimiento.AplicaA aplicaA) {
+
+        List<TipoMantenimiento> lista = tipoMantenimientoRepositorio.findOrdenByAplicaA(idOrg, aplicaA);
         
         Collections.sort(lista, TipoMantenimientoComparador.ordenarNombreAsc); 
 

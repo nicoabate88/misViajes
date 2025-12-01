@@ -7,43 +7,38 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">   
                         </head>
                         <body>
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/mantenimiento/listarAdmin}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
-                                            <h4>Lista Tipos de Mantenimiento</h4>
-                                        </div>
-                                        <div title="Ir a Registrar Tipo de Mantenimiento" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
-                                            <a th:href="@{/tipoMantenimiento/registrar}">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-justify" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
-</svg>
-                                                    <h6 id="icono">Nuevo</h6> </a>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/mantenimiento/listarAdmin}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                        <h4>Lista Tipos de Mantenimiento</h4>
+                                    </div>
+                                    <div title="Ir a Registrar Tipo de Mantenimiento" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                        <a th:href="@{/tipoMantenimiento/registrar}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-justify" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                            </svg>
+                                            <h6 id="icono">Nuevo</h6> </a>
                                     </div>
                                 </div>
-                                <div class="container mb-2"> 
+                            </div>
+                            <div class="container mb-2"> 
                                 <div th:if="${exito != null}" class="card bg-secondary mb-4 p-3 border border-secondary rounded text-center">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             
                                 </div>
                                 <div th:if="${!tipos.isEmpty()}">
                                     <div th:each="tipo : ${tipos}">
-                                        <div class="card border-secondary p-3 mb-1" id="color-card">
-                                            <h6 class='mb-2' th:text="${tipo.nombre}"></h6>
+                                        <div class="card border-secondary p-3 mb-1" id="color-card">                                                                                 
                                             <div class="row">
                                                 <div class="col-9">
-                                                    <div>
-                                                    <span class="text-dark">APLICA A:</span>
-                                                    <span th:each="entidad : ${tipo.aplicaA}">
-                                                        <span id="darkgray" th:text="${entidad}+' '"></span>
-                                                    </span>
-                                                    </div>
+                                                    <h6 class='mb-1' th:text="${tipo.nombre}"></h6>
+                                                    <p class='mb-1' th:text="'Clase '+${tipo.clase}"></p>
                                                 </div>
                                                 <div title="Ir a Modificar Tipo Mantenimiento" class="col-3 text-center">
                                                     <a th:href= "@{/tipoMantenimiento/modificar/__${tipo.id}__}">
@@ -52,16 +47,22 @@
                                                         </svg>     <p id="modificar">Modificar</p>
                                                     </a>
                                                 </div>
-                                            </div>   
+                                            </div> 
+                                            <div>
+                                                <span class="text-dark">APLICA A:</span>
+                                                <span th:each="entidad : ${tipo.aplicaA}">
+                                                    <span id="darkgray" th:text="${entidad}+' '"></span>
+                                                </span>
+                                            </div>
                                         </div>    
                                     </div>
                                     <br>
-                                    <div class="text-center mb-2">
-                                                <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Ir a Registrar Tipo Mantenimiento" th:href="@{/tipoMantenimiento/registrar}">Nuevo</a>
-                                            </div>    
-                                    <div class="text-center mb-2">
-                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
-                                            </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Ir a Registrar Tipo Mantenimiento" th:href="@{/tipoMantenimiento/registrar}">Nuevo</a>
+                                        </div>    
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
+                                        </div>
                                 </div>    
                                 <div th:if="${tipos.isEmpty()}">
                                     <br>

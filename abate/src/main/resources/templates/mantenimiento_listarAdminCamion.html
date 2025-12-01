@@ -13,6 +13,8 @@
                                         <div class="col-2">    
                                             <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
                                                 <input hidden th:value="${idCamion}" name="idCamion">
+                                                    <input hidden th:value="${idTipo}" name="idTipo">
+                                                        <input hidden th:value="${clase}" name="clase">
                                                     <button id="volver1" type="submit" class="border-0 bg-transparent shadow-none" title="Volver">
                                                         <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                             <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
@@ -36,13 +38,13 @@
                                                 <p class="mb-1" id="dimgray" th:text="'Fecha ' + ${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></p>
                                                 <h6 class="mb-2" id="dimgray" th:text="'Km Mantenimiento: ' +${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></h6>
                                                 <h6><strong class="mb-2" id="dimgray" th:text="'Km Actual ' +${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></strong></h6>
-                                                <div class="mb-3">
-                                                    <span th:switch="${mantenimiento.estado}"><strong>
+                                                <div class="mb-2">
+                                                    <span class="mb-2" th:switch="${mantenimiento.estado}"><strong>
                                                             <span id="dimgray">Estado</span>
-                                                            <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                                            <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                                            <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                            <span th:text="' '+${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
+                                                            <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">✅ VIGENTE</span>
+                                                            <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).PROXIMO_A_VENCER}">🟡 PRÓXIMO A VENCER</span>
+                                                            <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VENCIDO}">❌ VENCIDO</span>
+                                                            <span class="text-primary" th:text="' '+${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
                                                         </strong></span>
                                                 </div>
                                                 <h6 class="mb-2 text-dark" th:text="'🔧 Próximo Mantenimiento '+${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}+' Km'"></h6>
@@ -66,6 +68,8 @@
                                         <div class="text-center">
                                             <form th:action="@{/mantenimiento/listarAdminCamionFiltro}" method="POST">
                                                 <input hidden th:value="${idCamion}" name="idCamion">
+                                                    <input hidden th:value="${idTipo}" name="idTipo">
+                                                        <input hidden th:value="${clase}" name="clase">
                                                     <button id="volver2" title="Volver" type="submit" class="btn btn-primary bg-primary btn-lg w-50">Volver</button>
                                             </form>
                                         </div>

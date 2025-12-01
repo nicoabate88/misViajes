@@ -116,6 +116,8 @@
                                                                         <h6><strong>
                                                                                 <span id="dimgray" th:text="'Total Cargas '+${#numbers.formatDecimal(cantidad, 0, 'POINT', 0, 'COMMA')}"></span>
                                                                                 <span id="dimgray" th:text="' - Total Litros '+${#numbers.formatDecimal(litros, 0, 'POINT', 0, 'COMMA')}"></span>
+                                                                                <span id="dimgray" th:if="${km != null}" th:text="' -  '+${km}+' KM '"></span>
+                                                                                <span id="dimgray" th:if="${redondeado != null}" th:text="' - Consumo '+${redondeado}+'  L / 100 Km'"></span>
                                                                                 <span id="dimgray" th:if="${azul != 0.0}" th:text="' - Urea '+${azul}+' Lts '"></span>
                                                                             </strong></h6>
                                                                     </div>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Orden De Trabajo</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            .table, 
+            .table thead, 
+            .table th, 
+            .table td, 
+            .table tr {
+
+                background-color: transparent !important;
+            }
+            .recibo-container {
+                max-width: 1000px;
+                margin: 5px auto;
+                padding: 20px;
+
+                border-radius: 10px;
+                background-color: #f9f9f9;
+            }
+            .recibo-header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .recibo-section {
+                margin-bottom: 15px;
+            }
+            .recibo-section h5 {
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 5px;
+                margin-bottom: 10px;
+            }
+            .usuario-datos {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .usuario-datos p {
+                margin: 0;
+            }
+            .recibo-datos {
+                display: flex;
+                justify-content: space-between;
+            }
+            .recibo-datos p {
+                margin: 0;        /* elimina todo el margen */
+                padding: 0;       /* opcional, por si hay padding */
+            }
+            .recibo-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 20px;
+            }
+            .recibo-footer .footer-text {
+                text-align: center;
+                flex-grow: 1;
+            }
+            @media print {
+                .boton-imprimir {
+                    display: none !important;
+                }
+            }
+            @media print {
+                #cerrar {
+                    display: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="recibo-container">
+            <div th:if="${flag == true}" class="row header d-flex align-items-center justify-content-between">
+                <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <img th:src="@{${imagenUrl}}" th:alt="${imagenNombre}" style="height:60px;">
+                </div>
+                <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
+                    <h2 class="text-secondary">Orden de Trabajo</h2>
+                </div>
+                <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-end">
+                    <a title="Cerrar Ventana" id="cerrar" onclick="window.close();">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                             class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div th:if="${flag == false}">
+                <div class="text-end">
+                    <a title="Cerrar Ventana" id="cerrar" onclick="window.close();">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="recibo-header">
+                    <h2 class="text-secondary">Orden de Trabajo</h2>
+                </div>
+            </div>
+            <div class="recibo-section mb-0">
+                <h6 class="text-secondary"><span th:text="${orden.usuario.empresa}"></span></h6>
+            </div>
+            <div class="recibo-section">
+                <h5></h5>
+                <div class="recibo-datos mb-2">
+                    <p><strong class="text-secondary">Fecha: </strong><span th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></span></p>
+                    <p><strong class="text-secondary">N° </strong> <span th:text="${orden.idOrden}"></span></p>
+                </div>
+                <p><strong class="text-secondary">ESTADO: </strong> 
+                    <strong><span class="text-danger" th:text="${orden.estado}"></span></strong></p>
+                <p class="mb-0"><strong><span th:if="${orden.camion != null}" class="text-secondary" th:text="'Camión '+${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}+ ' '"></span></strong></p>
+                <p><strong><span th:if="${orden.acoplado != null}" class="text-secondary" th:text="'Acoplado '+${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span></strong></p>
+                <div class="recibo-datos">
+                    <p><strong class="text-secondary">Lugar: </strong> <span th:text="${orden.lugar}"></span></p>
+                    <p><strong class="text-secondary">Proveedor: </strong> <span th:text="${orden.proveedor}"></span></p>
+                </div>
+                <div class="recibo-datos mb-2">
+                    <p><strong class="text-secondary">Responsable: </strong> <span th:text="${orden.responsable}"></span></p>
+                    <p><strong class="text-secondary">Chofer: </strong> <span th:text="${orden.chofer.nombre}"></span></p>
+                </div>
+                <p class="mb-0"><strong class="text-secondary">Observación:</strong> <span th:text="${orden.observacion}"></span></p>
+            </div>
+            <div class="recibo-section">
+                <div th:if="${orden.camion != null}">
+                    <h6 class="text-primary text-center">Mantenimientos Camión</h6>
+                    <div class="row">
+                        <div class="table-responsive tabla-scroll">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-secondary">Tipo</th>
+                                        <th class="text-center text-secondary">Km Camión</th>
+                                        <th class="text-center text-secondary">Km Vigencia</th>
+                                        <th class="text-center text-secondary">Estado</th>
+                                        <th class="text-center text-secondary">Observación</th>
+                                    </tr>
+                                </thead>
+                                <tbody th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'CAMION'}">
+                                    <tr>
+                                        <td class="text-center text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-center text-secondary" th:text="${m.km}"></td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" class="text-center text-secondary">-</td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-center text-secondary" th:text="${m.kmVigencia}"></td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" class="text-center text-secondary">-</td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-center text-secondary">EJECUTADO</td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" class="text-center text-secondary">PENDIENTE</td>
+                                        <td class="text-center text-secondary" th:text="${m.observacion}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${orden.acoplado != null}">
+                    <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
+                    <div class="row mb-2">
+                        <div class="table-responsive tabla-scroll rounded">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center text-secondary">Tipo</th>
+                                        <th class="text-center text-secondary">Km Camión</th>
+                                        <th class="text-center text-secondary">Km Vigencia</th>
+                                        <th class="text-center text-secondary">Estado</th>
+                                        <th class="text-center text-secondary">Observación</th>
+                                    </tr>
+                                </thead>
+                                <tbody th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'ACOPLADO'}">
+                                    <tr>
+                                        <td class="text-center text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-center text-secondary" th:text="${m.km}"></td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" class="text-center text-secondary">-</td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-center text-secondary" th:text="${m.kmVigencia}"></td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" class="text-center text-secondary">-</td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-center text-secondary">EJECUTADO</td>
+                                        <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" class="text-center text-secondary">PENDIENTE</td>
+                                        <td class="text-center text-secondary" th:text="${m.observacion}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="recibo-footer">
+                <div class="footer-text">
+                    <!--
+                    <p class="text-muted mb-0">_____________</p>
+                    <p class="text-muted">Firma</p>
+                    -->
+                    <a title="Imprimir Ingreso" href="#" class="boton-imprimir pb-5" onclick="window.print(); return false;">
+                        <svg id="imprimir" xmlns="http://www.w3.org/2000/svg" width="25" height="25" class="bi bi-printer" viewBox="0 0 16 16">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                        <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+

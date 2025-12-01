@@ -247,7 +247,7 @@ public class MantenimientoControlador {
         mantenimiento.setKm(km);
         mantenimiento.setKmProximo(kmProximo);
         mantenimiento.setKmAlarma(kmAlarma);
-        mantenimiento.setEstado("VIGENTE");
+        mantenimiento.setEstado(Mantenimiento.Estado.VIGENTE);
         mantenimiento.setUsuario(logueado);
         mantenimiento.setIdOrg(logueado.getIdOrg());
         if (aplicaA == TipoMantenimiento.AplicaA.CAMION) {
@@ -309,7 +309,7 @@ public class MantenimientoControlador {
         mantenimiento.setKm(km);
         mantenimiento.setKmProximo(kmProximo);
         mantenimiento.setKmAlarma(kmAlarma);
-        mantenimiento.setEstado("VIGENTE");
+        mantenimiento.setEstado(Mantenimiento.Estado.VIGENTE);
         mantenimiento.setUsuario(logueado);
         mantenimiento.setIdOrg(logueado.getIdOrg());
         if (aplicaA == TipoMantenimiento.AplicaA.CAMION) {
@@ -463,7 +463,7 @@ public class MantenimientoControlador {
             modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
             modelo.put("camion", logueado.getCamion());
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-            modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdCamion(logueado.getCamion().getId()));
+            modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoVigenteIdCamion(logueado.getCamion().getId()));
 
             return "mantenimiento_listarChoferCamion.html";
 
@@ -497,7 +497,7 @@ public class MantenimientoControlador {
         modelo.put("camion", camionServicio.buscarCamion(idCamion));
         modelo.put("aplica", TipoMantenimiento.AplicaA.CAMION);
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdCamion(idCamion));
+        modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoVigenteIdCamion(idCamion));
 
         return "mantenimiento_listarChoferCamion.html";
 
@@ -535,7 +535,7 @@ public class MantenimientoControlador {
             modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
             modelo.put("acoplado", logueado.getAcoplado());
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-            modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdAcoplado(logueado.getAcoplado().getId()));
+            modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoVigenteIdAcoplado(logueado.getAcoplado().getId()));
 
             return "mantenimiento_listarChoferAcoplado.html";
 
@@ -569,7 +569,7 @@ public class MantenimientoControlador {
         modelo.put("aplica", TipoMantenimiento.AplicaA.ACOPLADO);
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoIdAcoplado(idAcoplado));
+        modelo.addAttribute("mantenimientos", mantenimientoServicio.buscarMantenimientoVigenteIdAcoplado(idAcoplado));
 
         return "mantenimiento_listarChoferAcoplado.html";
 
@@ -669,21 +669,23 @@ public class MantenimientoControlador {
         modelo.put("tipo", null);
         modelo.put("seleccioneC", "seleccione");
         modelo.put("seleccioneT", "seleccione");
+        modelo.put("clase", "PREVENTIVO");
 
         return "mantenimiento_listarAdminCamiones.html";
 
     }
 
     @PostMapping("/listarAdminCamionFiltro")
-    public String listarAdminCamionFiltro(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
+    public String listarAdminCamionFiltro(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idCamion != null && idTipo == null) {
+        if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdCamion(idCamion);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionPreventivo(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -693,15 +695,14 @@ public class MantenimientoControlador {
             }
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
-
             modelo.put("camion", camionServicio.buscarCamion(idCamion));
             modelo.put("idCamion", idCamion);
             modelo.put("idTipo", null);
             modelo.put("tipo", null);
 
-        } else if (idCamion == null && idTipo != null) {
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamionesPorTipo(logueado.getIdOrg(), idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamion(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -711,15 +712,48 @@ public class MantenimientoControlador {
             }
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("idCamion", idCamion);
+            modelo.put("idTipo", null);
+            modelo.put("tipo", null);
 
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionCorrectivo(idCamion);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("idCamion", idCamion);
+            modelo.put("idTipo", null);
+            modelo.put("tipo", null);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
             modelo.put("camion", null);
             modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
             modelo.put("idCamion", null);
             modelo.put("idTipo", idTipo);
 
-        } else if (idCamion != null && idTipo != null) {
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamionPorTipo(idCamion, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -729,16 +763,120 @@ public class MantenimientoControlador {
             }
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", null);
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idCamion", null);
+            modelo.put("idTipo", idTipo);
 
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", null);
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idCamion", null);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoPreventivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
             modelo.put("camion", camionServicio.buscarCamion(idCamion));
             modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
             modelo.put("idCamion", idCamion);
             modelo.put("idTipo", idTipo);
 
-        } else {
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamiones(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoCorrectivo(idCamion, idTipo);
 
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idCamion", idCamion);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idCamion", idCamion);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamiones(logueado.getIdOrg());
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", null);
+            modelo.put("idCamion", null);
+            modelo.put("tipo", null);
+            modelo.put("idTipo", null);
+            modelo.put("seleccioneC", null);
+            modelo.put("seleccioneT", null);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPreventivo(logueado.getIdOrg());
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", null);
+            modelo.put("idCamion", null);
+            modelo.put("tipo", null);
+            modelo.put("idTipo", null);
+            modelo.put("seleccioneC", null);
+            modelo.put("seleccioneT", null);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesCorrectivo(logueado.getIdOrg());
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
                     .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
@@ -761,16 +899,20 @@ public class MantenimientoControlador {
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("tipos", tipoMantenimientoServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoMantenimiento.AplicaA.CAMION));
         modelo.put("flag", flag);
+        modelo.put("clase", clase);
 
         return "mantenimiento_listarAdminCamiones.html";
 
     }
 
     @GetMapping("/listarAdminCamion")
-    public String listarAdminCamion(@RequestParam Long id, @RequestParam(required = false) Long idCamion, ModelMap modelo) {
+    public String listarAdminCamion(@RequestParam Long id, @RequestParam(required = false) Long idCamion,  @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo) {
 
         modelo.put("mantenimiento", mantenimientoServicio.buscarMantenimientoDiasVigencia(id));
         modelo.put("idCamion", idCamion);
+        modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
 
         return "mantenimiento_listarAdminCamion.html";
 
@@ -800,21 +942,40 @@ public class MantenimientoControlador {
         modelo.put("tipo", null);
         modelo.put("seleccioneA", "seleccione");
         modelo.put("seleccioneT", "seleccione");
+        modelo.put("clase", "PREVENTIVO");
 
         return "mantenimiento_listarAdminAcoplados.html";
 
     }
 
     @PostMapping("/listarAdminAcopladoFiltro")
-    public String listarAdminAcopladoFiltro(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
+    public String listarAdminAcopladoFiltro(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idAcoplado != null && idTipo == null) {
+        if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdAcoplado(idAcoplado);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoPreventivo(idAcoplado);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+            modelo.put("idAcoplado", idAcoplado);
+            modelo.put("idTipo", null);
+            modelo.put("tipo", null);
+
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoCorrectivo(idAcoplado);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -830,9 +991,27 @@ public class MantenimientoControlador {
             modelo.put("idTipo", null);
             modelo.put("tipo", null);
 
-        } else if (idAcoplado == null && idTipo != null) {
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcoplado(idAcoplado);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+            modelo.put("idAcoplado", idAcoplado);
+            modelo.put("idTipo", null);
+            modelo.put("tipo", null);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoPreventivo(logueado.getIdOrg(), idTipo);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -848,9 +1027,45 @@ public class MantenimientoControlador {
             modelo.put("idAcoplado", null);
             modelo.put("idTipo", idTipo);
 
-        } else if (idAcoplado != null && idTipo != null) {
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladoPorTipo(idAcoplado, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+            modelo.put("acoplado", null);
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idAcoplado", null);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+            modelo.put("acoplado", null);
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idAcoplado", null);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoPreventivo(idAcoplado, idTipo);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -866,9 +1081,85 @@ public class MantenimientoControlador {
             modelo.put("idAcoplado", idAcoplado);
             modelo.put("idTipo", idTipo);
 
-        } else {
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcoplados(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoCorrectivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idAcoplado", idAcoplado);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+            modelo.put("tipo", tipoMantenimientoServicio.buscarTipo(idTipo));
+            modelo.put("idAcoplado", idAcoplado);
+            modelo.put("idTipo", idTipo);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", null);
+            modelo.put("idAcoplado", null);
+            modelo.put("tipo", null);
+            modelo.put("idTipo", null);
+            modelo.put("seleccioneA", null);
+            modelo.put("seleccioneT", null);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", null);
+            modelo.put("idAcoplado", null);
+            modelo.put("tipo", null);
+            modelo.put("idTipo", null);
+            modelo.put("seleccioneA", null);
+            modelo.put("seleccioneT", null);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -892,16 +1183,20 @@ public class MantenimientoControlador {
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("tipos", tipoMantenimientoServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
         modelo.put("flag", flag);
+        modelo.put("clase", clase);
 
         return "mantenimiento_listarAdminAcoplados.html";
 
     }
 
     @GetMapping("/listarAdminAcoplado")
-    public String listarAdminAcoplado(@RequestParam Long id, @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
+    public String listarAdminAcoplado(@RequestParam Long id, @RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo) {
 
         modelo.addAttribute("mantenimiento", mantenimientoServicio.buscarMantenimientoDiasVigencia(id));
         modelo.put("idAcoplado", idAcoplado);
+        modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
 
         return "mantenimiento_listarAdminAcoplado.html";
 
@@ -940,7 +1235,7 @@ public class MantenimientoControlador {
         return "mantenimiento_listarHistorialAcopladoAdmin.html";
 
     }
-    
+
     @GetMapping("/registrarMasivo")
     public String registrarMasivo(ModelMap modelo, HttpSession session) {
 
@@ -949,40 +1244,40 @@ public class MantenimientoControlador {
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.put("camion", null);
         modelo.put("idOrg", logueado.getIdOrg());
-        
-        return "mantenimiento_registrarMasivo.html"; 
-    }
-    
-    @GetMapping("/registrarMasivo1")
-    public String registrarMasivo1(@RequestParam Long idOrg, @RequestParam(required = false) Long idCamion, 
-            @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
-        
-        if(idCamion != null){
-        Camion camion = camionServicio.buscarCamion(idCamion);
-        int kmCamion = combustibleServicio.kmUltimaCarga(camion);
 
-        modelo.put("kmCamion", kmCamion);
-        modelo.put("kmProximoCamion", kmCamion + 10000);
-        modelo.put("kmAlarmaCamion", kmCamion + 9000);
-        modelo.put("kmVigenciaCamion", 10000);
-        modelo.put("camion", camion);
-        
-        if(camion.getAcoplado() != null && idAcoplado == null){
-            Acoplado acoplado = camion.getAcoplado();
-            int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
-            modelo.put("acoplado", acoplado);
-            modelo.put("kmAcoplado", km);
-            modelo.put("kmProximoAcoplado", km + 10000);
-            modelo.put("kmAlarmaAcoplado", km + 9000);
-            modelo.put("kmVigenciaAcoplado", 10000);
-        } else {
-            modelo.put("acoplado", null);
-            modelo.put("kmAcoplado", null);
+        return "mantenimiento_registrarMasivo.html";
+    }
+
+    @GetMapping("/registrarMasivo1")
+    public String registrarMasivo1(@RequestParam Long idOrg, @RequestParam(required = false) Long idCamion,
+            @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
+
+        if (idCamion != null) {
+            Camion camion = camionServicio.buscarCamion(idCamion);
+            int kmCamion = combustibleServicio.kmUltimaCarga(camion);
+
+            modelo.put("kmCamion", kmCamion);
+            modelo.put("kmProximoCamion", kmCamion + 10000);
+            modelo.put("kmAlarmaCamion", kmCamion + 9000);
+            modelo.put("kmVigenciaCamion", 10000);
+            modelo.put("camion", camion);
+
+            if (camion.getAcoplado() != null && idAcoplado == null) {
+                Acoplado acoplado = camion.getAcoplado();
+                int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
+                modelo.put("acoplado", acoplado);
+                modelo.put("kmAcoplado", km);
+                modelo.put("kmProximoAcoplado", km + 10000);
+                modelo.put("kmAlarmaAcoplado", km + 9000);
+                modelo.put("kmVigenciaAcoplado", 10000);
+            } else {
+                modelo.put("acoplado", null);
+                modelo.put("kmAcoplado", null);
+            }
         }
-        }
-        
-        if(idAcoplado != null){
-            
+
+        if (idAcoplado != null) {
+
             Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
             int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
             modelo.put("acoplado", acoplado);
@@ -990,245 +1285,235 @@ public class MantenimientoControlador {
             modelo.put("kmProximoAcoplado", km + 10000);
             modelo.put("kmAlarmaAcoplado", km + 9000);
             modelo.put("kmVigenciaAcoplado", 10000);
-            
+
         }
-        
+
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
         modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposAplicaA(idOrg, TipoMantenimiento.AplicaA.CAMION));
         modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposAplicaA(idOrg, TipoMantenimiento.AplicaA.ACOPLADO));
         modelo.put("idOrg", idOrg);
-        
-        return "mantenimiento_registrarMasivo.html"; 
+
+        return "mantenimiento_registrarMasivo.html";
     }
 
     @PostMapping("/registroMasivo")
     public String registroMasivo(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
-                             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson,
-                             @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam String fecha,
-                             @RequestParam(required = false) String observacion, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    Date fechaOt = convertirFecha(fecha);
-    String obsMayusculas = observacion.toUpperCase();
-    
-    List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
-    List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
-    
-    List<Mantenimiento> mantenimientosCamion = new ArrayList<>();
-    for (MantenimientoDTO dto : mantenimientosCamionDTO) {
-    Mantenimiento m = new Mantenimiento();
-    TipoMantenimiento tipo = new TipoMantenimiento();
-    tipo.setId(dto.getTipoMantenimiento());
-    m.setTipoMantenimiento(tipo);
-    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
-    m.setKm(dto.getKm());
-    m.setKmVigencia(dto.getKmVigencia());
-    m.setKmProximo(dto.getKmProximo());
-    m.setKmAlarma(dto.getKmAlarma());
-    mantenimientosCamion.add(m);
-    }
-    
-    
-    List<Mantenimiento> mantenimientosAcoplado = new ArrayList<>();
-    for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
-    Mantenimiento m = new Mantenimiento();
-    TipoMantenimiento tipo = new TipoMantenimiento();
-    tipo.setId(dto.getTipoMantenimiento());
-    m.setTipoMantenimiento(tipo);
-    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
-    m.setKm(dto.getKm());
-    m.setKmVigencia(dto.getKmVigencia());
-    m.setKmProximo(dto.getKmProximo());
-    m.setKmAlarma(dto.getKmAlarma());
-    mantenimientosCamion.add(m);
-    }
+            @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson,
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam String fecha,
+            @RequestParam(required = false) String observacion, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
 
-    List<Mantenimiento> mantenimientosTotales = new ArrayList<>();
-    mantenimientosTotales.addAll(mantenimientosCamion);
-    mantenimientosTotales.addAll(mantenimientosAcoplado);
-    
-    for (Mantenimiento m : mantenimientosTotales) {
-        m.setEstado("VIGENTE");
-        m.setIdOrg(logueado.getIdOrg());
-        m.setUsuario(logueado);
-        m.setFecha(fechaOt);
-        m.setObservacion(obsMayusculas);
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+        Date fechaOt = convertirFecha(fecha);
+        String obsMayusculas = observacion.toUpperCase();
 
-        if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
-            Camion camion = camionServicio.buscarCamion(idCamion);
-            m.setCamion(camion);
-        } else if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.ACOPLADO)) {
-            Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
-            m.setAcoplado(acoplado);
-        }
-        
-        Mantenimiento mantenimientoVigente = mantenimientoServicio.buscarExistenteMasivo(m);
-            
-        mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
-            
+        List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
+        List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
+
+        List<Mantenimiento> mantenimientosCamion = new ArrayList<>();
+        for (MantenimientoDTO dto : mantenimientosCamionDTO) {
+            Mantenimiento m = new Mantenimiento();
+            TipoMantenimiento tipo = new TipoMantenimiento();
+            tipo.setId(dto.getTipoMantenimiento());
+            m.setTipoMantenimiento(tipo);
+            m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+            m.setKm(dto.getKm());
+            m.setKmVigencia(dto.getKmVigencia());
+            m.setKmProximo(dto.getKmProximo());
+            m.setKmAlarma(dto.getKmAlarma());
+            mantenimientosCamion.add(m);
         }
 
-    redirectAttributes.addFlashAttribute("mantenimientosC", mantenimientosCamionDTO);
-    redirectAttributes.addFlashAttribute("mantenimientosA", mantenimientosAcopladoDTO);
+        List<Mantenimiento> mantenimientosAcoplado = new ArrayList<>();
+        for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
+            Mantenimiento m = new Mantenimiento();
+            TipoMantenimiento tipo = new TipoMantenimiento();
+            tipo.setId(dto.getTipoMantenimiento());
+            m.setTipoMantenimiento(tipo);
+            m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+            m.setKm(dto.getKm());
+            m.setKmVigencia(dto.getKmVigencia());
+            m.setKmProximo(dto.getKmProximo());
+            m.setKmAlarma(dto.getKmAlarma());
+            mantenimientosCamion.add(m);
+        }
 
-    return "redirect:/mantenimiento/registradoMasivo";
+        List<Mantenimiento> mantenimientosTotales = new ArrayList<>();
+        mantenimientosTotales.addAll(mantenimientosCamion);
+        mantenimientosTotales.addAll(mantenimientosAcoplado);
 
-}
-    
+        for (Mantenimiento m : mantenimientosTotales) {
+            m.setEstado(Mantenimiento.Estado.VIGENTE);
+            m.setIdOrg(logueado.getIdOrg());
+            m.setUsuario(logueado);
+            m.setFecha(fechaOt);
+            m.setObservacion(obsMayusculas);
+
+            if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
+                Camion camion = camionServicio.buscarCamion(idCamion);
+                m.setCamion(camion);
+            } else if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.ACOPLADO)) {
+                Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+                m.setAcoplado(acoplado);
+            }
+
+            Mantenimiento mantenimientoVigente = mantenimientoServicio.buscarExistenteMasivo(m);
+
+            mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+
+        }
+
+        redirectAttributes.addFlashAttribute("mantenimientosC", mantenimientosCamionDTO);
+        redirectAttributes.addFlashAttribute("mantenimientosA", mantenimientosAcopladoDTO);
+
+        return "redirect:/mantenimiento/registradoMasivo";
+
+    }
+
     @GetMapping("/registradoMasivo")
     public String registradoMasivo(@ModelAttribute("mantenimientosC") List<Mantenimiento> mantenimientosC,
             @ModelAttribute("mantenimientosA") List<Mantenimiento> mantenimientosA, ModelMap modelo) {
 
-         modelo.put("exito", "La carga de Mantenimientos se ha REGISTRADO con éxito");
-         modelo.addAttribute("mantenimientosC", mantenimientosC);
-         modelo.addAttribute("mantenimientosA", mantenimientosA);
-        
+        modelo.put("exito", "La carga de Mantenimientos se ha REGISTRADO con éxito");
+        modelo.addAttribute("mantenimientosC", mantenimientosC);
+        modelo.addAttribute("mantenimientosA", mantenimientosA);
+
         return "mantenimiento_mostrarMasivo.html";
     }
-    
+
     @GetMapping("/registrarMasivoChofer")
     public String registrarMasivoChofer(ModelMap modelo, HttpSession session) {
 
         Usuario chofer = (Usuario) session.getAttribute("usuariosession");
-        
+
         Camion camion = null;
         Acoplado acoplado = null;
 
-        if(chofer.getCamion() != null){
-            
-        camion = chofer.getCamion();
-        int kmCamion = combustibleServicio.kmUltimaCarga(camion);
-        modelo.put("kmCamion", kmCamion);
-        modelo.put("kmProximoCamion", kmCamion + 10000);
-        modelo.put("kmAlarmaCamion", kmCamion + 9000);
-        modelo.put("kmVigenciaCamion", 10000);
-            
-        } if(chofer.getAcoplado() != null){
-            
+        if (chofer.getCamion() != null) {
+
+            camion = chofer.getCamion();
+            int kmCamion = combustibleServicio.kmUltimaCarga(camion);
+            modelo.put("kmCamion", kmCamion);
+            modelo.put("kmProximoCamion", kmCamion + 10000);
+            modelo.put("kmAlarmaCamion", kmCamion + 9000);
+            modelo.put("kmVigenciaCamion", 10000);
+
+        }
+        if (chofer.getAcoplado() != null) {
+
             acoplado = chofer.getAcoplado();
             int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
             modelo.put("kmAcoplado", km);
             modelo.put("kmProximoAcoplado", km + 10000);
             modelo.put("kmAlarmaAcoplado", km + 9000);
             modelo.put("kmVigenciaAcoplado", 10000);
-            
-        } 
-        
+
+        }
+
         modelo.put("camion", camion);
         modelo.put("acoplado", acoplado);
         modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoMantenimiento.AplicaA.CAMION));
         modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
-        
-        return "mantenimiento_registrarMasivoChofer.html"; 
+
+        return "mantenimiento_registrarMasivoChofer.html";
     }
-    
+
     @PostMapping("/registroMasivoChofer")
     public String registroMasivoChofer(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
-                             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson, @RequestParam String fecha,
-                             @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session, RedirectAttributes redirectAttributes) 
-                             throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    Date fechaOt = convertirFecha(fecha);
-    String obsMayusculas = observacion.toUpperCase();
-    
-    List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
-    List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
-    
-    List<Mantenimiento> mantenimientosCamion = new ArrayList<>();
-    for (MantenimientoDTO dto : mantenimientosCamionDTO) {
-    Mantenimiento m = new Mantenimiento();
-    TipoMantenimiento tipo = new TipoMantenimiento();
-    tipo.setId(dto.getTipoMantenimiento());
-    m.setTipoMantenimiento(tipo);
-    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
-    m.setKm(dto.getKm());
-    m.setKmVigencia(dto.getKmVigencia());
-    m.setKmProximo(dto.getKmProximo());
-    m.setKmAlarma(dto.getKmAlarma());
-    mantenimientosCamion.add(m);
-    }
-    
-    
-    List<Mantenimiento> mantenimientosAcoplado = new ArrayList<>();
-    for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
-    Mantenimiento m = new Mantenimiento();
-    TipoMantenimiento tipo = new TipoMantenimiento();
-    tipo.setId(dto.getTipoMantenimiento());
-    m.setTipoMantenimiento(tipo);
-    m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
-    m.setKm(dto.getKm());
-    m.setKmVigencia(dto.getKmVigencia());
-    m.setKmProximo(dto.getKmProximo());
-    m.setKmAlarma(dto.getKmAlarma());
-    mantenimientosCamion.add(m);
-    }
+            @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson, @RequestParam String fecha,
+            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session, RedirectAttributes redirectAttributes)
+            throws JsonProcessingException, ParseException {
 
-    List<Mantenimiento> mantenimientosTotales = new ArrayList<>();
-    mantenimientosTotales.addAll(mantenimientosCamion);
-    mantenimientosTotales.addAll(mantenimientosAcoplado);
-    
-    for (Mantenimiento m : mantenimientosTotales) {
-        m.setEstado("VIGENTE");
-        m.setIdOrg(logueado.getIdOrg());
-        m.setUsuario(logueado);
-        m.setFecha(fechaOt);
-        m.setObservacion(obsMayusculas);
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+        Date fechaOt = convertirFecha(fecha);
+        String obsMayusculas = observacion.toUpperCase();
 
-        if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
-            Camion camion = logueado.getCamion();
-            m.setCamion(camion);
-        } else if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.ACOPLADO)) {
-            Acoplado acoplado = logueado.getAcoplado();
-            m.setAcoplado(acoplado);
+        List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
+        List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
+
+        List<Mantenimiento> mantenimientosCamion = new ArrayList<>();
+        for (MantenimientoDTO dto : mantenimientosCamionDTO) {
+            Mantenimiento m = new Mantenimiento();
+            TipoMantenimiento tipo = new TipoMantenimiento();
+            tipo.setId(dto.getTipoMantenimiento());
+            m.setTipoMantenimiento(tipo);
+            m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+            m.setKm(dto.getKm());
+            m.setKmVigencia(dto.getKmVigencia());
+            m.setKmProximo(dto.getKmProximo());
+            m.setKmAlarma(dto.getKmAlarma());
+            mantenimientosCamion.add(m);
         }
-        
-        Mantenimiento mantenimientoVigente = mantenimientoServicio.buscarExistenteMasivo(m);
-            
-        mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
-            
+
+        List<Mantenimiento> mantenimientosAcoplado = new ArrayList<>();
+        for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
+            Mantenimiento m = new Mantenimiento();
+            TipoMantenimiento tipo = new TipoMantenimiento();
+            tipo.setId(dto.getTipoMantenimiento());
+            m.setTipoMantenimiento(tipo);
+            m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+            m.setKm(dto.getKm());
+            m.setKmVigencia(dto.getKmVigencia());
+            m.setKmProximo(dto.getKmProximo());
+            m.setKmAlarma(dto.getKmAlarma());
+            mantenimientosCamion.add(m);
         }
-    
-    redirectAttributes.addFlashAttribute("mantenimientosC", mantenimientosCamionDTO);
-    redirectAttributes.addFlashAttribute("mantenimientosA", mantenimientosAcopladoDTO);
 
-    return "redirect:/mantenimiento/registradoMasivoChofer";
+        List<Mantenimiento> mantenimientosTotales = new ArrayList<>();
+        mantenimientosTotales.addAll(mantenimientosCamion);
+        mantenimientosTotales.addAll(mantenimientosAcoplado);
 
-  }
-    
+        for (Mantenimiento m : mantenimientosTotales) {
+            m.setEstado(Mantenimiento.Estado.VIGENTE);
+            m.setIdOrg(logueado.getIdOrg());
+            m.setUsuario(logueado);
+            m.setFecha(fechaOt);
+            m.setObservacion(obsMayusculas);
+
+            if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
+                Camion camion = logueado.getCamion();
+                m.setCamion(camion);
+            } else if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.ACOPLADO)) {
+                Acoplado acoplado = logueado.getAcoplado();
+                m.setAcoplado(acoplado);
+            }
+
+            Mantenimiento mantenimientoVigente = mantenimientoServicio.buscarExistenteMasivo(m);
+
+            mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+
+        }
+
+        redirectAttributes.addFlashAttribute("mantenimientosC", mantenimientosCamionDTO);
+        redirectAttributes.addFlashAttribute("mantenimientosA", mantenimientosAcopladoDTO);
+
+        return "redirect:/mantenimiento/registradoMasivoChofer";
+
+    }
+
     @GetMapping("/registradoMasivoChofer")
     public String registradoMasivoChofer(@ModelAttribute("mantenimientosC") List<Mantenimiento> mantenimientosC,
             @ModelAttribute("mantenimientosA") List<Mantenimiento> mantenimientosA, ModelMap modelo) {
 
-         modelo.put("exito", "La carga de Mantenimientos se ha REGISTRADO con éxito");
-         modelo.addAttribute("mantenimientosC", mantenimientosC);
-         modelo.addAttribute("mantenimientosA", mantenimientosA);
-        
-            return "mantenimiento_mostrarMasivoChofer.html";
+        modelo.put("exito", "La carga de Mantenimientos se ha REGISTRADO con éxito");
+        modelo.addAttribute("mantenimientosC", mantenimientosC);
+        modelo.addAttribute("mantenimientosA", mantenimientosA);
+
+        return "mantenimiento_mostrarMasivoChofer.html";
     }
 
     @PostMapping("/exportarCamiones")
-    public String exportarCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
+    public String exportarCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo, HttpSession session) throws ParseException {
 
-       Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idCamion != null && idTipo == null) {
+        if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdCamion(idCamion);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            modelo.put("mantenimientos", mantenimientoPorTipo);
-
-        } else if (idCamion == null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamionesPorTipo(logueado.getIdOrg(), idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionPreventivo(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1236,9 +1521,9 @@ public class MantenimientoControlador {
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
-        } else if (idCamion != null && idTipo != null) {
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamionPorTipo(idCamion, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamion(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1246,9 +1531,99 @@ public class MantenimientoControlador {
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
-        } else {
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamiones(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionCorrectivo(idCamion);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoPreventivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoCorrectivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamiones(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1257,33 +1632,24 @@ public class MantenimientoControlador {
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
         }
-        
+
         modelo.put("idCamion", idCamion);
         modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
 
         return "mantenimiento_exportarCamiones.html";
 
     }
 
     @PostMapping("/exportaCamiones")
-    public void exportaCamion(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+    public void exportaCamion(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        if (idCamion != null && idTipo == null) {
+        if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientoIdCamion(idCamion);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
-            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
-
-        } else if (idCamion == null && idTipo != null) {
-
-            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosCamionesPorTipo(logueado.getIdOrg(), idTipo);
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionPreventivo(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1292,9 +1658,9 @@ public class MantenimientoControlador {
             String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
             excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
 
-        } else if (idCamion != null && idTipo != null) {
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosCamionPorTipo(idCamion, idTipo);
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamion(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1303,9 +1669,108 @@ public class MantenimientoControlador {
             String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
             excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
 
-        } else {
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosCamiones(logueado.getIdOrg());
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionCorrectivo(idCamion);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoPreventivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoCorrectivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamiones(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1352,24 +1817,15 @@ public class MantenimientoControlador {
     }
 
     @PostMapping("/exportarAcoplados")
-    public String exportarAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
+    public String exportarAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idAcoplado != null && idTipo == null) {
+        if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdAcoplado(idAcoplado);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            modelo.put("mantenimientos", mantenimientoPorTipo);
-
-        } else if (idAcoplado == null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoPreventivo(idAcoplado);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1377,9 +1833,9 @@ public class MantenimientoControlador {
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
-        } else if (idAcoplado != null && idTipo != null) {
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladoPorTipo(idAcoplado, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoCorrectivo(idAcoplado);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1387,9 +1843,99 @@ public class MantenimientoControlador {
 
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
-        } else {
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcoplados(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcoplado(idAcoplado);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoPreventivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoCorrectivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1398,34 +1944,25 @@ public class MantenimientoControlador {
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
         }
-        
+
         modelo.put("idAcoplado", idAcoplado);
         modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
 
         return "mantenimiento_exportarAcoplados.html";
 
     }
 
     @PostMapping("/exportaAcoplados")
-    public void exportaAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+    public void exportaAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idAcoplado != null && idTipo == null) {
+        if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdAcoplado(idAcoplado);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
-            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
-
-        } else if (idAcoplado == null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoPreventivo(idAcoplado);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1434,9 +1971,9 @@ public class MantenimientoControlador {
             String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
             excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
 
-        } else if (idAcoplado != null && idTipo != null) {
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladoPorTipo(idAcoplado, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoCorrectivo(idAcoplado);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1445,9 +1982,108 @@ public class MantenimientoControlador {
             String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
             excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
 
-        } else {
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcoplados(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcoplado(idAcoplado);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoPreventivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoCorrectivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            String htmlContent = generateHtmlFromObjects(mantenimientoPorTipo);
+            excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1457,7 +2093,7 @@ public class MantenimientoControlador {
             excelServicio.exportHtmlToExcelMantenimiento(htmlContent, response);
 
         }
-        
+
     }
 
     @PostMapping("/exportarHistorialAcoplado")
@@ -1594,10 +2230,10 @@ public class MantenimientoControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
+
     @GetMapping("/imprimirVencimiento/{km}")
     public String imprimirVencimiento(@PathVariable Integer km, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Mantenimiento> mantenimientos = mantenimientoServicio.obtenerMantenimientosPorVencer(logueado.getIdOrg(), km);
 
@@ -1610,37 +2246,17 @@ public class MantenimientoControlador {
 
         return "mantenimiento_imprimirVencimiento.html";
     }
-    
+
     @GetMapping("/imprimirCamiones")
-    public String imprimirCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
+    public String imprimirCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo, HttpSession session) {
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idCamion != null && idTipo == null) {
+        if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdCamion(idCamion);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            modelo.put("mantenimientos", mantenimientoPorTipo);
-            modelo.put("camion", camionServicio.buscarCamion(idCamion));
-
-        } else if (idCamion == null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamionesPorTipo(logueado.getIdOrg(), idTipo);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            modelo.put("mantenimientos", mantenimientoPorTipo);
-
-        } else if (idCamion != null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamionPorTipo(idCamion, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionPreventivo(idCamion);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1649,9 +2265,113 @@ public class MantenimientoControlador {
             modelo.put("mantenimientos", mantenimientoPorTipo);
             modelo.put("camion", camionServicio.buscarCamion(idCamion));
 
-        } else {
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosCamiones(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamion(idCamion);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        } else if (idCamion != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdCamionCorrectivo(idCamion);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoPreventivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipoCorrectivo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        } else if (idCamion != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionPorTipo(idCamion, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("camion", camionServicio.buscarCamion(idCamion));
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamiones(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idCamion == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteCamionesCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1660,17 +2380,18 @@ public class MantenimientoControlador {
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
         }
-        
+
         modelo.put("idCamion", idCamion);
         modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
 
         return "mantenimiento_imprimirCamiones.html";
     }
-    
-     @GetMapping("/imprimirHistorialCamion/{idCamion}")
+
+    @GetMapping("/imprimirHistorialCamion/{idCamion}")
     public String imprimirHistorialCamion(@PathVariable Long idCamion, ModelMap modelo, HttpSession session) {
 
-            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarHistorialCamion(idCamion);
+        List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarHistorialCamion(idCamion);
 
         Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                 .sorted(Comparator.comparing(Mantenimiento::getFecha).reversed())
@@ -1681,37 +2402,17 @@ public class MantenimientoControlador {
 
         return "mantenimiento_imprimirHistorialCamion.html";
     }
-    
+
     @GetMapping("/imprimirAcoplados")
-    public String imprimirAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
+    public String imprimirAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo, HttpSession session) {
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Mantenimiento> mantenimientos = new ArrayList();
 
-        if (idAcoplado != null && idTipo == null) {
+        if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientoIdAcoplado(idAcoplado);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            modelo.put("mantenimientos", mantenimientoPorTipo);
-            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
-
-        } else if (idAcoplado == null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladosPorTipo(logueado.getIdOrg(), idTipo);
-
-            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
-                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
-                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
-
-            modelo.put("mantenimientos", mantenimientoPorTipo);
-
-        } else if (idAcoplado != null && idTipo != null) {
-
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcopladoPorTipo(idAcoplado, idTipo);
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoPreventivo(idAcoplado);
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1720,9 +2421,114 @@ public class MantenimientoControlador {
             modelo.put("mantenimientos", mantenimientoPorTipo);
             modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
 
-        } else {
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
 
-            mantenimientos = mantenimientoServicio.buscarMantenimientosAcoplados(logueado.getIdOrg());
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcopladoCorrectivo(idAcoplado);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else if (idAcoplado != null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientoVigenteIdAcoplado(idAcoplado);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoPreventivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipoCorrectivo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPorTipo(logueado.getIdOrg(), idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoPreventivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipoCorrectivo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else if (idAcoplado != null && idTipo != null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladoPorTipo(idAcoplado, idTipo);
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("TODOS")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcoplados(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("PREVENTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosPreventivo(logueado.getIdOrg());
+
+            Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
+                    .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+
+            modelo.put("mantenimientos", mantenimientoPorTipo);
+
+        } else if (idAcoplado == null && idTipo == null && clase.equalsIgnoreCase("CORRECTIVO")) {
+
+            mantenimientos = mantenimientoServicio.buscarMantenimientosVigenteAcopladosCorrectivo(logueado.getIdOrg());
 
             Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                     .sorted(Comparator.comparing(Mantenimiento::getKmVigencia))
@@ -1731,17 +2537,18 @@ public class MantenimientoControlador {
             modelo.put("mantenimientos", mantenimientoPorTipo);
 
         }
-        
+
         modelo.put("idAcoplado", idAcoplado);
         modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
 
         return "mantenimiento_imprimirAcoplados.html";
     }
-    
+
     @GetMapping("/imprimirHistorialAcoplado/{idAcoplado}")
     public String imprimirHistorialAcoplado(@PathVariable Long idAcoplado, ModelMap modelo, HttpSession session) {
 
-            List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarHistorialAcoplado(idAcoplado);
+        List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarHistorialAcoplado(idAcoplado);
 
         Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                 .sorted(Comparator.comparing(Mantenimiento::getFecha).reversed())

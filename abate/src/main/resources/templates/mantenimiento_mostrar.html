@@ -28,12 +28,12 @@
                                     <h6 class="mb-1" id="dimgray"><strong th:if="${mantenimiento.acoplado != null}" th:text="'- '+${mantenimiento.aplicaA}+' '+${mantenimiento.acoplado.dominio}+' - '+${mantenimiento.acoplado.marca}+' '+${mantenimiento.acoplado.modelo}"></strong></h6>
                                     <p class="mb-2" id="dimgray" th:text="'Fecha ' + ${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></p>
                                     <h6 th:if="${mantenimiento.km != 0}" class="mb-2" id="dimgray" th:text="'Km Mantenimiento ' +${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></h6>
-                                    <span class="mb-3" th:switch="${mantenimiento.estado}"><strong>
+                                    <span class="mb-2"  th:switch="${mantenimiento.estado}"><strong>
                                             <span id="dimgray">Estado</span>
-                                            <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                            <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                            <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                            <span th:text="' '+${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
+                                            <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">✅ VIGENTE</span>
+                                            <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).PROXIMO_A_VENCER}">🟡 PRÓXIMO A VENCER</span>
+                                            <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VENCIDO}">❌ VENCIDO</span>
+                                            <span class="text-primary" th:text="' '+${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}+' Km'"></span>
                                         </strong></span>
                                     <h6 class="mb-2 text-dark" th:text="'🔧 Próximo Mantenimiento '+${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}+' Km'"></h6>
                                     <h6 class="mb-2 text-dark" th:text="'🔔 Alarma '+${#numbers.formatDecimal(mantenimiento.kmAlarma, 0, 'POINT', 0, 'POINT')}+' Km'"></h6>
