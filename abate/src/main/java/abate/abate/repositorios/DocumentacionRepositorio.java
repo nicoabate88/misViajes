@@ -25,40 +25,49 @@ public interface DocumentacionRepositorio extends JpaRepository<Documentacion, L
     
     Optional<Documentacion> findByTipoDocumentacionIdAndChoferId(Long tipoDocumentacionId, Long choferId);
     
-    @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id")
+    @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND d.estado = 'VIGENTE'")
     public List<Documentacion> buscarDocumentacionIdChofer(@Param("id") Long id);
     
-    @Query("SELECT d FROM Documentacion d WHERE camion_id = :id")
+    @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND d.estado = 'INHABILITADO'")
+    public List<Documentacion> buscarDocumentacionInhabilitadoIdChofer(@Param("id") Long id);
+    
+    @Query("SELECT d FROM Documentacion d WHERE camion_id = :id AND d.estado = 'VIGENTE'")
     public List<Documentacion> buscarDocumentacionIdCamion(@Param("id") Long id);
     
-    @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id")
+    @Query("SELECT d FROM Documentacion d WHERE camion_id = :id AND d.estado = 'INHABILITADO'")
+    public List<Documentacion> buscarDocumentacionInhabilitadoIdCamion(@Param("id") Long id);
+    
+    @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id AND d.estado = 'VIGENTE'")
     public List<Documentacion> buscarDocumentacionIdAcoplado(@Param("id") Long id);
     
-    List<Documentacion> findByCamionIsNotNullAndIdOrg(Long idOrg);
+    @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id AND d.estado = 'INHABILITADO'")
+    public List<Documentacion> buscarDocumentacionInhabilitadoIdAcoplado(@Param("id") Long id);
     
-    List<Documentacion> findByAcopladoIsNotNullAndIdOrg(Long idOrg);
+    List<Documentacion> findByCamionIsNotNullAndIdOrgAndEstado(Long idOrg, String estado);
     
-    List<Documentacion> findByChoferIsNotNullAndIdOrg(Long idOrg);
+    List<Documentacion> findByAcopladoIsNotNullAndIdOrgAndEstado(Long idOrg, String estado);
+    
+    List<Documentacion> findByChoferIsNotNullAndIdOrgAndEstado(Long idOrg, String estado);
     
     @Query("SELECT d FROM Documentacion d WHERE imagen_id = :id")
     public Documentacion buscarDocumentacionIdImagen(@Param("id") Long id);
     
-    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :id AND d.fechaVencimiento <= :fechaLimite")
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :id AND d.estado = 'VIGENTE' AND d.fechaVencimiento <= :fechaLimite")
     List<Documentacion> findDocumentacionesPorVencer(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite);
     
-    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND camion_id != null AND tipo_documentacion_id = :idTipo")
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND d.estado = 'VIGENTE' AND camion_id != null AND tipo_documentacion_id = :idTipo")
     List<Documentacion> buscarDocumentacionCamionesPorTipo(@Param("idOrg") Long idOrg, @Param("idTipo") Long idTipo);
     
     @Query("SELECT d FROM Documentacion d WHERE camion_id = :id AND tipo_documentacion_id = :idTipo")
     List<Documentacion> buscarDocumentacionCamionPorTipo(@Param("id") Long id, @Param("idTipo") Long idTipo);
     
-    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND acoplado_id != null AND tipo_documentacion_id = :idTipo")
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND d.estado = 'VIGENTE' AND acoplado_id != null AND tipo_documentacion_id = :idTipo")
     List<Documentacion> buscarDocumentacionAcopladosPorTipo(@Param("idOrg") Long idOrg, @Param("idTipo") Long idTipo);
     
     @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id AND tipo_documentacion_id = :idTipo")
     List<Documentacion> buscarDocumentacionAcopladoPorTipo(@Param("id") Long id, @Param("idTipo") Long idTipo);
     
-    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND chofer_id != null AND tipo_documentacion_id = :idTipo")
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :idOrg AND d.estado = 'VIGENTE' AND chofer_id != null AND tipo_documentacion_id = :idTipo")
     List<Documentacion> buscarDocumentacionChoferesPorTipo(@Param("idOrg") Long idOrg, @Param("idTipo") Long idTipo);
     
     @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND tipo_documentacion_id = :idTipo")
@@ -73,5 +82,10 @@ public interface DocumentacionRepositorio extends JpaRepository<Documentacion, L
     @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND tipo_documentacion_id = :idTipo")
     Optional<Documentacion> buscarDocumentacionChofer(@Param("id") Long id, @Param("idTipo") Long idTipo);
 
+    boolean existsByCamionIdAndEstado(Long camionId, String estado);
+    
+    boolean existsByAcopladoIdAndEstado(Long acopladoId, String estado);
+    
+    boolean existsByChoferIdAndEstado(Long choferId, String estado);
     
 }

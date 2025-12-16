@@ -16,6 +16,7 @@ import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.CajaRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
+import abate.abate.repositorios.DocumentacionRepositorio;
 import abate.abate.repositorios.EntregaRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
 import abate.abate.repositorios.GastoRepositorio;
@@ -66,6 +67,10 @@ public class ChoferServicio {
     private GastoRepositorio gastoRepositorio;
     @Autowired
     private AcopladoRepositorio acopladoRepositorio;
+    @Autowired
+    private DocumentacionRepositorio documentacionRepositorio;
+    @Autowired
+    private DocumentacionServicio documentacionServicio;
 
     @Transactional
     public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, Long idAcoplado, String caja, String cuenta,String verDocumentacion, String documentacion,
@@ -131,6 +136,22 @@ public class ChoferServicio {
         }
 
         validarDatosModificar(user, nombreM, nombreUsuarioMin, cuil);
+        
+                if (!user.getEstado().equalsIgnoreCase(estado)) {
+            if (estado.equalsIgnoreCase("INHABILITADO")) {
+                Boolean flag = false;
+                flag = documentacionRepositorio.existsByChoferIdAndEstado(id, "VIGENTE");
+                if (flag == true) {
+                    documentacionServicio.inhabilitarDocumentacionIdChofer(id);
+                }
+            } else if (estado.equalsIgnoreCase("HABILITADO")) {
+                Boolean flag = false;
+                flag = documentacionRepositorio.existsByChoferIdAndEstado(id, "INHABILITADO");
+                if (flag == true) {
+                    documentacionServicio.habilitarDocumentacionIdChofer(id);
+                }
+            }
+        }
 
         if (idCamion != 0) {
             Camion camion = new Camion();

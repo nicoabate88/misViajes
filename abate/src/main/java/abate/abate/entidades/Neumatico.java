@@ -46,6 +46,8 @@ public class Neumatico {
     private Usuario usuario;
     private String estado;
     private String ubicacion;
+    private String vehiculo;
+    private String posicion;
     @OneToMany(mappedBy = "neumatico", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HistorialNeumatico> historial = new ArrayList<>();
     @OneToMany(mappedBy = "neumatico", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,7 +64,7 @@ public class Neumatico {
     public Neumatico() {
     }
 
-    public Neumatico(Long id, Long idOrg, Integer numero, NeumaticoMarca marca, String modelo, NeumaticoProveedor proveedor, Integer km, Integer kmEstimado, Integer kmUtil, Integer kmIngreso, Date fechaIngreso, Date fechaEgreso, String observacion, Usuario usuario, String estado, String ubicacion, List<AplicaA> aplicaA) {
+    public Neumatico(Long id, Long idOrg, Integer numero, NeumaticoMarca marca, String modelo, NeumaticoProveedor proveedor, Integer km, Integer kmEstimado, Integer kmUtil, Integer kmIngreso, Date fechaIngreso, Date fechaEgreso, String observacion, Usuario usuario, String estado, String ubicacion, String vehiculo, String posicion, List<AplicaA> aplicaA) {
         this.id = id;
         this.idOrg = idOrg;
         this.numero = numero;
@@ -79,6 +81,8 @@ public class Neumatico {
         this.usuario = usuario;
         this.estado = estado;
         this.ubicacion = ubicacion;
+        this.vehiculo = vehiculo;
+        this.posicion = posicion;
         this.aplicaA = aplicaA;
     }
 
@@ -210,6 +214,22 @@ public class Neumatico {
         this.ubicacion = ubicacion;
     }
 
+    public String getVehiculo() {
+        return vehiculo;
+    }
+
+    public void setVehiculo(String vehiculo) {
+        this.vehiculo = vehiculo;
+    }
+
+    public String getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(String posicion) {
+        this.posicion = posicion;
+    }
+
     public List<HistorialNeumatico> getHistorial() {
         return historial;
     }
@@ -233,9 +253,7 @@ public class Neumatico {
     public void setAplicaA(List<AplicaA> aplicaA) {
         this.aplicaA = aplicaA;
     }
-    
-    
-    
+
     
     
 }

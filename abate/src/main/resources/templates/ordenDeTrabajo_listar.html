@@ -63,53 +63,73 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
+                                        <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center">
                                             <h4>Lista Orden de Trabajo</h4>
                                         </div>                                    
-                                        <div title="Ir a Registrar Orden" class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-center">
+                                        <div title="Ir a Registrar Orden" class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
                                             <a th:href="@{/ordenDeTrabajo/registrar}">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
                                                     <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
                                                     <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
                                                 </svg><h6 id="icono">Nuevo</h6> </a>
                                         </div>
+                                        <div title="Ir a Proveedor" class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                            <a th:href="@{/proveedor/listar}">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
+                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                                                    <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+                                                </svg><h6 id="icono">Proveedor</h6> </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="container mb-2">  
                                     <form id="form" th:action="@{/ordenDeTrabajo/listarFiltro}" method="POST">
                                         <div class="row">
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 pb-3">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 pb-3">
                                                 <label for="idCamion" class="form-floting text-secondary">Camión</label>
                                                 <select class="form-control text-secondary border-secondary" id="idCamion" name="idCamion">
                                                     <option th:if="${camion != null}" th:value="${camion.id}"
                                                             th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" selected></option>
-                                                    <option th:value=null>Todos</option>
+                                                    <option th:value=null>TODOS</option>
                                                     <option th:each="camion : ${camiones}"
                                                             th:value="${camion.id}"
                                                             th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
                                                     <option value="">TODOS</option>
                                                 </select>
                                             </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 pb-3">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 pb-3">
                                                 <label for="idAcoplado" class="form-floting text-secondary">Acoplado</label>
                                                 <select class="form-control text-secondary border-secondary" id="idAcoplado" name="idAcoplado">
                                                     <option th:if="${acoplado != null}" th:value="${acoplado.id}"
                                                             th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}" selected></option>
-                                                    <option th:value=null>Todos</option>
+                                                    <option th:value=null>TODOS</option>
                                                     <option th:each="acoplado : ${acoplados}"
                                                             th:value="${acoplado.id}"
                                                             th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
                                                 </select>
                                             </div>
-                                            <div class="col-10 col-sm-10 col-md-10 col-lg-3 col-xl-3 pb-3">
+                                            <div class="col-5 col-sm-5 col-md-5 col-lg-2 col-xl-2 pb-3">
+                                                <label for="lugar" class="form-floting text-secondary">Lugar</label>
+                                                <select class="form-control text-secondary border-secondary" id="lugar" name="lugar">
+                                                    <option th:if="${lugar == 'CAMILO'}" selected th:value="CAMILO">CAMILO ALDAO</option>
+                                                    <option th:if="${lugar == 'NOGOYA'}" selected th:value="NOGOYA">NOGOYA</option>
+                                                    <option th:if="${lugar == 'EXTERNO'}" selected th:value="EXTERNO">PROVEEDOR EXTERNO</option>
+                                                    <option th:if="${lugar == 'TODOS'}" selected th:value="TODOS">TODOS</option>
+                                                    <option th:value="CAMILO">CAMILO ALDAO</option>
+                                                    <option th:value="NOGOYA">NOGOYA</option>
+                                                    <option th:value="EXTERNO">PROVEEDOR EXTERNO</option>
+                                                    <option th:value="TODOS">TODOS</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-5 col-sm-5 col-md-5 col-lg-3 col-xl-3 pb-3">
                                                 <label for="estado" class="form-floting text-secondary">Estado</label>
                                                 <select class="form-control text-secondary border-secondary" id="estado" name="estado">
-                                                    <option th:if="${estado == 'ABIERTA'}" selected th:value="ABIERTA">ABIERTA - EN PROCESO</option>
-                                                    <option th:if="${estado == 'CERRADA'}" selected th:value="CERRADA">CERRADA</option>
-                                                    <option th:if="${estado == 'TODOS'}" selected th:value="TODOS">TODAS</option>
-                                                    <option th:value="ABIERTA">ABIERTA - EN PROCESO</option>
-                                                    <option th:value="CERRADA">CERRADA</option>
-                                                    <option th:value="TODOS">TODAS</option>
+                                                    <option th:if="${estado == 'ABIERTO'}" selected th:value="ABIERTO">ABIERTO - EN PROCESO</option>
+                                                    <option th:if="${estado == 'CERRADO'}" selected th:value="CERRADO">CERRADO</option>
+                                                    <option th:if="${estado == 'TODOS'}" selected th:value="TODOS">TODOS</option>
+                                                    <option th:value="ABIERTO">ABIERTO - EN PROCESO</option>
+                                                    <option th:value="CERRADO">CERRADO</option>
+                                                    <option th:value="TODOS">TODOS</option>
                                                 </select>
                                             </div>
                                             <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
@@ -139,8 +159,9 @@
                                             <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
                                                 <thead>
                                                     <tr>
-                                                        <th class="text-center">ID</th>
+                                                        <th class="text-center">N° OT</th>
                                                         <th class="text-center">Fecha Alta</th>
+                                                        <th class="text-center">Lugar</th>
                                                         <th class="text-center">Camión</th>
                                                         <th class="text-center">Acoplado</th>
                                                         <th class="text-center">Estado</th>
@@ -152,6 +173,7 @@
                                                     <tr th:each="orden : ${ordenes}">
                                                         <td class="text-center" th:text="${orden.idOrden}"></td>
                                                         <td class="text-center" th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></td>
+                                                        <td class="text-center" th:text="${orden.lugar}"></td>
                                                         <td th:if="${orden.camion != null}" class="text-center" th:text="${orden.camion.dominio}"></td>
                                                         <td th:if="${orden.camion == null}" class="text-center">-</td>
                                                         <td th:if="${orden.acoplado != null}" class="text-center" th:text="${orden.acoplado.dominio}"></td>

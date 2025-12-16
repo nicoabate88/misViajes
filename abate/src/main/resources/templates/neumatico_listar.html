@@ -40,24 +40,55 @@
                                             </svg> 
                                         </a>   
                                     </div>
-                                    <div class="col-5 col-sm-5 col-md-6 col-lg-8 col-xl-8 text-center">
+                                    <div class="col-4 col-sm-5 col-md-7 col-lg-7 col-xl-7 text-center">
                                         <h4>Lista de Neumáticos</h4>
                                     </div>
-                                    <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
-                                        <form id="exportaForm" th:action="@{/neumatico/exportar}" method="POST">
-                                            <input hidden th:value="${ubicacion}" name="ubicacion"> 
-                                                <input hidden th:value="${estado}" name="estado">     
-                                                    <button class="btn btn-light" type="submit">
-                                                        <h6 id="icono">Exportar</h6> 
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                        <form>
+                                            <input id="ubicacion" hidden th:value="${ubicacion}" name="ubicacion">
+                                                <input id="estado" hidden th:value="${estado}" name="estado">
+                                                    <button id="exportButton" onclick="startExport(event)" class="btn btn-light" type="button">
+                                                        <h6 id="icono">Excel</h6>
                                                     </button>
                                                     </form>
                                                     </div>
-                                                    <div class="col-3 col-sm-3 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == false}"></div>
-                                                    <div title="Ir a Registrar Neumático" class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                                    <div class="col-2 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                                        <a title="Ir a Imprimir Mantenimiento" target="_blank" th:href="@{/neumatico/imprimir(ubicacion=${ubicacion}, estado=${estado})}">
+                                                            <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                                            </svg><p id="imprimirExporta">Imprimir</p>
+                                                        </a>
+                                                    </div>
+                                                    <!--
+                                                    <div title="Exportar a Excel" class="col-3 col-sm-3 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                                        <form id="exportaForm" th:action="@{/neumatico/exportar}" method="POST">
+                                                            <input hidden th:value="${ubicacion}" name="ubicacion"> 
+                                                                <input hidden th:value="${estado}" name="estado">     
+                                                                    <button class="btn btn-light" type="submit">
+                                                                        <h6 id="icono">Exportar</h6> 
+                                                                    </button>
+                                                                    </form>
+                                                                    </div>
+                                                    -->
+                                                    <div class="col-4 col-sm-3 col-md-2 col-lg-2 col-xl-2 text-center" th:if="${flag == false}"></div>
+                                                    <div title="Ir a Registrar Neumático" class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
                                                         <a th:href="@{/neumatico/registrar}">
                                                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 423.04 423.04" style="enable-background:new 0 0 423.04 423.04;" xml:space="preserve"><g><g><path d="M278,0H145.04c-48,0-74.48,108.96-74.48,211.52s26.08,211.52,74.48,211.52H278c48,0,74.48-108.96,74.48-211.52 S326.4,0,278,0z M145.04,407.04c-27.68,0-58.48-80-58.48-195.52S117.36,16,145.04,16h16c-5.56,10.416-12.444,20.069-20.48,28.72 c-1.503,1.339-2.446,3.196-2.64,5.2l-3.04,33.6l-20,16c-2.356,1.931-3.41,5.033-2.72,8l10.56,40l-17.28,32.8 c-1.088,2.221-1.088,4.819,0,7.04l13.76,30l-13.76,30c-1.141,2.264-1.141,4.936,0,7.2l18.96,34.16l-10.16,28.64 c-0.895,2.548-0.444,5.377,1.2,7.52l22.48,29.28l1.6,33.36c0.09,1.53,0.618,3.001,1.52,4.24l11.36,16L145.04,407.04z M172.64,407.04l-17.12-23.2l-1.84-33.04c-0.106-1.602-0.691-3.135-1.68-4.4l-21.36-27.76l9.92-27.92 c0.763-2.166,0.56-4.555-0.56-6.56l-18.72-33.76l13.68-29.68c0.986-2.131,0.986-4.589,0-6.72l-13.68-29.76l16.88-32.56 c0.926-1.773,1.154-3.827,0.64-5.76l-10-37.6l18.72-14.72c1.696-1.361,2.765-3.354,2.96-5.52l3.04-33.68 c10.126-11.749,18.852-24.635,26-38.4h30.96c-5.56,10.416-12.444,20.069-20.48,28.72c-1.503,1.339-2.446,3.196-2.64,5.2l-3.2,33.6 l-20,16c-2.356,1.931-3.41,5.033-2.72,8l10.56,40l-17.28,32.8c-1.088,2.221-1.088,4.819,0,7.04l13.76,30l-13.76,30 c-1.141,2.264-1.141,4.936,0,7.2l18.96,34.16l-10.16,28.64c-0.895,2.549-0.444,5.377,1.2,7.52l22.8,29.28l1.68,33.36 c0.09,1.53,0.618,3.001,1.52,4.24l11.36,16L172.64,407.04z M222,407.04l-16.88-23.12l-1.6-33.12 c-0.106-1.602-0.691-3.135-1.68-4.4l-21.36-27.76l9.92-27.92c0.763-2.166,0.56-4.555-0.56-6.56l-18.72-33.76l13.68-29.68 c0.986-2.131,0.986-4.589,0-6.72l-14.08-29.76l16.8-32.56c0.926-1.773,1.154-3.827,0.64-5.76l-10-37.6l18.56-14.72 c1.696-1.361,2.765-3.354,2.96-5.52l3.04-33.68c10.037-11.736,18.682-24.595,25.76-38.32H248 c-28.96,33.84-44.48,116.56-44.48,195.44s15.52,161.6,44.64,195.52L222,407.04z M278,407.04c-27.68,0-58.48-80.32-58.48-195.52 S250.32,16,278,16c27.68,0,58.48,80,58.48,195.52S305.68,407.04,278,407.04z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></g></g><g><g><path d="M280.88,63.76c-33.04,0-41.84,96.64-41.84,147.76s8.72,147.76,41.84,147.76s41.76-96.64,41.76-147.76 S313.92,63.76,280.88,63.76z M280.88,343.28c-7.76,0-25.84-44.88-25.84-131.76s18.08-131.76,25.84-131.76 s25.76,44.88,25.76,131.76h0.08C306.72,298.4,288.64,343.28,280.88,343.28z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></g></g></svg>
                                                             <h6 id="icono">Nuevo</h6> </a>
                                                     </div>
+                                                    </div>
+                                                    <div id="loadingModalExport" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; text-align: center; z-index: 1000;">
+                                                        <div style="margin-top: 20%; font-size: 20px;">
+                                                            <div class="spinner" style="margin-bottom: 20px;">
+                                                                <svg viewBox="0 0 50 50" style="width: 50px; height: 50px;">
+                                                                    <circle cx="25" cy="25" r="20" fill="none" stroke-width="5" stroke="#fff" stroke-dasharray="31.4 31.4" stroke-linecap="round">
+                                                                        <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+                                                                    </circle>
+                                                                </svg>
+                                                            </div>
+                                                            Exportando... Por favor, espere.
+                                                        </div>
                                                     </div>
                                                     </div>
                                                     <div class="container mb-2"> 
@@ -122,7 +153,9 @@
                                                                                 <span th:text="'KM de Neumático '+${#numbers.formatDecimal(neumatico.km, 0, 'POINT', 0, 'POINT')}"></span>
                                                                                 <span id="dimgray" th:text="' (KM Estimado '+${#numbers.formatDecimal(neumatico.kmEstimado, 0, 'POINT', 0, 'POINT')}+' - KM Útil '+${#numbers.formatDecimal(neumatico.kmUtil, 0, 'POINT', 0, 'POINT')}+')'"></span>
                                                                             </p>
-                                                                            <h6 class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></h6>
+                                                                            <h6 th:if="${neumatico.ubicacion != 'COLOCADO' && neumatico.ubicacion != 'AUXILIO'}" class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}"></h6>
+                                                                            <h6 th:if="${neumatico.ubicacion == 'COLOCADO' && neumatico.ubicacion != 'AUXILIO'}" class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}+' - '+${neumatico.vehiculo}+' - '+${neumatico.posicion}"></h6>
+                                                                            <h6 th:if="${neumatico.ubicacion == 'AUXILIO'}" class="mb-2 text-dark" th:text="'📌 Ubicación '+${neumatico.ubicacion}+' - '+${neumatico.vehiculo}"></h6>
                                                                         </div>  
                                                                         <div class="col-3 text-center">
                                                                             <div> 
@@ -241,6 +274,58 @@
                                                                                             $('#loadingModal').modal('show');
                                                                                         });
                                                                                     });
+                                                                    </script>
+                                                                    <script>
+                                                                        function startExport(event) {
+                                                                            event.preventDefault();
+
+                                                                            const modal = document.getElementById('loadingModalExport');
+                                                                            modal.style.display = 'block';
+
+                                                                            const ubicacion = document.getElementById('ubicacion').value;
+                                                                            const estado = document.getElementById('estado').value;
+
+                                                                            const url = `/neumatico/exporta?ubicacion=${ubicacion}&estado=${estado}`;
+
+                                                                            fetch(url, {method: 'POST'})
+                                                                                    .then(response => {
+                                                                                        const contentDisposition = response.headers.get('Content-Disposition');
+                                                                                        let fileName = 'exportacion.xlsx';
+
+                                                                                        if (contentDisposition) {
+                                                                                            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                                                                                            if (match && match[1]) {
+                                                                                                fileName = match[1];
+                                                                                            }
+                                                                                        }
+
+                                                                                        return response.blob().then(blob => ({blob, fileName}));
+                                                                                    })
+                                                                                    .then(({ blob, fileName }) => {
+                                                                                        const downloadUrl = window.URL.createObjectURL(blob);
+                                                                                        const a = document.createElement('a');
+                                                                                        a.href = downloadUrl;
+                                                                                        a.download = fileName;
+                                                                                        document.body.appendChild(a);
+                                                                                        a.click();
+                                                                                        a.remove();
+                                                                                    })
+                                                                                    .catch(error => {
+                                                                                        console.error('Error:', error);
+                                                                                        alert('Error durante la exportación.');
+                                                                                    })
+                                                                                    .finally(() => {
+                                                                                        modal.style.display = 'none';
+                                                                                    });
+                                                                        }
+
+                                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                                            const volverBtn = document.getElementById("imprimirExporta");
+                                                                            volverBtn.addEventListener("click", function (e) {
+                                                                                // Mostrar spinner
+                                                                                document.getElementById("spinner").style.display = "block";
+                                                                            });
+                                                                        });
                                                                     </script>
                                                                     </body>
                                                                     </html>

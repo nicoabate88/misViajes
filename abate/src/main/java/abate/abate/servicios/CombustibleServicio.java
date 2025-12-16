@@ -494,8 +494,8 @@ public class CombustibleServicio {
 
     }
     
-        public Double consumoPromedioFechasCamion(Long idCamion,  String desde, String hasta) throws ParseException {
-            
+    public Double consumoPromedioFechasCamion(Long idCamion, String desde, String hasta) throws ParseException {
+
         Date d = convertirFecha(desde);
         Date h = convertirFecha(hasta);
 

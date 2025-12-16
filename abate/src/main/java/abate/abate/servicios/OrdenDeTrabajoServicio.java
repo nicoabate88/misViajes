@@ -4,10 +4,12 @@ import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Mantenimiento;
 import abate.abate.entidades.OrdenDeTrabajo;
+import abate.abate.entidades.Proveedor;
 import abate.abate.entidades.Usuario;
 import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.OrdenDeTrabajoRepositorio;
+import abate.abate.repositorios.ProveedorRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,28 +32,50 @@ public class OrdenDeTrabajoServicio {
     private UsuarioRepositorio usuarioRepositorio;
     @Autowired
     private OrdenDeTrabajoRepositorio ordenRepositorio;
+    @Autowired
+    private ProveedorRepositorio proveedorRepositorio;
 
     @Transactional
-    public OrdenDeTrabajo crearOrden(String fecha, Long idCamion, Long idAcoplado, String lugar, String proveedor, String responsable, Long idChofer,
-            String observacion, Usuario usuario) throws ParseException {
+    public OrdenDeTrabajo crearOrden(String fecha, Long idCamion, Long idAcoplado, String lugar, Long idProveedor, Long idChofer, String taller,
+            String metal, String nogoya, String averia, String observacion, String fechaInicio, String fechaFin, Usuario usuario) throws ParseException {
 
         Date fechaAlta = convertirFecha(fecha);
         String obsMayusculas = observacion.toUpperCase();
         Long idOrden = buscarUltimoIdOrg(usuario.getIdOrg());
 
         OrdenDeTrabajo orden = new OrdenDeTrabajo();
+        
+        if(fechaInicio != null){
+         Date fechaI = convertirFecha(fechaInicio);
+         orden.setFechaInicio(fechaI);
+        }
+        if(fechaFin != null){
+          Date fechaF = convertirFecha(fechaFin);
+          orden.setFechaFin(fechaF);
+          
+        }
 
         orden.setObservacion(obsMayusculas);
         orden.setFechaAlta(fechaAlta);
         orden.setUsuario(usuario);
         orden.setLugar(lugar);
-        orden.setProveedor(proveedor);
-        orden.setResponsable(responsable);
+        
+        orden.setCheckTaller(taller);
+        orden.setCheckMetalurgica(metal);
+        orden.setCheckNogoya(nogoya);
+        orden.setCheckAveria(averia);
         orden.setIdOrg(usuario.getIdOrg());
         orden.setIdOrden(idOrden + 1);
-        orden.setEstado(OrdenDeTrabajo.Estado.ABIERTA);
+        orden.setEstado(OrdenDeTrabajo.Estado.ABIERTO);
         Usuario chofer = usuarioRepositorio.getById(idChofer);
         orden.setChofer(chofer);
+        
+        if(idProveedor != null){
+            Proveedor proveedor = proveedorRepositorio.getById(idProveedor);
+            orden.setProveedor(proveedor);
+            
+        }
+
         if (idCamion != null) {
             Camion camion = camionRepositorio.getById(idCamion);
             orden.setCamion(camion);
@@ -89,13 +113,13 @@ public class OrdenDeTrabajoServicio {
         long pendientes = total - ejecutados;
 
         if (ejecutados == 0) {
-            orden.setEstado(OrdenDeTrabajo.Estado.ABIERTA);
+            orden.setEstado(OrdenDeTrabajo.Estado.ABIERTO);
             orden.setFechaCierre(null);
         } else if (pendientes > 0) {
             orden.setEstado(OrdenDeTrabajo.Estado.EN_PROCESO);
             orden.setFechaCierre(null);
         } else {
-            orden.setEstado(OrdenDeTrabajo.Estado.CERRADA);
+            orden.setEstado(OrdenDeTrabajo.Estado.CERRADO);
             orden.setFechaCierre(new Date());
         }
 
@@ -116,7 +140,7 @@ public class OrdenDeTrabajoServicio {
     public OrdenDeTrabajo buscarOrdenAbiertaCamion(Long idCamion) {
 
         List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
-                OrdenDeTrabajo.Estado.ABIERTA,
+                OrdenDeTrabajo.Estado.ABIERTO,
                 OrdenDeTrabajo.Estado.EN_PROCESO
         );
 
@@ -138,7 +162,7 @@ public class OrdenDeTrabajoServicio {
     public OrdenDeTrabajo buscarOrdenAbiertaAcoplado(Long idAcoplado) {
 
         List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
-                OrdenDeTrabajo.Estado.ABIERTA,
+                OrdenDeTrabajo.Estado.ABIERTO,
                 OrdenDeTrabajo.Estado.EN_PROCESO
         );
 
@@ -164,11 +188,19 @@ public class OrdenDeTrabajoServicio {
         return ordenes;
 
     }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesLugar(Long id, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByIdOrgAndLugar(id, lugar);
+
+        return ordenes;
+
+    }
 
     public List<OrdenDeTrabajo> buscarOrdenAbiertaProceso(Long id) {
 
         List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
-                OrdenDeTrabajo.Estado.ABIERTA,
+                OrdenDeTrabajo.Estado.ABIERTO,
                 OrdenDeTrabajo.Estado.EN_PROCESO
         );
 
@@ -176,10 +208,29 @@ public class OrdenDeTrabajoServicio {
 
         return ordenes;
     }
+    
+    public List<OrdenDeTrabajo> buscarOrdenAbiertaProcesoLugar(Long id, String lugar) {
+
+        List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
+                OrdenDeTrabajo.Estado.ABIERTO,
+                OrdenDeTrabajo.Estado.EN_PROCESO
+        );
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByIdOrgAndLugarAndEstadoIn(id, lugar, estados);
+
+        return ordenes;
+    }
 
     public List<OrdenDeTrabajo> buscarOrdenCerrada(Long id) {
 
-        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByIdOrgAndEstado(id, OrdenDeTrabajo.Estado.CERRADA);
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByIdOrgAndEstado(id, OrdenDeTrabajo.Estado.CERRADO);
+
+        return ordenes;
+    }
+    
+    public List<OrdenDeTrabajo> buscarOrdenCerradaLugar(Long id, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByIdOrgAndLugarAndEstado(id, lugar, OrdenDeTrabajo.Estado.CERRADO);
 
         return ordenes;
     }
@@ -190,10 +241,24 @@ public class OrdenDeTrabajoServicio {
 
         return ordenes;
     }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesCamionLugar(Long idCamion, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndLugar(idCamion, lugar);
+
+        return ordenes;
+    }
 
     public List<OrdenDeTrabajo> buscarOrdenesAcoplado(Long idAcoplado) {
 
         List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByAcopladoId(idAcoplado);
+
+        return ordenes;
+    }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesAcopladoLugar(Long idAcoplado, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByAcopladoIdAndLugar(idAcoplado, lugar);
 
         return ordenes;
     }
@@ -205,11 +270,19 @@ public class OrdenDeTrabajoServicio {
         return ordenes;
 
     }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesCamionAcopladoLugar(Long idCamion, Long idAcoplado, String lugar) {
 
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndAcopladoIdAndLugar(idCamion, idAcoplado, lugar);
+
+        return ordenes;
+
+    }
+    
     public List<OrdenDeTrabajo> buscarOrdenesCamionAcopladoAbiertaProceso(Long idCamion, Long idAcoplado) {
 
         List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
-                OrdenDeTrabajo.Estado.ABIERTA,
+                OrdenDeTrabajo.Estado.ABIERTO,
                 OrdenDeTrabajo.Estado.EN_PROCESO
         );
 
@@ -219,10 +292,23 @@ public class OrdenDeTrabajoServicio {
 
     }
 
+    public List<OrdenDeTrabajo> buscarOrdenesCamionAcopladoAbiertaProcesoLugar(Long idCamion, Long idAcoplado, String lugar) {
+
+        List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
+                OrdenDeTrabajo.Estado.ABIERTO,
+                OrdenDeTrabajo.Estado.EN_PROCESO
+        );
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndAcopladoIdAndLugarAndEstadoIn(idCamion, idAcoplado, lugar, estados);
+
+        return ordenes;
+
+    }
+
     public List<OrdenDeTrabajo> buscarOrdenesCamionAbiertaProceso(Long idCamion) {
 
         List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
-                OrdenDeTrabajo.Estado.ABIERTA,
+                OrdenDeTrabajo.Estado.ABIERTO,
                 OrdenDeTrabajo.Estado.EN_PROCESO
         );
 
@@ -231,11 +317,24 @@ public class OrdenDeTrabajoServicio {
         return ordenes;
 
     }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesCamionAbiertaProcesoLugar(Long idCamion, String lugar) {
+
+        List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
+                OrdenDeTrabajo.Estado.ABIERTO,
+                OrdenDeTrabajo.Estado.EN_PROCESO
+        );
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndLugarAndEstadoIn(idCamion, lugar, estados);
+
+        return ordenes;
+
+    }
 
     public List<OrdenDeTrabajo> buscarOrdenesAcopladoAbiertaProceso(Long idAcoplado) {
 
         List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
-                OrdenDeTrabajo.Estado.ABIERTA,
+                OrdenDeTrabajo.Estado.ABIERTO,
                 OrdenDeTrabajo.Estado.EN_PROCESO
         );
 
@@ -244,24 +343,58 @@ public class OrdenDeTrabajoServicio {
         return ordenes;
 
     }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesAcopladoAbiertaProcesoLugar(Long idAcoplado, String lugar) {
 
+        List<OrdenDeTrabajo.Estado> estados = Arrays.asList(
+                OrdenDeTrabajo.Estado.ABIERTO,
+                OrdenDeTrabajo.Estado.EN_PROCESO
+        );
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByAcopladoIdAndLugarAndEstadoIn(idAcoplado, lugar, estados);
+
+        return ordenes;
+
+    }
+    
     public List<OrdenDeTrabajo> buscarOrdenesCamionCerrada(Long idCamion) {
 
-        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndEstado(idCamion, OrdenDeTrabajo.Estado.CERRADA);
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndEstado(idCamion, OrdenDeTrabajo.Estado.CERRADO);
+
+        return ordenes;
+    }
+
+    public List<OrdenDeTrabajo> buscarOrdenesCamionCerradaLugar(Long idCamion, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndLugarAndEstado(idCamion, lugar, OrdenDeTrabajo.Estado.CERRADO);
 
         return ordenes;
     }
 
     public List<OrdenDeTrabajo> buscarOrdenesAcopladoCerrada(Long idAcoplado) {
 
-        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByAcopladoIdAndEstado(idAcoplado, OrdenDeTrabajo.Estado.CERRADA);
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByAcopladoIdAndEstado(idAcoplado, OrdenDeTrabajo.Estado.CERRADO);
+
+        return ordenes;
+    }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesAcopladoCerradaLugar(Long idAcoplado, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByAcopladoIdAndLugarAndEstado(idAcoplado, lugar, OrdenDeTrabajo.Estado.CERRADO);
 
         return ordenes;
     }
 
     public List<OrdenDeTrabajo> buscarOrdenesCamionAcopladoCerrada(Long idCamion, Long idAcoplado) {
 
-        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndAcopladoIdAndEstado(idCamion, idAcoplado, OrdenDeTrabajo.Estado.CERRADA);
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndAcopladoIdAndEstado(idCamion, idAcoplado, OrdenDeTrabajo.Estado.CERRADO);
+
+        return ordenes;
+    }
+    
+    public List<OrdenDeTrabajo> buscarOrdenesCamionAcopladoCerradaLugar(Long idCamion, Long idAcoplado, String lugar) {
+
+        List<OrdenDeTrabajo> ordenes = ordenRepositorio.findByCamionIdAndAcopladoIdAndLugarAndEstado(idCamion, idAcoplado, lugar, OrdenDeTrabajo.Estado.CERRADO);
 
         return ordenes;
     }

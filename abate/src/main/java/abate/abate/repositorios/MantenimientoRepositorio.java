@@ -45,6 +45,12 @@ public interface MantenimientoRepositorio extends JpaRepository<Mantenimiento, L
 
     @Query("SELECT m FROM Mantenimiento m WHERE m.idOrg = :id AND m.estado = :estado")
     List<Mantenimiento> findMantenimientosNoActualizados(Long id, Mantenimiento.Estado estado);
+    
+    @Query("SELECT m FROM Mantenimiento m WHERE camion_id = :id AND m.estado = :estado")
+    List<Mantenimiento> findMantenimientosCamionPorVencer(Long id, Mantenimiento.Estado estado);
+    
+    @Query("SELECT m FROM Mantenimiento m WHERE acoplado_id = :id AND m.estado = :estado")
+    List<Mantenimiento> findMantenimientosAcopladoPorVencer(Long id, Mantenimiento.Estado estado);
 
     @Query("SELECT m FROM Mantenimiento m WHERE m.estado = :estado AND camion_id = :id AND tipo_mantenimiento_id = :idTipo")
     Optional<Mantenimiento> buscarMantenimientoVigenteCamion(@Param("estado") Mantenimiento.Estado estado, @Param("id") Long id, @Param("idTipo") Long idTipo);

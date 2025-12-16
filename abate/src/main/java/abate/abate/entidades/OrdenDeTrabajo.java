@@ -28,12 +28,22 @@ public class OrdenDeTrabajo {
     private Date fechaAlta;
     @Temporal(TemporalType.DATE)
     private Date fechaCierre;
+    @Temporal(TemporalType.DATE)
+    private Date fechaInicio;
+    @Temporal(TemporalType.DATE)
+    private Date fechaFin;
+    private Double duracion;
     private String lugar;
     private String observacion;
     @OneToOne
     private Usuario usuario;
     private String responsable;
-    private String proveedor;
+    private String checkTaller;
+    private String checkMetalurgica;
+    private String checkAveria;
+    private String checkNogoya;
+    @ManyToOne
+    private Proveedor proveedor;
     @ManyToOne
     private Camion camion;
     @ManyToOne
@@ -46,22 +56,29 @@ public class OrdenDeTrabajo {
     private Estado estado;
 
     public enum Estado {
-        ABIERTA, EN_PROCESO, CERRADA, CANCELADA
+        ABIERTO, EN_PROCESO, CERRADO, CANCELADO
     }
-
+    
     public OrdenDeTrabajo() {
     }
 
-    public OrdenDeTrabajo(Long id, Long idOrden, Long idOrg, Date fechaAlta, Date fechaCierre, String lugar, String observacion, Usuario usuario, String responsable, String proveedor, Camion camion, Acoplado acoplado, Usuario chofer, Estado estado) {
+    public OrdenDeTrabajo(Long id, Long idOrden, Long idOrg, Date fechaAlta, Date fechaCierre, Date fechaInicio, Date fechaFin, Double duracion, String lugar, String observacion, Usuario usuario, String responsable, String checkTaller, String checkMetalurgica, String checkAveria, String checkNogoya, Proveedor proveedor, Camion camion, Acoplado acoplado, Usuario chofer, Estado estado) {
         this.id = id;
         this.idOrden = idOrden;
         this.idOrg = idOrg;
         this.fechaAlta = fechaAlta;
         this.fechaCierre = fechaCierre;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.duracion = duracion;
         this.lugar = lugar;
         this.observacion = observacion;
         this.usuario = usuario;
         this.responsable = responsable;
+        this.checkTaller = checkTaller;
+        this.checkMetalurgica = checkMetalurgica;
+        this.checkAveria = checkAveria;
+        this.checkNogoya = checkNogoya;
         this.proveedor = proveedor;
         this.camion = camion;
         this.acoplado = acoplado;
@@ -109,6 +126,30 @@ public class OrdenDeTrabajo {
         this.fechaCierre = fechaCierre;
     }
 
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public Double getDuracion() {
+        return duracion;
+    }
+
+    public void setDuracion(Double duracion) {
+        this.duracion = duracion;
+    }
+
     public String getLugar() {
         return lugar;
     }
@@ -141,11 +182,43 @@ public class OrdenDeTrabajo {
         this.responsable = responsable;
     }
 
-    public String getProveedor() {
+    public String getCheckTaller() {
+        return checkTaller;
+    }
+
+    public void setCheckTaller(String checkTaller) {
+        this.checkTaller = checkTaller;
+    }
+
+    public String getCheckMetalurgica() {
+        return checkMetalurgica;
+    }
+
+    public void setCheckMetalurgica(String checkMetalurgica) {
+        this.checkMetalurgica = checkMetalurgica;
+    }
+
+    public String getCheckAveria() {
+        return checkAveria;
+    }
+
+    public void setCheckAveria(String checkAveria) {
+        this.checkAveria = checkAveria;
+    }
+
+    public String getCheckNogoya() {
+        return checkNogoya;
+    }
+
+    public void setCheckNogoya(String checkNogoya) {
+        this.checkNogoya = checkNogoya;
+    }
+
+    public Proveedor getProveedor() {
         return proveedor;
     }
 
-    public void setProveedor(String proveedor) {
+    public void setProveedor(Proveedor proveedor) {
         this.proveedor = proveedor;
     }
 
@@ -189,6 +262,10 @@ public class OrdenDeTrabajo {
         this.estado = estado;
     }
 
+    
+
+    
+    
     
     
 }

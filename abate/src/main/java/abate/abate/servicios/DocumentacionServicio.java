@@ -510,7 +510,7 @@ public class DocumentacionServicio {
     
     public List<Documentacion> buscarDocumentacionCamiones(Long idOrg) {
           
-        List<Documentacion> lista = documentacionRepositorio.findByCamionIsNotNullAndIdOrg(idOrg);
+        List<Documentacion> lista = documentacionRepositorio.findByCamionIsNotNullAndIdOrgAndEstado(idOrg, "VIGENTE");
         
         if(!lista.isEmpty()){
         for(Documentacion d : lista){
@@ -534,7 +534,7 @@ public class DocumentacionServicio {
       
     public List<Documentacion> buscarDocumentacionAcoplados(Long idOrg) {
           
-        List<Documentacion> lista = documentacionRepositorio.findByAcopladoIsNotNullAndIdOrg(idOrg);
+        List<Documentacion> lista = documentacionRepositorio.findByAcopladoIsNotNullAndIdOrgAndEstado(idOrg, "VIGENTE");
         
         if(!lista.isEmpty()){
         for(Documentacion d : lista){
@@ -558,7 +558,7 @@ public class DocumentacionServicio {
         
     public List<Documentacion> buscarDocumentacionChoferes(Long idOrg) {
           
-        List<Documentacion> lista = documentacionRepositorio.findByChoferIsNotNullAndIdOrg(idOrg);
+        List<Documentacion> lista = documentacionRepositorio.findByChoferIsNotNullAndIdOrgAndEstado(idOrg, "VIGENTE");
         
         if(!lista.isEmpty()){
         for(Documentacion d : lista){
@@ -578,6 +578,78 @@ public class DocumentacionServicio {
         }
           
         return lista;
+    }
+    
+        public void inhabilitarDocumentacionIdCamion(Long idCamion) {
+
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionIdCamion(idCamion);
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+                d.setEstado("INHABILITADO");
+                documentacionRepositorio.save(d);
+
+            }
+        }
+    }
+
+    public void habilitarDocumentacionIdCamion(Long idCamion) {
+
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionInhabilitadoIdCamion(idCamion);
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+                d.setEstado("VIGENTE");
+                documentacionRepositorio.save(d);
+
+            }
+        }
+    }
+
+    public void inhabilitarDocumentacionIdAcoplado(Long idAcoplado) {
+
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionIdAcoplado(idAcoplado);
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+                d.setEstado("INHABILITADO");
+                documentacionRepositorio.save(d);
+
+            }
+        }
+    }
+
+    public void habilitarDocumentacionIdAcoplado(Long idAcoplado) {
+
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionInhabilitadoIdAcoplado(idAcoplado);
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+                d.setEstado("VIGENTE");
+                documentacionRepositorio.save(d);
+
+            }
+        }
+    }
+
+    public void inhabilitarDocumentacionIdChofer(Long idChofer) {
+
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionIdChofer(idChofer);
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+                d.setEstado("INHABILITADO");
+                documentacionRepositorio.save(d);
+
+            }
+        }
+    }
+
+    public void habilitarDocumentacionIdChofer(Long idChofer) {
+
+        List<Documentacion> lista = documentacionRepositorio.buscarDocumentacionInhabilitadoIdChofer(idChofer);
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+                d.setEstado("VIGENTE");
+                documentacionRepositorio.save(d);
+
+            }
+        }
     }
     
     public void validarDatos(Long tipoId, TipoDocumentacion.AplicaA aplicaA, Long idEntidad) throws MiException {

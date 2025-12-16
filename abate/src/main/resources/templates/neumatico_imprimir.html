@@ -49,6 +49,8 @@
                                         <th class="text-center">FechaIngreso</th>
                                         <th class="text-center">Estado</th>
                                         <th class="text-center">Ubicación</th>
+                                        <th class="text-center">Vehículo</th>
+                                        <th class="text-center">Posición</th>
                                         <th class="text-center">Km</th>
                                         <th class="text-center">KmEstimado</th>
                                         <th class="text-center">KmÚtil</th>                                        
@@ -64,6 +66,8 @@
                                         <td class="text-center" th:text="${#dates.format(neumatico.fechaIngreso, 'dd-MM-yyyy')}"></td>
                                         <td class="text-center" th:text="${neumatico.estado}"></td>
                                         <td class="text-center" th:text="${neumatico.ubicacion}"></td>
+                                        <td class="text-center" th:text="${neumatico.vehiculo}"></td>
+                                        <td class="text-center" th:text="${neumatico.posicion}"></td>
                                         <th class="text-center text-primary" th:text="${#numbers.formatDecimal(neumatico.km, 0, 'POINT', 0, 'POINT')}"></th>
                                         <td class="text-center" th:text="${#numbers.formatDecimal(neumatico.kmEstimado, 0, 'POINT', 0, 'POINT')}"></td>
                                         <td  class="text-center text-primary" th:text="${#numbers.formatDecimal(neumatico.kmUtil, 0, 'POINT', 0, 'POINT')}"></td>

@@ -357,18 +357,27 @@ public class MantenimientoServicio {
     public List<Mantenimiento> obtenerMantenimientosPorVencer(Long idOrg, int km) {
 
         List<Mantenimiento> lista = mantenimientoRepositorio.findMantenimientosNoActualizados(idOrg, Mantenimiento.Estado.VIGENTE);
+        boolean flag = false;
 
         if (!lista.isEmpty()) {
 
             for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual;
+                int kmActual = 0;
                 int kmProximo = mantenimiento.getKmProximo();
 
                 if (mantenimiento.getAplicaA() == TipoMantenimiento.AplicaA.CAMION) {
+                    if(mantenimiento.getCamion().getEstado().equalsIgnoreCase("INHABILITADO")){
+                        flag = true;
+                    } else {
                     kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+                    }
                 } else {
+                    if(mantenimiento.getAcoplado().getEstado().equalsIgnoreCase("INHABILITADO")){
+                        flag = true;
+                    } else {
                     kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+                    }
                 }
 
                 mantenimiento.setKmActual(kmActual);
@@ -376,11 +385,11 @@ public class MantenimientoServicio {
 
             }
         }
-
+        
         Iterator<Mantenimiento> iterator = lista.iterator();
         while (iterator.hasNext()) {
             Mantenimiento mantenimiento = iterator.next();
-            if (mantenimiento.getKmVigencia() > km) {
+            if (mantenimiento.getKmVigencia() > km && flag == true) {
                 iterator.remove();
             }
         }
@@ -398,30 +407,98 @@ public class MantenimientoServicio {
         return lista;
 
     }
+    
+    public List<Mantenimiento> obtenerMantenimientosCamionPorVencer(Long idCamion, int km) {
+
+        List<Mantenimiento> lista = mantenimientoRepositorio.findMantenimientosCamionPorVencer(idCamion, Mantenimiento.Estado.VIGENTE);
+
+        if (!lista.isEmpty()) {
+
+            for (Mantenimiento mantenimiento : lista) {
+
+                int kmProximo = mantenimiento.getKmProximo();
+                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+
+                mantenimiento.setKmActual(kmActual);
+                mantenimiento.setKmVigencia(kmProximo - kmActual);
+
+            }
+        }
+
+        Iterator<Mantenimiento> iterator = lista.iterator();
+        while (iterator.hasNext()) {
+            Mantenimiento mantenimiento = iterator.next();
+            if (mantenimiento.getKmVigencia() > km) {
+                iterator.remove();
+            }
+        }
+
+        return lista;
+
+    }
+    
+    public List<Mantenimiento> obtenerMantenimientosAcopladoPorVencer(Long idAcoplado, int km) {
+
+        List<Mantenimiento> lista = mantenimientoRepositorio.findMantenimientosAcopladoPorVencer(idAcoplado, Mantenimiento.Estado.VIGENTE);
+
+        if (!lista.isEmpty()) {
+
+            for (Mantenimiento mantenimiento : lista) {
+
+                int kmProximo = mantenimiento.getKmProximo();
+                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+                
+                mantenimiento.setKmActual(kmActual);
+                mantenimiento.setKmVigencia(kmProximo - kmActual);
+
+            }
+        }
+
+        Iterator<Mantenimiento> iterator = lista.iterator();
+        while (iterator.hasNext()) {
+            Mantenimiento mantenimiento = iterator.next();
+            if (mantenimiento.getKmVigencia() > km) {
+                iterator.remove();
+            }
+        }
+
+        return lista;
+
+    }
 
     public List<Mantenimiento> buscarMantenimientosVigenteCamiones(Long idOrg) {
 
         List<Mantenimiento> lista = mantenimientoRepositorio.findByCamionIsNotNullAndIdOrgAndEstado(idOrg, Mantenimiento.Estado.VIGENTE);
-
+        
         if (!lista.isEmpty()) {
-            for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
-                int kmAlarma = mantenimiento.getKmAlarma();
-                int kmProximo = mantenimiento.getKmProximo();
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                mantenimiento.setKmVigencia(kmProximo - kmActual);
-                mantenimiento.setKmActual(kmActual);
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
 
-                if (kmAlarma <= kmActual && kmProximo > kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
-                }
-                if (kmProximo <= kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
-                }
+            if (mantenimiento.getCamion() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getCamion().getEstado())) {
+                iterator.remove();
+                continue;
             }
 
+            int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+            int kmAlarma = mantenimiento.getKmAlarma();
+            int kmProximo = mantenimiento.getKmProximo();
+
+            mantenimiento.setKmVigencia(kmProximo - kmActual);
+            mantenimiento.setKmActual(kmActual);
+
+            if (kmAlarma <= kmActual && kmProximo > kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
+            }
+
+            if (kmProximo <= kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
+            }
         }
+    }
 
         return lista;
     }
@@ -431,24 +508,34 @@ public class MantenimientoServicio {
         List<Mantenimiento> lista = mantenimientoRepositorio.findByCamionIsNotNullAndIdOrgAndEstadoAndTipoMantenimiento_Clase(idOrg, Mantenimiento.Estado.VIGENTE, TipoMantenimiento.Clase.PREVENTIVO);
 
         if (!lista.isEmpty()) {
-            for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
-                int kmAlarma = mantenimiento.getKmAlarma();
-                int kmProximo = mantenimiento.getKmProximo();
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                mantenimiento.setKmVigencia(kmProximo - kmActual);
-                mantenimiento.setKmActual(kmActual);
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
 
-                if (kmAlarma <= kmActual && kmProximo > kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
-                }
-                if (kmProximo <= kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
-                }
+            if (mantenimiento.getCamion() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getCamion().getEstado())) {
+                iterator.remove();
+                continue;
             }
 
+            int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+            int kmAlarma = mantenimiento.getKmAlarma();
+            int kmProximo = mantenimiento.getKmProximo();
+
+            mantenimiento.setKmVigencia(kmProximo - kmActual);
+            mantenimiento.setKmActual(kmActual);
+
+            if (kmAlarma <= kmActual && kmProximo > kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
+            }
+
+            if (kmProximo <= kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
+            }
         }
+    }
 
         return lista;
     }
@@ -458,24 +545,34 @@ public class MantenimientoServicio {
         List<Mantenimiento> lista = mantenimientoRepositorio.findByCamionIsNotNullAndIdOrgAndEstadoAndTipoMantenimiento_Clase(idOrg, Mantenimiento.Estado.VIGENTE, TipoMantenimiento.Clase.CORRECTIVO);
 
         if (!lista.isEmpty()) {
-            for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
-                int kmAlarma = mantenimiento.getKmAlarma();
-                int kmProximo = mantenimiento.getKmProximo();
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                mantenimiento.setKmVigencia(kmProximo - kmActual);
-                mantenimiento.setKmActual(kmActual);
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
 
-                if (kmAlarma <= kmActual && kmProximo > kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
-                }
-                if (kmProximo <= kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
-                }
+            if (mantenimiento.getCamion() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getCamion().getEstado())) {
+                iterator.remove();
+                continue;
             }
 
+            int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+            int kmAlarma = mantenimiento.getKmAlarma();
+            int kmProximo = mantenimiento.getKmProximo();
+
+            mantenimiento.setKmVigencia(kmProximo - kmActual);
+            mantenimiento.setKmActual(kmActual);
+
+            if (kmAlarma <= kmActual && kmProximo > kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
+            }
+
+            if (kmProximo <= kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
+            }
         }
+    }
 
         return lista;
     }
@@ -483,12 +580,21 @@ public class MantenimientoServicio {
     public List<Mantenimiento> buscarMantenimientosVigenteAcoplados(Long idOrg) {
 
         List<Mantenimiento> lista = mantenimientoRepositorio.findByAcopladoIsNotNullAndIdOrgAndEstado(idOrg, Mantenimiento.Estado.VIGENTE);
-
+        
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -501,8 +607,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }
@@ -513,9 +619,18 @@ public class MantenimientoServicio {
 
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -528,8 +643,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }
@@ -540,9 +655,18 @@ public class MantenimientoServicio {
 
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -555,8 +679,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }
@@ -564,26 +688,36 @@ public class MantenimientoServicio {
     public List<Mantenimiento> buscarMantenimientosVigenteCamionesPorTipo(Long idOrg, Long idTipo) {
 
         List<Mantenimiento> lista = mantenimientoRepositorio.buscarMantenimientoVigenteCamionesPorTipo(idOrg, Mantenimiento.Estado.VIGENTE, idTipo);
-
+        
         if (!lista.isEmpty()) {
-            for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
-                int kmAlarma = mantenimiento.getKmAlarma();
-                int kmProximo = mantenimiento.getKmProximo();
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                mantenimiento.setKmVigencia(kmProximo - kmActual);
-                mantenimiento.setKmActual(kmActual);
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
 
-                if (kmAlarma <= kmActual && kmProximo > kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
-                }
-                if (kmProximo <= kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
-                }
+            if (mantenimiento.getCamion() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getCamion().getEstado())) {
+                iterator.remove();
+                continue;
             }
 
+            int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+            int kmAlarma = mantenimiento.getKmAlarma();
+            int kmProximo = mantenimiento.getKmProximo();
+
+            mantenimiento.setKmVigencia(kmProximo - kmActual);
+            mantenimiento.setKmActual(kmActual);
+
+            if (kmAlarma <= kmActual && kmProximo > kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
+            }
+
+            if (kmProximo <= kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
+            }
         }
+    }
 
         return lista;
     }
@@ -593,24 +727,34 @@ public class MantenimientoServicio {
         List<Mantenimiento> lista = mantenimientoRepositorio.buscarMantenimientoVigenteCamionesPorTipoClase(idOrg, Mantenimiento.Estado.VIGENTE, idTipo, TipoMantenimiento.Clase.PREVENTIVO);
 
         if (!lista.isEmpty()) {
-            for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
-                int kmAlarma = mantenimiento.getKmAlarma();
-                int kmProximo = mantenimiento.getKmProximo();
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                mantenimiento.setKmVigencia(kmProximo - kmActual);
-                mantenimiento.setKmActual(kmActual);
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
 
-                if (kmAlarma <= kmActual && kmProximo > kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
-                }
-                if (kmProximo <= kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
-                }
+            if (mantenimiento.getCamion() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getCamion().getEstado())) {
+                iterator.remove();
+                continue;
             }
 
+            int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+            int kmAlarma = mantenimiento.getKmAlarma();
+            int kmProximo = mantenimiento.getKmProximo();
+
+            mantenimiento.setKmVigencia(kmProximo - kmActual);
+            mantenimiento.setKmActual(kmActual);
+
+            if (kmAlarma <= kmActual && kmProximo > kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
+            }
+
+            if (kmProximo <= kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
+            }
         }
+    }
 
         return lista;
     }
@@ -620,24 +764,34 @@ public class MantenimientoServicio {
         List<Mantenimiento> lista = mantenimientoRepositorio.buscarMantenimientoVigenteCamionesPorTipoClase(idOrg, Mantenimiento.Estado.VIGENTE, idTipo, TipoMantenimiento.Clase.CORRECTIVO);
 
         if (!lista.isEmpty()) {
-            for (Mantenimiento mantenimiento : lista) {
 
-                int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
-                int kmAlarma = mantenimiento.getKmAlarma();
-                int kmProximo = mantenimiento.getKmProximo();
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                mantenimiento.setKmVigencia(kmProximo - kmActual);
-                mantenimiento.setKmActual(kmActual);
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
 
-                if (kmAlarma <= kmActual && kmProximo > kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
-                }
-                if (kmProximo <= kmActual) {
-                    mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
-                }
+            if (mantenimiento.getCamion() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getCamion().getEstado())) {
+                iterator.remove();
+                continue;
             }
 
+            int kmActual = combustibleServicio.kmUltimaCarga(mantenimiento.getCamion());
+            int kmAlarma = mantenimiento.getKmAlarma();
+            int kmProximo = mantenimiento.getKmProximo();
+
+            mantenimiento.setKmVigencia(kmProximo - kmActual);
+            mantenimiento.setKmActual(kmActual);
+
+            if (kmAlarma <= kmActual && kmProximo > kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.PROXIMO_A_VENCER);
+            }
+
+            if (kmProximo <= kmActual) {
+                mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
+            }
         }
+    }
 
         return lista;
     }
@@ -729,9 +883,18 @@ public class MantenimientoServicio {
 
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -744,8 +907,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }
@@ -756,9 +919,18 @@ public class MantenimientoServicio {
 
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -771,8 +943,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }
@@ -783,9 +955,18 @@ public class MantenimientoServicio {
 
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -798,8 +979,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }
@@ -810,9 +991,18 @@ public class MantenimientoServicio {
 
         if (!lista.isEmpty()) {
 
-            for (Mantenimiento mantenimiento : lista) {
+        Iterator<Mantenimiento> iterator = lista.iterator();
 
-                int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
+        while (iterator.hasNext()) {
+            
+            Mantenimiento mantenimiento = iterator.next();
+
+            if (mantenimiento.getAcoplado() != null && "INHABILITADO".equalsIgnoreCase(mantenimiento.getAcoplado().getEstado())) {
+                iterator.remove();
+                continue;
+            }
+
+            int kmActual = combustibleServicio.kmAcoplado(mantenimiento.getAcoplado(), obtenerFechaFija());
                 int kmAlarma = mantenimiento.getKmAlarma();
                 int kmProximo = mantenimiento.getKmProximo();
 
@@ -825,8 +1015,8 @@ public class MantenimientoServicio {
                 if (kmProximo <= kmActual) {
                     mantenimiento.setEstado(Mantenimiento.Estado.VENCIDO);
                 }
-            }
         }
+    }
 
         return lista;
     }

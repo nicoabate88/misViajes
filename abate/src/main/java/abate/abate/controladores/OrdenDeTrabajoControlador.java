@@ -13,6 +13,7 @@ import abate.abate.servicios.ChoferServicio;
 import abate.abate.servicios.CombustibleServicio;
 import abate.abate.servicios.MantenimientoServicio;
 import abate.abate.servicios.OrdenDeTrabajoServicio;
+import abate.abate.servicios.ProveedorServicio;
 import abate.abate.servicios.TipoMantenimientoServicio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +56,8 @@ public class OrdenDeTrabajoControlador {
     private OrdenDeTrabajoServicio ordenServicio;
     @Autowired
     private CombustibleServicio combustibleServicio;
+    @Autowired
+    private ProveedorServicio proveedorServicio;
 
     @GetMapping("/registrar")
     public String registrar(ModelMap modelo, HttpSession session) {
@@ -62,6 +65,7 @@ public class OrdenDeTrabajoControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.put("flag", false);
         modelo.put("camion", null);
 
         return "ordenDeTrabajo_registrar.html";
@@ -69,16 +73,14 @@ public class OrdenDeTrabajoControlador {
 
     @GetMapping("/registrar1")
     public String registrar1(@RequestParam(required = false) Long idCamion,
-            @RequestParam(required = false) Long idAcoplado, ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+            @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
 
         if (idCamion != null) {
 
             Camion camion = camionServicio.buscarCamion(idCamion);
 
             OrdenDeTrabajo orden = ordenServicio.buscarOrdenAbiertaCamion(idCamion);
-
+            
             if (orden != null) {
 
                 return "redirect:/ordenDeTrabajo/modificar?id=" + orden.getId();
@@ -130,22 +132,71 @@ public class OrdenDeTrabajoControlador {
 
         }
 
+        modelo.put("flag", true);
+
+        return "ordenDeTrabajo_registrar.html";
+    }
+
+    @GetMapping("/buscarMantenimientos")
+    public String buscarMantenimientos(@RequestParam(required = false) int km, @RequestParam(required = false) Long idCamion,
+            @RequestParam(required = false) Long idAcoplado, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Mantenimiento> listaCamion = new ArrayList();
+        List<Mantenimiento> listaAcoplado = new ArrayList();
+
+        if (idCamion != null) {
+
+            Camion camion = camionServicio.buscarCamion(idCamion);
+
+            listaCamion = mantenimientoServicio.obtenerMantenimientosCamionPorVencer(idCamion, km);
+            modelo.put("camion", camion);
+
+            if (camion.getAcoplado() != null && idAcoplado == null) {
+
+                Acoplado acoplado = camion.getAcoplado();
+
+                listaAcoplado = mantenimientoServicio.obtenerMantenimientosAcopladoPorVencer(acoplado.getId(), km);
+                modelo.put("acoplado", acoplado);
+                modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(logueado.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
+
+            } else {
+
+                modelo.put("acoplado", null);
+
+            }
+        }
+
+        if (idAcoplado != null) {
+
+            Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+
+            listaAcoplado = mantenimientoServicio.obtenerMantenimientosAcopladoPorVencer(acoplado.getId(), km);
+            modelo.put("acoplado", acoplado);
+            modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(logueado.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
+
+        }
+
+        modelo.put("flag", false);
         modelo.put("idOrg", logueado.getIdOrg());
+        modelo.addAttribute("mantenimientoC", listaCamion);
+        modelo.addAttribute("mantenimientoA", listaAcoplado);
+        modelo.addAttribute("proveedores", proveedorServicio.buscarProveedoresHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(logueado.getIdOrg(), TipoMantenimiento.AplicaA.CAMION));
-        modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(logueado.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
 
         return "ordenDeTrabajo_registrar.html";
     }
 
     @PostMapping("/registro")
-    public String registro(@RequestParam String fecha, @RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
+    public String registro(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson,
-            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) String lugar,
-            @RequestParam(required = false) String proveedor, @RequestParam String responsable, @RequestParam Long idChofer,
-            @RequestParam(required = false) String observacion, ModelMap modelo, RedirectAttributes redirectAttributes,
+            @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam String fecha, @RequestParam(required = false) String lugar,
+            @RequestParam(required = false) Long idProveedor, @RequestParam Long idChofer, @RequestParam(required = false) String taller, @RequestParam(required = false) String metal,
+            @RequestParam(required = false) String nogoya, @RequestParam(required = false) String averia, @RequestParam(required = false) String observacion,
+            @RequestParam(required = false) String fechaInicio, @RequestParam(required = false) String fechaFin, ModelMap modelo, RedirectAttributes redirectAttributes,
             HttpSession session) throws JsonProcessingException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
@@ -158,7 +209,27 @@ public class OrdenDeTrabajoControlador {
             idAcoplado = null;
         }
 
-        OrdenDeTrabajo orden = ordenServicio.crearOrden(fecha, idCamion, idAcoplado, lugar, proveedor, responsable, idChofer, observacion, logueado);
+        if (!lugar.equalsIgnoreCase("PROVEEDOR EXTERNO")) {
+            idProveedor = null;
+        }
+
+        if (lugar.equalsIgnoreCase("PROVEEDOR EXTERNO")) {
+            taller = null;
+            metal = null;
+            nogoya = null;
+            averia = null;
+        }
+
+        if (lugar.equalsIgnoreCase("CAMILO ALDAO")) {
+            nogoya = null;
+        }
+
+        if (lugar.equalsIgnoreCase("NOGOYA")) {
+            taller = null;
+            metal = null;
+        }
+
+        OrdenDeTrabajo orden = ordenServicio.crearOrden(fecha, idCamion, idAcoplado, lugar, idProveedor, idChofer, taller, metal, nogoya, averia, observacion, fechaInicio, fechaFin, logueado);
 
         ObjectMapper mapper = new ObjectMapper();
         Date fechaOt = convertirFecha(fecha);
@@ -241,7 +312,7 @@ public class OrdenDeTrabajoControlador {
 
         OrdenDeTrabajo orden = ordenServicio.buscarOrden(id);
 
-        if (orden.getEstado() == OrdenDeTrabajo.Estado.CERRADA) {
+        if (orden.getEstado() == OrdenDeTrabajo.Estado.CERRADO) {
 
             modelo.addAttribute("orden", orden);
             modelo.addAttribute("mantenimientos", orden.getMantenimientos());
@@ -266,7 +337,6 @@ public class OrdenDeTrabajoControlador {
 
         modelo.put("orden", orden);
         modelo.addAttribute("mantenimientos", orden.getMantenimientos());
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(orden.getIdOrg()));
         modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(orden.getIdOrg(), TipoMantenimiento.AplicaA.CAMION));
         modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(orden.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
 
@@ -274,11 +344,11 @@ public class OrdenDeTrabajoControlador {
 
     }
 
+    /*
     @PostMapping("/modifica")
     public String completarOT(@RequestParam Long id, @RequestParam(required = false) List<Long> ejecutados,
             @RequestParam(required = false) String nuevosCamionJson, @RequestParam(required = false) String nuevosAcopladoJson,
-            @RequestParam(required = false) String lugar, @RequestParam(required = false) String proveedor, @RequestParam String responsable,
-            @RequestParam Long idChofer, @RequestParam String observacion, HttpSession session, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+            @RequestParam(required = false) String observacion, HttpSession session, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         try {
 
@@ -288,9 +358,26 @@ public class OrdenDeTrabajoControlador {
             List<Mantenimiento> existentes = ot.getMantenimientos();
 
             ObjectMapper mapper = new ObjectMapper();
-            List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(nuevosCamionJson, MantenimientoDTO[].class));
-            List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(nuevosAcopladoJson, MantenimientoDTO[].class));
 
+// CAMIÓN
+List<MantenimientoDTO> mantenimientosCamionDTO = new ArrayList<>();
+if (nuevosCamionJson != null && !nuevosCamionJson.trim().isEmpty() && !nuevosCamionJson.equals("[]")) {
+    MantenimientoDTO[] arr = mapper.readValue(nuevosCamionJson, MantenimientoDTO[].class);
+    if (arr != null) {
+        mantenimientosCamionDTO = Arrays.asList(arr);
+    }
+}
+
+// ACOPLADO
+List<MantenimientoDTO> mantenimientosAcopladoDTO = new ArrayList<>();
+if (nuevosAcopladoJson != null && !nuevosAcopladoJson.trim().isEmpty() && !nuevosAcopladoJson.equals("[]")) {
+    MantenimientoDTO[] arr = mapper.readValue(nuevosAcopladoJson, MantenimientoDTO[].class);
+    if (arr != null) {
+        mantenimientosAcopladoDTO = Arrays.asList(arr);
+    }
+}
+
+            if(mantenimientosCamionDTO != null){
             for (MantenimientoDTO dto : mantenimientosCamionDTO) {
                 Mantenimiento m = new Mantenimiento();
                 TipoMantenimiento tipo = new TipoMantenimiento();
@@ -327,7 +414,9 @@ public class OrdenDeTrabajoControlador {
                 mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
 
             }
-
+            }
+            
+            if(mantenimientosAcopladoDTO != null){
             for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
                 Mantenimiento m = new Mantenimiento();
                 TipoMantenimiento tipo = new TipoMantenimiento();
@@ -362,6 +451,7 @@ public class OrdenDeTrabajoControlador {
                 Mantenimiento mantenimientoVigente = null;
 
                 mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+            }
             }
 
             // 2️⃣ Obtener datos enviados por el formulario (en arrays separados)
@@ -449,6 +539,249 @@ public class OrdenDeTrabajoControlador {
             return "redirect:/ordenDeTrabajo/listar?mensaje=" + "error";
         }
     }
+*/
+    @PostMapping("/modifica")
+public String completarOT(@RequestParam Long id,
+                          @RequestParam(required = false) List<Long> ejecutados,
+                          @RequestParam(required = false) String nuevosCamionJson,
+                          @RequestParam(required = false) String nuevosAcopladoJson,
+                          @RequestParam(required = false) String observacion,
+                          HttpSession session,
+                          HttpServletRequest request,
+                          RedirectAttributes redirectAttributes) {
+
+    try {
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        if (logueado == null) {
+            redirectAttributes.addFlashAttribute("error", "Sesión expirada. Vuelva a iniciar sesión.");
+            return "redirect:/usuario/login";
+        }
+
+        OrdenDeTrabajo ot = ordenServicio.buscarOrden(id);
+        if (ot == null) {
+            redirectAttributes.addFlashAttribute("error", "No se encontró la Orden de Trabajo.");
+            return "redirect:/ordenDeTrabajo/listar?mensaje=error";
+        }
+
+        List<Mantenimiento> existentes = ot.getMantenimientos();
+        if (existentes == null) {
+            existentes = new ArrayList<>();
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        // ---------- 1) NUEVOS MANTENIMIENTOS CAMIÓN ----------
+        List<MantenimientoDTO> mantenimientosCamionDTO = new ArrayList<>();
+        if (nuevosCamionJson != null && !nuevosCamionJson.trim().isEmpty() && !nuevosCamionJson.trim().equals("[]")) {
+            MantenimientoDTO[] arrC = mapper.readValue(nuevosCamionJson, MantenimientoDTO[].class);
+            if (arrC != null) {
+                mantenimientosCamionDTO = Arrays.asList(arrC);
+            }
+        }
+
+        for (MantenimientoDTO dto : mantenimientosCamionDTO) {
+            if (dto == null) continue;
+
+            Mantenimiento m = new Mantenimiento();
+            TipoMantenimiento tipo = new TipoMantenimiento();
+            tipo.setId(dto.getTipoMantenimiento());
+            m.setTipoMantenimiento(tipo);
+
+            if (dto.getAplicaA() != null) {
+                m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+            } else {
+                m.setAplicaA(TipoMantenimiento.AplicaA.CAMION); // por las dudas
+            }
+
+            String obs = dto.getObservacion();
+            if (obs != null) {
+                m.setObservacion(obs.toUpperCase());
+            }
+
+            m.setKm(dto.getKm());
+            m.setKmVigencia(dto.getKmVigencia());
+            m.setUsuario(logueado);
+            m.setEstado(Mantenimiento.Estado.PENDIENTE);
+            m.setIdOrg(logueado.getIdOrg());
+            m.setFecha(new Date());
+            m.setCamion(ot.getCamion());
+            m.setOrdenDeTrabajo(ot);
+
+            Boolean ejecutadoNuevo = dto.getEjecutado();
+            if (Boolean.TRUE.equals(ejecutadoNuevo)) {
+                m.setEstado(Mantenimiento.Estado.VIGENTE);
+
+                Integer km = m.getKm();
+                Integer kmVig = m.getKmVigencia();
+                if (km != null && kmVig != null) {
+                    m.setKmProximo(km + kmVig);
+                    m.setKmAlarma(km + kmVig - 1000);
+                }
+
+                Mantenimiento existente = mantenimientoServicio.buscarExistenteMasivo(m);
+                if (existente != null) {
+                    mantenimientoServicio.modificarVigenteOt(m, existente);
+                }
+            }
+
+            existentes.add(m);
+            Mantenimiento mantenimientoVigente = null;
+            mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+        }
+
+        // ---------- 2) NUEVOS MANTENIMIENTOS ACOPLADO ----------
+        List<MantenimientoDTO> mantenimientosAcopladoDTO = new ArrayList<>();
+        if (nuevosAcopladoJson != null && !nuevosAcopladoJson.trim().isEmpty() && !nuevosAcopladoJson.trim().equals("[]")) {
+            MantenimientoDTO[] arrA = mapper.readValue(nuevosAcopladoJson, MantenimientoDTO[].class);
+            if (arrA != null) {
+                mantenimientosAcopladoDTO = Arrays.asList(arrA);
+            }
+        }
+
+        for (MantenimientoDTO dto : mantenimientosAcopladoDTO) {
+            if (dto == null) continue;
+
+            Mantenimiento m = new Mantenimiento();
+            TipoMantenimiento tipo = new TipoMantenimiento();
+            tipo.setId(dto.getTipoMantenimiento());
+            m.setTipoMantenimiento(tipo);
+
+            if (dto.getAplicaA() != null) {
+                m.setAplicaA(TipoMantenimiento.AplicaA.valueOf(dto.getAplicaA()));
+            } else {
+                m.setAplicaA(TipoMantenimiento.AplicaA.ACOPLADO); // por las dudas
+            }
+
+            String obs = dto.getObservacion();
+            if (obs != null) {
+                m.setObservacion(obs.toUpperCase());
+            }
+
+            m.setKm(dto.getKm());
+            m.setKmVigencia(dto.getKmVigencia());
+            m.setUsuario(logueado);
+            m.setEstado(Mantenimiento.Estado.PENDIENTE);
+            m.setIdOrg(logueado.getIdOrg());
+            m.setFecha(new Date());
+            m.setAcoplado(ot.getAcoplado());
+            m.setOrdenDeTrabajo(ot);
+
+            Boolean ejecutadoNuevo = dto.getEjecutado();
+            if (Boolean.TRUE.equals(ejecutadoNuevo)) {
+                m.setEstado(Mantenimiento.Estado.VIGENTE);
+
+                Integer km = m.getKm();
+                Integer kmVig = m.getKmVigencia();
+                if (km != null && kmVig != null) {
+                    m.setKmProximo(km + kmVig);
+                    m.setKmAlarma(km + kmVig - 1000);
+                }
+
+                Mantenimiento existente = mantenimientoServicio.buscarExistenteMasivo(m);
+                if (existente != null) {
+                    mantenimientoServicio.modificarVigenteOt(m, existente);
+                }
+            }
+
+            existentes.add(m);
+            Mantenimiento mantenimientoVigente = null;
+            mantenimientoServicio.crearMantenimiento(m, mantenimientoVigente);
+        }
+
+        // ---------- 3) DATOS DE MANTENIMIENTOS EXISTENTES (FORMULARIO) ----------
+        String[] kmCam = request.getParameterValues("kmCamionExistente");
+        String[] kmVigCam = request.getParameterValues("kmVigenciaExistente");
+        String[] obsCam = request.getParameterValues("obsExistente");
+
+        String[] kmAco = request.getParameterValues("kmAcopladoExistente");
+        String[] kmVigAco = request.getParameterValues("kmVigenciaAExistente");
+        String[] obsAco = request.getParameterValues("obsAcopladoExistente");
+
+        int iCam = 0;
+        int iAco = 0;
+
+        for (Mantenimiento m : existentes) {
+
+            // CAMIÓN
+            if (m.getAplicaA() == TipoMantenimiento.AplicaA.CAMION) {
+
+                if (m.getEstado() == Mantenimiento.Estado.PENDIENTE) {
+
+                    if (kmCam != null && iCam < kmCam.length && kmCam[iCam] != null && !kmCam[iCam].trim().isEmpty()) {
+                        m.setKm(Integer.parseInt(kmCam[iCam].trim()));
+                    }
+                    if (kmVigCam != null && iCam < kmVigCam.length && kmVigCam[iCam] != null && !kmVigCam[iCam].trim().isEmpty()) {
+                        m.setKmVigencia(Integer.parseInt(kmVigCam[iCam].trim()));
+                    }
+                    if (obsCam != null && iCam < obsCam.length && obsCam[iCam] != null && !obsCam[iCam].trim().isEmpty()) {
+                        m.setObservacion(obsCam[iCam].toUpperCase());
+                    }
+                }
+
+                // IMPORTANTE: sólo incremento cuando el mantenimiento es CAMIÓN
+                iCam++;
+            }
+
+            // ACOPLADO
+            else if (m.getAplicaA() == TipoMantenimiento.AplicaA.ACOPLADO) {
+
+                if (m.getEstado() == Mantenimiento.Estado.PENDIENTE) {
+
+                    if (kmAco != null && iAco < kmAco.length && kmAco[iAco] != null && !kmAco[iAco].trim().isEmpty()) {
+                        m.setKm(Integer.parseInt(kmAco[iAco].trim()));
+                    }
+                    if (kmVigAco != null && iAco < kmVigAco.length && kmVigAco[iAco] != null && !kmVigAco[iAco].trim().isEmpty()) {
+                        m.setKmVigencia(Integer.parseInt(kmVigAco[iAco].trim()));
+                    }
+                    if (obsAco != null && iAco < obsAco.length && obsAco[iAco] != null && !obsAco[iAco].trim().isEmpty()) {
+                        m.setObservacion(obsAco[iAco].toUpperCase());
+                    }
+                }
+
+                iAco++;
+            }
+        }
+
+        // ---------- 4) MARCAR COMO EJECUTADOS ----------
+        if (ejecutados != null && !ejecutados.isEmpty()) {
+            for (Mantenimiento m : existentes) {
+                if (m.getId() != null && ejecutados.contains(m.getId())) {
+                    m.setEstado(Mantenimiento.Estado.VIGENTE);
+                    m.setFecha(new Date());
+                    m.setUsuario(logueado);
+
+                    Integer km = m.getKm();
+                    Integer kmVig = m.getKmVigencia();
+                    if (km != null && kmVig != null) {
+                        m.setKmProximo(km + kmVig);
+                        m.setKmAlarma(km + kmVig - 1000);
+                    }
+
+                    Mantenimiento existente = mantenimientoServicio.buscarExistenteMasivo(m);
+                    if (existente != null) {
+                        mantenimientoServicio.modificarVigenteOt(m, existente);
+                    }
+                }
+            }
+        }
+
+        // ---------- 5) OBSERVACIÓN DE LA OT ----------
+        if (observacion != null && !observacion.trim().isEmpty()) {
+            ot.setObservacion(observacion.toUpperCase());
+        }
+
+        ot.setMantenimientos(existentes);
+        ordenServicio.modificar(ot);
+        ordenServicio.actualizarEstadoOT(ot.getId());
+
+        return "redirect:/ordenDeTrabajo/listar?mensaje=exito";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        redirectAttributes.addFlashAttribute("error", "Error al procesar la OT.");
+        return "redirect:/ordenDeTrabajo/listar?mensaje=error";
+    }
+}
 
     @GetMapping("/imprimir/{id}")
     public String imprimir(@PathVariable Long id, ModelMap modelo, HttpSession session) {
@@ -512,7 +845,8 @@ public class OrdenDeTrabajoControlador {
         modelo.put("ordenes", ordenServicio.buscarOrdenAbiertaProceso(logueado.getIdOrg()));
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        modelo.put("estado", "ABIERTA");
+        modelo.put("estado", "ABIERTO");
+        modelo.put("lugar", "TODOS");
 
         return "ordenDeTrabajo_listar.html";
 
@@ -520,60 +854,115 @@ public class OrdenDeTrabajoControlador {
 
     @PostMapping("/listarFiltro")
     public String listarFiltro(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
-            @RequestParam(required = false) String estado, ModelMap modelo, HttpSession session) {
+            @RequestParam(required = false) String lugar, @RequestParam(required = false) String estado, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
         List<OrdenDeTrabajo> ordenes = new ArrayList();
 
-        if (idCamion == null && idAcoplado == null && estado.equalsIgnoreCase("TODOS")) {
+        if (lugar.equalsIgnoreCase("CAMILO")) {
+            lugar = "CAMILO ALDAO";
+        }
+
+        if (lugar.equalsIgnoreCase("EXTERNO")) {
+            lugar = "PROVEEDOR EXTERNO";
+        }
+
+        if (idCamion == null && idAcoplado == null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
 
             ordenes = ordenServicio.buscarOrdenes(logueado.getIdOrg());
 
-        }
-        if (idCamion != null && idAcoplado == null && estado.equalsIgnoreCase("TODOS")) {
+        } else if (idCamion != null && idAcoplado == null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
 
             ordenes = ordenServicio.buscarOrdenesCamion(idCamion);
 
-        } else if (idCamion == null && idAcoplado != null && estado.equalsIgnoreCase("TODOS")) {
+        } else if (idCamion == null && idAcoplado != null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
 
             ordenes = ordenServicio.buscarOrdenesAcoplado(idAcoplado);
 
-        } else if (idCamion != null && idAcoplado != null && estado.equalsIgnoreCase("TODOS")) {
+        } else if (idCamion != null && idAcoplado != null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
 
             ordenes = ordenServicio.buscarOrdenesCamionAcoplado(idCamion, idAcoplado);
 
-        } else if (idCamion == null && idAcoplado == null && estado.equalsIgnoreCase("ABIERTA")) {
+        } else if (idCamion == null && idAcoplado == null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
 
-            ordenes = ordenServicio.buscarOrdenAbiertaProceso(idCamion);
+            ordenes = ordenServicio.buscarOrdenAbiertaProceso(logueado.getIdOrg());
 
-        } else if (idCamion != null && idAcoplado != null && estado.equalsIgnoreCase("ABIERTA")) {
+        } else if (idCamion != null && idAcoplado != null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
 
             ordenes = ordenServicio.buscarOrdenesCamionAcopladoAbiertaProceso(idCamion, idAcoplado);
 
-        } else if (idCamion != null && idAcoplado == null && estado.equalsIgnoreCase("ABIERTA")) {
+        } else if (idCamion != null && idAcoplado == null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
 
             ordenes = ordenServicio.buscarOrdenesCamionAbiertaProceso(idCamion);
 
-        } else if (idCamion == null && idAcoplado != null && estado.equalsIgnoreCase("ABIERTA")) {
+        } else if (idCamion == null && idAcoplado != null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
 
             ordenes = ordenServicio.buscarOrdenesAcopladoAbiertaProceso(idAcoplado);
 
-        } else if (idCamion == null && idAcoplado == null && estado.equalsIgnoreCase("CERRADA")) {
+        } else if (idCamion == null && idAcoplado == null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
 
             ordenes = ordenServicio.buscarOrdenCerrada(logueado.getIdOrg());
 
-        } else if (idCamion != null && idAcoplado != null && estado.equalsIgnoreCase("CERRADA")) {
+        } else if (idCamion != null && idAcoplado != null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
 
             ordenes = ordenServicio.buscarOrdenesCamionAcopladoCerrada(idCamion, idAcoplado);
 
-        } else if (idCamion != null && idAcoplado == null && estado.equalsIgnoreCase("CERRADA")) {
+        } else if (idCamion != null && idAcoplado == null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
 
             ordenes = ordenServicio.buscarOrdenesCamionCerrada(idCamion);
 
-        } else if (idCamion == null && idAcoplado != null && estado.equalsIgnoreCase("CERRADA")) {
+        } else if (idCamion == null && idAcoplado != null && lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
 
             ordenes = ordenServicio.buscarOrdenesAcopladoCerrada(idAcoplado);
+
+        } else if (idCamion == null && idAcoplado == null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
+
+            ordenes = ordenServicio.buscarOrdenesLugar(logueado.getIdOrg(), lugar);
+
+        } else if (idCamion != null && idAcoplado == null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
+
+            ordenes = ordenServicio.buscarOrdenesCamionLugar(idCamion, lugar);
+
+        } else if (idCamion == null && idAcoplado != null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
+
+            ordenes = ordenServicio.buscarOrdenesAcopladoLugar(idAcoplado, lugar);
+
+        } else if (idCamion != null && idAcoplado != null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("TODOS")) {
+
+            ordenes = ordenServicio.buscarOrdenesCamionAcopladoLugar(idCamion, idAcoplado, lugar);
+
+        } else if (idCamion == null && idAcoplado == null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
+
+            ordenes = ordenServicio.buscarOrdenAbiertaProcesoLugar(logueado.getIdOrg(), lugar);
+
+        } else if (idCamion != null && idAcoplado != null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
+
+            ordenes = ordenServicio.buscarOrdenesCamionAcopladoAbiertaProcesoLugar(idCamion, idAcoplado, lugar);
+
+        } else if (idCamion != null && idAcoplado == null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
+
+            ordenes = ordenServicio.buscarOrdenesCamionAbiertaProcesoLugar(idCamion, lugar);
+
+        } else if (idCamion == null && idAcoplado != null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("ABIERTO")) {
+
+            ordenes = ordenServicio.buscarOrdenesAcopladoAbiertaProcesoLugar(idAcoplado, lugar);
+
+        } else if (idCamion == null && idAcoplado == null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
+
+            ordenes = ordenServicio.buscarOrdenCerradaLugar(logueado.getIdOrg(), lugar);
+
+        } else if (idCamion != null && idAcoplado != null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
+
+            ordenes = ordenServicio.buscarOrdenesCamionAcopladoCerradaLugar(idCamion, idAcoplado, lugar);
+
+        } else if (idCamion != null && idAcoplado == null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
+
+            ordenes = ordenServicio.buscarOrdenesCamionCerradaLugar(idCamion, lugar);
+
+        } else if (idCamion == null && idAcoplado != null && !lugar.equalsIgnoreCase("TODOS") && estado.equalsIgnoreCase("CERRADO")) {
+
+            ordenes = ordenServicio.buscarOrdenesAcopladoCerradaLugar(idAcoplado, lugar);
         }
 
         if (!ordenes.isEmpty()) {
@@ -586,7 +975,15 @@ public class OrdenDeTrabajoControlador {
         if (idAcoplado != null) {
             modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
         }
+        if (lugar.equalsIgnoreCase("CAMILO ALDAO")) {
+            lugar = "CAMILO";
+        }
+
+        if (lugar.equalsIgnoreCase("PROVEEDOR EXTERNO")) {
+            lugar = "EXTERNO";
+        }
         modelo.put("estado", estado);
+        modelo.put("lugar", lugar);
         modelo.put("flag", flag);
         modelo.put("ordenes", ordenes);
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));

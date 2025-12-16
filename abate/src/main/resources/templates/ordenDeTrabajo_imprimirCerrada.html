@@ -110,7 +110,7 @@
                 <h5></h5>
                 <div class="recibo-datos mb-2">
                     <p><strong class="text-secondary">Fecha: </strong><span th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></span></p>
-                    <p><strong class="text-secondary">N° </strong> <span th:text="${orden.idOrden}"></span></p>
+                    <p><strong class="text-secondary">N° OT: </strong> <span th:text="${orden.idOrden}"></span></p>
                 </div>
                 <div class="recibo-datos mb-2">
                     <p><strong class="text-secondary">ESTADO: </strong> 
@@ -119,21 +119,36 @@
                 <p class="mb-0"><strong><span th:if="${orden.camion != null}" class="text-secondary" th:text="'Camión: '+${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}+ ' '"></span></strong></p>
                 <p><strong><span th:if="${orden.acoplado != null}" class="text-secondary" th:text="'Acoplado: '+${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span></strong></p>
                 <div class="recibo-datos">
-                    <p><strong class="text-secondary">Lugar: </strong> <span th:text="${orden.lugar}"></span></p>
-                    <p><strong class="text-secondary">Proveedor: </strong> <span th:text="${orden.proveedor}"></span></p>
-                </div>
-                <div class="recibo-datos mb-2">
-                    <p><strong class="text-secondary">Responsable: </strong> <span th:text="${orden.responsable}"></span></p>
+                    <p><strong class="text-secondary">Lugar: </strong> <span th:text="${orden.lugar}"></span>
+                        <span th:if="${orden.proveedor != null}" th:text="' ('+${orden.proveedor.nombre}+')'"></span></p>
                     <p><strong class="text-secondary">Chofer: </strong> <span th:text="${orden.chofer.nombre}"></span></p>
                 </div>
-                <p class="mb-0"><strong class="text-secondary">Observación:</strong> <span th:text="${orden.observacion}"></span></p>
+                <div class="recibo-datos mb-2">
+                    <div th:if="${orden.checkTaller != null}">
+                        <span><strong class="text-secondary">N° Check List Taller: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkTaller}"></span>
+                    </div>
+                    <div th:if="${orden.checkMetalurgica != null}">
+                        <span><strong class="text-secondary">N° Check List Metalúrgica: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkMetalurgica}"></span>
+                    </div>
+                    <div th:if="${orden.checkNogoya != null}">
+                        <span><strong class="text-secondary">N° Check List Nogoyá: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkNogoya}"></span>
+                    </div>
+                    <div th:if="${orden.checkAveria != null}">
+                        <span><strong class="text-secondary">N° Planilla Avería: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkAveria}"></span>
+                    </div>
+                </div>
+                <p th:if="${orden.observacion != ''}" class="mb-0"><strong class="text-secondary">Observación:</strong> <span th:text="${orden.observacion}"></span></p>
             </div>
             <div class="recibo-section">
                 <div th:if="${orden.camion != null}">
                     <h6 class="text-primary text-center">Mantenimientos Camión</h6>
                     <div class="row">
                         <div class="table-responsive tabla-scroll">
-                            <table class="table table-sm">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th class="text-center text-secondary">Tipo</th>
@@ -162,7 +177,7 @@
                     <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
                     <div class="row mb-2">
                         <div class="table-responsive tabla-scroll rounded">
-                            <table class="table table-sm">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th class="text-center text-secondary">Tipo</th>

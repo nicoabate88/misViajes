@@ -13,6 +13,7 @@ import abate.abate.excepciones.MiException;
 import abate.abate.repositorios.AcopladoRepositorio;
 import abate.abate.repositorios.CamionRepositorio;
 import abate.abate.repositorios.CombustibleRepositorio;
+import abate.abate.repositorios.DocumentacionRepositorio;
 import abate.abate.repositorios.EjeRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
 import abate.abate.repositorios.GastoRepositorio;
@@ -55,6 +56,10 @@ public class CamionServicio {
     private PosicionNeumaticoRepositorio posicionNeumaticoRepositorio;
     @Autowired
     private EjeRepositorio ejeRepositorio;
+    @Autowired
+    private DocumentacionRepositorio documentacionRepositorio;
+    @Autowired
+    private DocumentacionServicio documentacionServicio;
 
     @Transactional
     public void crearCamion(Camion camion, Usuario logueado) throws MiException {
@@ -96,6 +101,22 @@ public class CamionServicio {
     } else {
         
          validarDatosModificarInhabilitado(camionOriginal, dominioMay);
+    }
+    
+    if(!camionModificado.getEstado().equalsIgnoreCase(camionOriginal.getEstado())){
+    if(camionModificado.getEstado().equalsIgnoreCase("INHABILITADO")){
+        Boolean flag = false;
+        flag = documentacionRepositorio.existsByCamionIdAndEstado(camionModificado.getId(), "VIGENTE");
+        if(flag == true){
+            documentacionServicio.inhabilitarDocumentacionIdCamion(camionModificado.getId());
+        }
+    } else if (camionModificado.getEstado().equalsIgnoreCase("HABILITADO")){
+        Boolean flag = false;
+        flag = documentacionRepositorio.existsByCamionIdAndEstado(camionModificado.getId(), "INHABILITADO");
+        if(flag == true){
+            documentacionServicio.habilitarDocumentacionIdCamion(camionModificado.getId());
+        }
+    }
     }
     
     String marcaMay = camionModificado.getMarca().toUpperCase();

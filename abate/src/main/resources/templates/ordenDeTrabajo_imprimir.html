@@ -76,7 +76,7 @@
         <div class="recibo-container">
             <div th:if="${flag == true}" class="row header d-flex align-items-center justify-content-between">
                 <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
-                    <img th:src="@{${imagenUrl}}" th:alt="${imagenNombre}" style="height:60px;">
+                    <img th:src="@{${imagenUrl}}" th:alt="${imagenNombre}" style="height:75px;">
                 </div>
                 <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
                     <h2 class="text-secondary">Orden de Trabajo</h2>
@@ -91,47 +91,62 @@
                     </a>
                 </div>
             </div>
-            <div th:if="${flag == false}">
-                <div class="text-end">
+            <div th:if="${flag == false}" class="recibo-datos">
+                <div class="col-4 text-secondary">
+                <h6 th:text="${orden.usuario.empresa}"></h6>
+                </div>
+                <div class="col-4 text-secondary text-center">
+                    <h2>Orden de Trabajo</h2>
+                </div>
+                <div class="col-4 text-end">
                     <a title="Cerrar Ventana" id="cerrar" onclick="window.close();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708"/>
                         </svg>
                     </a>
                 </div>
-                <div class="recibo-header">
-                    <h2 class="text-secondary">Orden de Trabajo</h2>
-                </div>
-            </div>
-            <div class="recibo-section mb-0">
-                <h6 class="text-secondary"><span th:text="${orden.usuario.empresa}"></span></h6>
             </div>
             <div class="recibo-section">
                 <h5></h5>
                 <div class="recibo-datos mb-2">
                     <p><strong class="text-secondary">Fecha: </strong><span th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></span></p>
-                    <p><strong class="text-secondary">N° </strong> <span th:text="${orden.idOrden}"></span></p>
+                    <p><strong class="text-secondary">N° OT: </strong> <span th:text="${orden.idOrden}"></span></p>
                 </div>
                 <p><strong class="text-secondary">ESTADO: </strong> 
                     <strong><span class="text-danger" th:text="${orden.estado}"></span></strong></p>
-                <p class="mb-0"><strong><span th:if="${orden.camion != null}" class="text-secondary" th:text="'Camión '+${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}+ ' '"></span></strong></p>
-                <p><strong><span th:if="${orden.acoplado != null}" class="text-secondary" th:text="'Acoplado '+${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span></strong></p>
+                <p class="mb-0"><strong><span th:if="${orden.camion != null}" class="text-secondary" th:text="'Camión: '+${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}+ ' '"></span></strong></p>
+                <p><strong><span th:if="${orden.acoplado != null}" class="text-secondary" th:text="'Acoplado: '+${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span></strong></p>
                 <div class="recibo-datos">
-                    <p><strong class="text-secondary">Lugar: </strong> <span th:text="${orden.lugar}"></span></p>
-                    <p><strong class="text-secondary">Proveedor: </strong> <span th:text="${orden.proveedor}"></span></p>
-                </div>
-                <div class="recibo-datos mb-2">
-                    <p><strong class="text-secondary">Responsable: </strong> <span th:text="${orden.responsable}"></span></p>
+                    <p><strong class="text-secondary">Lugar: </strong> <span th:text="${orden.lugar}"></span>
+                        <span th:if="${orden.proveedor != null}" th:text="' ('+${orden.proveedor.nombre}+')'"></span></p>
                     <p><strong class="text-secondary">Chofer: </strong> <span th:text="${orden.chofer.nombre}"></span></p>
                 </div>
-                <p class="mb-0"><strong class="text-secondary">Observación:</strong> <span th:text="${orden.observacion}"></span></p>
+                <div class="recibo-datos mb-2">
+                    <div th:if="${orden.checkTaller != null}">
+                        <span><strong class="text-secondary">N° Check List Taller: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkTaller}"></span>
+                    </div>
+                    <div th:if="${orden.checkMetalurgica != null}">
+                        <span><strong class="text-secondary">N° Check List Metalúrgica: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkMetalurgica}"></span>
+                    </div>
+                    <div th:if="${orden.checkNogoya != null}">
+                        <span><strong class="text-secondary">N° Check List Nogoyá: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkNogoya}"></span>
+                    </div>
+                    <div th:if="${orden.checkAveria != null}">
+                        <span><strong class="text-secondary">N° Planilla Avería: </strong></span>
+                        <span class="mb-2" th:text="${orden.checkAveria}"></span>
+                    </div>
+                </div>
+                <p th:if="${orden.observacion != ''}" class="mb-0"><strong class="text-secondary">Observación:</strong> <span th:text="${orden.observacion}"></span></p>
             </div>
             <div class="recibo-section">
                 <div th:if="${orden.camion != null}">
                     <h6 class="text-primary text-center">Mantenimientos Camión</h6>
                     <div class="row">
                         <div class="table-responsive tabla-scroll">
-                            <table class="table table-sm">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th class="text-center text-secondary">Tipo</th>
@@ -161,7 +176,7 @@
                     <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
                     <div class="row mb-2">
                         <div class="table-responsive tabla-scroll rounded">
-                            <table class="table table-sm">
+                            <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
                                         <th class="text-center text-secondary">Tipo</th>

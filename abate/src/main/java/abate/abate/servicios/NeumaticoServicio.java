@@ -325,6 +325,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -335,7 +336,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -346,7 +347,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -356,11 +357,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -398,6 +399,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -408,7 +410,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -419,7 +421,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -429,11 +431,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -453,6 +455,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -463,7 +466,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -474,7 +477,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -484,11 +487,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -508,6 +511,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -518,7 +522,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -529,7 +533,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -539,11 +543,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -563,6 +567,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -573,7 +578,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -584,7 +589,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -594,11 +599,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -619,11 +624,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -644,11 +649,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -668,11 +673,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -692,11 +697,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -763,6 +768,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -773,7 +779,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -784,7 +790,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -794,11 +800,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -818,6 +824,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -828,7 +835,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -839,7 +846,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -849,11 +856,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             
@@ -873,6 +880,7 @@ public class NeumaticoServicio {
             List<HistorialNeumatico> historialList = n.getHistorial();
             if (historialList != null && !historialList.isEmpty()) {
                 HistorialNeumatico historial = historialList.get(historialList.size() - 1);
+                n.setPosicion(historial.getPosicion().getEje().getNombre()+" Posición "+historial.getPosicion().getPosicion());
                 if (historial.getCamion() != null) {
                     int km = combustibleServicio.kmUltimaCarga(historial.getCamion());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -883,7 +891,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Camión " + historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo()+ ")");
+                    n.setVehiculo(historial.getCamion().getDominio() + " " + historial.getCamion().getMarca() + " " + historial.getCamion().getModelo());
                 } else {
                     int km = combustibleServicio.kmAcoplado(historial.getAcoplado(), obtenerFechaFija());
                     Integer kmRecorrido = km - historial.getKmColocacion();
@@ -894,7 +902,7 @@ public class NeumaticoServicio {
                     }
                     n.setKm(kmNeumatico);
                     n.setKmUtil(n.getKmEstimado() - kmNeumatico);
-                    n.setUbicacion("COLOCADO (Acoplado " + historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo()+ ")");
+                    n.setVehiculo(historial.getAcoplado().getDominio() + " " + historial.getAcoplado().getMarca() + " " + historial.getAcoplado().getModelo());
                 } 
 
             }
@@ -904,11 +912,11 @@ public class NeumaticoServicio {
            
            if(auxilio.getCamion() != null){
               
-               n.setUbicacion("AUXILIO (Camión " + auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo()+ ")");
+               n.setVehiculo(auxilio.getCamion().getDominio() + " " + auxilio.getCamion().getMarca() + " " + auxilio.getCamion().getModelo());
            
            } else{
                
-               n.setUbicacion("AUXILIO (Acoplado " + auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo()+ ")");
+               n.setVehiculo(auxilio.getAcoplado().getDominio() + " " + auxilio.getAcoplado().getMarca() + " " + auxilio.getAcoplado().getModelo());
            
            } 
             

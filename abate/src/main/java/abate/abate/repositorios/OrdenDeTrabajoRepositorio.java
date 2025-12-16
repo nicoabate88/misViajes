@@ -1,6 +1,7 @@
 package abate.abate.repositorios;
 
 import abate.abate.entidades.OrdenDeTrabajo;
+import abate.abate.entidades.Proveedor;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,27 +22,53 @@ public interface OrdenDeTrabajoRepositorio extends JpaRepository<OrdenDeTrabajo,
     Optional<OrdenDeTrabajo> findTopByIdOrgOrderByIdDesc(Long idOrg);
 
     List<OrdenDeTrabajo> findByIdOrgAndEstadoIn(Long idOrg, List<OrdenDeTrabajo.Estado> estados);
+    
+    List<OrdenDeTrabajo> findByIdOrgAndLugarAndEstadoIn(Long idOrg, String lugar, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByIdOrgAndEstado(Long idOrg, OrdenDeTrabajo.Estado estado);
+    
+    List<OrdenDeTrabajo> findByIdOrgAndLugarAndEstado(Long idOrg,String lugar, OrdenDeTrabajo.Estado estado);
 
     List<OrdenDeTrabajo> findByIdOrg(Long idOrg);
+    
+    List<OrdenDeTrabajo> findByIdOrgAndLugar(Long idOrg, String lugar);
 
     List<OrdenDeTrabajo> findByCamionId(Long idCamion);
+    
+    List<OrdenDeTrabajo> findByCamionIdAndLugar(Long idCamion, String lugar);
 
     List<OrdenDeTrabajo> findByAcopladoId(Long idAcoplado);
+    
+    List<OrdenDeTrabajo> findByAcopladoIdAndLugar(Long idAcoplado, String lugar);
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoId(Long idCamion, Long idAcoplado);
+    
+    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndLugar(Long idCamion, Long idAcoplado, String lugar);
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndEstadoIn(Long idCamion, Long idAcoplado, List<OrdenDeTrabajo.Estado> estados);
+    
+    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndLugarAndEstadoIn(Long idCamion, Long idAcoplado, String lugar, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByCamionIdAndEstadoIn(Long idCamion, List<OrdenDeTrabajo.Estado> estados);
+    
+    List<OrdenDeTrabajo> findByCamionIdAndLugarAndEstadoIn(Long idCamion, String lugar, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByAcopladoIdAndEstadoIn(Long idAcoplado, List<OrdenDeTrabajo.Estado> estados);
+    
+    List<OrdenDeTrabajo> findByAcopladoIdAndLugarAndEstadoIn(Long idAcoplado, String lugar, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByCamionIdAndEstado(Long idCamion, OrdenDeTrabajo.Estado estado);
+    
+    List<OrdenDeTrabajo> findByCamionIdAndLugarAndEstado(Long idCamion, String lugar, OrdenDeTrabajo.Estado estado);
 
     List<OrdenDeTrabajo> findByAcopladoIdAndEstado(Long idAcoplado, OrdenDeTrabajo.Estado estado);
+    
+    List<OrdenDeTrabajo> findByAcopladoIdAndLugarAndEstado(Long idAcoplado, String lugar, OrdenDeTrabajo.Estado estado);
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndEstado(Long idCamion, Long idAcoplado, OrdenDeTrabajo.Estado estado);
+    
+     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndLugarAndEstado(Long idCamion, Long idAcoplado, String lugar, OrdenDeTrabajo.Estado estado);
+    
+    OrdenDeTrabajo findTopByProveedorOrderByIdDesc(Proveedor proveedor);
 
 }
