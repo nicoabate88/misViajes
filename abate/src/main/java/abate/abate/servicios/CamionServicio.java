@@ -89,7 +89,7 @@ public class CamionServicio {
     
     @Transactional
     public void modificarCamion(Camion camionModificado, Long idAcoplado, Usuario usuario) throws MiException {
-    
+
     Camion camionOriginal = camionRepositorio.getById(camionModificado.getId());
 
     String dominioMay = camionModificado.getDominio().toUpperCase();
@@ -121,18 +121,32 @@ public class CamionServicio {
     
     String marcaMay = camionModificado.getMarca().toUpperCase();
     String modeloMay = camionModificado.getModelo().toUpperCase();
-    
-    if (idAcoplado != 0) {
-            Acoplado acoplado = new Acoplado();
-            Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
-            if (acop.isPresent()) {
-                acoplado = acop.get();
+
+    if (idAcoplado == 0) {
+        camionOriginal.setAcoplado(null);
+
+    } else {
+
+        Acoplado acoplado = acopladoRepositorio.findById(idAcoplado)
+                .orElseThrow(() -> new MiException("No se encontró el acoplado seleccionado"));
+
+        Optional<Camion> camionConAcoplado = camionRepositorio.findByAcopladoId(idAcoplado);
+
+        if (camionConAcoplado.isPresent()) {
+            Camion otroCamion = camionConAcoplado.get();
+
+            if (!otroCamion.getId().equals(camionOriginal.getId())) {
+                throw new MiException(
+                        "No puede asociar el acoplado '" + acoplado.getDominio() +
+                        "' porque está asociado al camión '" + otroCamion.getDominio() + "'. " +
+                        "Por favor, primero modifique el camión '" + otroCamion.getDominio() + "'."
+                );
             }
-            camionOriginal.setAcoplado(acoplado);
-        } else {
-            camionOriginal.setAcoplado(null);
         }
-    
+
+        camionOriginal.setAcoplado(acoplado);
+    }
+
     camionOriginal.setDominio(dominioMay);
     camionOriginal.setMarca(marcaMay);
     camionOriginal.setModelo(modeloMay);
@@ -141,13 +155,10 @@ public class CamionServicio {
     camionOriginal.setCantidadAuxilio(camionModificado.getCantidadAuxilio());
     camionOriginal.setUsuario(usuario);
 
-    // Mapear ejes enviados desde el formulario
     List<Eje> nuevosEjes = camionModificado.getEjes();
 
-    // Mapear ejes existentes en la base de datos
     List<Eje> ejesOriginales = camionOriginal.getEjes();
 
-    // Detectar ejes eliminados
     List<Eje> ejesAEliminar = new ArrayList<>();
     for (Eje original : ejesOriginales) {
         boolean sigueExistiendo = nuevosEjes.stream()
@@ -161,20 +172,18 @@ public class CamionServicio {
         }
     }
 
-    // Eliminar los ejes permitidos
     ejesAEliminar.forEach(e -> {
         camionOriginal.getEjes().remove(e);
         ejeRepositorio.delete(e);
     });
 
-    // Procesar ejes nuevos o actualizados
     for (Eje eje : nuevosEjes) {
         eje.setCamion(camionOriginal);
         if (eje.getId() == null) {
-            // Nuevo eje
+
             camionOriginal.getEjes().add(eje);
         } else {
-            // Actualizar eje existente
+
             for (Eje existente : camionOriginal.getEjes()) {
                 if (existente.getId().equals(eje.getId())) {
                     existente.setNombre(eje.getNombre());
@@ -187,7 +196,6 @@ public class CamionServicio {
         }
     }
 
-    // Renumerar todos los ejes del camión secuencialmente
     int contador = 1;
     for (Eje eje : camionOriginal.getEjes()) {
         eje.setUsuario(usuario);
@@ -195,9 +203,8 @@ public class CamionServicio {
     }
 
     camionRepositorio.save(camionOriginal);
-    
-   }
-    
+}
+
     @Transactional
     public void eliminarCamion(Long id) throws MiException {
         

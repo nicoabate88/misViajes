@@ -2,6 +2,7 @@ package abate.abate.repositorios;
 
 import abate.abate.entidades.Camion;
 import java.util.ArrayList;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +19,7 @@ public interface CamionRepositorio extends JpaRepository<Camion, Long> {
     
     @Query("SELECT c FROM Camion c WHERE c.idOrg = :id AND c.estado = 'HABILITADO'")
     public ArrayList<Camion> buscarCamionesHab(@Param("id") Long id);
+    
+    Optional<Camion> findByAcopladoId(Long idAcoplado);
 
 }

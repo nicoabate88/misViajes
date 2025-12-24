@@ -7,8 +7,8 @@
                     <link rel="stylesheet" href="/css/medidas_container.css"> 
                         <style>
                             .tabla-scroll {
-                                max-height: 170px;       /* altura total de unas dos filas */
-                                min-height: 170px;       /* fuerza que tenga esa altura aunque esté vacía */
+                                max-height: 186px;       /* altura total de unas dos filas */
+                                min-height: 186px;       /* fuerza que tenga esa altura aunque esté vacía */
                                 overflow-y: auto;        /* agrega scroll vertical si se pasa */
                                 border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
                                 border-radius: 0.25rem;
@@ -27,7 +27,7 @@
                             .tabla-scroll tbody:empty::before {
                                 content: "";
                                 display: block;
-                                height: 170px; 
+                                height: 186px; 
                             }
                             .btn-eliminar {
                                 background: none;
@@ -76,12 +76,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="container mb-2">  
+                            <div class="container">  
                                 <form id="formulario" th:action="@{/mantenimiento/registroMasivo}" method="POST">
                                     <input hidden id="idOrg" th:value="${idOrg}" name="idOrg">
                                         <div class="card border-secondary p-2 mb-1" id="color-card">
                                             <div class="row mb-2">                                                                      
-                                                <div class="col-6 col-sm-6 col-md-5 col-lg-4 col-xl-4 mb-2">
+                                                <div class="col-6 col-sm-6 col-md-5 col-lg-4 col-xl-4 mb-1">
                                                     <label for="idCamion" class="form-floting text-secondary">Camión*</label>
                                                     <select class="form-control text-secondary" id="idCamion" name="idCamion" required onchange="enviarRegistroCamion()">
                                                         <option th:if="${camion == null}" selected disabled value="">Seleccione Camión</option>
@@ -92,7 +92,7 @@
                                                                 th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
                                                     </select>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 mb-2">
+                                                <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 mb-1">
                                                     <label for="idAcoplado" class="form-floting text-secondary">Acoplado*</label>
                                                     <select class="form-control text-secondary" id="idAcoplado" name="idAcoplado" onchange="enviarRegistroCamion()">
                                                         <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
@@ -103,15 +103,14 @@
                                                                 th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
                                                     </select>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-1">
                                                     <label for="fecha" class="form-label text-secondary">Fecha*</label>
                                                     <input type="date" class="form-control text-secondary" id="fecha" name="fecha" required>
                                                 </div>
                                             </div>
                                             <h6 class="text-primary text-center">Mantenimientos Camión</h6>
-                                            <div class="row mb-1">
-
-                                                <div class="col-7 col-sm-7 col-md-8 col-lg-3 col-xl-3 mb-2">
+                                            <div class="row mb-2">
+                                                <div class="col-12 col-sm-12 col-md-8 col-lg-3 col-xl-3 mb-2">
                                                     <label for="tipo" class="form-floting text-secondary">Tipo Mantenimiento*</label>
                                                     <select class="form-control text-secondary" id="tipo">
                                                         <option selected disabled value="">Seleccione Tipo</option>
@@ -120,7 +119,7 @@
                                                                 th:text="${tipo.nombre}"/>
                                                     </select>
                                                 </div> 
-                                                <div class="col-5 col-sm-5 col-md-4 col-lg-2 col-xl-2 mb-2"> 
+                                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-1"> 
                                                     <label for="kmInicialCamion" class="form-label text-secondary">Km Camión*</label> 
                                                     <div class="input-group"> 
                                                         <span class="input-group-text text-secondary">km</span> 
@@ -128,7 +127,7 @@
                                                                th:value=${kmCamion} oninput="calcularKmCamion()"> 
                                                     </div> 
                                                 </div> 
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2">
+                                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2">
                                                     <label for="kmVigenciaCamion" class="form-label text-secondary">Km Vigencia*</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text bg-light text-success">km</span>
@@ -136,7 +135,7 @@
                                                                oninput="calcularKmAlarmaCamion()">
                                                     </div>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-2"> 
+                                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-1"> 
                                                     <label for="kmProximoCamion" class="form-label text-secondary">Km Próximo*</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text text-secondary">km</span>
@@ -152,16 +151,21 @@
                                                                th:value=${kmAlarmaCamion}>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div class="row mb-3"> 
+                                                <div class="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11">                                                 
+                                                    <input type="text" class="form-control text-secondary" id="observacionC" placeholder="Ingrese Observación..." maxlength="200" size="200">
+                                                </div>
                                                 <div class="form-floating" >
-                                                    <label class="form-label text-white"></label><br><br>
+                                                    <label class="form-label text-white"></label>
                                                             <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
-                                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                                                                     <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
                                                                 </svg>
                                                             </button>
                                                             </div>
                                                             </div>
-                                                            <div class="row">
+                                                            <div class="row mb-3">
                                                                 <div class="col-12">
                                                                     <div class="table-responsive tabla-scroll">
                                                                         <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
@@ -172,6 +176,7 @@
                                                                                     <th>Km Vigencia</th>
                                                                                     <th>Km Próximo</th>
                                                                                     <th>Km Alarma</th>
+                                                                                    <th>Observación</th>
                                                                                     <th class="text-center" style="width: 50px;">Acción</th>
                                                                                 </tr>
                                                                             </thead>
@@ -180,11 +185,9 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            </div>
-                                                            <div class="card border-secondary p-2 mb-1" id="color-card">
                                                                 <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
-                                                                <div class="row mb-1">
-                                                                    <div class="col-7 col-sm-7 col-md-8 col-lg-3 col-xl-3 mb-2">
+                                                                <div class="row mb-2">
+                                                                    <div class="col-12 col-sm-12 col-md-8 col-lg-3 col-xl-3 mb-1">
                                                                         <label for="tipoA" class="form-floting text-secondary">Tipo Mantenimiento*</label>
                                                                         <select class="form-control text-secondary" id="tipoA">
                                                                             <option selected disabled value="">Seleccione Tipo</option>
@@ -193,7 +196,7 @@
                                                                                     th:text="${tipo.nombre}"/>
                                                                         </select>
                                                                     </div> 
-                                                                    <div class="col-5 col-sm-5 col-md-4 col-lg-2 col-xl-2 mb-2"> 
+                                                                    <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-1"> 
                                                                         <label for="kmInicialAcoplado" class="form-label text-secondary">Km Acoplado*</label> 
                                                                         <div class="input-group"> 
                                                                             <span class="input-group-text text-secondary">km</span> 
@@ -201,7 +204,7 @@
                                                                                    th:value=${kmAcoplado} oninput="calcularKmAcoplado()"> 
                                                                         </div> 
                                                                     </div> 
-                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2">
+                                                                    <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2">
                                                                         <label for="kmVigenciaAcoplado" class="form-label text-secondary">Km Vigencia*</label>
                                                                         <div class="input-group">
                                                                             <span class="input-group-text bg-light text-success">km</span>
@@ -209,7 +212,7 @@
                                                                                    oninput="calcularKmAlarmaAcoplado()">
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-2"> 
+                                                                    <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-1"> 
                                                                         <label for="kmProximoAcoplado" class="form-label text-secondary">Km Próximo*</label>
                                                                         <div class="input-group">
                                                                             <span class="input-group-text text-secondary">km</span>
@@ -225,10 +228,15 @@
                                                                                    th:value=${kmAlarmaAcoplado}>
                                                                         </div>
                                                                     </div>
+                                                                </div>
+                                                                <div class="row mb-3">
+                                                                    <div class="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11">
+                                                                        <input type="text" class="form-control text-secondary" id="observacionS" placeholder="Ingrese Observación..." maxlength="200" size="200">
+                                                                    </div>
                                                                     <div class="form-floating" >
-                                                                        <label class="form-label text-white"></label><br><br>
+                                                                        <label class="form-label text-white"></label>
                                                                                 <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoAcoplado" title="Agregar Mantenimiento">
-                                                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
                                                                                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
                                                                                     </svg>
                                                                                 </button>
@@ -245,6 +253,7 @@
                                                                                                         <th>Km Vigencia</th>
                                                                                                         <th>Km Próximo</th>
                                                                                                         <th>Km Alarma</th>
+                                                                                                        <th>Observación</th>
                                                                                                         <th class="text-center" style="width: 50px;">Acción</th>
                                                                                                     </tr>
                                                                                                 </thead>
@@ -252,21 +261,17 @@
                                                                                             </table>
                                                                                         </div>
                                                                                     </div>
-                                                                                </div>
-                                                                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-4">
-                                                                                        <textarea class="form-control text-secondary" id="obs" name="observacion" rows="1" th:text="${obs}" placeholder="OBSERVACIÓN: Ingrese detalle de Mantenimientos..." maxlength="500" size="500" required></textarea>
-                                                                                    </div>  
-                                                                               
+                                                                                </div>                                             
                                                                                 <div th:if="${error != null}" class="card bg-secondary mb-2 p-3 border-secondary text-center">                        
                                                                                     <h6 id="white" th:text="${error}"></h6>                                                                             
                                                                                 </div>
                                                                                 <div class="text-center mb-2">
-                                                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
-                                                                            </div>
-                                                                            <div class="text-center mb-2">
-                                                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/mantenimiento/listarAdminCamiones}" title="Cancelar">Cancelar</a>
-                                                                            </div>
-                                                            </div>
+                                                                                    <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
+                                                                                </div>
+                                                                                <div class="text-center">
+                                                                                    <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/mantenimiento/listarAdminCamiones}" title="Cancelar">Cancelar</a>
+                                                                                </div>
+                                                                                </div>
                                                                                 </form>
                                                                                 <input hidden id="kmC" th:value=${kmCamion}>
                                                                                     <input hidden id="kmVigenciaC" th:value=${kmVigenciaCamion}>
@@ -433,6 +438,7 @@
                                                                                                                         const kmProximo = $('#kmProximoCamion').val();
                                                                                                                         const kmVigencia = $('#kmVigenciaCamion').val();
                                                                                                                         const kmAlarma = $('#kmAlarmaCamion').val();
+                                                                                                                        const observacion = $('#observacionC').val();
 
                                                                                                                         if (!tipo || !km || !kmProximo || !kmVigencia || !kmAlarma) {
                                                                                                                             alert("Debe completar todos los campos antes de agregar.");
@@ -453,11 +459,17 @@
                                                                                                                             kmVigencia: kmVigencia,
                                                                                                                             kmProximo: kmProximo,
                                                                                                                             kmAlarma: kmAlarma,
+                                                                                                                            observacion: observacion,
                                                                                                                             estado: tipoTexto
                                                                                                                         };
 
                                                                                                                         mantenimientosCamion.push(mantenimiento);
 
+                                                                                                                        let observacionMostrar = observacion;
+
+                                                                                                                        if (observacion && observacion.length > 25) {
+                                                                                                                            observacionMostrar = observacion.substring(0, 25) + '...';
+                                                                                                                        }
                                                                                                                         // Agregar fila visualmente
                                                                                                                         const fila = `
                                             <tr class="text-center text-secondary">
@@ -466,6 +478,7 @@
                                                 <td>${kmVigencia}</td>
                                                 <td>${kmProximo}</td>
                                                 <td>${kmAlarma}</td>
+                                                <td title="${observacion || ''}">${observacionMostrar || ''}</td>
                                                 <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
                                             </tr>`;
                                                                                                                         $('#tablaMantenimientosCamion tbody').append(fila);
@@ -475,6 +488,7 @@
                                                                                                                         document.getElementById("kmVigenciaCamion").value = parseInt(document.getElementById('kmVigenciaC').value) || 0;
                                                                                                                         document.getElementById("kmProximoCamion").value = parseInt(document.getElementById('kmProximoC').value) || 0;
                                                                                                                         document.getElementById("kmAlarmaCamion").value = parseInt(document.getElementById('kmAlarmaC').value) || 0;
+                                                                                                                        document.getElementById("observacionC").value = "";
 
                                                                                                                     });
 
@@ -507,6 +521,7 @@
                                                                                                                         const kmVigencia = $('#kmVigenciaAcoplado').val();
                                                                                                                         const kmProximo = $('#kmProximoAcoplado').val();
                                                                                                                         const kmAlarma = $('#kmAlarmaAcoplado').val();
+                                                                                                                        const observacion = $('#observacionS').val();
 
                                                                                                                         if (!tipo || !km || !kmProximo || !kmVigencia || !kmAlarma) {
                                                                                                                             alert("Debe completar todos los campos antes de agregar.");
@@ -527,10 +542,17 @@
                                                                                                                             kmVigencia: kmVigencia,
                                                                                                                             kmProximo: kmProximo,
                                                                                                                             kmAlarma: kmAlarma,
+                                                                                                                            observacion: observacion,
                                                                                                                             estado: tipoTexto
                                                                                                                         };
 
                                                                                                                         mantenimientosAcoplado.push(mantenimiento);
+
+                                                                                                                        let observacionMostrar = observacion;
+
+                                                                                                                        if (observacion && observacion.length > 25) {
+                                                                                                                            observacionMostrar = observacion.substring(0, 25) + '...';
+                                                                                                                        }
 
                                                                                                                         const fila = `
                                             <tr class="text-center text-secondary">
@@ -539,6 +561,7 @@
                                                 <td>${kmVigencia}</td>
                                                 <td>${kmProximo}</td>
                                                 <td>${kmAlarma}</td>
+                                                <td title="${observacion || ''}">${observacionMostrar || ''}</td>
                                                 <td><button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button></td>
                                             </tr>`;
                                                                                                                         $('#tablaMantenimientosAcoplado tbody').append(fila);
@@ -548,7 +571,9 @@
                                                                                                                         document.getElementById("kmVigenciaAcoplado").value = parseInt(document.getElementById('kmVigenciaA').value) || 0;
                                                                                                                         document.getElementById("kmProximoAcoplado").value = parseInt(document.getElementById('kmProximoA').value) || 0;
                                                                                                                         document.getElementById("kmAlarmaAcoplado").value = parseInt(document.getElementById('kmAlarmaA').value) || 0;
+                                                                                                                        document.getElementById("observacionS").value = "";
                                                                                                                     });
+
 
                                                                                                                     // Eliminar fila de acoplado
                                                                                                                     $(document).on('click', '.eliminarFilaAcoplado', function () {

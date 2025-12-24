@@ -42,13 +42,12 @@ public class CamionControlador {
     private ExcelServicio excelServicio;
     
     @GetMapping("/registrar")
-    public String registrarCamion(ModelMap modelo, HttpSession session) {
+    public String registrarCamion(ModelMap modelo) {
 
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         modelo.put("camion", new Camion());
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         
         return "camion_registrar.html";
+        
     }
     
      @PostMapping("/registro")
@@ -65,10 +64,6 @@ public class CamionControlador {
         } catch (MiException ex) {
             
             model.addAttribute("camion", camion);
-            if(camion.getAcoplado() != null){
-                model.put("acoplado", acopladoServicio.buscarAcoplado(camion.getAcoplado().getId()));
-            }
-            model.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             model.addAttribute("error", ex.getMessage());
             
             return "camion_registrar.html";

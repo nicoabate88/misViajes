@@ -1301,12 +1301,11 @@ public class MantenimientoControlador {
     public String registroMasivo(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson,
             @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado, @RequestParam String fecha,
-            @RequestParam(required = false) String observacion, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         ObjectMapper mapper = new ObjectMapper();
         Date fechaOt = convertirFecha(fecha);
-        String obsMayusculas = observacion.toUpperCase();
 
         List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
         List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
@@ -1322,6 +1321,7 @@ public class MantenimientoControlador {
             m.setKmVigencia(dto.getKmVigencia());
             m.setKmProximo(dto.getKmProximo());
             m.setKmAlarma(dto.getKmAlarma());
+            m.setObservacion(dto.getObservacion().toUpperCase());
             mantenimientosCamion.add(m);
         }
 
@@ -1336,6 +1336,7 @@ public class MantenimientoControlador {
             m.setKmVigencia(dto.getKmVigencia());
             m.setKmProximo(dto.getKmProximo());
             m.setKmAlarma(dto.getKmAlarma());
+            m.setObservacion(dto.getObservacion().toUpperCase());
             mantenimientosCamion.add(m);
         }
 
@@ -1348,7 +1349,6 @@ public class MantenimientoControlador {
             m.setIdOrg(logueado.getIdOrg());
             m.setUsuario(logueado);
             m.setFecha(fechaOt);
-            m.setObservacion(obsMayusculas);
 
             if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
                 Camion camion = camionServicio.buscarCamion(idCamion);
@@ -1422,13 +1422,12 @@ public class MantenimientoControlador {
     @PostMapping("/registroMasivoChofer")
     public String registroMasivoChofer(@RequestParam("mantenimientosCamionJson") String mantenimientosCamionJson,
             @RequestParam("mantenimientosAcopladoJson") String mantenimientosAcopladoJson, @RequestParam String fecha,
-            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session, RedirectAttributes redirectAttributes)
+            ModelMap modelo, HttpSession session, RedirectAttributes redirectAttributes)
             throws JsonProcessingException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         ObjectMapper mapper = new ObjectMapper();
         Date fechaOt = convertirFecha(fecha);
-        String obsMayusculas = observacion.toUpperCase();
 
         List<MantenimientoDTO> mantenimientosCamionDTO = Arrays.asList(mapper.readValue(mantenimientosCamionJson, MantenimientoDTO[].class));
         List<MantenimientoDTO> mantenimientosAcopladoDTO = Arrays.asList(mapper.readValue(mantenimientosAcopladoJson, MantenimientoDTO[].class));
@@ -1444,6 +1443,7 @@ public class MantenimientoControlador {
             m.setKmVigencia(dto.getKmVigencia());
             m.setKmProximo(dto.getKmProximo());
             m.setKmAlarma(dto.getKmAlarma());
+            m.setObservacion(dto.getObservacion().toUpperCase());
             mantenimientosCamion.add(m);
         }
 
@@ -1458,6 +1458,7 @@ public class MantenimientoControlador {
             m.setKmVigencia(dto.getKmVigencia());
             m.setKmProximo(dto.getKmProximo());
             m.setKmAlarma(dto.getKmAlarma());
+            m.setObservacion(dto.getObservacion().toUpperCase());
             mantenimientosCamion.add(m);
         }
 
@@ -1470,7 +1471,6 @@ public class MantenimientoControlador {
             m.setIdOrg(logueado.getIdOrg());
             m.setUsuario(logueado);
             m.setFecha(fechaOt);
-            m.setObservacion(obsMayusculas);
 
             if (m.getAplicaA().equals(TipoMantenimiento.AplicaA.CAMION)) {
                 Camion camion = logueado.getCamion();
