@@ -78,6 +78,15 @@ public class CajaServicio {
 
         return cajas;
     }
+    
+    public List<Caja> buscarCajasHab(Long idOrg) {
+
+        List<Caja> cajas = cajaRepositorio.buscarCajasChoferHabilitados(idOrg);
+
+        Collections.sort(cajas, CajaComparador.ordenarNombreChoferAsc);
+
+        return cajas;
+    }
 
     @Transactional
     public void agregarTransaccionCajaChofer(Long idTransaccion) {

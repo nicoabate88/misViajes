@@ -119,7 +119,7 @@ public class ChoferControlador {
     public String listar(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        List<Usuario> choferes = choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg());
+        List<Usuario> choferes = choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg());
         Boolean flag = false;
         
         for(Usuario c : choferes){
@@ -136,14 +136,34 @@ public class ChoferControlador {
     
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarFiltro")
-    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+    public String listarFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
+            ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
-        modelo.put("chofer", choferServicio.buscarChofer(id));
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
 
-        return "chofer_listarFiltro.html";
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+
+            return "chofer_listar.html";
+
+        } else if (id != null) {
+
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+            modelo.put("chofer", choferServicio.buscarChofer(id));
+
+            return "chofer_listarFiltro.html";
+
+        } else {
+
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+
+            return "chofer_listar.html";
+
+        }
+
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CHOFER')")

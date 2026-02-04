@@ -63,7 +63,7 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-4 col-sm-4 col-md-6 col-lg-7 col-xl-7 text-center" th:if="${flag == true}">
+                                        <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center" th:if="${flag == true}">
                                             <h4>Documentación Acoplados</h4>
                                         </div>
                                         <div  class="col-8 text-center" th:if="${flag != true}">
@@ -86,11 +86,6 @@
                                                                     </svg><p id="imprimirExporta">Imprimir</p>
                                                                 </a>
                                                             </div>
-                                                            <div title="Ir a Registrar Documentación" class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
-                                                                <a th:href="@{/documentacion/registrarMasivoA}">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 60 60"><path d="M11,50v-.952a4.013,4.013,0,0,1,.877-2.494L14.562,43.2A2,2,0,0,0,15,41.947V31.5A1.5,1.5,0,0,0,13.5,30a1.486,1.486,0,0,0-.9.3h0a1.486,1.486,0,0,0-.6,1.2V37a1,1,0,0,1-2,0V31.5a3.5,3.5,0,0,1,1-2.419V21.762L3.928,30.25A4,4,0,0,0,3,32.811V54h8Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M17,31.5V41.945a4,4,0,0,1-.877,2.5L13.438,47.8A2.007,2.007,0,0,0,13,49.054V50H47v-.949a1.99,1.99,0,0,0-.438-1.247l-2.685-3.356a4,4,0,0,1-.877-2.5V31.5A3.5,3.5,0,0,1,46.5,28a3.464,3.464,0,0,1,.5.04V9H42a2,2,0,0,1-2-2V2H14a1,1,0,0,0-1,1V28.04a3.464,3.464,0,0,1,.5-.04A3.5,3.5,0,0,1,17,31.5ZM30,43H20a1,1,0,0,1,0-2H30a1,1,0,0,1,0,2Zm10-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2Zm0-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2ZM18,11H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><polygon points="42 3.414 42 7 45.586 7 42 3.414" fill="#000000" style="fill: rgb(255, 255, 255);"></polygon><path d="M45,31.5V41.947a2,2,0,0,0,.438,1.249l2.686,3.358a4.014,4.014,0,0,1,.876,2.5V54h8V32.811a4,4,0,0,0-.928-2.561L49,21.762v7.319A3.5,3.5,0,0,1,50,31.5V37a1,1,0,0,1-2,0V31.5a1.486,1.486,0,0,0-.6-1.2h0a1.486,1.486,0,0,0-.9-.3A1.5,1.5,0,0,0,45,31.5Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M3,58h8a1,1,0,1,0,0-2H3a1,1,0,0,0,0,2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M49,56a1,1,0,0,0,0,2h8a1,1,0,0,0,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>
-                                                                    <h6 id="icono">Nuevo</h6> </a>
-                                                            </div>
                                                             </div>
                                                             </div>
                                                             <div class="container mb-2">  
@@ -108,7 +103,7 @@
                                                                 </div> 
                                                                 <form th:action="@{/documentacion/listarAdminAcopladosFiltro}" method="POST">
                                                                     <div class="row">
-                                                                        <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 pb-3">
+                                                                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-3">
                                                                             <label for="idAcoplado" class="form-floting text-secondary">Acoplado</label>
                                                                             <select class="form-control text-secondary border-secondary" id="idAcoplado" name="idAcoplado">
                                                                                 <option th:if="${acoplado == null && seleccioneA != null}" selected value="">Seleccione Acoplado</option>
@@ -121,7 +116,7 @@
                                                                                 <option value="">TODOS</option>
                                                                             </select>
                                                                         </div>
-                                                                        <div class="col-10 col-sm-10 col-md-5 col-lg-5 col-xl-5 pb-3">
+                                                                        <div class="col-10 col-sm-10 col-md-4 col-lg-4 col-xl-4 pb-3">
                                                                             <label for="idTipo" class="form-floting text-secondary">Tipo de Documentación</label>
                                                                             <select class="form-control text-secondary border-secondary" id="idTipo" name="idTipo">
                                                                                 <option th:if="${tipo == null && seleccioneT != null}" selected value="">Seleccione Tipo de Documentación</option>
@@ -141,16 +136,22 @@
                                                                                 </svg>
                                                                             </button>
                                                                         </div>
+                                                                        <div title="Ir a Registrar Documentación" class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 p-4 text-center">
+                                                                            <a th:href="@{/documentacion/registrarMasivoA}">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 60 60"><path d="M11,50v-.952a4.013,4.013,0,0,1,.877-2.494L14.562,43.2A2,2,0,0,0,15,41.947V31.5A1.5,1.5,0,0,0,13.5,30a1.486,1.486,0,0,0-.9.3h0a1.486,1.486,0,0,0-.6,1.2V37a1,1,0,0,1-2,0V31.5a3.5,3.5,0,0,1,1-2.419V21.762L3.928,30.25A4,4,0,0,0,3,32.811V54h8Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M17,31.5V41.945a4,4,0,0,1-.877,2.5L13.438,47.8A2.007,2.007,0,0,0,13,49.054V50H47v-.949a1.99,1.99,0,0,0-.438-1.247l-2.685-3.356a4,4,0,0,1-.877-2.5V31.5A3.5,3.5,0,0,1,46.5,28a3.464,3.464,0,0,1,.5.04V9H42a2,2,0,0,1-2-2V2H14a1,1,0,0,0-1,1V28.04a3.464,3.464,0,0,1,.5-.04A3.5,3.5,0,0,1,17,31.5ZM30,43H20a1,1,0,0,1,0-2H30a1,1,0,0,1,0,2Zm10-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2Zm0-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2ZM18,11H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><polygon points="42 3.414 42 7 45.586 7 42 3.414" fill="#000000" style="fill: rgb(0, 0, 139);"></polygon><path d="M45,31.5V41.947a2,2,0,0,0,.438,1.249l2.686,3.358a4.014,4.014,0,0,1,.876,2.5V54h8V32.811a4,4,0,0,0-.928-2.561L49,21.762v7.319A3.5,3.5,0,0,1,50,31.5V37a1,1,0,0,1-2,0V31.5a1.486,1.486,0,0,0-.6-1.2h0a1.486,1.486,0,0,0-.9-.3A1.5,1.5,0,0,0,45,31.5Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M3,58h8a1,1,0,1,0,0-2H3a1,1,0,0,0,0,2Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M49,56a1,1,0,0,0,0,2h8a1,1,0,0,0,0-2Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
+                                                                                <p class="mb-0">Nuevo</p> </a>
+                                                                        </div>
                                                                     </div>
                                                                 </form>
-                                                                <div th:if="${documentacion.size >= 1}">
-                                                                    <div class="mb-4" th:each="entry : ${documentacion}">
+                                                            </div>
+                                                                <div th:if="${documentacion.size >= 1}" class="row justify-content-center">
+                                                                    <div th:each="entry : ${documentacion}" class="col-12 col-lg-10 px-3 px-md-4 px-lg-3 mb-4">
                                                                         <h6 class="text-dark p-1 text-center" th:text="${entry.key}"></h6> 
                                                                         <div class="table-responsive border border-secondary rounded">
                                                                             <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
                                                                                 <thead>
                                                                                     <tr>
-                                                                                        <th class="text-center">Dominio</th>
+                                                                                        <th class="text-center">Acoplado</th>
                                                                                         <th class="text-center">Fecha Alta</th>
                                                                                         <th class="text-center">Vencimiento</th>
                                                                                         <th class="text-center">Vigencia</th>
@@ -161,7 +162,7 @@
                                                                                 </thead>
                                                                                 <tbody>
                                                                                     <tr th:each="documento : ${entry.value}">
-                                                                                        <td class="text-center"><b><a id="dimgray" th:text="${documento.acoplado.dominio}" th:attr="data-id=${documento.acoplado.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle"></a></b>
+                                                                                        <td class="text-center"><b><a id="dimgray" th:text="${documento.acoplado.dominio}+' '+${documento.acoplado.marca}+' '+${documento.acoplado.modelo}" th:attr="data-id=${documento.acoplado.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle"></a></b>
                                                                                         </td>
                                                                                         <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
                                                                                         <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>
@@ -184,6 +185,8 @@
                                                                             </table>
                                                                         </div>
                                                                     </div>
+                                                                </div>
+                                                                 <div th:if="${documentacion.size >= 1}" class="container">
                                                                     <div class="text-center mb-2">
                                                                         <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/registrarMasivoA}">Nuevo</a>
                                                                     </div>
@@ -191,7 +194,7 @@
                                                                         <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/listarAdmin}">Volver</a>
                                                                     </div>
                                                                 </div>
-                                                                <div th:if="${documentacion.size < 1}">
+                                                                <div th:if="${documentacion.size < 1}" class="container">
                                                                     <br>
                                                                         <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
                                                                             <h6 id="azul">No existen Documentaciones de Acoplados para mostrar</h6>
@@ -205,7 +208,7 @@
                                                                                 <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/listarAdmin}">Volver</a>
                                                                             </div>
                                                                             </div>
-                                                                            </div>
+                                                                            
                                                                             <div id="spinner" class="modal" style="display: none;">
                                                                                 <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
                                                                                     <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">

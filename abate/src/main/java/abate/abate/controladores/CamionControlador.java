@@ -89,21 +89,41 @@ public class CamionControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
 
         return "camion_listar.html";
 
     }
     
     @GetMapping("/listarFiltro")
-    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+    public String listarFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
+            ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
-        modelo.put("camion", camionServicio.buscarCamion(id));
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
 
-        return "camion_listarFiltro.html";
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+
+            return "camion_listar.html";
+
+        } else if (id != null) {
+
+            modelo.put("camion", camionServicio.buscarCamion(id));
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+
+            return "camion_listarFiltro.html";
+
+        } else {
+
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+
+            return "camion_listar.html";
+
+        }
+
     }
     
     @GetMapping("/detalle/{id}")

@@ -98,7 +98,7 @@ public class CajaControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         Double saldo = 0.0;
-        List<Caja> cajas = cajaServicio.buscarCajas(logueado.getIdOrg());
+        List<Caja> cajas = cajaServicio.buscarCajasHab(logueado.getIdOrg());
         for (Caja c : cajas) {
             saldo = saldo + c.getSaldo();
         }
@@ -107,6 +107,65 @@ public class CajaControlador {
         modelo.put("saldo", saldo);
 
         return "caja_mostrarTodas.html";
+
+    }
+    
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/listarChoferFiltro")
+    public String listarChoferFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+            
+        Double saldo = 0.0;
+        List<Caja> cajas = cajaServicio.buscarCajas(logueado.getIdOrg());
+        for (Caja c : cajas) {
+            saldo = saldo + c.getSaldo();
+        }
+
+        modelo.addAttribute("cajas", cajas);
+        modelo.put("saldo", saldo);
+        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+
+        return "caja_mostrarTodas.html";
+
+        } else if (id != null) {
+            
+        Caja caja = cajaServicio.buscarCaja(id);
+        String desde = obtenerFechaDesde();
+        String hasta = obtenerFechaHasta();
+
+        ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCajaFecha(caja.getId(), desde, hasta);
+        Boolean flag = true;
+        if (lista.isEmpty()) {
+            flag = false;
+        }
+
+        modelo.put("flag", flag);
+        modelo.put("caja", caja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.addAttribute("transacciones", lista);
+
+        return "caja_mostrarAdminTodas.html";
+
+        } else {
+            
+        Double saldo = 0.0;
+        List<Caja> cajas = cajaServicio.buscarCajasHab(logueado.getIdOrg());
+        for (Caja c : cajas) {
+            saldo = saldo + c.getSaldo();
+        }
+
+        modelo.addAttribute("cajas", cajas);
+        modelo.put("saldo", saldo);
+
+        return "caja_mostrarTodas.html";
+
+        }
 
     }
     

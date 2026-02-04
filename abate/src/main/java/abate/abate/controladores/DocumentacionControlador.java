@@ -1864,9 +1864,9 @@ public class DocumentacionControlador {
             for (Documentacion documento : documentos) {
                 String dominio = "";
                 if (documento.getAcoplado() != null) {
-                    dominio = documento.getAcoplado().getDominio();
+                    dominio = documento.getAcoplado().getDominio()+' '+documento.getAcoplado().getMarca()+' '+documento.getAcoplado().getModelo();
                 } else if (documento.getCamion() != null) {
-                    dominio = documento.getCamion().getDominio();
+                    dominio = documento.getCamion().getDominio()+' '+documento.getCamion().getMarca()+' '+documento.getCamion().getModelo();
                 } else if (documento.getChofer() != null) {
                     dominio = documento.getChofer().getNombre();
                 }

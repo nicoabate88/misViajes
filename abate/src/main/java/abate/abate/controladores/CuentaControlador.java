@@ -60,7 +60,7 @@ public class CuentaControlador {
         Boolean flag = false;
 
         Double saldo = 0.0;
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg());
         for (Cuenta c : cuentas) {
             saldo = saldo + c.getSaldo();
         }
@@ -78,14 +78,56 @@ public class CuentaControlador {
     
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarChoferFiltro")
-    public String listarChoferFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+    public String listarChoferFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
+            ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+        Boolean flag = false;
 
-        modelo.addAttribute("cuentas", cuentaServicio.buscarCuentasChofer(logueado.getIdOrg()));
-        modelo.addAttribute("cuenta", cuentaServicio.buscarCuenta(id));
+        if (filtrarInhabilitados) {
+        Double saldo = 0.0;
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+        for (Cuenta c : cuentas) {
+            saldo = saldo + c.getSaldo();
+        }
+        if(!cuentas.isEmpty()){
+            flag = true;
+        }
 
-        return "cuenta_listarChoferFiltro.html";
+        modelo.put("flag", flag);
+        modelo.addAttribute("cuentas", cuentas);
+        modelo.put("saldo", saldo);
+        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+
+        return "cuenta_listarChofer.html";
+
+        } else if (id != null) {
+
+            modelo.addAttribute("cuentas", cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg()));
+            modelo.addAttribute("cuenta", cuentaServicio.buscarCuenta(id));
+
+            return "cuenta_listarChoferFiltro.html";
+
+        } else {
+            
+        Double saldo = 0.0;
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg());
+        for (Cuenta c : cuentas) {
+            saldo = saldo + c.getSaldo();
+        }
+        if(!cuentas.isEmpty()){
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("cuentas", cuentas);
+        modelo.put("saldo", saldo);
+
+        return "cuenta_listarChofer.html";
+
+        }
+
     }
 
     @GetMapping("/mostrarChofer/{id}")
@@ -230,7 +272,7 @@ public class CuentaControlador {
         Boolean flag = false;
 
         Double saldo = 0.0;
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg());
         for (Cuenta c : cuentas) {
             saldo = saldo + c.getSaldo();
         }
@@ -247,14 +289,56 @@ public class CuentaControlador {
     
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarClienteFiltro")
-    public String listarClienteFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
+    public String listarClienteFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
+            ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+        Boolean flag = false;
 
-        modelo.addAttribute("cuentas", cuentaServicio.buscarCuentasCliente(logueado.getIdOrg()));
-        modelo.addAttribute("cuenta", cuentaServicio.buscarCuenta(id));
+        if (filtrarInhabilitados) {
+        Double saldo = 0.0;
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+        for (Cuenta c : cuentas) {
+            saldo = saldo + c.getSaldo();
+        }
+        if(!cuentas.isEmpty()){
+            flag = true;
+        }
 
-        return "cuenta_listarClienteFiltro.html";
+        modelo.put("flag", flag);
+        modelo.addAttribute("cuentas", cuentas);
+        modelo.put("saldo", saldo);
+        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+
+        return "cuenta_listarCliente.html";
+
+        } else if (id != null) {
+
+            modelo.addAttribute("cuentas", cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg()));
+            modelo.addAttribute("cuenta", cuentaServicio.buscarCuenta(id));
+
+            return "cuenta_listarClienteFiltro.html";
+
+        } else {
+            
+        Double saldo = 0.0;
+        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg());
+        for (Cuenta c : cuentas) {
+            saldo = saldo + c.getSaldo();
+        }
+        if(!cuentas.isEmpty()){
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("cuentas", cuentas);
+        modelo.put("saldo", saldo);
+
+        return "cuenta_listarCliente.html";
+
+        }
+
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

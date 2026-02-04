@@ -24,8 +24,14 @@ public interface CuentaRepositorio extends JpaRepository<Cuenta, Long> {
 
     @Query("SELECT c FROM Cuenta c WHERE cliente_id = null AND c.idOrg = :id")
     public ArrayList<Cuenta> buscarCuentasChofer(@Param("id") Long id);
-
+    
+    @Query("SELECT c FROM Cuenta c WHERE c.cliente IS NULL AND c.idOrg = :idOrg AND c.chofer.estado = 'HABILITADO'")
+    ArrayList<Cuenta> buscarCuentasChoferHabilitados(@Param("idOrg") Long idOrg);
+    
     @Query("SELECT c FROM Cuenta c WHERE chofer_id = null AND c.idOrg = :id")
     public ArrayList<Cuenta> buscarCuentasCliente(@Param("id") Long id);
+    
+    @Query("SELECT c FROM Cuenta c WHERE c.chofer IS NULL AND c.idOrg = :idOrg AND c.cliente.estado = 'HABILITADO'")
+    ArrayList<Cuenta> buscarCuentasClienteHabilitados(@Param("idOrg") Long idOrg);
 
 }

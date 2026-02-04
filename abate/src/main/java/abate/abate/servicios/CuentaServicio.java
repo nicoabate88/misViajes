@@ -157,7 +157,7 @@ public class CuentaServicio {
 
         ArrayList<Cuenta> lista = new ArrayList();
 
-        lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasChofer(idOrg);
+        lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasChoferHabilitados(idOrg);
 
         Collections.sort(lista, CuentaComparador.ordenarNombreChoferAsc);
 
@@ -169,6 +169,17 @@ public class CuentaServicio {
         ArrayList<Cuenta> lista = new ArrayList();
 
         lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasCliente(idOrg);
+
+        Collections.sort(lista, CuentaComparador.ordenarNombreClienteAsc);
+
+        return lista;
+    }
+    
+    public ArrayList<Cuenta> buscarCuentasClienteHab(Long idOrg) {
+
+        ArrayList<Cuenta> lista = new ArrayList();
+
+        lista = (ArrayList<Cuenta>) cuentaRepositorio.buscarCuentasClienteHabilitados(idOrg);
 
         Collections.sort(lista, CuentaComparador.ordenarNombreClienteAsc);
 

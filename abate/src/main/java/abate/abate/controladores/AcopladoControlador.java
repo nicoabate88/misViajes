@@ -84,21 +84,42 @@ public class AcopladoControlador {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
         return "acoplado_listar.html";
 
     }
     
-    @GetMapping("/listarFiltro")
-    public String listarFiltro(@RequestParam Long id, ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
-        modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
+    @GetMapping("/listarFiltro")
+    public String listarFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado, 
+            ModelMap modelo, HttpSession session) {
 
+    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+    boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+    if (filtrarInhabilitados) {
+        // lógica cuando el checkbox está marcado
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+        
+        return "acoplado_listar.html";
+        
+    } else if(id != null) {
+        
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+        modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
+        
         return "acoplado_listarFiltro.html";
+        
+    }  else {
+
+    modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+    
+    return "acoplado_listar.html";
+    
+    }
+    
     }
     
     @GetMapping("/detalle/{id}")

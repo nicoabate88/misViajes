@@ -52,8 +52,8 @@
                                     <tbody>
                                         <tr th:each="documento : ${entry.value}">
                                             <td th:if="${documento.chofer != null}" class="text-center" th:text="${documento.chofer.nombre}"></td>
-                                            <td th:if="${documento.camion != null}" class="text-center" th:text="${documento.camion.dominio}"></td>
-                                            <td th:if="${documento.acoplado != null}" class="text-center" th:text="${documento.acoplado.dominio}"></td>
+                                            <td th:if="${documento.camion != null}" class="text-center" th:text="${documento.camion.dominio}+' '+${documento.camion.marca}+' '+${documento.camion.modelo}"></td>
+                                            <td th:if="${documento.acoplado != null}" class="text-center" th:text="${documento.acoplado.dominio}+' '+${documento.acoplado.marca}+' '+${documento.acoplado.modelo}"></td>
                                             <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
                                             <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>
                                             <th class="text-center text-primary" th:text="${documento.diasVigencia}+' días'"></th>

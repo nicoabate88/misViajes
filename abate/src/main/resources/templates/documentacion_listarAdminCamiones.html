@@ -64,7 +64,7 @@
                                                 </svg> 
                                             </a>   
                                         </div>
-                                        <div  class="col-4 col-sm-4 col-md-6 col-lg-7 col-xl-7 text-center" th:if="${flag == true}">
+                                        <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center" th:if="${flag == true}">
                                             <h4>Documentación Camiones</h4>
                                         </div>
                                         <div  class="col-8 text-center" th:if="${flag != true}">
@@ -87,11 +87,6 @@
                                                                     </svg><p id="imprimirExporta">Imprimir</p>
                                                                 </a>
                                                             </div>
-                                                            <div title="Ir a Registrar Documentación" class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
-                                                                <a th:href="@{/documentacion/registrarMasivo}">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 60 60"><path d="M11,50v-.952a4.013,4.013,0,0,1,.877-2.494L14.562,43.2A2,2,0,0,0,15,41.947V31.5A1.5,1.5,0,0,0,13.5,30a1.486,1.486,0,0,0-.9.3h0a1.486,1.486,0,0,0-.6,1.2V37a1,1,0,0,1-2,0V31.5a3.5,3.5,0,0,1,1-2.419V21.762L3.928,30.25A4,4,0,0,0,3,32.811V54h8Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M17,31.5V41.945a4,4,0,0,1-.877,2.5L13.438,47.8A2.007,2.007,0,0,0,13,49.054V50H47v-.949a1.99,1.99,0,0,0-.438-1.247l-2.685-3.356a4,4,0,0,1-.877-2.5V31.5A3.5,3.5,0,0,1,46.5,28a3.464,3.464,0,0,1,.5.04V9H42a2,2,0,0,1-2-2V2H14a1,1,0,0,0-1,1V28.04a3.464,3.464,0,0,1,.5-.04A3.5,3.5,0,0,1,17,31.5ZM30,43H20a1,1,0,0,1,0-2H30a1,1,0,0,1,0,2Zm10-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2Zm0-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2ZM18,11H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><polygon points="42 3.414 42 7 45.586 7 42 3.414" fill="#000000" style="fill: rgb(255, 255, 255);"></polygon><path d="M45,31.5V41.947a2,2,0,0,0,.438,1.249l2.686,3.358a4.014,4.014,0,0,1,.876,2.5V54h8V32.811a4,4,0,0,0-.928-2.561L49,21.762v7.319A3.5,3.5,0,0,1,50,31.5V37a1,1,0,0,1-2,0V31.5a1.486,1.486,0,0,0-.6-1.2h0a1.486,1.486,0,0,0-.9-.3A1.5,1.5,0,0,0,45,31.5Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M3,58h8a1,1,0,1,0,0-2H3a1,1,0,0,0,0,2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path><path d="M49,56a1,1,0,0,0,0,2h8a1,1,0,0,0,0-2Z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></svg>
-                                                                    <h6 id="icono">Nuevo</h6> </a>
-                                                            </div>
                                                             </div>
                                                             </div>
                                                             <div class="container mb-2">  
@@ -109,7 +104,7 @@
                                                                 </div> 
                                                                 <form th:action="@{/documentacion/listarAdminCamionesFiltro}" method="POST">
                                                                     <div class="row">
-                                                                        <div class="col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 pb-3">
+                                                                        <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 pb-3">
                                                                             <label for="idCamion" class="form-floting text-secondary">Camión</label>
                                                                             <select class="form-control text-secondary border-secondary" id="idCamion" name="idCamion">
                                                                                 <option th:if="${camion == null && seleccioneC != null}" selected value="">Seleccione Camión</option>
@@ -122,7 +117,7 @@
                                                                                 <option value="">TODOS</option>
                                                                             </select>
                                                                         </div>
-                                                                        <div class="col-10 col-sm-10 col-md-5 col-lg-5 col-xl-5 pb-3">
+                                                                        <div class="col-10 col-sm-10 col-md-4 col-lg-4 col-xl-4 pb-3">
                                                                             <label for="idTipo" class="form-floting text-secondary">Tipo de Documentación</label>
                                                                             <select class="form-control text-secondary border-secondary" id="idTipo" name="idTipo">
                                                                                 <option th:if="${tipo == null && seleccioneT != null}" selected value="">Seleccione Tipo de Documentación</option>
@@ -142,197 +137,205 @@
                                                                                 </svg>
                                                                             </button>
                                                                         </div>
+                                                                        <div title="Ir a Registrar Documentación" class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 p-4 text-center">
+                                                                            <a th:href="@{/documentacion/registrarMasivo}">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 60 60"><path d="M11,50v-.952a4.013,4.013,0,0,1,.877-2.494L14.562,43.2A2,2,0,0,0,15,41.947V31.5A1.5,1.5,0,0,0,13.5,30a1.486,1.486,0,0,0-.9.3h0a1.486,1.486,0,0,0-.6,1.2V37a1,1,0,0,1-2,0V31.5a3.5,3.5,0,0,1,1-2.419V21.762L3.928,30.25A4,4,0,0,0,3,32.811V54h8Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M17,31.5V41.945a4,4,0,0,1-.877,2.5L13.438,47.8A2.007,2.007,0,0,0,13,49.054V50H47v-.949a1.99,1.99,0,0,0-.438-1.247l-2.685-3.356a4,4,0,0,1-.877-2.5V31.5A3.5,3.5,0,0,1,46.5,28a3.464,3.464,0,0,1,.5.04V9H42a2,2,0,0,1-2-2V2H14a1,1,0,0,0-1,1V28.04a3.464,3.464,0,0,1,.5-.04A3.5,3.5,0,0,1,17,31.5ZM30,43H20a1,1,0,0,1,0-2H30a1,1,0,0,1,0,2Zm10-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2Zm0-5H20a1,1,0,0,1,0-2H40a1,1,0,0,1,0,2ZM18,11H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Zm0,5H42a1,1,0,0,1,0,2H18a1,1,0,0,1,0-2Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><polygon points="42 3.414 42 7 45.586 7 42 3.414" fill="#000000" style="fill: rgb(0, 0, 139);"></polygon><path d="M45,31.5V41.947a2,2,0,0,0,.438,1.249l2.686,3.358a4.014,4.014,0,0,1,.876,2.5V54h8V32.811a4,4,0,0,0-.928-2.561L49,21.762v7.319A3.5,3.5,0,0,1,50,31.5V37a1,1,0,0,1-2,0V31.5a1.486,1.486,0,0,0-.6-1.2h0a1.486,1.486,0,0,0-.9-.3A1.5,1.5,0,0,0,45,31.5Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M3,58h8a1,1,0,1,0,0-2H3a1,1,0,0,0,0,2Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M49,56a1,1,0,0,0,0,2h8a1,1,0,0,0,0-2Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
+                                                                                <p class="mb-0">Nuevo</p> </a>
+                                                                        </div>
                                                                     </div>
                                                                 </form>
-                                                                <div th:if="${documentacion.size >= 1}">
-                                                                    <div class="mb-4" th:each="entry : ${documentacion}">
-                                                                        <h6 class="text-dark p-1 text-center" th:text="${entry.key}"></h6> 
-                                                                        <div class="table-responsive border border-secondary rounded">
-                                                                            <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th class="text-center">Dominio</th>
-                                                                                        <th class="text-center">Fecha Alta</th>
-                                                                                        <th class="text-center">Vencimiento</th>
-                                                                                        <th class="text-center">Vigencia</th>
-                                                                                        <th class="text-center">Estado</th>
-                                                                                        <th class="text-center">Ver</th>
-                                                                                        <th class="text-center">Observación</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    <tr th:each="documento : ${entry.value}">
-                                                                                        <td class="text-center"><b><a id="dimgray" th:text="${documento.camion.dominio}" th:attr="data-id=${documento.camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle"></a></b></td>
-                                                                                        <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
-                                                                                        <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                                                                                        <th class="text-center text-primary" th:text="${documento.diasVigencia}+' días'"></th>
-                                                                                        <td class="text-center">
-                                                                                            <span th:switch="${documento.estado}">
-                                                                                                <span th:case="'VIGENTE'">✅ VIGENTE</span>
-                                                                                                <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
-                                                                                                <span th:case="'VENCIDO'">❌ VENCIDO</span>
-                                                                                            </span> 
-                                                                                        </td>
-                                                                                        <td class="text-center">
-                                                                                            <a th:href="@{/documentacion/listarAdminCamion(id=${documento.id}, idCamion=${idCamion})}">
-                                                                                                <i id="dimgray" class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
-                                                                                            </a>
-                                                                                        </td>
-                                                                                        <td class="text-center" th:text="${documento.observacion}"></td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="text-center mb-2">
-                                                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/registrarMasivo}">Nuevo</a>
-                                                                    </div>
-                                                                    <div class="text-center mb-2">
-                                                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/listarAdmin}">Volver</a>
+                                                            </div>
+                                                            <div th:if="${documentacion.size >= 1}" class="row justify-content-center">
+                                                                <div th:each="entry : ${documentacion}" class="col-12 col-lg-10 px-3 px-md-4 px-lg-3 mb-4">
+                                                                    <h6 class="text-dark p-1 text-center" th:text="${entry.key}"></h6> 
+                                                                    <div class="table-responsive border border-secondary rounded">
+                                                                        <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th class="text-center">Camión</th>
+                                                                                    <th class="text-center">Fecha Alta</th>
+                                                                                    <th class="text-center">Vencimiento</th>
+                                                                                    <th class="text-center">Vigencia</th>
+                                                                                    <th class="text-center">Estado</th>
+                                                                                    <th class="text-center">Ver</th>
+                                                                                    <th class="text-center">Observación</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr th:each="documento : ${entry.value}">
+                                                                                    <td class="text-center"><b><a id="dimgray" th:text="${documento.camion.dominio}+' - '+${documento.camion.marca}+' '+${documento.camion.modelo}" th:attr="data-id=${documento.camion.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle"></a></b></td>
+                                                                                    <td class="text-center" th:text="${#dates.format(documento.fechaAlta, 'dd-MM-yyyy')}"></td>
+                                                                                    <td class="text-center" th:text="${#dates.format(documento.fechaVencimiento, 'dd-MM-yyyy')}"></td>
+                                                                                    <th class="text-center text-primary" th:text="${documento.diasVigencia}+' días'"></th>
+                                                                                    <td class="text-center">
+                                                                                        <span th:switch="${documento.estado}">
+                                                                                            <span th:case="'VIGENTE'">✅ VIGENTE</span>
+                                                                                            <span th:case="'PRÓXIMO A VENCER'">🟡 PRÓXIMO A VENCER</span>
+                                                                                            <span th:case="'VENCIDO'">❌ VENCIDO</span>
+                                                                                        </span> 
+                                                                                    </td>
+                                                                                    <td class="text-center">
+                                                                                        <a th:href="@{/documentacion/listarAdminCamion(id=${documento.id}, idCamion=${idCamion})}">
+                                                                                            <i id="dimgray" class="fa fa-eye" style="margin-left:10px; cursor:pointer;"></i>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                    <td class="text-center" th:text="${documento.observacion}"></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
                                                                     </div>
                                                                 </div>
-                                                                <div th:if="${documentacion.size < 1}">
+                                                            </div>
+                                                            <div th:if="${documentacion.size >= 1}" class="container">
+                                                                <div class="text-center mb-2">
+                                                                    <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/registrarMasivo}">Nuevo</a>
+                                                                </div>
+                                                                <div class="text-center mb-2">
+                                                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/listarAdmin}">Volver</a>
+                                                                </div>
+                                                            </div>
+                                                            <div th:if="${documentacion.size < 1}" class="container">
+                                                                <br>
+                                                                    <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
+                                                                        <h6 id="azul">No existen Documentaciones de Camiones para mostrar</h6>
+                                                                        <h6 id="azul">Por favor, seleccione Filtro</h6>
+                                                                    </div>
                                                                     <br>
-                                                                        <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
-                                                                            <h6 id="azul">No existen Documentaciones de Camiones para mostrar</h6>
-                                                                            <h6 id="azul">Por favor, seleccione Filtro</h6>
+                                                                        <div class="text-center mb-2">
+                                                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/registrarMasivo}">Nuevo</a>
                                                                         </div>
-                                                                        <br>
-                                                                            <div class="text-center mb-2">
-                                                                                <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/registrarMasivo}">Nuevo</a>
+                                                                        <div class="text-center mb-2">
+                                                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/listarAdmin}">Volver</a>
+                                                                        </div>
+                                                                        </div>
+
+                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                </div>
                                                                             </div>
-                                                                            <div class="text-center mb-2">
-                                                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/documentacion/listarAdmin}">Volver</a>
-                                                                            </div>
-                                                                            </div>
-                                                                            </div>
-                                                                            <div id="spinner" class="modal" style="display: none;">
-                                                                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                                                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                                                                        <span class="sr-only">Cargando...</span>
+                                                                        </div>
+                                                                        <!-- Modal para mostrar historial -->
+                                                                        <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                                                            <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                                                                <div class="modal-content">
+                                                                                    <div class="modal-header position-relative modal-header-darkblue">
+                                                                                        <h4 class="modal-title mx-auto">Detalle de Camión</h4>
+                                                                                        <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                                                            <span aria-hidden="true">&times;</span>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <div class="modal-body" id="historialContenido">
+                                                                                        <!-- Aquí se cargará el fragmento HTML con el historial -->
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <!-- Modal para mostrar historial -->
-                                                                            <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
-                                                                                <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-                                                                                    <div class="modal-content">
-                                                                                        <div class="modal-header position-relative modal-header-darkblue">
-                                                                                            <h4 class="modal-title mx-auto">Detalle de Camión</h4>
-                                                                                            <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
-                                                                                                <span aria-hidden="true">&times;</span>
-                                                                                            </button>
-                                                                                        </div>
-                                                                                        <div class="modal-body" id="historialContenido">
-                                                                                            <!-- Aquí se cargará el fragmento HTML con el historial -->
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <script>
-                                                                                document.addEventListener("DOMContentLoaded", function () {
-                                                                                    const volverBtn = document.getElementById("ver");
-                                                                                    volverBtn.addEventListener("click", function (e) {
-                                                                                        // Mostrar spinner
-                                                                                        document.getElementById("spinner").style.display = "block";
-                                                                                    });
+                                                                        </div>
+                                                                        <script>
+                                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                                const volverBtn = document.getElementById("ver");
+                                                                                volverBtn.addEventListener("click", function (e) {
+                                                                                    // Mostrar spinner
+                                                                                    document.getElementById("spinner").style.display = "block";
                                                                                 });
-                                                                                function verHistorial(button) {
-                                                                                    const camionId = button.getAttribute('data-id');
+                                                                            });
+                                                                            function verHistorial(button) {
+                                                                                const camionId = button.getAttribute('data-id');
 
-                                                                                    fetch(`/camion/detalle/${camionId}`)
-                                                                                            .then(response => {
-                                                                                                if (!response.ok) {
-                                                                                                    throw new Error("Error al obtener detalle");
-                                                                                                }
-                                                                                                return response.text();
-                                                                                            })
-                                                                                            .then(html => {
-                                                                                                document.getElementById("historialContenido").innerHTML = html;
-                                                                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
-                                                                                                modal.show();
-                                                                                            })
-                                                                                            .catch(error => {
-                                                                                                console.error("Error:", error);
-                                                                                                alert("No se pudo cargar el detalle del camión.");
-                                                                                            });
-                                                                                }
-
-
-                                                                                document.addEventListener("DOMContentLoaded", function () {
-                                                                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
-                                                                                        btn.addEventListener("click", function () {
-                                                                                            const id = this.getAttribute("data-id");
-
-                                                                                            fetch("/camion/detalle/" + id)
-                                                                                                    .then(response => response.text())
-                                                                                                    .then(html => {
-                                                                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
-                                                                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
-                                                                                                    })
-                                                                                                    .catch(error => console.error("Error al cargar detalle", error));
+                                                                                fetch(`/camion/detalle/${camionId}`)
+                                                                                        .then(response => {
+                                                                                            if (!response.ok) {
+                                                                                                throw new Error("Error al obtener detalle");
+                                                                                            }
+                                                                                            return response.text();
+                                                                                        })
+                                                                                        .then(html => {
+                                                                                            document.getElementById("historialContenido").innerHTML = html;
+                                                                                            const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                                                            modal.show();
+                                                                                        })
+                                                                                        .catch(error => {
+                                                                                            console.error("Error:", error);
+                                                                                            alert("No se pudo cargar el detalle del camión.");
                                                                                         });
+                                                                            }
+
+
+                                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                                document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                                                    btn.addEventListener("click", function () {
+                                                                                        const id = this.getAttribute("data-id");
+
+                                                                                        fetch("/camion/detalle/" + id)
+                                                                                                .then(response => response.text())
+                                                                                                .then(html => {
+                                                                                                    document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                                                                    new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                                                                })
+                                                                                                .catch(error => console.error("Error al cargar detalle", error));
                                                                                     });
                                                                                 });
+                                                                            });
 
-                                                                                $(document).ready(function () {
-                                                                                    $('#filtroForm').on('submit', function () {
-                                                                                        $('#loadingModal').modal('show');
-                                                                                    });
+                                                                            $(document).ready(function () {
+                                                                                $('#filtroForm').on('submit', function () {
+                                                                                    $('#loadingModal').modal('show');
                                                                                 });
-                                                                                $(document).ready(function () {
-                                                                                    $('#exportaForm').on('submit', function () {
-                                                                                        $('#loadingModal').modal('show');
-                                                                                    });
+                                                                            });
+                                                                            $(document).ready(function () {
+                                                                                $('#exportaForm').on('submit', function () {
+                                                                                    $('#loadingModal').modal('show');
                                                                                 });
+                                                                            });
 
-                                                                            </script>
-                                                                            <script>
-                                                                                function startExport(event) {
-                                                                                    event.preventDefault();
+                                                                        </script>
+                                                                        <script>
+                                                                            function startExport(event) {
+                                                                                event.preventDefault();
 
-                                                                                    const modal = document.getElementById('loadingModalExport');
-                                                                                    modal.style.display = 'block';
+                                                                                const modal = document.getElementById('loadingModalExport');
+                                                                                modal.style.display = 'block';
 
-                                                                                    const idCamion = document.getElementById('idCamion').value;
-                                                                                    const idTipo = document.getElementById('idTipo').value;
+                                                                                const idCamion = document.getElementById('idCamion').value;
+                                                                                const idTipo = document.getElementById('idTipo').value;
 
-                                                                                    const url = `/documentacion/exportaCamiones?idCamion=${idCamion}&idTipo=${idTipo}`;
+                                                                                const url = `/documentacion/exportaCamiones?idCamion=${idCamion}&idTipo=${idTipo}`;
 
-                                                                                    fetch(url, {method: 'POST'})
-                                                                                            .then(response => {
-                                                                                                const contentDisposition = response.headers.get('Content-Disposition');
-                                                                                                let fileName = 'exportacion.xlsx';
+                                                                                fetch(url, {method: 'POST'})
+                                                                                        .then(response => {
+                                                                                            const contentDisposition = response.headers.get('Content-Disposition');
+                                                                                            let fileName = 'exportacion.xlsx';
 
-                                                                                                if (contentDisposition) {
-                                                                                                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                                                                                                    if (match && match[1]) {
-                                                                                                        fileName = match[1];
-                                                                                                    }
+                                                                                            if (contentDisposition) {
+                                                                                                const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                                                                                                if (match && match[1]) {
+                                                                                                    fileName = match[1];
                                                                                                 }
+                                                                                            }
 
-                                                                                                return response.blob().then(blob => ({blob, fileName}));
-                                                                                            })
-                                                                                            .then(({ blob, fileName }) => {
-                                                                                                const downloadUrl = window.URL.createObjectURL(blob);
-                                                                                                const a = document.createElement('a');
-                                                                                                a.href = downloadUrl;
-                                                                                                a.download = fileName;
-                                                                                                document.body.appendChild(a);
-                                                                                                a.click();
-                                                                                                a.remove();
-                                                                                            })
-                                                                                            .catch(error => {
-                                                                                                console.error('Error:', error);
-                                                                                                alert('Error durante la exportación.');
-                                                                                            })
-                                                                                            .finally(() => {
-                                                                                                modal.style.display = 'none';
-                                                                                            });
-                                                                                }
+                                                                                            return response.blob().then(blob => ({blob, fileName}));
+                                                                                        })
+                                                                                        .then(({ blob, fileName }) => {
+                                                                                            const downloadUrl = window.URL.createObjectURL(blob);
+                                                                                            const a = document.createElement('a');
+                                                                                            a.href = downloadUrl;
+                                                                                            a.download = fileName;
+                                                                                            document.body.appendChild(a);
+                                                                                            a.click();
+                                                                                            a.remove();
+                                                                                        })
+                                                                                        .catch(error => {
+                                                                                            console.error('Error:', error);
+                                                                                            alert('Error durante la exportación.');
+                                                                                        })
+                                                                                        .finally(() => {
+                                                                                            modal.style.display = 'none';
+                                                                                        });
+                                                                            }
 
-                                                                            </script>
-                                                                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                                            </body>
-                                                                            </html>
+                                                                        </script>
+                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                        </body>
+                                                                        </html>

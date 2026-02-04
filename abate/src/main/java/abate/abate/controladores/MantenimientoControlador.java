@@ -1203,34 +1203,54 @@ public class MantenimientoControlador {
     }
 
     @GetMapping("/listarHistorialCamionAdmin")
-    public String listarHistorialCamionAdmin(@RequestParam Long id, @RequestParam(required = false) Long idCamion, ModelMap modelo) {
+    public String listarHistorialCamionAdmin(@RequestParam Long id, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo) {
 
+        Boolean flag = false;
+        
         List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarHistorialCamion(id);
 
         Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                 .sorted(Comparator.comparing(Mantenimiento::getFecha).reversed())
                 .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+        
+         if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
 
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("camion", camionServicio.buscarCamion(id));
-        modelo.put("idCamion", idCamion);
+        modelo.put("idCamion", id);
+        modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
+        modelo.put("flag", flag);
 
         return "mantenimiento_listarHistorialCamionAdmin.html";
 
     }
 
     @GetMapping("/listarHistorialAcopladoAdmin")
-    public String listarHistorialAcopladoAdmin(@RequestParam Long id, @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
+    public String listarHistorialAcopladoAdmin(@RequestParam Long id, @RequestParam(required = false) Long idTipo,
+            @RequestParam String clase, ModelMap modelo) {
+        
+        Boolean flag = false;
 
         List<Mantenimiento> mantenimientos = mantenimientoServicio.buscarHistorialAcoplado(id);
 
         Map<String, List<Mantenimiento>> mantenimientoPorTipo = mantenimientos.stream()
                 .sorted(Comparator.comparing(Mantenimiento::getFecha).reversed())
                 .collect(Collectors.groupingBy(doc -> doc.getTipoMantenimiento().getNombre()));
+        
+        if (!mantenimientos.isEmpty()) {
+                flag = true;
+            }
 
         modelo.put("mantenimientos", mantenimientoPorTipo);
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
-        modelo.put("idAcoplado", idAcoplado);
+        modelo.put("idAcoplado", id);
+        modelo.put("idTipo", idTipo);
+        modelo.put("clase", clase);
+        modelo.put("flag", flag);
 
         return "mantenimiento_listarHistorialAcopladoAdmin.html";
 
@@ -2165,7 +2185,7 @@ public class MantenimientoControlador {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         sb.append("<thead><tr>"
-                + "<th>Dominio</th>"
+                + "<th>Vehículo</th>"
                 + "<th>Tipo Mantenimiento</th>"
                 + "<th>Fecha</th>"
                 + "<th>Km Mantenimiento</th>"
@@ -2181,9 +2201,9 @@ public class MantenimientoControlador {
             for (Mantenimiento mantenimiento : mantenimientos) {
                 String dominio = "";
                 if (mantenimiento.getAcoplado() != null) {
-                    dominio = mantenimiento.getAcoplado().getDominio();
+                    dominio = mantenimiento.getAcoplado().getDominio()+' '+mantenimiento.getAcoplado().getMarca()+' '+mantenimiento.getAcoplado().getModelo();
                 } else if (mantenimiento.getCamion() != null) {
-                    dominio = mantenimiento.getCamion().getDominio();
+                    dominio = mantenimiento.getCamion().getDominio()+' '+mantenimiento.getCamion().getMarca()+' '+mantenimiento.getCamion().getModelo();
                 }
                 sb.append("<tr><td>").append(dominio).append("</td>"
                         + "<td>").append(mantenimiento.getTipoMantenimiento().getNombre()).append("</td>"
