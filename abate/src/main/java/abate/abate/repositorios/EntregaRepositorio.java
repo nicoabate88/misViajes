@@ -30,4 +30,7 @@ public interface EntregaRepositorio extends JpaRepository<Entrega, Long> {
 
     ArrayList<Entrega> findByFechaBetweenAndChoferId(Date desde, Date hasta, Long idChofer);
 
+    @Query("SELECT e FROM Entrega e LEFT JOIN FETCH e.valores WHERE e.id = :id")
+    Entrega findByIdWithValores(@Param("id") Long id);
+
 }

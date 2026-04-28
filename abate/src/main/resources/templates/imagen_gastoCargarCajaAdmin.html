@@ -10,7 +10,7 @@
                                 <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" type="button" th:href="@{/gasto/mostrarAdminCaja/__${gasto.id}__}">
+                                            <a title="Volver" type="button" th:href="@{/caja/mostrarTransaccionAdmin(id=${idTransaccion}, idCaja=${idCaja}, desde=${desde}, hasta=${hasta})}">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -29,6 +29,10 @@
 
                                     <form th:action="@{/imagen/cargaGastoCajaAdmin}" method="POST" enctype="multipart/form-data" onsubmit="mostrarCargando()">
                                         <input hidden th:value="${gasto.id}" name="id"> 
+                                        <input hidden th:value="${idTransaccion}" name="idTransaccion">
+                                            <input hidden th:value="${idCaja}" name="idCaja">
+                                                    <input hidden th:value="${desde}" name="desde">
+                                                        <input hidden th:value="${hasta}" name="hasta">
                                             <div class="col-12 mb-5">
                                                 <label for="file" id="darkblue">Cargar imagen de Gasto</label>
                                                 <input type="file" id="file" name="file" accept="image/*" required>
@@ -42,7 +46,7 @@
                                                 <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Cargar Imagen">Cargar</button>
                                             </div>
                                             <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" th:href="@{/gasto/mostrarAdminCaja/__${gasto.id}__}">Cancelar</a>
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" title="Cancelar" th:href="@{/caja/mostrarTransaccionAdmin(id=${idTransaccion}, idCaja=${idCaja}, desde=${desde}, hasta=${hasta})}">Cancelar</a>
                                             </div>
                                     </form>
                                 </div>

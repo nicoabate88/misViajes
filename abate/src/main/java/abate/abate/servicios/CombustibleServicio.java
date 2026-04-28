@@ -47,9 +47,12 @@ public class CombustibleServicio {
         }
 
         Date f = convertirFecha(fecha);
+        
+        Long idCarga = buscarUltimoIdOrg(idOrg);
 
         Combustible carga = new Combustible();
 
+        carga.setIdCarga(idCarga + 1);
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
         carga.setKmCarga(km);
@@ -87,10 +90,13 @@ public class CombustibleServicio {
             Azul ultimoAzul = azulRepositorio.ultimaCargaAzul(idOrg);
             carga.setAzul(ultimoAzul);
         }
+        
         if (idAcoplado != null){
             Acoplado acoplado = acopladoRepositorio.getById(idAcoplado);
             carga.setAcoplado(acoplado);
         } 
+        
+        Long idCarga = buscarUltimoIdOrg(idOrg);
 
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
@@ -103,6 +109,7 @@ public class CombustibleServicio {
         carga.setConsumo(consumoRed);
         carga.setEstado("PENDIENTE");
         carga.setCamion(camion);
+        carga.setIdCarga(idCarga + 1);
 
         if (completo.equalsIgnoreCase("NO")) {
             carga.setCompleto("NO");
@@ -114,6 +121,25 @@ public class CombustibleServicio {
         }
 
         combustibleRepositorio.save(carga);
+
+    }
+    
+    public Long buscarUltimoIdOrg(Long idOrg) {
+
+        Combustible carga = combustibleRepositorio.findTopByIdOrgOrderByIdDesc(idOrg);
+        
+        if (carga != null) {
+
+            return carga.getIdCarga();
+
+        } else {
+
+            int ultimo = 0;
+            Long primero = Long.valueOf(ultimo);
+
+            return primero;
+
+        }
 
     }
 
@@ -149,6 +175,9 @@ public class CombustibleServicio {
             carga.setAcoplado(acoplado);
         } 
 
+        Long idCarga = buscarUltimoIdOrg(idOrg);
+        
+        carga.setIdCarga(idCarga + 1);
         carga.setIdOrg(idOrg);
         carga.setFechaCarga(f);
         carga.setLitro(litros);
@@ -602,13 +631,7 @@ public class CombustibleServicio {
 
         return consumo;
     }
-/*
-    public Long buscarUltimo(Long idOrg) {
 
-        return combustibleRepositorio.ultimaCarga(idOrg);
-
-    }
-    */
     public Combustible buscarUltimo(Long idOrg) {
 
         return combustibleRepositorio.findTopByIdOrgOrderByIdDesc(idOrg);

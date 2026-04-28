@@ -56,7 +56,16 @@
                                                                 <input type="date" id="fechaAnterior" hidden th:value="${fechaAnterior}"> 
 
                                                                     <input hidden id="kmAnterior" th:value="${carga.kmAnterior}">
-
+                                                                        <div class="row">
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="id" class="form-label text-secondary">ID</label>
+                                                                                <input type="text" class="form-control" id="id" th:value="${carga.idCarga}" readonly>
+                                                                            </div>
+                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                                                <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                                                <input type="date" class="form-control" id="fecha" th:value="${carga.fechaCarga}" name="fecha" required>
+                                                                            </div>
+                                                                        </div>
                                                                         <div class="row">
                                                                             <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
                                                                                 <label for="chofer" class="form-floting text-secondary">Camión</label>
@@ -67,12 +76,6 @@
                                                                                 <input type="text" class="form-control" id="kmAnterior" th:value="${#numbers.formatDecimal(carga.kmAnterior, 0, 'POINT', 1, 'COMMA')}" disabled readonly>
                                                                             </div>
                                                                             <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                                                <label for="fecha" class="form-label text-secondary">Fecha*</label>
-                                                                                <input type="date" class="form-control" id="fecha" th:value="${carga.fechaCarga}" name="fecha" required>
                                                                             </div>
                                                                         </div>
                                                                         <div class="row">

@@ -35,7 +35,7 @@ public class TipoMantenimiento {
         CAMION, ACOPLADO,
     }
     
-        public enum Clase {
+    public enum Clase {
     PREVENTIVO, CORRECTIVO
     }
 

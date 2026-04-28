@@ -23,9 +23,32 @@
                             </div>
                             <div class="container mb-2">   
                                 <div class="card border-secondary p-3" id="color-card">         
-                                    <h6 th:text="'Importe: $'+${#numbers.formatDecimal(importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                    <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}"></h6>
+                                    <h6 th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                    <h6 id="dimgray" th:text="'Importe: $'+${#numbers.formatDecimal(importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                     <p id="dimgray" th:text="'Observación: '+${entrega.observacion}"></p>
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-hover table-sm">
+                                            <thead>
+                                                <tr id="darkblue">
+                                                    <td class="text-center">Tipo</td>
+                                                    <td class="text-center">Importe</td>
+                                                    <td class="text-center">Observación</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody th:each="valor : ${entrega.valores}">
+                                                <tr id="dimgray">
+                                                    <td class="text-center" th:text="${valor.tipo}"></td>
+                                                    <td class="text-center" th:text="'$'+${#numbers.formatDecimal(valor.importe, 0, 'POINT', 0, 'POINT')}"></td>
+                                                    <td class="text-center" th:text="${valor.observacion}"></td>
+                                                </tr>
+                                            </tbody>
+                                            <tr> 
+                                                <th class="text-center" id="dimgray">TOTAL</th>
+                                                <th class="text-center" id="dimgray" th:text="'$'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 0, 'POINT')}"></th>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div> 
                                 </div>
                                 <br>
                                     <div class="text-center mb-2">

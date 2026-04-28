@@ -37,7 +37,7 @@ public interface NeumaticoRepositorio extends JpaRepository<Neumatico, Long> {
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'DEPOSITO' AND n.estado = 'USADO' AND n.idOrg = :id")
     List<Neumatico> findByDepositoUsado(@Param("id") Long id);
     
-    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'DEPOSITO' AND n.estado = 'RECAPADO' AND n.idOrg = :id")
+    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'DEPOSITO' AND n.estado IN ('RECAPADO', '+RECAPADO') AND n.idOrg = :id")
     List<Neumatico> findByDepositoRecapado(@Param("id") Long id);
     
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'COLOCADO' AND n.idOrg = :id")
@@ -49,7 +49,7 @@ public interface NeumaticoRepositorio extends JpaRepository<Neumatico, Long> {
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'COLOCADO' AND n.estado = 'USADO' AND n.idOrg = :id")
     List<Neumatico> findByColocadoUsado(@Param("id") Long id);
     
-    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'COLOCADO' AND n.estado = 'RECAPADO' AND n.idOrg = :id")
+    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'COLOCADO' AND n.estado IN ('RECAPADO', '+RECAPADO') AND n.idOrg = :id")
     List<Neumatico> findByColocadoRecapado(@Param("id") Long id);
     
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'AUXILIO' AND n.idOrg = :id")
@@ -61,7 +61,7 @@ public interface NeumaticoRepositorio extends JpaRepository<Neumatico, Long> {
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'AUXILIO' AND n.estado = 'USADO' AND n.idOrg = :id")
     List<Neumatico> findByAuxilioUsado(@Param("id") Long id);
     
-    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'AUXILIO' AND n.estado = 'RECAPADO' AND n.idOrg = :id")
+    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'AUXILIO' AND n.estado IN ('RECAPADO', '+RECAPADO') AND n.idOrg = :id")
     List<Neumatico> findByAuxilioRecapado(@Param("id") Long id);
     
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'EN RECAPADO' AND n.idOrg = :id")
@@ -73,7 +73,7 @@ public interface NeumaticoRepositorio extends JpaRepository<Neumatico, Long> {
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'EN RECAPADO' AND n.estado = 'USADO' AND n.idOrg = :id")
     List<Neumatico> findByEnRecapadoUsado(@Param("id") Long id);
     
-    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'EN RECAPADO' AND n.estado = 'RECAPADO' AND n.idOrg = :id")
+    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'EN RECAPADO' AND n.estado IN ('RECAPADO', '+RECAPADO') AND n.idOrg = :id")
     List<Neumatico> findByEnRecapadoRecapado(@Param("id") Long id);
     
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'FUERA DE SERVICIO' AND n.idOrg = :id")
@@ -85,10 +85,10 @@ public interface NeumaticoRepositorio extends JpaRepository<Neumatico, Long> {
     @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'FUERA DE SERVICIO' AND n.estado = 'USADO' AND n.idOrg = :id")
     List<Neumatico> findByFueraServicioUsado(@Param("id") Long id);
     
-    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'FUERA DE SERVICIO' AND n.estado = 'RECAPADO' AND n.idOrg = :id")
+    @Query("SELECT n FROM Neumatico n WHERE n.ubicacion = 'FUERA DE SERVICIO' AND n.estado IN ('RECAPADO', '+RECAPADO') AND n.idOrg = :id")
     List<Neumatico> findByFueraServicioRecapado(@Param("id") Long id);
     
-    @Query("SELECT n FROM Neumatico n WHERE n.estado = 'RECAPADO' AND n.idOrg = :id")
+    @Query("SELECT n FROM Neumatico n WHERE n.estado IN ('RECAPADO', '+RECAPADO') AND n.idOrg = :id")
     List<Neumatico> findByRecapado(@Param("id") Long id);
     
     @Query("SELECT n FROM Neumatico n WHERE n.estado = 'NUEVO' AND n.idOrg = :id")

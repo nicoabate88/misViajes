@@ -39,6 +39,7 @@
                                             <label for="camion" class="form-floting">Camión</label>  
                                             <select class="form-control border-secondary" id="camion" name="id">
                                                 <option selected th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
+                                                <option th:value=null>Todos</option>
                                                 <option th:each="camion : ${camiones}"
                                                         th:value="${camion.id}"
                                                         th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
@@ -57,6 +58,8 @@
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
                                         <h6 th:text="'Dominio '+${camion.dominio}"></h6>
                                     <h6 class='mb-2' id="dimgray" th:text="'Marca '+${camion.marca}+' Modelo '+${camion.modelo}"></h6>
+                                    <p class="mb-1" th:if="${camion.acoplado} != null" id="dimgray" th:text="'Acoplado '+${camion.acoplado.dominio}+' - '+${camion.acoplado.marca}+' '+${camion.acoplado.modelo}"></p>                                             
+                                    <p class="mb-1 text-danger" th:if="${camion.acoplado} == null" id="dimgray">Sin Acoplado Asociado</p>
                                     <h6 th:if="${camion.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${camion.estado}"></h6>
                                     <h6 th:if="${camion.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${camion.estado}"></h6>
                                     <p id="dimgray" class="mb-1" th:text="'Carga de Úrea '+${camion.azul}"></p>

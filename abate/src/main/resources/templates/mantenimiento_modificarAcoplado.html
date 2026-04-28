@@ -7,12 +7,12 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         <script>
                             window.onload = function () {
-                                var fechaActual = new Date();
-                                var dia = String(fechaActual.getDate()).padStart(2, '0');
-                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-                                var anio = fechaActual.getFullYear();
-                                var fechaFormateada = anio + '-' + mes + '-' + dia;
-                                document.getElementById('fecha').max = fechaFormateada;
+                            var fechaActual = new Date();
+                            var dia = String(fechaActual.getDate()).padStart(2, '0');
+                            var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                            var anio = fechaActual.getFullYear();
+                            var fechaFormateada = anio + '-' + mes + '-' + dia;
+                            document.getElementById('fecha').max = fechaFormateada;
                             };
                         </script>
                         </head>
@@ -41,180 +41,221 @@
                             <div class="container mb-2">  
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form id="formulario" th:action="@{/mantenimiento/modifica}" method="POST">
-
-                                        <input hidden id="idMantenimiento" th:value="${mantenimiento.id}" name="id">
-                                            <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                    <label for="aplicaA" class="form-floting text-secondary">Entidad*</label>
-                                                    <select class="form-control text-secondary" id="aplicaA" required>
-                                                        <option selected th:text="${mantenimiento.aplicaA}" th:value="${mantenimiento.aplicaA}"></option>
-                                                    </select>
+                                        <input hidden id="kmActual" th:value="${kmActual}">
+                                            <input hidden id="idMantenimiento" th:value="${mantenimiento.id}" name="id">
+                                                <div class="row">   
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                        <label for="tipo" class="form-floting text-secondary">Acoplado*</label>
+                                                        <select class="form-control text-secondary" id="tipo" required>
+                                                            <option selected th:text="${mantenimiento.acoplado.dominio}+' - '+${mantenimiento.acoplado.marca}+' '+${mantenimiento.acoplado.modelo}" 
+                                                                    th:value="${mantenimiento.acoplado.id}"></option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                        <label for="tipo" class="form-floting text-secondary">Tipo*</label>
+                                                        <select class="form-control text-secondary" id="tipo" required>
+                                                            <option selected th:text="${mantenimiento.tipoMantenimiento.nombre}" 
+                                                                    th:value="${mantenimiento.tipoMantenimiento.id}"
+                                                                    th:attr="data-clase=${mantenimiento.tipoMantenimiento.clase}"></option>
+                                                        </select>
+                                                    </div>                                 
                                                 </div>
-                                            </div>
-                                            <div class="row">   
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                    <label for="tipo" class="form-floting text-secondary">Acoplado*</label>
-                                                    <select class="form-control text-secondary" id="tipo" required>
-                                                        <option selected th:text="${mantenimiento.acoplado.dominio}+' - '+${mantenimiento.acoplado.marca}+' '+${mantenimiento.acoplado.modelo}" 
-                                                                th:value="${mantenimiento.acoplado.id}"></option>
-                                                    </select>
+                                                <div class="row">
+                                                    <div class="col-12 col-sm-12 col-md-12 col-lg-10 col-xl-10 mb-2">
+                                                        <label for="obs" class="form-label text-secondary">Observación</label>
+                                                        <textarea class="form-control text-secondary" id="obs" name="observacion" rows="2" th:text="${mantenimiento.observacion}" maxlength="150" size="150"></textarea>
+                                                    </div>  
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                                    <label for="tipo" class="form-floting text-secondary">Tipo*</label>
-                                                    <select class="form-control text-secondary" id="tipo" required>
-                                                        <option selected th:text="${mantenimiento.tipoMantenimiento.nombre}" 
-                                                                th:value="${mantenimiento.tipoMantenimiento.id}"></option>
-                                                    </select>
-                                                </div>                                 
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-12 col-sm-12 col-md-12 col-lg-10 col-xl-10 mb-2">
-                                                    <label for="obs" class="form-label text-secondary">Observación</label>
-                                                    <textarea class="form-control text-secondary" id="obs" name="observacion" rows="2" th:text="${mantenimiento.observacion}" maxlength="150" size="150"></textarea>
-                                                </div>  
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
-                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
-                                                    <input type="date" class="form-control text-secondary" id="fecha" th:value="${mantenimiento.fecha}"  name="fecha" required>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-5">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
-                                                    <label for="kmInicial" class="form-label text-secondary">Km Mantenimiento*</label> 
-                                                    <div class="input-group"> 
-                                                        <span class="input-group-text text-secondary">km</span> 
-                                                        <input type="number" class="form-control text-secondary" id="kmInicial" 
-                                                               th:value="${mantenimiento.km}" name="km" required oninput="calcularKm()"> 
-                                                    </div> 
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
-                                                    <label for="kmVigencia" class="form-label text-secondary">Km Vigencia*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-light text-success">km</span>
-                                                        <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${mantenimiento.kmVigencia}
-                                                               oninput="calcularKmAlarma()" required>
+                                                <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                        <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                        <input type="date" class="form-control text-secondary" id="fecha" th:value="${mantenimiento.fecha}"  name="fecha" required>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                        <label for="anterior" class="form-floting text-secondary">KM Actual Acoplado</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">KM</span>
+                                                            <input type="text" class="form-control" id="anterior" th:value="${#numbers.formatDecimal(kmActual, 0, 'POINT', 1, 'COMMA')}" disabled readonly>
+                                                        </div>  
                                                     </div>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
-                                                    <label for="kmProximo" class="form-label text-secondary">Km Próximo*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text text-secondary">km</span>
-                                                        <input type="number" class="form-control text-secondary" id="kmProximo" th:value="${mantenimiento.kmProximo}"
-                                                               name="kmProximo" oninput="calcularKmAlarma()" required>
+                                                <div class="row mb-5">
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                                        <label for="kmVigencia" class="form-label text-secondary">Km Vigencia*</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text bg-light text-success">km</span>
+                                                            <input type="number" class="form-control bg-light text-success" id="kmVigencia" th:value=${mantenimiento.kmVigencia}
+                                                                   oninput="calcularKmAlarma()" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2"> 
+                                                        <label for="kmProximo" class="form-label text-secondary">Km Próximo*</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text text-secondary">km</span>
+                                                            <input type="number" class="form-control text-secondary" id="kmProximo" th:value="${mantenimiento.kmProximo}"
+                                                                   name="kmProximo" oninput="calcularKmAlarma()" readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
+                                                        <label for="kmAlarma" class="form-label text-secondary">Km Alarma*</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text bg-light text-danger">km</span>
+                                                            <input type="number" class="form-control bg-light text-danger" id="kmAlarma" th:value="${mantenimiento.kmAlarma}"
+                                                                   name="kmAlarma" required>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3">
-                                                    <label for="kmAlarma" class="form-label text-secondary">Km Alarma*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text bg-light text-danger">km</span>
-                                                        <input type="number" class="form-control bg-light text-danger" id="kmAlarma" th:value="${mantenimiento.kmAlarma}"
-                                                               name="kmAlarma" required>
+                                                <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                                    <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                </div>
+                                                <div class="text-center mb-2">
+                                                    <button id="modifica" class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Mantenimiento">Modificar</button>
+                                                </div>
+                                                <div class="text-center">
+                                                    <a class="btn btn-primary bg-primary border-light w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
+                                                </div> 
+                                                </form>
+                                                </div>
+                                                </div>
+                                                <div id="spinner" class="modal" style="display: none;">
+                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                            <span class="sr-only">Cargando...</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
-                                                <h6 id="white" th:text="${error}"></h6>                                                                             
-                                            </div>
-                                            <div class="text-center mb-2">
-                                                <button id="modifica" class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Mantenimiento">Modificar</button>
-                                            </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
-                                            </div> 
-                                    </form>
-                                </div>
-                            </div>
-                            <div id="spinner" class="modal" style="display: none;">
-                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                        <span class="sr-only">Cargando...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <script>
-                                document.getElementById('kmInicial').addEventListener('keydown', function (event) {
-                                    if (event.key === '.' || event.key === ',') {
-                                        event.preventDefault();
-                                    }
-                                });
-                                document.getElementById('kmInicial').addEventListener('input', function () {
-                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
-                                });
+                                                <script>
+                                                    document.getElementById('kmVigencia').addEventListener('keydown', function (event) {
+                                                    if (event.key === '.' || event.key === ',') {
+                                                    event.preventDefault();
+                                                    }
+                                                    });
 
-                                document.getElementById('kmProximo').addEventListener('keydown', function (event) {
-                                    if (event.key === '.' || event.key === ',') {
-                                        event.preventDefault();
-                                    }
-                                });
+                                                    document.getElementById('kmVigencia').addEventListener('input', function () {
+                                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                    });
 
-                                document.getElementById('kmProximo').addEventListener('input', function () {
-                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
-                                });
-                                document.getElementById('kmAlarma').addEventListener('keydown', function (event) {
-                                    if (event.key === '.' || event.key === ',') {
-                                        event.preventDefault();
-                                    }
-                                });
-                                document.getElementById('kmAlarma').addEventListener('input', function () {
-                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
-                                });
+                                                    document.getElementById('kmAlarma').addEventListener('keydown', function (event) {
+                                                    if (event.key === '.' || event.key === ',') {
+                                                    event.preventDefault();
+                                                    }
+                                                    });
+                                                    document.getElementById('kmAlarma').addEventListener('input', function () {
+                                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                    });
 
-                                function calcularKm() {
-                                    const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
-                                    const kmProximo = parseInt(document.getElementById('kmProximo').value) || 0;
-                                    const kmVigencia = kmProximo - kmInicial;
+                                                    function calcularKm() {
+                                                    const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
+                                                    const kmProximo = parseInt(document.getElementById('kmProximo').value) || 0;
+                                                    const kmVigencia = kmProximo - kmInicial;
 
-                                    document.getElementById('kmVigencia').value = kmVigencia >= 0 ? kmVigencia : '';
+                                                    document.getElementById('kmVigencia').value = kmVigencia >= 0 ? kmVigencia : '';
 
-                                }
+                                                    }
 
-                                function calcularKmAlarma() {
-                                    const kmInicial = parseInt(document.getElementById('kmInicial').value) || 0;
-                                    const kmVigencia = parseInt(document.getElementById('kmVigencia').value) || 0;
-                                    const kmProximo = kmInicial + kmVigencia;
-                                    const kmAlarma = kmProximo - 1000;
+                                                    function calcularKmAlarma() {
 
-                                    document.getElementById('kmAlarma').value = kmAlarma >= 0 ? kmAlarma : '';
-                                    document.getElementById('kmProximo').value = kmProximo >= 0 ? kmProximo : '';
-                                }
+                                                    const kmActual = parseInt(document.getElementById('kmActual').value, 10) || 0;
+                                                    const kmVigencia = parseInt(document.getElementById('kmVigencia').value, 10);
 
-                                document.getElementById('formulario').addEventListener('submit', function (event) {
+                                                    // Si kmVigencia es exactamente 0
+                                                    if (kmVigencia === 0) {
+                                                    document.getElementById('kmProximo').value = kmActual;
+                                                    document.getElementById('kmAlarma').value = kmActual;
+                                                    return;
+                                                    }
 
-                                    const km = parseInt(document.getElementById('km').value);
-                                    const kmInicial = parseInt(document.getElementById('kmInicial').value);
-                                    const kmProximo = parseInt(document.getElementById('kmProximo').value);
-                                    const kmAlarma = parseInt(document.getElementById('kmAlarma').value);
-                                    /*
-                                     if (km > kmInicial) {
-                                     alert('Km Actual debe ser mayor o igual a ' + km);
-                                     event.preventDefault();
-                                     return;
-                                     }
-                                     */
-                                    if (kmInicial >= kmProximo) {
-                                        alert('KM Próximo Mantenimiento debe ser mayor que KM Actual');
-                                        event.preventDefault();
-                                        return;
-                                    }
+                                                    // Si está vacío o no es número, limpiamos
+                                                    if (isNaN(kmVigencia)) {
+                                                    document.getElementById('kmProximo').value = '';
+                                                    document.getElementById('kmAlarma').value = '';
+                                                    return;
+                                                    }
 
-                                    if (kmProximo < kmAlarma) {
-                                        alert('KM Alarma debe ser menor que KM Próximo Mantenimiento');
-                                        event.preventDefault();
-                                        return;
-                                    }
+                                                    const kmProximo = kmActual + kmVigencia;
+                                                    const kmAlarma = kmProximo - 1000;
 
-                                    if (kmInicial >= kmAlarma) {
-                                        alert('KM Alarma debe ser mayor que KM Actual');
-                                        event.preventDefault();
-                                        return;
-                                    }
-                                    
-                                    document.getElementById("spinner").style.display = "block";
+                                                    document.getElementById('kmProximo').value = kmProximo > 0 ? kmProximo : '';
+                                                    document.getElementById('kmAlarma').value = kmAlarma > 0 ? kmAlarma : '';
+                                                    }
 
-                                });
-                            </script>
-                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                        </body>
-                        </html>
+                                                    document.getElementById('formulario').addEventListener('submit', function (event) {
+
+                                                    var selectTipo = document.getElementById('tipo');
+                                                    var opt = selectTipo ? selectTipo.options[selectTipo.selectedIndex] : null;
+
+                                                    var tipoClase = '';
+                                                    if (opt) {
+                                                    tipoClase = opt.getAttribute('data-clase') || '';
+                                                    }
+
+                                                    if (!tipoClase && opt) {
+                                                    var texto = (opt.text || '').toUpperCase();
+                                                    if (texto.indexOf('PREVENTIVO') !== -1)
+                                                    tipoClase = 'PREVENTIVO';
+                                                    else if (texto.indexOf('CORRECTIVO') !== -1)
+                                                    tipoClase = 'CORRECTIVO';
+                                                    }
+
+                                                    var kmInicialStr = document.getElementById('kmInicial').value;
+                                                    var kmVigenciaStr = document.getElementById('kmVigencia').value;
+                                                    var kmProximoStr = document.getElementById('kmProximo').value;
+                                                    var kmAlarmaStr = document.getElementById('kmAlarma').value;
+
+                                                    var kmInicial = Number(kmInicialStr);
+                                                    var kmVigencia = Number(kmVigenciaStr);
+                                                    var kmProximo = Number(kmProximoStr);
+                                                    var kmAlarma = Number(kmAlarmaStr);
+
+                                                    if (!kmInicialStr || isNaN(kmInicial) || kmInicial < 0) {
+                                                    alert('Debe ingresar un KM de mantenimiento válido');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+
+                                                    if (tipoClase === 'PREVENTIVO') {
+
+                                                    if (!kmVigenciaStr || isNaN(kmVigencia) || kmVigencia <= 0) {
+                                                    alert('KM Vigencia debe ser mayor a 0 para mantenimiento PREVENTIVO');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+
+                                                    if (!kmProximoStr || isNaN(kmProximo) || kmProximo <= 0) {
+                                                    alert('KM Próximo debe ser mayor a 0 para mantenimiento PREVENTIVO');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+
+                                                    if (!kmAlarmaStr || isNaN(kmAlarma) || kmAlarma <= 0) {
+                                                    alert('KM Alarma debe ser mayor a 0 para mantenimiento PREVENTIVO');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+
+                                                    if (kmInicial >= kmProximo) {
+                                                    alert('KM Próximo Mantenimiento debe ser mayor que KM Actual');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+
+                                                    if (kmProximo < kmAlarma) {
+                                                    alert('KM Alarma debe ser menor que KM Próximo Mantenimiento');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+
+                                                    if (kmInicial >= kmAlarma) {
+                                                    alert('KM Alarma debe ser mayor que KM Actual');
+                                                    event.preventDefault();
+                                                    return;
+                                                    }
+                                                    }
+
+                                                    document.getElementById("spinner").style.display = "block";
+                                                    });
+                                                </script>
+                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                </body>
+                                                </html>

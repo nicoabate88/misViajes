@@ -23,51 +23,51 @@ public interface OrdenDeTrabajoRepositorio extends JpaRepository<OrdenDeTrabajo,
 
     List<OrdenDeTrabajo> findByIdOrgAndEstadoIn(Long idOrg, List<OrdenDeTrabajo.Estado> estados);
     
-    List<OrdenDeTrabajo> findByIdOrgAndLugarAndEstadoIn(Long idOrg, String lugar, List<OrdenDeTrabajo.Estado> estados);
+    List<OrdenDeTrabajo> findByIdOrgAndProveedorIdAndEstadoIn(Long idOrg, Long idProveedor, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByIdOrgAndEstado(Long idOrg, OrdenDeTrabajo.Estado estado);
     
-    List<OrdenDeTrabajo> findByIdOrgAndLugarAndEstado(Long idOrg,String lugar, OrdenDeTrabajo.Estado estado);
+    List<OrdenDeTrabajo> findByIdOrgAndProveedorIdAndEstado(Long idOrg, Long idProveedor, OrdenDeTrabajo.Estado estado);
 
     List<OrdenDeTrabajo> findByIdOrg(Long idOrg);
     
-    List<OrdenDeTrabajo> findByIdOrgAndLugar(Long idOrg, String lugar);
+    List<OrdenDeTrabajo> findByIdOrgAndProveedorId(Long idOrg, Long idProveedor);
 
     List<OrdenDeTrabajo> findByCamionId(Long idCamion);
     
-    List<OrdenDeTrabajo> findByCamionIdAndLugar(Long idCamion, String lugar);
+    List<OrdenDeTrabajo> findByCamionIdAndProveedorId(Long idCamion, Long idProveedor);
 
     List<OrdenDeTrabajo> findByAcopladoId(Long idAcoplado);
     
-    List<OrdenDeTrabajo> findByAcopladoIdAndLugar(Long idAcoplado, String lugar);
+    List<OrdenDeTrabajo> findByAcopladoIdAndProveedorId(Long idAcoplado, Long idProveedor);
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoId(Long idCamion, Long idAcoplado);
     
-    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndLugar(Long idCamion, Long idAcoplado, String lugar);
+    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndProveedorId(Long idCamion, Long idAcoplado, Long idProveedor);
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndEstadoIn(Long idCamion, Long idAcoplado, List<OrdenDeTrabajo.Estado> estados);
     
-    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndLugarAndEstadoIn(Long idCamion, Long idAcoplado, String lugar, List<OrdenDeTrabajo.Estado> estados);
+    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndProveedorIdAndEstadoIn(Long idCamion, Long idAcoplado, Long idProveedor, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByCamionIdAndEstadoIn(Long idCamion, List<OrdenDeTrabajo.Estado> estados);
     
-    List<OrdenDeTrabajo> findByCamionIdAndLugarAndEstadoIn(Long idCamion, String lugar, List<OrdenDeTrabajo.Estado> estados);
+    List<OrdenDeTrabajo> findByCamionIdAndProveedorIdAndEstadoIn(Long idCamion, Long idProveedor, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByAcopladoIdAndEstadoIn(Long idAcoplado, List<OrdenDeTrabajo.Estado> estados);
     
-    List<OrdenDeTrabajo> findByAcopladoIdAndLugarAndEstadoIn(Long idAcoplado, String lugar, List<OrdenDeTrabajo.Estado> estados);
+    List<OrdenDeTrabajo> findByAcopladoIdAndProveedorIdAndEstadoIn(Long idAcoplado, Long idProveedor, List<OrdenDeTrabajo.Estado> estados);
 
     List<OrdenDeTrabajo> findByCamionIdAndEstado(Long idCamion, OrdenDeTrabajo.Estado estado);
     
-    List<OrdenDeTrabajo> findByCamionIdAndLugarAndEstado(Long idCamion, String lugar, OrdenDeTrabajo.Estado estado);
+    List<OrdenDeTrabajo> findByCamionIdAndProveedorIdAndEstado(Long idCamion, Long idProveedor, OrdenDeTrabajo.Estado estado);
 
     List<OrdenDeTrabajo> findByAcopladoIdAndEstado(Long idAcoplado, OrdenDeTrabajo.Estado estado);
     
-    List<OrdenDeTrabajo> findByAcopladoIdAndLugarAndEstado(Long idAcoplado, String lugar, OrdenDeTrabajo.Estado estado);
+    List<OrdenDeTrabajo> findByAcopladoIdAndProveedorIdAndEstado(Long idAcoplado, Long idProveedor, OrdenDeTrabajo.Estado estado);
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndEstado(Long idCamion, Long idAcoplado, OrdenDeTrabajo.Estado estado);
     
-     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndLugarAndEstado(Long idCamion, Long idAcoplado, String lugar, OrdenDeTrabajo.Estado estado);
+     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndProveedorIdAndEstado(Long idCamion, Long idAcoplado, Long idProveedor, OrdenDeTrabajo.Estado estado);
     
     OrdenDeTrabajo findTopByProveedorOrderByIdDesc(Proveedor proveedor);
 

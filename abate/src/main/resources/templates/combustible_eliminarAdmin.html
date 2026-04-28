@@ -23,15 +23,16 @@
                             </div>
                             <div class="container mb-2"> 
                                 <div class="card border-secondary p-3 mb-2" id="color-card">  
-                                    <h6 th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></h6>
-                                            <h6 class="text-dark" th:text="'Camión '+${carga.camion.dominio}+' - '+${carga.camion.marca}+' '+${carga.camion.modelo}"></h6>
-                                            <h6 class="text-dark" th:if="${carga.acoplado != null}" th:text="'Acoplado '+${carga.acoplado.dominio}+' - '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}"></h6>
-                                            <p class="mb-1" id="dimgray" th:text="'KM Carga '+${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}"></p>
-                                            <h6 class="mb-2" id="dimgray" th:text="'Km Recorrido: ' + ${#numbers.formatDecimal(carga.kmRecorrido, 0, 'POINT', 1, 'COMMA')}"></h6>
-                                            <p class="mb-1 text-dark" th:text="${carga.litro} + ' L - Tanque Lleno: ' + ${carga.completo}"></p>
-                                            <h6 class="mb-1" th:text="'Consumo: ' + ${carga.consumo} + ' L / 100 Km'"></h6>
-                                            <span id="dimgray" th:if="${carga.azul != null}" th:text="'Urea '+${carga.azul.litro}+' Lts '"></span>
-                                            <p class="mb-0" id="darkgray" th:if="${carga.chofer != null}" th:text="'Chofer '+${carga.chofer.nombre}"></p>
+                                    <h6 th:text="'Fecha ' + ${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}+' - ID'+${carga.idCarga}"></h6>
+                                    <h6>
+                                        <span class="text-dark" th:text="'Camión '+${carga.camion.dominio}+' '+${carga.camion.marca}+' '+${carga.camion.modelo}"></span>
+                                        <span class="text-dark" th:if="${carga.acoplado != null}" th:text="'- Acoplado '+${carga.acoplado.dominio}+' '+${carga.acoplado.marca}+' '+${carga.acoplado.modelo}"></span>
+                                    </h6>
+                                    <p class='mb-1' id="dimgray" th:text="'KM Carga '+${#numbers.formatDecimal(carga.kmCarga, 0, 'POINT', 1, 'COMMA')}+' - '+'Km Recorrido: ' + ${#numbers.formatDecimal(carga.kmRecorrido, 1, 'POINT', 1, 'COMMA')}"></p>
+                                    <h6 class="mb-1 text-dark" th:text="${carga.litro} + ' L - Tanque Lleno: ' + ${carga.completo}"></h6>
+                                    <h6 class="mb-1 text-success"><strong th:text="'✔ Consumo: ' + ${carga.consumo} + ' L / 100 Km'"></strong></h6>
+                                    <span id="dimgray" th:if="${carga.azul != null}" th:text="'Urea '+${carga.azul.litro}+' Lts '"></span>
+                                    <p class="mb-0" id="dimgray" th:if="${carga.chofer != null}" th:text="'Chofer '+${carga.chofer.nombre}"></p>
                                 </div>
                                 <div th:if="${error == null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">
                                     <h6 id="white">¿Seguro desea ELIMINAR esta Carga de Combustible?</h6>
@@ -56,12 +57,12 @@
                                 </div>
                             </div>
                             <script>
-                            document.addEventListener("DOMContentLoaded", function () {
-                                    const volverBtn = document.getElementById("elimina");
-                                    volverBtn.addEventListener("click", function (e) {
-                                        // Mostrar spinner
-                                        document.getElementById("spinner").style.display = "block";
-                                    });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                const volverBtn = document.getElementById("elimina");
+                                volverBtn.addEventListener("click", function (e) {
+                                // Mostrar spinner
+                                document.getElementById("spinner").style.display = "block";
+                                });
                                 });
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

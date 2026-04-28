@@ -39,6 +39,7 @@
                             <table class="table table-hover table-sm mb-0" id="dimgray">
                                 <thead>
                                     <tr>
+                                        <th class="text-center">ID</th>  
                                         <th class="text-center">Fecha</th>                                          
                                         <th class="text-center">Km Carga</th>
                                         <th class="text-center">Km Recorrido</th>
@@ -49,6 +50,7 @@
                                 </thead>
                                 <tbody th:each="carga : ${cargas}">
                                     <tr>
+                                        <td id="dimgray" class="text-center" th:text="${carga.idCarga}"></td>
                                         <td class="text-center" th:text="${#dates.format(carga.fechaCarga, 'dd-MM-yyyy')}"></td>
                                         <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmCarga, 1, 'POINT', 1, 'COMMA')}"></td>
                                         <td class="text-center" th:text="${#numbers.formatDecimal(carga.kmRecorrido, 1, 'POINT', 1, 'COMMA')}"></td>

@@ -73,7 +73,7 @@ public class ChoferServicio {
     private DocumentacionServicio documentacionServicio;
 
     @Transactional
-    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, Long idAcoplado, String caja, String cuenta,String verDocumentacion, String documentacion,
+    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, String caja, String cuenta,String verDocumentacion, String documentacion,
             String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String estado, String password, String password2) throws MiException {
 
         String nombreUsuarioMin = nombreUsuario.toLowerCase();
@@ -89,14 +89,6 @@ public class ChoferServicio {
                 camion = cam.get();
             }
             user.setCamion(camion);
-        }
-        if (idAcoplado != null) {
-            Acoplado acoplado = new Acoplado();
-            Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
-            if (acop.isPresent()) {
-                acoplado = acop.get();
-            }
-            user.setAcoplado(acoplado);
         }
 
         user.setIdOrg(idOrg);
@@ -123,7 +115,7 @@ public class ChoferServicio {
     }
 
     @Transactional
-    public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, Long idAcoplado, String verDocumentacion,  String documentacion, 
+    public void modificarChofer(Long id, String nombre, Long cuil, Long idCamion, String verDocumentacion,  String documentacion, 
             String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String estado) throws MiException {
 
         String nombreM = nombre.toUpperCase();
@@ -162,17 +154,6 @@ public class ChoferServicio {
             user.setCamion(camion);
         } else {
             user.setCamion(null);
-        }
-        
-        if (idAcoplado != 0) {
-            Acoplado acoplado = new Acoplado();
-            Optional<Acoplado> acop = acopladoRepositorio.findById(idAcoplado);
-            if (acop.isPresent()) {
-                acoplado = acop.get();
-            }
-            user.setAcoplado(acoplado);
-        } else {
-            user.setAcoplado(null);
         }
 
         user.setNombre(nombreM);
@@ -486,6 +467,7 @@ public class ChoferServicio {
             resumen.setGasto(resumen.getGasto() + gasto.getImporte());
             totalGeneral.setGasto(totalGeneral.getGasto() + gasto.getImporte());
         }
+        
         if(totalGeneral.getKmRecorrido() > 0){
         totalGeneral.setRentabilidad(totalGeneral.getNeto() / totalGeneral.getKmRecorrido());
         }

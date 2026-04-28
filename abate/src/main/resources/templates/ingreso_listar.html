@@ -27,8 +27,8 @@
                                         <div class="row">
                                             <div class="col-8">
                                                 <div class="card-body">
-                                                    <h6 th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                    <h6 id="dimgray" th:text="'Fecha '+${ingreso.fecha}+' - ID'+${ingreso.idIngreso}"></h6>
+                                                    <h6 th:text="'Fecha '+${ingreso.fecha}+' - ID'+${ingreso.idIngreso}"></h6>
+                                                    <h6 id="dimgray" th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                     <p id="dimgray" class="mb-1" th:text="'Caja de Chofer '+${ingreso.chofer.nombre}"></p>
                                                     <p class='mb-0' id="dimgray" th:text="${ingreso.observacion}"></p>
                                                 </div>

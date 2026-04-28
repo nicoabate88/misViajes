@@ -32,16 +32,10 @@ public class OrdenDeTrabajo {
     private Date fechaInicio;
     @Temporal(TemporalType.DATE)
     private Date fechaFin;
-    private Double duracion;
-    private String lugar;
     private String observacion;
     @OneToOne
     private Usuario usuario;
     private String responsable;
-    private String checkTaller;
-    private String checkMetalurgica;
-    private String checkAveria;
-    private String checkNogoya;
     @ManyToOne
     private Proveedor proveedor;
     @ManyToOne
@@ -62,7 +56,7 @@ public class OrdenDeTrabajo {
     public OrdenDeTrabajo() {
     }
 
-    public OrdenDeTrabajo(Long id, Long idOrden, Long idOrg, Date fechaAlta, Date fechaCierre, Date fechaInicio, Date fechaFin, Double duracion, String lugar, String observacion, Usuario usuario, String responsable, String checkTaller, String checkMetalurgica, String checkAveria, String checkNogoya, Proveedor proveedor, Camion camion, Acoplado acoplado, Usuario chofer, Estado estado) {
+    public OrdenDeTrabajo(Long id, Long idOrden, Long idOrg, Date fechaAlta, Date fechaCierre, Date fechaInicio, Date fechaFin, String observacion, Usuario usuario, String responsable, Proveedor proveedor, Camion camion, Acoplado acoplado, Usuario chofer, Estado estado) {
         this.id = id;
         this.idOrden = idOrden;
         this.idOrg = idOrg;
@@ -70,15 +64,9 @@ public class OrdenDeTrabajo {
         this.fechaCierre = fechaCierre;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.duracion = duracion;
-        this.lugar = lugar;
         this.observacion = observacion;
         this.usuario = usuario;
         this.responsable = responsable;
-        this.checkTaller = checkTaller;
-        this.checkMetalurgica = checkMetalurgica;
-        this.checkAveria = checkAveria;
-        this.checkNogoya = checkNogoya;
         this.proveedor = proveedor;
         this.camion = camion;
         this.acoplado = acoplado;
@@ -142,22 +130,6 @@ public class OrdenDeTrabajo {
         this.fechaFin = fechaFin;
     }
 
-    public Double getDuracion() {
-        return duracion;
-    }
-
-    public void setDuracion(Double duracion) {
-        this.duracion = duracion;
-    }
-
-    public String getLugar() {
-        return lugar;
-    }
-
-    public void setLugar(String lugar) {
-        this.lugar = lugar;
-    }
-
     public String getObservacion() {
         return observacion;
     }
@@ -180,38 +152,6 @@ public class OrdenDeTrabajo {
 
     public void setResponsable(String responsable) {
         this.responsable = responsable;
-    }
-
-    public String getCheckTaller() {
-        return checkTaller;
-    }
-
-    public void setCheckTaller(String checkTaller) {
-        this.checkTaller = checkTaller;
-    }
-
-    public String getCheckMetalurgica() {
-        return checkMetalurgica;
-    }
-
-    public void setCheckMetalurgica(String checkMetalurgica) {
-        this.checkMetalurgica = checkMetalurgica;
-    }
-
-    public String getCheckAveria() {
-        return checkAveria;
-    }
-
-    public void setCheckAveria(String checkAveria) {
-        this.checkAveria = checkAveria;
-    }
-
-    public String getCheckNogoya() {
-        return checkNogoya;
-    }
-
-    public void setCheckNogoya(String checkNogoya) {
-        this.checkNogoya = checkNogoya;
     }
 
     public Proveedor getProveedor() {
@@ -262,10 +202,5 @@ public class OrdenDeTrabajo {
         this.estado = estado;
     }
 
-    
-
-    
-    
-    
     
 }

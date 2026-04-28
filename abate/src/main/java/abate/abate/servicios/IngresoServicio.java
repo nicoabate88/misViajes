@@ -2,6 +2,7 @@ package abate.abate.servicios;
 
 import abate.abate.entidades.Ingreso;
 import abate.abate.entidades.Usuario;
+import abate.abate.entidades.ValorI;
 import abate.abate.repositorios.IngresoRepositorio;
 import abate.abate.repositorios.UsuarioRepositorio;
 import abate.abate.util.IngresoComparador;
@@ -10,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +28,12 @@ public class IngresoServicio {
     private IngresoRepositorio ingresoRepositorio;
 
     @Transactional
-    public void crearIngreso(Long idOrg, Long idChofer, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
+    public void crearIngreso(Long idOrg, Long idChofer, String fecha, List<ValorI> valores, String observacion, Usuario usuario) throws ParseException {
 
         Usuario chofer = new Usuario();
         Optional<Usuario> chof = usuarioRepositorio.findById(idChofer);
         if (chof.isPresent()) {
             chofer = chof.get();
-        }
-
-        Usuario usuario = new Usuario();
-        Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
-        if (user.isPresent()) {
-            usuario = user.get();
         }
 
         String obsMayusculas = observacion.toUpperCase();
@@ -50,9 +46,18 @@ public class IngresoServicio {
         ingreso.setChofer(chofer);
         ingreso.setFecha(f);
         ingreso.setObservacion(obsMayusculas);
-        ingreso.setImporte(importe);
         ingreso.setUsuario(usuario);
         ingreso.setIdIngreso(idIngreso + 1);
+
+        Double total = 0.0;
+
+        for (ValorI v : valores) {
+
+            ingreso.addValor(v);   // mantiene relación bidireccional
+            total += v.getImporte();
+        }
+
+        ingreso.setImporte(total);
 
         ingresoRepositorio.save(ingreso);
 
@@ -61,7 +66,7 @@ public class IngresoServicio {
     }
 
     @Transactional
-    public void modificarIngreso(Long idIngreso, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
+    public void modificarIngreso(Long idIngreso, String fecha, List<ValorI> nuevosValores, String observacion, Usuario usuario) throws ParseException {
 
         Ingreso ingreso = new Ingreso();
         Optional<Ingreso> ing = ingresoRepositorio.findById(idIngreso);
@@ -69,19 +74,23 @@ public class IngresoServicio {
             ingreso = ing.get();
         }
 
-        Usuario usuario = new Usuario();
-        Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
-        if (user.isPresent()) {
-            usuario = user.get();
-        }
-
         String obsMayusculas = observacion.toUpperCase();
         Date f = convertirFecha(fecha);
 
         ingreso.setFecha(f);
-        ingreso.setImporte(importe);
         ingreso.setObservacion(obsMayusculas);
         ingreso.setUsuario(usuario);
+
+        ingreso.getValores().clear();
+
+        Double total = 0.0;
+
+        for (ValorI v : nuevosValores) {
+            ingreso.addValor(v);
+            total += v.getImporte();
+        }
+
+        ingreso.setImporte(total);
 
         ingresoRepositorio.save(ingreso);
 
@@ -92,20 +101,11 @@ public class IngresoServicio {
     @Transactional
     public void eliminarIngreso(Long idIngreso) {
 
-        Ingreso ingreso = new Ingreso();
-        Optional<Ingreso> ing = ingresoRepositorio.findById(idIngreso);
-        if (ing.isPresent()) {
-            ingreso = ing.get();
-        }
+        Ingreso ingreso = ingresoRepositorio.getById(idIngreso);
 
         transaccionServicio.eliminarTransaccionIngreso(idIngreso);
 
-        ingreso.setChofer(null);
-        ingreso.setUsuario(null);
-
-        ingresoRepositorio.save(ingreso);
-
-        ingresoRepositorio.deleteById(idIngreso);
+        ingresoRepositorio.delete(ingreso);
 
     }
 
@@ -136,7 +136,8 @@ public class IngresoServicio {
 
     public Ingreso buscarIngreso(Long id) {
 
-        return ingresoRepositorio.getById(id);
+        return ingresoRepositorio.findByIdWithValores(id);
+
     }
 
     public ArrayList<Ingreso> buscarIngresos(Long id) {

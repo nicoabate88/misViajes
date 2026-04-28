@@ -3,15 +3,16 @@ package abate.abate.servicios;
 import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Recibo;
 import abate.abate.entidades.Usuario;
+import abate.abate.entidades.Valor;
 import abate.abate.repositorios.ClienteRepositorio;
 import abate.abate.repositorios.ReciboRepositorio;
-import abate.abate.repositorios.UsuarioRepositorio;
 import abate.abate.util.ReciboComparador;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,40 +24,36 @@ public class ReciboServicio {
     @Autowired
     private ClienteRepositorio clienteRepositorio;
     @Autowired
-    private UsuarioRepositorio usuarioRepositorio;
-    @Autowired
     private ReciboRepositorio reciboRepositorio;
     @Autowired
     private TransaccionServicio transaccionServicio;
 
     @Transactional
-    public void crearRecibo(Long idOrg, Long idCliente, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
+    public void crearRecibo(Long idOrg, Long idCliente, String fecha, List<Valor> valores, String observacion, Usuario usuario) throws ParseException {
 
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cte = clienteRepositorio.findById(idCliente);
-        if (cte.isPresent()) {
-            cliente = cte.get();
-        }
-
-        Usuario usuario = new Usuario();
-        Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
-        if (user.isPresent()) {
-            usuario = user.get();
-        }
+        Cliente cliente = clienteRepositorio.getById(idCliente);
 
         String obsMayusculas = observacion.toUpperCase();
         Date f = convertirFecha(fecha);
         Long idRecibo = buscarUltimoIdOrg(idOrg);
 
         Recibo recibo = new Recibo();
-
         recibo.setIdOrg(idOrg);
         recibo.setCliente(cliente);
         recibo.setFecha(f);
         recibo.setObservacion(obsMayusculas);
-        recibo.setImporte(importe);
         recibo.setUsuario(usuario);
         recibo.setIdRecibo(idRecibo + 1);
+
+        Double total = 0.0;
+
+        for (Valor v : valores) {
+
+            recibo.addValor(v);   // mantiene relación bidireccional
+            total += v.getImporte();
+        }
+
+        recibo.setImporte(total);
 
         reciboRepositorio.save(recibo);
 
@@ -65,59 +62,44 @@ public class ReciboServicio {
     }
 
     @Transactional
-    public void modificarRecibo(Long idRecibo, Long idCliente, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException { //modificar Cliente u observacion de Recibo
+    public void modificarRecibo(Long idRecibo, Long idCliente, String fecha, List<Valor> nuevosValores, String observacion, Usuario usuario) throws ParseException {
 
-        Recibo recibo = new Recibo();
-        Optional<Recibo> rec = reciboRepositorio.findById(idRecibo);
-        if (rec.isPresent()) {
-            recibo = rec.get();
-        }
+        Recibo recibo = reciboRepositorio.getById(idRecibo);
 
-        Cliente cliente = new Cliente();
-        Optional<Cliente> cte = clienteRepositorio.findById(idCliente);
-        if (cte.isPresent()) {
-            cliente = cte.get();
-        }
-
-        Usuario usuario = new Usuario();
-        Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
-        if (user.isPresent()) {
-            usuario = user.get();
-        }
+        Cliente cliente = clienteRepositorio.getById(idCliente);
 
         String obsMayusculas = observacion.toUpperCase();
         Date f = convertirFecha(fecha);
 
         recibo.setCliente(cliente);
         recibo.setFecha(f);
-        recibo.setImporte(importe);
         recibo.setObservacion(obsMayusculas);
         recibo.setUsuario(usuario);
+
+        recibo.getValores().clear();
+
+        Double total = 0.0;
+
+        for (Valor v : nuevosValores) {
+            recibo.addValor(v);
+            total += v.getImporte();
+        }
+
+        recibo.setImporte(total);
 
         reciboRepositorio.save(recibo);
 
         transaccionServicio.modificarTransaccionRecibo(idRecibo);
-
     }
 
     @Transactional
     public void eliminarRecibo(Long idRecibo) {
 
-        Recibo recibo = new Recibo();
-        Optional<Recibo> rec = reciboRepositorio.findById(idRecibo);
-        if (rec.isPresent()) {
-            recibo = rec.get();
-        }
+        Recibo recibo = reciboRepositorio.getById(idRecibo);
 
         transaccionServicio.eliminarTransaccionRecibo(idRecibo);
 
-        recibo.setCliente(null);
-        recibo.setUsuario(null);
-
-        reciboRepositorio.save(recibo);
-
-        reciboRepositorio.deleteById(idRecibo);
-
+        reciboRepositorio.delete(recibo);
     }
 
     public ArrayList<Recibo> buscarRecibosIdCliente(Long id, String desde, String hasta) throws ParseException {
@@ -174,7 +156,8 @@ public class ReciboServicio {
 
     public Recibo buscarRecibo(Long id) {
 
-        return reciboRepositorio.getById(id);
+        return reciboRepositorio.findByIdWithValores(id);
+
     }
 
     public Date convertirFecha(String fecha) throws ParseException {

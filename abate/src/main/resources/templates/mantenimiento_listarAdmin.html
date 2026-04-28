@@ -19,15 +19,6 @@
                                     <div  class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 text-center">
                                         <h4>Mantenimiento</h4>
                                     </div>
-                                    <!--
-                                    <div title="Ir a Registrar Orden de Trabajo" class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
-                                        <a th:href="@{/ordenDeTrabajo/listar}">
-                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                                                <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                                                <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
-                                            </svg><h6 id="icono">OT</h6> </a>
-                                    </div> 
-                                    -->
                                     <div title="Ir a Registrar Tipo" class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
                                         <a th:href="@{/tipoMantenimiento/listar}">
                                             <svg id="white" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-justify" viewBox="0 0 16 16">
@@ -47,7 +38,7 @@
                                 <div class="row mb-2">
                                     <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                                         <div class="card border-secondary p-5 mb-1" id="color-card">
-                                            <div class="row mb-5">
+                                            <div class="row">
                                                 <div  class="col-6 text-center">
                                                     <a id="camiones" th:href="@{/mantenimiento/listarAdminCamiones}">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 -15 60 65"><path d="M57.942,28.151l-.832-11.63a3.337,3.337,0,0,0-2.535-3.083l-22.119-3.4A3,3,0,0,0,29,13V38H6a6,6,0,1,0,5.91,7h2.274A3,3,0,0,0,17,47H32a3,3,0,0,0,2.816-2H37.09a5.986,5.986,0,0,0,10.37,3H57a3,3,0,0,0,3-3V31A3.007,3.007,0,0,0,57.942,28.151ZM58,31v5.184A2.966,2.966,0,0,0,57,36H56V30h1A1,1,0,0,1,58,31Zm-2.074-3H48a2,2,0,0,1-2-2V23a1,1,0,0,1,1-1h8.5ZM46,29.444A3.959,3.959,0,0,0,48,30h6v6H46ZM31,13a1,1,0,0,1,1.151-.988l22.12,3.4c.372.057.8.7.845,1.248L55.355,20H47a3,3,0,0,0-3,3V38.09A6,6,0,0,0,43,38H31Zm3.816,27H38.54a5.979,5.979,0,0,0-1.45,3H35V41A2.966,2.966,0,0,0,34.816,40ZM28,40v5H21V40ZM14,43H11.91a5.979,5.979,0,0,0-1.45-3h3.724A2.966,2.966,0,0,0,14,41ZM6,48a4,4,0,1,1,4-4A4,4,0,0,1,6,48Zm10-4V41a1,1,0,0,1,1-1h2v5H17A1,1,0,0,1,16,44Zm17,0a1,1,0,0,1-1,1H30V40h2a1,1,0,0,1,1,1Zm10,4a4,4,0,1,1,4-4A4,4,0,0,1,43,48Zm15-3a1,1,0,0,1-1,1H48.65A5.963,5.963,0,0,0,46,38.812V38H57a1,1,0,0,1,1,1Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M35,28h4a2,2,0,0,0,2-2V22a2,2,0,0,0-2-2H35a2,2,0,0,0-2,2v4A2,2,0,0,0,35,28Zm0-6h4l0,4H35Z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
@@ -71,6 +62,7 @@
                                                 </div>
                                                 <div class="col-2"></div>                                                
                                             </div>
+                                            
                                         </div>
                                     </div>
                                 </div>

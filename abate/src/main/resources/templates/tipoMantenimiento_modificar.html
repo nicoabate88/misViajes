@@ -7,28 +7,28 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         </head>
                         <body>
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/tipoMantenimiento/listar}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
-                                            <h4>Modificar Tipo de Mantenimiento</h4>
-                                        </div>
-                                        <div title="Ir a Eliminar Tipo" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
-                                            <a th:href="@{/tipoMantenimiento/eliminar/__${tipo.id}__}">
-                                               <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                                                    </svg><h6 id="icono">Eliminar</h6> </a>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/tipoMantenimiento/listar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                        <h4>Modificar Tipo de Mantenimiento</h4>
+                                    </div>
+                                    <div title="Ir a Eliminar Tipo" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
+                                        <a th:href="@{/tipoMantenimiento/eliminar/__${tipo.id}__}">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                            </svg><h6 id="icono">Eliminar</h6> </a>
                                     </div>
                                 </div>
-                                <div class="container mb-2"> 
+                            </div>
+                            <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form id="formulario" th:action="@{/tipoMantenimiento/modifica}" method="POST">
                                         <input hidden th:value="${tipo.id}" name="id">
@@ -38,13 +38,13 @@
                                                     <input type="text" class="form-control" id="nombre" placeholder="Ingrese Nombre" name="nombre" th:value="${tipo.nombre}" required maxlength="75" size="75">     
                                                 </div> 
                                                 <div class="col-6 col-sm-6 col-md-5 col-lg-3 col-xl-3 mb-2">
-                                                            <label for="clase" class="form-floting text-secondary">Clase*</label>
-                                                            <select class="form-control" id="clase" name="clase" required>
-                                                                <option selected th:text="${tipo.clase}" th:value="${tipo.clase}"></option>
-                                                                <option value="PREVENTIVO">PREVENTIVO</option>
-                                                                <option value="CORRECTIVO">CORRECTIVO</option>
-                                                            </select>
-                                                        </div>
+                                                    <label for="clase" class="form-floting text-secondary">Clase*</label>
+                                                    <select class="form-control" id="clase" name="clase" required>
+                                                        <option selected th:text="${tipo.clase}" th:value="${tipo.clase}"></option>
+                                                        <option value="PREVENTIVO">PREVENTIVO</option>
+                                                        <option value="CORRECTIVO">CORRECTIVO</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                             <div class="mb-5">
                                                 <label>Aplica a*</label>
@@ -75,14 +75,14 @@
                             </div>
                             <script>
                                 document.getElementById("formulario").addEventListener("submit", function (event) {
-                                    let checkboxes = document.querySelectorAll("input[name='aplicaA']:checked");
+                                let checkboxes = document.querySelectorAll("input[name='aplicaA']:checked");
 
-                                    if (checkboxes.length === 0) {
-                                        alert("Debe seleccionar al menos un valor en 'Aplica a'.");
-                                        event.preventDefault(); 
-                                    } else {
-                                    
-                                    document.getElementById("spinner").style.display = "block";
+                                if (checkboxes.length === 0) {
+                                alert("Debe seleccionar al menos un valor en 'Aplica a'.");
+                                event.preventDefault(); 
+                                } else {
+
+                                document.getElementById("spinner").style.display = "block";
                                 }
                                 });
                             </script>

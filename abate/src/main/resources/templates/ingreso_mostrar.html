@@ -25,10 +25,33 @@
                                 <div class="card border-secondary p-4 mb-2" id="color-card">
                                     <div class="row">
                                         <div class="col-8"> 
-                                            <h6 th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                            <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(ingreso.fecha, 'dd-MM-yyyy')}+' - ID'+${ingreso.idIngreso}"></h6>
+                                            <h6 th:text="'Fecha ' + ${#dates.format(ingreso.fecha, 'dd-MM-yyyy')}+' - ID'+${ingreso.idIngreso}"></h6>
+                                            <h6 id="dimgray" th:text="'Importe $'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                             <p id="dimgray" class="mb-1" th:text="'Caja de '+${ingreso.chofer.nombre}"></p>
                                             <p class="mb-0" id="dimgray" th:text="${ingreso.observacion}"></p>
+                                            <div class="table-responsive">
+                                                <table class="table table-borderless table-hover table-sm">
+                                                    <thead>
+                                                        <tr id="darkblue">
+                                                            <td class="text-center">Tipo</td>
+                                                            <td class="text-center">Importe</td>
+                                                            <td class="text-center">Observación</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody th:each="valor : ${ingreso.valores}">
+                                                        <tr id="dimgray">
+                                                            <td class="text-center" th:text="${valor.tipo}"></td>
+                                                            <td class="text-center" th:text="'$'+${#numbers.formatDecimal(valor.importe, 0, 'POINT', 0, 'POINT')}"></td>
+                                                            <td class="text-center" th:text="${valor.observacion}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tr> 
+                                                        <th class="text-center" id="dimgray">TOTAL</th>
+                                                        <th class="text-center" id="dimgray" th:text="'$'+${#numbers.formatDecimal(ingreso.importe, 0, 'POINT', 0, 'POINT')}"></th>
+                                                        <td></td>
+                                                    </tr>
+                                                </table>
+                                            </div> 
                                         </div>
                                         <div class="col-4 text-center">
                                             <a title="Ir a Imprimir Ingreso" target="_blank" th:href= "@{/ingreso/imprimir/__${ingreso.id}__}" >

@@ -47,7 +47,7 @@ public class PortalControlador {
 
         } else if (logueado.getRol().equalsIgnoreCase("ADMIN")) {
 
-            modelo.put("id", logueado.getId());
+            modelo.put("usuario", logueado);
 
             return "index_admin.html";
 

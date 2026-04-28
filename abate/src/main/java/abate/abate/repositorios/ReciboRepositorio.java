@@ -26,5 +26,8 @@ public interface ReciboRepositorio extends JpaRepository<Recibo, Long> {
     ArrayList<Recibo> findByFechaBetweenAndIdOrg(Date desde, Date hasta, Long idOrg);
 
     ArrayList<Recibo> findByFechaBetweenAndClienteId(Date desde, Date hasta, Long idCliente);
+    
+    @Query("SELECT r FROM Recibo r LEFT JOIN FETCH r.valores WHERE r.id = :id")
+    Recibo findByIdWithValores(@Param("id") Long id);
 
 }

@@ -22,4 +22,7 @@ public interface IngresoRepositorio extends JpaRepository<Ingreso, Long> {
 
     Ingreso findTopByChoferOrderByIdDesc(Usuario chofer);
 
+    @Query("SELECT i FROM Ingreso i LEFT JOIN FETCH i.valores WHERE i.id = :id")
+    Ingreso findByIdWithValores(@Param("id") Long id);
+
 }

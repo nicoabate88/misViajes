@@ -77,7 +77,7 @@
                                             </form>
                                         </div>
                                         <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
-                                            <a title="Ir a Imprimir Documentación" target="_blank" th:href="@{/documentacion/imprimirVencimiento/__${dias}__}">
+                                            <a title="Ir a Imprimir Documentación" target="_blank" th:href="@{/documentacion/imprimirVencimiento(dias=${dias}, idCamion=${idCamion}, idAcoplado=${idAcoplado}, idChofer=${idChofer})}">
                                                 <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
                                                     <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
                                                     <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
@@ -101,9 +101,53 @@
                                     </div> 
                                     <form th:action="@{/documentacion/listarAdminVencimientoFiltro}" method="POST">
                                         <div class="row">
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 pb-3">
-                                                <label for="dias" class="form-floting text-secondary">Cantidad de Días</label>
+                                            <div class="col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 pb-3">
+                                                <label for="dias" class="form-floting text-secondary">Días</label>
                                                 <input type="number" step="1" class="form-control border-secondary" id="dias" name="dias" th:value="${dias}">
+                                            </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 pb-3">
+                                                <label for="idCamion" class="form-floting text-secondary">Camión</label>
+                                                <select class="form-control text-secondary border-secondary" id="idCamion" name="idCamion">
+                                                    <option th:if="${camion == null}" value="" selected disabled>Seleccione Camión</option>
+                                                    <option th:if="${camion != null}" selected th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                    <option th:if="${camion == null}" selected value="">TODOS</option>
+                                                    <option th:if="${idCamion == 0}" selected th:value="${ninguno}">NO INCLUIR</option>
+                                                    <option value="">TODOS</option>
+                                                    <option th:value="${ninguno}">NO INCLUIR</option>
+                                                    <option th:each="camion : ${camiones}"
+                                                            th:value="${camion.id}"
+                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-5 col-sm-5 col-md-3 col-lg-3 col-xl-3 pb-3">
+                                                <label for="idAcoplado" class="form-floting text-secondary">Acoplado</label>
+                                                <select class="form-control text-secondary border-secondary" id="idAcoplado" name="idAcoplado">
+                                                    <option th:if="${acoplado == null}" value="" selected disabled>Seleccione Acoplado</option>
+                                                    <option th:if="${acoplado != null}" selected th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                    <option th:if="${acoplado == null}" selected value="">TODOS</option>
+                                                    <option th:if="${idAcoplado == 0}" selected th:value="${ninguno}">NO INCLUIR</option>
+                                                    <option value="">TODOS</option>
+                                                    <option th:value="${ninguno}">NO INCLUIR</option>
+                                                    <option th:each="acoplado : ${acoplados}"
+                                                            th:value="${acoplado.id}"
+                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-5 col-sm-5 col-md-3 col-lg-3 col-xl-3 pb-3">
+                                                <label for="idChofer" class="form-floting text-secondary">Chofer</label>
+                                                <select class="form-control text-secondary border-secondary" id="idChofer" name="idChofer">
+                                                    <option th:if="${chofer == null}" value="" selected disabled>Seleccione Chofer</option>
+                                                    <option th:if="${chofer != null}" selected th:value="${chofer.id}"
+                                                            th:text="${chofer.nombre}"/>
+                                                    <option th:if="${chofer == null}" selected value="">TODOS</option>
+                                                    <option th:if="${idChofer == 0}" selected th:value="${ninguno}">NO INCLUIR</option>
+                                                    <option value="">TODOS</option>
+                                                    <option th:value="${ninguno}">NO INCLUIR</option>
+                                                    <option th:each="chofer : ${choferes}"
+                                                            th:value="${chofer.id}" th:text="${chofer.nombre}"/>
+                                                </select>
                                             </div>
                                             <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center">
                                                 <label for="ver" class="form-floting">Ver</label> 
@@ -194,136 +238,136 @@
                                             </div>
                                             <script>
                                                 document.addEventListener("DOMContentLoaded", function () {
-                                                    const volverBtn = document.getElementById("ver");
-                                                    volverBtn.addEventListener("click", function (e) {
-                                                        // Mostrar spinner
-                                                        document.getElementById("spinner").style.display = "block";
-                                                    });
+                                                const volverBtn = document.getElementById("ver");
+                                                volverBtn.addEventListener("click", function (e) {
+                                                // Mostrar spinner
+                                                document.getElementById("spinner").style.display = "block";
+                                                });
                                                 });
 
                                                 function verHistorial(button) {
-                                                    const camionId = button.getAttribute('data-id');
+                                                const camionId = button.getAttribute('data-id');
 
-                                                    fetch(`/camion/detalle/${camionId}`)
-                                                            .then(response => {
-                                                                if (!response.ok) {
-                                                                    throw new Error("Error al obtener detalle");
-                                                                }
-                                                                return response.text();
-                                                            })
-                                                            .then(html => {
-                                                                document.getElementById("historialContenido").innerHTML = html;
-                                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
-                                                                modal.show();
-                                                            })
-                                                            .catch(error => {
-                                                                console.error("Error:", error);
-                                                                alert("No se pudo cargar el detalle del camión.");
-                                                            });
+                                                fetch(`/camion/detalle/${camionId}`)
+                                                .then(response => {
+                                                if (!response.ok) {
+                                                throw new Error("Error al obtener detalle");
+                                                }
+                                                return response.text();
+                                                })
+                                                .then(html => {
+                                                document.getElementById("historialContenido").innerHTML = html;
+                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                modal.show();
+                                                })
+                                                .catch(error => {
+                                                console.error("Error:", error);
+                                                alert("No se pudo cargar el detalle del camión.");
+                                                });
                                                 }
 
 
                                                 document.addEventListener("DOMContentLoaded", function () {
-                                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
-                                                        btn.addEventListener("click", function () {
-                                                            const id = this.getAttribute("data-id");
+                                                document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                btn.addEventListener("click", function () {
+                                                const id = this.getAttribute("data-id");
 
-                                                            fetch("/camion/detalle/" + id)
-                                                                    .then(response => response.text())
-                                                                    .then(html => {
-                                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
-                                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
-                                                                    })
-                                                                    .catch(error => console.error("Error al cargar detalle", error));
-                                                        });
-                                                    });
+                                                fetch("/camion/detalle/" + id)
+                                                .then(response => response.text())
+                                                .then(html => {
+                                                document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                })
+                                                .catch(error => console.error("Error al cargar detalle", error));
+                                                });
+                                                });
                                                 });
 
                                                 $(document).ready(function () {
-                                                    $('#filtroForm').on('submit', function () {
-                                                        $('#loadingModal').modal('show');
-                                                    });
+                                                $('#filtroForm').on('submit', function () {
+                                                $('#loadingModal').modal('show');
+                                                });
                                                 });
                                                 $(document).ready(function () {
-                                                    $('#exportaForm').on('submit', function () {
-                                                        $('#loadingModal').modal('show');
-                                                    });
+                                                $('#exportaForm').on('submit', function () {
+                                                $('#loadingModal').modal('show');
+                                                });
                                                 });
 
                                                 function verHistorialAcoplado(button) {
-                                                    const acopladoId = button.getAttribute('data-id');
+                                                const acopladoId = button.getAttribute('data-id');
 
-                                                    fetch(`/acoplado/detalle/${acopladoId}`)
-                                                            .then(response => {
-                                                                if (!response.ok) {
-                                                                    throw new Error("Error al obtener detalle");
-                                                                }
-                                                                return response.text();
-                                                            })
-                                                            .then(html => {
-                                                                document.getElementById("historialContenido").innerHTML = html;
-                                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
-                                                                modal.show();
-                                                            })
-                                                            .catch(error => {
-                                                                console.error("Error:", error);
-                                                                alert("No se pudo cargar el detalle del acoplado.");
-                                                            });
+                                                fetch(`/acoplado/detalle/${acopladoId}`)
+                                                .then(response => {
+                                                if (!response.ok) {
+                                                throw new Error("Error al obtener detalle");
+                                                }
+                                                return response.text();
+                                                })
+                                                .then(html => {
+                                                document.getElementById("historialContenido").innerHTML = html;
+                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                modal.show();
+                                                })
+                                                .catch(error => {
+                                                console.error("Error:", error);
+                                                alert("No se pudo cargar el detalle del acoplado.");
+                                                });
                                                 }
 
 
                                                 document.addEventListener("DOMContentLoaded", function () {
-                                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
-                                                        btn.addEventListener("click", function () {
-                                                            const id = this.getAttribute("data-id");
+                                                document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                btn.addEventListener("click", function () {
+                                                const id = this.getAttribute("data-id");
 
-                                                            fetch("/acoplado/detalle/" + id)
-                                                                    .then(response => response.text())
-                                                                    .then(html => {
-                                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
-                                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
-                                                                    })
-                                                                    .catch(error => console.error("Error al cargar detalle", error));
-                                                        });
-                                                    });
+                                                fetch("/acoplado/detalle/" + id)
+                                                .then(response => response.text())
+                                                .then(html => {
+                                                document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                })
+                                                .catch(error => console.error("Error al cargar detalle", error));
+                                                });
+                                                });
                                                 });
 
                                                 function verHistorialChofer(button) {
-                                                    const choferId = button.getAttribute('data-id');
+                                                const choferId = button.getAttribute('data-id');
 
-                                                    fetch(`/chofer/detalle/${choferId}`)
-                                                            .then(response => {
-                                                                if (!response.ok) {
-                                                                    throw new Error("Error al obtener detalle");
-                                                                }
-                                                                return response.text();
-                                                            })
-                                                            .then(html => {
-                                                                document.getElementById("historialContenido").innerHTML = html;
-                                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
-                                                                modal.show();
-                                                            })
-                                                            .catch(error => {
-                                                                console.error("Error:", error);
-                                                                alert("No se pudo cargar el detalle del chofer.");
-                                                            });
+                                                fetch(`/chofer/detalle/${choferId}`)
+                                                .then(response => {
+                                                if (!response.ok) {
+                                                throw new Error("Error al obtener detalle");
+                                                }
+                                                return response.text();
+                                                })
+                                                .then(html => {
+                                                document.getElementById("historialContenido").innerHTML = html;
+                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                                modal.show();
+                                                })
+                                                .catch(error => {
+                                                console.error("Error:", error);
+                                                alert("No se pudo cargar el detalle del chofer.");
+                                                });
                                                 }
 
 
                                                 document.addEventListener("DOMContentLoaded", function () {
-                                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
-                                                        btn.addEventListener("click", function () {
-                                                            const id = this.getAttribute("data-id");
+                                                document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                                btn.addEventListener("click", function () {
+                                                const id = this.getAttribute("data-id");
 
-                                                            fetch("/chofer/detalle/" + id)
-                                                                    .then(response => response.text())
-                                                                    .then(html => {
-                                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
-                                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
-                                                                    })
-                                                                    .catch(error => console.error("Error al cargar detalle", error));
-                                                        });
-                                                    });
+                                                fetch("/chofer/detalle/" + id)
+                                                .then(response => response.text())
+                                                .then(html => {
+                                                document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                                new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                                })
+                                                .catch(error => console.error("Error al cargar detalle", error));
+                                                });
+                                                });
                                                 });
 
 
@@ -331,45 +375,48 @@
                                             </script>
                                             <script>
                                                 function startExport(event) {
-                                                    event.preventDefault();
+                                                event.preventDefault();
 
-                                                    const modal = document.getElementById('loadingModalExport');
-                                                    modal.style.display = 'block';
+                                                const modal = document.getElementById('loadingModalExport');
+                                                modal.style.display = 'block';
 
-                                                    const dias = document.getElementById('dias').value;
+                                                const dias = document.getElementById('dias').value;
+                                                const idCamion = document.getElementById('idCamion').value;
+                                                const idAcoplado = document.getElementById('idAcoplado').value;
+                                                const idChofer = document.getElementById('idChofer').value;
 
-                                                    const url = `/documentacion/exportaVencimiento?dias=${dias}`;
+                                                const url = `/documentacion/exportaVencimiento?dias=${dias}&idCamion=${idCamion}&idAcoplado=${idAcoplado}&idChofer=${idChofer}`;
 
-                                                    fetch(url, {method: 'POST'})
-                                                            .then(response => {
-                                                                const contentDisposition = response.headers.get('Content-Disposition');
-                                                                let fileName = 'exportacion.xlsx';
+                                                fetch(url, {method: 'POST'})
+                                                .then(response => {
+                                                const contentDisposition = response.headers.get('Content-Disposition');
+                                                let fileName = 'exportacion.xlsx';
 
-                                                                if (contentDisposition) {
-                                                                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                                                                    if (match && match[1]) {
-                                                                        fileName = match[1];
-                                                                    }
-                                                                }
+                                                if (contentDisposition) {
+                                                const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                                                if (match && match[1]) {
+                                                fileName = match[1];
+                                                }
+                                                }
 
-                                                                return response.blob().then(blob => ({blob, fileName}));
-                                                            })
-                                                            .then(({ blob, fileName }) => {
-                                                                const downloadUrl = window.URL.createObjectURL(blob);
-                                                                const a = document.createElement('a');
-                                                                a.href = downloadUrl;
-                                                                a.download = fileName;
-                                                                document.body.appendChild(a);
-                                                                a.click();
-                                                                a.remove();
-                                                            })
-                                                            .catch(error => {
-                                                                console.error('Error:', error);
-                                                                alert('Error durante la exportación.');
-                                                            })
-                                                            .finally(() => {
-                                                                modal.style.display = 'none';
-                                                            });
+                                                return response.blob().then(blob => ({blob, fileName}));
+                                                })
+                                                .then(({ blob, fileName }) => {
+                                                const downloadUrl = window.URL.createObjectURL(blob);
+                                                const a = document.createElement('a');
+                                                a.href = downloadUrl;
+                                                a.download = fileName;
+                                                document.body.appendChild(a);
+                                                a.click();
+                                                a.remove();
+                                                })
+                                                .catch(error => {
+                                                console.error('Error:', error);
+                                                alert('Error durante la exportación.');
+                                                })
+                                                .finally(() => {
+                                                modal.style.display = 'none';
+                                                });
                                                 }
                                             </script>
                                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

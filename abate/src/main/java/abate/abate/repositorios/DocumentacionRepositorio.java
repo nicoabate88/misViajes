@@ -88,4 +88,17 @@ public interface DocumentacionRepositorio extends JpaRepository<Documentacion, L
     
     boolean existsByChoferIdAndEstado(Long choferId, String estado);
     
+    @Query("SELECT d FROM Documentacion d WHERE d.idOrg = :id AND d.estado = 'VIGENTE' AND d.fechaVencimiento <= :fechaLimite AND ((:idCamion IS NULL) OR (:idCamion = 0L AND d.camion IS NULL) OR (:idCamion > 0 AND d.camion.id = :idCamion)) AND ((:idAcoplado IS NULL) OR (:idAcoplado = 0L AND d.acoplado IS NULL) OR (:idAcoplado > 0 AND d.acoplado.id = :idAcoplado)) AND ((:idChofer IS NULL) OR (:idChofer = 0L AND d.chofer IS NULL) OR (:idChofer > 0 AND d.chofer.id = :idChofer))")
+    List<Documentacion> findDocumentacionesPorVencerFiltrado(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite, @Param("idCamion") Long idCamion, @Param("idAcoplado") Long idAcoplado, @Param("idChofer") Long idChofer);
+    
+    @Query("SELECT d FROM Documentacion d WHERE camion_id = :id AND d.estado = 'VIGENTE' AND d.fechaVencimiento <= :fechaLimite")
+    List<Documentacion> findDocumentacionesPorVencerCamion(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite);
+    
+    @Query("SELECT d FROM Documentacion d WHERE acoplado_id = :id AND d.estado = 'VIGENTE' AND d.fechaVencimiento <= :fechaLimite")
+    List<Documentacion> findDocumentacionesPorVencerAcoplado(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite);
+    
+    @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND d.estado = 'VIGENTE' AND d.fechaVencimiento <= :fechaLimite")
+    List<Documentacion> findDocumentacionesPorVencerChofer(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite);
+
+    
 }

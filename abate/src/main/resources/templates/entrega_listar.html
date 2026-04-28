@@ -23,38 +23,43 @@
                             </div>
                             <div class="container mb-2">   
                                 <div class="card-header pb-0" id="bgWhite">
-                                    <form th:action="@{/entrega/listarFiltro}" method="POST">
-                                        <input hidden th:value="${id}" name="id">  
-                                            <div class="row">    
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                    <label for="desde" class="form-label">Desde</label>
-                                                    <input type="date" class="form-control border-secondary" id="desde" th:value="${desde}" name="desde" required>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                    <label for="hasta" class="form-label">Hasta</label>
-                                                    <input type="date" class="form-control border-secondary" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
-                                                </div>
-                                                <div class="col-10 col-sm-10 col-md-5 col-lg-6 col-xl-6">
-                                                    <label for="chofer" class="form-floting">Chofer</label>  
-                                                    <select class="form-control border-secondary" id="chofer" name="idChofer">
-                                                        <option th:if="${chofer != null}" th:value="${chofer.id}"
-                                                                th:text="${chofer.nombre}" selected></option>
-                                                        <option th:value=null>Todos</option>
-                                                        <option th:each="chofer : ${choferes}"
-                                                                th:value="${chofer.id}"
-                                                                th:text="${chofer.nombre}"/>
-                                                    </select>
-                                                </div>
-                                                <div class="col-1">
-                                                    <label for="ver" class="form-floting">Ver</label>
-                                                    <button id="ver"title="Buscar" class="btn btn-primary" type="submit">
-                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="16" height="22" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
+                                    <form th:action="@{/entrega/listarFiltro}" method="GET"> 
+                                        <div class="row">    
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                <label for="desde" class="form-label">Desde</label>
+                                                <input type="date" class="form-control border-secondary" id="desde" th:value="${desde}" name="desde" required>
                                             </div>
+                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                <label for="hasta" class="form-label">Hasta</label>
+                                                <input type="date" class="form-control border-secondary" id="hasta" th:value="${hasta}" name="hasta" required>                                                                                              
+                                            </div>
+                                            <div class="col-10 col-sm-10 col-md-5 col-lg-6 col-xl-6">
+                                                <label for="chofer" class="form-floting">Chofer</label>  
+                                                <select class="form-control border-secondary" id="chofer" name="idChofer">
+                                                    <option th:if="${chofer != null}" th:value="${chofer.id}"
+                                                            th:text="${chofer.nombre}" selected></option>
+                                                    <option th:value=null>Todos</option>
+                                                    <option th:each="chofer : ${choferes}"
+                                                            th:value="${chofer.id}"
+                                                            th:text="${chofer.nombre}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-1">
+                                                <label for="ver" class="form-floting">Ver</label>
+                                                <button id="ver"title="Buscar" class="btn btn-primary" type="submit">
+                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="16" height="22" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </form>   
+                                </div>
+                                <div th:if="${exito != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">
+                                    <h6 id="white" th:text="${exito}" class="mb-0 d-inline"></h6>
+                                    <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
                                 <div th:if="${!entregas.isEmpty()}">
                                     <div class="card-body p-2">
@@ -64,11 +69,11 @@
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
                                             <div class="row">
                                                 <div class="col-8">
-                                                    <h6 th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                    <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                                    <h6 th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                                    <h6 id="dimgray" th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 </div>
                                                 <div class="col-4 text-center">
-                                                    <a th:href= "@{/entrega/modificar/__${entrega.id}__}" >
+                                                    <a th:href= "@{/entrega/modificar(id=${entrega.id}, desde=${desde}, hasta=${hasta}, idChofer=${idChofer})}" >
                                                         <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
                                                         </svg>     <p id="modificar">Modificar</p>
@@ -79,7 +84,6 @@
                                                 <div class="col-8">
                                                     <p id="dimgray" class="mb-1" th:text="${entrega.chofer.nombre}"></p>
                                                     <p class="mb-1" id="dimgray" th:text="${entrega.observacion}"></p>
-                                                    <p class='mb-0' id="darkgray" th:text="${entrega.usuario.nombre}"></p>
                                                 </div>
                                                 <div class="col-4 text-center">
                                                     <a title="Ir a Imprimir Recibo" target="_blank" th:href= "@{/entrega/imprimir/__${entrega.id}__}" >

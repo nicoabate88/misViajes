@@ -7,29 +7,29 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         </head>
                         <body>
-                                <div class="card-header mb-2" style="height: 70px;">
-                                    <div class="row">
-                                        <div class="col-2">   
-                                            <a title="Volver" th:href="@{/tipoMantenimiento/listar}" type="button">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                                </svg> 
-                                            </a>   
-                                        </div>
-                                        <div  class="col-8 text-center">
-                                            <h4>Registrar Tipo de Mantenimiento</h4>
-                                        </div>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/tipoMantenimiento/listar}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Tipo de Mantenimiento</h4>
                                     </div>
                                 </div>
+                            </div>
                             <div class="container mb-2"> 
                                 <div class="card border-secondary p-2" id="color-card">
                                     <form id="formulario" th:action="@{/tipoMantenimiento/registro}" method="POST">
                                         <div class="row">
-                                        <div class="col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6 mb-2">
-                                            <label for="nombre" class="form-label text-secondary">Tipo de Mantenimiento*</label>                                
-                                            <input type="text" class="form-control" id="nombre" placeholder="Ingrese Nombre" name="nombre" th:value="${nombre}" required maxlength="60" size="60">     
-                                        </div> 
-                                        <div class="col-6 col-sm-6 col-md-5 col-lg-3 col-xl-3 mb-2">
+                                            <div class="col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6 mb-2">
+                                                <label for="nombre" class="form-label text-secondary">Tipo de Mantenimiento*</label>                                
+                                                <input type="text" class="form-control" id="nombre" placeholder="Ingrese Nombre" name="nombre" th:value="${nombre}" required maxlength="60" size="60">     
+                                            </div> 
+                                            <div class="col-6 col-sm-6 col-md-5 col-lg-3 col-xl-3 mb-2">
                                                 <label for="clase" class="form-floting text-secondary">Clase*</label>
                                                 <select class="form-control" id="clase" name="clase" required>
                                                     <option th:if="${clase} != null" selected th:text="${clase}" th:value="${clase}"></option>
@@ -67,14 +67,14 @@
                             </div>
                             <script>
                                 document.getElementById("formulario").addEventListener("submit", function (event) {
-                                    let checkboxes = document.querySelectorAll("input[name='aplicaA']:checked");
+                                let checkboxes = document.querySelectorAll("input[name='aplicaA']:checked");
 
-                                    if (checkboxes.length === 0) {
-                                        alert("Debe seleccionar al menos un valor en 'Aplica a'.");
-                                        event.preventDefault(); 
-                                    } else {
-                                    
-                                    document.getElementById("spinner").style.display = "block";
+                                if (checkboxes.length === 0) {
+                                alert("Debe seleccionar al menos un valor en 'Aplica a'.");
+                                event.preventDefault(); 
+                                } else {
+
+                                document.getElementById("spinner").style.display = "block";
                                 }
                                 });
                             </script>

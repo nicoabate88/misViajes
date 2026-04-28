@@ -4,616 +4,552 @@
         <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-                    <link rel="stylesheet" href="/css/medidas_container.css"> 
-                        <style>
-                            .tabla-scroll {
-                                max-height: 190px;       /* altura total de unas dos filas */
-                                min-height: 190px;       /* fuerza que tenga esa altura aunque esté vacía */
-                                overflow-y: auto;        /* agrega scroll vertical si se pasa */
-                                border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
-                                border-radius: 0.25rem;
-                            }
-
-                            .tabla-scroll table {
-                                margin-bottom: 0;
-                            }
-
-                            .tabla-scroll thead th {
-                                top: 0;
-                                background-color: #f8f9fa;
-                                z-index: 1;
-                            }
-
-                            .tabla-scroll tbody:empty::before {
-                                content: "";
-                                display: block;
-                                height: 190px; 
-                            }
-                            .btn-eliminar {
-                                background: none;
-                                border: none;
-                                color: red;          /* podés ajustar el color si querés */
-                                font-size: 18px;     /* tamaño del ícono */
-                                cursor: pointer;
-                            }
-
-                            .btn-eliminar:hover {
-                                transform: scale(1.2);  /* efecto sutil al pasar el mouse */
-                            }
-                        </style>
-                        <script>
-                            window.onload = function () {
-                                var fechaActual = new Date();
-                                var dia = String(fechaActual.getDate()).padStart(2, '0');
-                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-                                var anio = fechaActual.getFullYear();
-                                var fechaFormateada = anio + '-' + mes + '-' + dia;
-
-                                document.getElementById('fecha').max = fechaFormateada;
-                            };
-                            document.addEventListener('DOMContentLoaded', function () {
-                                const inputFecha = document.getElementById('fecha');
-                                const hoy = new Date();
-                                const dia = String(hoy.getDate()).padStart(2, '0');
-                                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-                                const anio = hoy.getFullYear();
-                                inputFecha.value = `${anio}-${mes}-${dia}`;
-                            });
-                        </script>
-                        <script>
-                            window.onload = function () {
-                                controlarCampos();  // Oculta todos los campos al iniciar
-                            };
-
-                            function controlarCampos() {
-                                const lugar = document.getElementById("lugar").value;
-
-                                const proveedor = document.getElementById("proveedor");
-                                const taller = document.getElementById("taller");
-                                const metal = document.getElementById("metal");
-                                const nogoya = document.getElementById("nogoya");
-                                const averia = document.getElementById("averia");
-
-                                proveedor.parentElement.style.display = "none";
-                                taller.parentElement.style.display = "none";
-                                metal.parentElement.style.display = "none";
-                                nogoya.parentElement.style.display = "none";
-                                averia.parentElement.style.display = "none";
-
-                                if (lugar === "CAMILO ALDAO") {
-                                    taller.parentElement.style.display = "block";
-                                    taller.setAttribute("required", "required");
-                                    metal.parentElement.style.display = "block";
-                                    metal.setAttribute("required", "required");
-                                    averia.parentElement.style.display = "block";
-                                    averia.setAttribute("required", "required");
-                                } else if (lugar === "NOGOYA") {
-                                    nogoya.parentElement.style.display = "block";
-                                    nogoya.setAttribute("required", "required");
-                                    averia.parentElement.style.display = "block";
-                                    averia.setAttribute("required", "required");
-                                } else if (lugar === "PROVEEDOR EXTERNO") {
-                                    proveedor.parentElement.style.display = "block";
-                                    proveedor.setAttribute("required", "required");
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                        <link rel="stylesheet" href="/css/medidas_container.css"> 
+                            <style>
+                                .link-historial {
+                                    color: darkblue;
+                                    background: none;
+                                    border: none;
+                                    padding: 0;
+                                    cursor: pointer;
                                 }
-                            }
-                        </script>
-
-                        </head>
-                        <body>
-                            <div class="card-header mb-2" style="height: 70px;">
-                                <div class="row">
-                                    <div class="col-2">   
-                                        <a title="Volver" th:href="@{/ordenDeTrabajo/listar}" type="button">
-                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                            </svg> 
-                                        </a>   
-                                    </div>
-                                    <div  class="col-8 text-center">
-                                        <h4>Registrar Orden de Trabajo</h4>
+                                .modal-header-darkblue {
+                                    background-color: darkblue;
+                                    color: white;
+                                }
+                                .tabla-scroll-c {
+                                    max-height: 254px;     
+                                    min-height: 254px;     
+                                    overflow-y: auto;        
+                                    border: 1px solid #dee2e6; 
+                                    border-radius: 0.25rem;
+                                }
+                                .tabla-scroll-c table {
+                                    margin-bottom: 0;
+                                }
+                                .tabla-scroll-c thead th {
+                                    top: 0;
+                                    background-color: #f8f9fa;
+                                    z-index: 1;
+                                }
+                                .tabla-scroll-c tbody:empty::before {
+                                    content: "";
+                                    display: block;
+                                    height: 254px; 
+                                }
+                                .tabla-scroll-s {
+                                    max-height: 166px;     
+                                    min-height: 166px;     
+                                    overflow-y: auto;        
+                                    border: 1px solid #dee2e6; 
+                                    border-radius: 0.25rem;
+                                }
+                                .tabla-scroll-s table {
+                                    margin-bottom: 0;
+                                }
+                                .tabla-scroll-s thead th {
+                                    top: 0;
+                                    background-color: #f8f9fa;
+                                    z-index: 1;
+                                }
+                                .tabla-scroll-s tbody:empty::before {
+                                    content: "";
+                                    display: block;
+                                    height: 166px; 
+                                }
+                                .btn-eliminar {
+                                    background: none;
+                                    border: none;
+                                    color: red;         
+                                    font-size: 18px;     
+                                    cursor: pointer;
+                                }
+                                .btn-eliminar:hover {
+                                    transform: scale(1.2);  
+                                }
+                            </style>
+                            </head>
+                            <body>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a title="Volver" th:href="@{/ordenDeTrabajo/listar}" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-8 text-center">
+                                            <h4>Registrar Orden de Trabajo</h4>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="container mb-2">  
-                                <form id="formulario" th:action="@{/ordenDeTrabajo/registro}" method="POST">
-                                    <div class="card border-secondary p-2 mb-1" id="color-card">
-                                        <div class="row">  
-                                            <div class="col-6 col-sm-6 col-md-5 col-lg-5 col-xl-5 mb-2">
-                                                <label for="idCamion" class="form-floting text-secondary mb-1">Camión*</label>
-                                                <select class="form-control text-secondary" id="idCamion" name="idCamion" required onchange="enviarRegistroCamion()">
-                                                    <option th:if="${camion == null}" selected disabled value="">Seleccione Camión</option>
-                                                    <option th:if="${camion != null}" selected th:value="${camion.id}"
-                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
-                                                    <option th:each="camion : ${camiones}"
-                                                            th:value="${camion.id}"
-                                                            th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
-                                                </select>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-4 col-lg-5 col-xl-5 mb-2">
-                                                <label for="idAcoplado" class="form-floting text-secondary mb-1">Acoplado*</label>
-                                                <select class="form-control text-secondary" id="idAcoplado" name="idAcoplado" onchange="enviarRegistroCamion()">
-                                                    <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
-                                                    <option th:if="${acoplado != null}" selected th:value="${acoplado.id}"
-                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"></option>
-                                                    <option th:each="acoplado : ${acoplados}"
-                                                            th:value="${acoplado.id}"
-                                                            th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
-                                                </select>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                <label for="fecha" class="form-label text-secondary mb-1">Fecha*</label>
-                                                <input type="date" class="form-control text-secondary" id="fecha" name="fecha" required>
-                                            </div> 
-                                            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-2">
-                                                <label for="lugar" class="form-floting text-secondary mb-1">Lugar*</label>
-                                                <select class="form-control text-secondary" id="lugar" name="lugar" required="" onchange="controlarCampos()">
-                                                    <option selected disabled value="">Seleccione Lugar</option>
-                                                    <option value="CAMILO ALDAO">CAMILO ALDAO</option>
-                                                    <option value="NOGOYA">NOGOYA</option>
-                                                    <option value="PROVEEDOR EXTERNO">PROVEEDOR EXTERNO</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-2">
-                                                <label for="proveedor" class="form-floting text-secondary mb-1">Proveedor*</label>
-                                                <select class="form-control text-secondary" id="proveedor" name="idProveedor">
-                                                    <option selected disabled value="">Seleccione Proveedor</option>
-                                                    <option th:each="proveedor : ${proveedores}"
-                                                            th:value="${proveedor.id}"
-                                                            th:text="${proveedor.nombre}"/>
-                                                </select>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-2">
-                                                <label for="idChofer" class="form-floting text-secondary mb-1">Chofer*</label>
-                                                <select class="form-control text-secondary" id="idChofer" name="idChofer" required>
-                                                    <option selected disabled value="">Seleccione Chofer</option>
-                                                    <option th:each="chofer : ${choferes}"
-                                                            th:value="${chofer.id}"
-                                                            th:text="${chofer.nombre}"/>
-                                                </select>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-2">
-                                                <label for="taller" class="form-floting text-secondary mb-1">Check List Taller*</label>
-                                                <input type="text" class="form-control text-secondary" id="taller" name="taller" placeholder="Ingrese N°" maxlength="15" size="15"></input>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2 mb-2">
-                                                <label for="metal" class="form-floting text-secondary mb-1">Check List Metal*</label>
-                                                <input type="text" class="form-control text-secondary" id="metal" name="metal" placeholder="Ingrese N°" maxlength="15" size="15"></input>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-2 mb-2">
-                                                <label for="nogoya" class="form-floting text-secondary mb-1">Check List Nogoyá*</label>
-                                                <input type="text" class="form-control text-secondary" id="nogoya" name="nogoya" placeholder="Ingrese N°" maxlength="15" size="15"></input>
-                                            </div>
-                                            <div class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2 mb-2">
-                                                <label for="averia" class="form-floting text-secondary mb-1">Planilla Avería*</label>
-                                                <input type="text" class="form-control text-secondary" id="averia" name="averia" placeholder="Ingrese N°" maxlength="15" size="15"></input>
-                                            </div>
-                                        </div>
-                                        <h6 class="text-primary text-center mb-3">Mantenimientos Camión</h6>
-                                        <div class="row mb-1">
-                                            <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5 mb-2">
-                                                <select class="form-control text-secondary" id="tipo">
-                                                    <option selected disabled value="">Seleccione Tipo</option>
-                                                    <option th:each="tipo : ${tiposCamion}"
-                                                            th:value="${tipo.id}"
-                                                            th:text="${tipo.nombre}"/>
-                                                </select>
-                                            </div> 
-                                            <div class="col-5 col-sm-5 col-md-6 col-lg-6 col-xl-6 mb-2">
-                                                <input type="text" class="form-control text-secondary" id="observacionC" placeholder="Ingrese Observación..." maxlength="45" size="45">
-                                            </div>
-                                            <div class="form-floating" >
-                                                <label class="form-label text-white"></label>
-                                                        <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
-                                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                            </svg>
-                                                        </button>
-                                                        </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <div class="col-12">
-                                                                <div class="table-responsive tabla-scroll">
-                                                                    <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
-                                                                        <thead class="thead-light">
-                                                                            <tr class="text-center">
-                                                                                <th>Tipo</th>
-                                                                                <th>Observación</th>
-                                                                                <th class="text-center" style="width: 50px;">Acción</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody id="tbodyMantenimientosCamion">
-                                                                            <tr th:each="m : ${mantenimientoC}" class="text-center text-secondary fila-mant-camion"
-                                                                                th:data-tipo-id="${m.tipoMantenimiento.id}"
-                                                                                th:data-estado="${m.tipoMantenimiento.nombre}">
-                                                                                <td th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                                                <td><input type="text" class="form-control form-control-sm text-secondary obs-camion"
-                                                                                           placeholder="Ingrese Observación..." maxlength="45"></td>
-                                                                                <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
-                                                                            </tr>
-                                                                        </tbody>
-
-                                                                    </table>
+                                <div class="container-fluid mt-2">
+                                    <div class="row">
+                                        <div class="col-2"></div>
+                                        <div class="col-12 col-lg-8">
+                                            <form id="formulario" th:action="@{/ordenDeTrabajo/registro}" method="POST">
+                                                <input id="pendiente" hidden th:value="${pendiente}" name="pendiente">
+                                                    <input id="idOt" hidden th:value="${idOt}" name="idOt">
+                                                        <div id="checklist-hidden-inputs"></div>
+                                                        <div class="card border-secondary p-2 mb-1" id="color-card">
+                                                            <div class="row">
+                                                                <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 mb-2">
+                                                                    <label for="idCamion" class="form-floting text-secondary mb-1">Camión*</label>
+                                                                    <select class="form-control text-secondary" id="idCamion" name="idCamion" required>
+                                                                        <option th:if="${camion == null}" selected disabled value="">Seleccione Camión</option>
+                                                                        <option th:if="${camion != null}" selected th:value="${camion.id}"
+                                                                                th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
+                                                                        <option th:each="camion : ${camiones}"
+                                                                                th:value="${camion.id}"
+                                                                                th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 mb-2">
+                                                                    <label for="idAcoplado" class="form-floting text-secondary mb-1">Acoplado*</label>
+                                                                    <select class="form-control text-secondary" id="idAcoplado" name="idAcoplado">
+                                                                        <option th:if="${acoplado == null}" selected disabled value="">Seleccione Acoplado</option>
+                                                                        <option th:if="${acoplado != null}" selected th:value="${acoplado.id}"
+                                                                                th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"></option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                                    <label for="proveedor" class="form-floting text-secondary mb-1">Proveedor*</label>
+                                                                    <select class="form-control text-secondary" id="proveedor" name="idProveedor" required>
+                                                                        <option selected disabled value="">Seleccione Proveedor</option>
+                                                                        <option th:each="proveedor : ${proveedores}"
+                                                                                th:value="${proveedor.id}"
+                                                                                th:text="${proveedor.nombre}"/>
+                                                                    </select>
                                                                 </div>
                                                             </div>
-                                                        </div>                                               
-                                                        <h6 class="text-primary text-center mb-3">Mantenimientos Acoplado</h6>
-                                                        <div class="row mb-1">
-                                                            <div class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5 mb-2">   
-                                                                <select class="form-control text-secondary" id="tipoA">
-                                                                    <option selected disabled value="">Seleccione Tipo</option>
-                                                                    <option th:each="tipo : ${tiposAcoplado}"
-                                                                            th:value="${tipo.id}"
-                                                                            th:text="${tipo.nombre}"/>
-                                                                </select>
-                                                            </div> 
-                                                            <div class="col-5 col-sm-5 col-md-6 col-lg-6 col-xl-6 mb-2">
-                                                                <input type="text" class="form-control text-secondary" id="observacionA" placeholder="Ingrese Observación..." maxlength="45" size="45">
+                                                            <h5 class="text-primary text-center mb-3">Mantenimientos Camión</h5>
+                                                            <div class="row mb-1">
+                                                                <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">
+                                                                    <select class="form-control text-secondary" id="tipo">
+                                                                        <option selected disabled value="">Seleccione Tipo</option>
+                                                                        <option th:each="tipo : ${tiposCamion}"
+                                                                                th:value="${tipo.id}"
+                                                                                th:text="${tipo.nombre}">
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-10 col-sm-10 col-md-7 col-lg-7 col-xl-7 mb-2">
+                                                                    <input type="text" class="form-control text-secondary" id="observacionC" placeholder="Ingrese Observación..." maxlength="120" size="120">
+                                                                </div>
+                                                                <div class="form-floating" >
+                                                                    <label class="form-label text-white"></label>
+                                                                    <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
+                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            <div class="form-floating" >
-                                                                <label class="form-label text-white"></label>
-                                                                        <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoAcoplado" title="Agregar Mantenimiento">
-                                                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                                                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                                            </svg>
-                                                                        </button>
-                                                                        </div>
-                                                                        </div>
-                                                                        <div class="row mb-2">
-                                                                            <div class="col-12">
-                                                                                <div class="table-responsive tabla-scroll">
-                                                                                    <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosAcoplado">
-                                                                                        <thead class="thead-light">
-                                                                                            <tr class="text-center">
-                                                                                                <th>Tipo</th>
-                                                                                                <th>Observación</th>
-                                                                                                <th class="text-center" style="width: 50px;">Acción</th>
-                                                                                            </tr>
-                                                                                        </thead>
-                                                                                        <tbody id="tbodyMantenimientosAcoplado">
-                                                                                            <tr th:each="m : ${mantenimientoA}"
-                                                                                                class="text-center text-secondary fila-mant-acoplado"
-                                                                                                th:data-tipo-id="${m.tipoMantenimiento.id}"
-                                                                                                th:data-estado="${m.tipoMantenimiento.nombre}">
-                                                                                                <td th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                                                                <td>
-                                                                                                    <input type="text"
-                                                                                                           class="form-control form-control-sm text-secondary obs-acoplado"
-                                                                                                           placeholder="Ingrese Observación..."
-                                                                                                           maxlength="45">
-                                                                                                </td>
-                                                                                                <td>
-                                                                                                    <button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-2">
-                                                                                <label for="obs" class="form-label text-secondary mb-1">Observación</label>
-                                                                                <textarea class="form-control text-secondary" id="obs" name="observacion" rows="1" th:text="${obs}" placeholder="OBSERVACIÓN: Ingrese detalle de OT..." maxlength="500" size="500"></textarea>
-                                                                            </div>  
-                                                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                                                <label for="fechaI" class="form-label text-secondary mb-1">Fecha Inicio</label>
-                                                                                <input type="date" class="form-control text-secondary" id="fechaI" name="fechaInicio" required="">
-                                                                            </div> 
-                                                                            <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-4">
-                                                                                <label for="fechaF" class="form-label text-secondary mb-1">Fecha Fin</label>
-                                                                                <input type="date" class="form-control text-secondary" id="fechaF" name="fechaFin" required="">
-                                                                            </div> 
-                                                                        </div>
-                                                                        <div th:if="${error != null}" class="card bg-secondary mb-2 p-3 border-secondary text-center">                        
-                                                                            <h6 id="white" th:text="${error}"></h6>                                                                             
-                                                                        </div>
-                                                                        <div class="text-center mb-2">
-                                                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
-                                                                        </div>
-                                                                        <div class="text-center">
-                                                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/ordenDeTrabajo/listar}" title="Cancelar">Cancelar</a>
-                                                                        </div>
-                                                                        </div>
-                                                                        </form>
-                                                                        </div>
-                                                                        <!-- Modal para ingresar Km de Vigencia -->
-                                                                        <div class="modal fade" id="modalKm" tabindex="-1" aria-labelledby="modalKmLabel" aria-hidden="true">
-                                                                            <div class="modal-dialog modal-dialog-centered">
-                                                                                <div class="modal-content">
-                                                                                    <div class="modal-header bg-primary">
-                                                                                        <h5 class="modal-title text-white" id="modalKmLabel">Consulta de Mantenimientos</h5>
-                                                                                    </div>
-                                                                                    <div class="modal-body">
-                                                                                        <p class="text-secondary fw-bold">
-                                                                                            Ingrese cantidad de Km que quiere consultar:
-                                                                                        </p>
-                                                                                        <input type="number" class="form-control" id="kmVigenciaInput"
-                                                                                               placeholder="Ingrese km" min="0">
-                                                                                    </div>
-                                                                                    <div class="modal-footer">
+                                                            <div class="row mb-2">
+                                                                <div class="col-12">
+                                                                    <div class="table-responsive tabla-scroll-c">
+                                                                        <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
+                                                                            <thead class="thead-light">
+                                                                                <tr class="text-center">
+                                                                                    <th>Tipo</th>
+                                                                                    <th>Observación</th>
+                                                                                    <th class="text-center" style="width: 50px;">Acción</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody id="tbodyMantenimientosCamion">
+                                                                                <tr th:each="m : ${mantenimientoC}" class="text-center text-secondary fila-mant-camion bg-light"
+                                                                                    th:data-tipo-id="${m.tipoMantenimiento.id}"
+                                                                                    th:data-estado="${m.tipoMantenimiento.nombre}"
+                                                                                    th:data-obs="${m.observacion}">
+                                                                                    <td th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                                                    <td><input type="text" class="form-control form-control-sm border-0 bg-light text-secondary obs-camion"
+                                                                                               th:value="${m.observacion}" maxlength="45"></td>
+                                                                                    <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>                                               
+                                                            <h5 class="text-primary text-center mb-3">Mantenimientos Acoplado</h5>
+                                                            <div class="row mb-1">
+                                                                <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 mb-2">   
+                                                                    <select class="form-control text-secondary" id="tipoA">
+                                                                        <option selected disabled value="">Seleccione Tipo</option>
+                                                                        <option th:each="tipo : ${tiposAcoplado}"
+                                                                                th:value="${tipo.id}"
+                                                                                th:text="${tipo.nombre}">
+                                                                    </select>
+                                                                </div> 
+                                                                <div class="col-10 col-sm-10 col-md-7 col-lg-7 col-xl-7 mb-2">
+                                                                    <input type="text" class="form-control bg-white text-secondary" id="observacionA" placeholder="Ingrese Observación..." maxlength="120" size="120">
+                                                                </div>
+                                                                <div class="form-floating" >
+                                                                    <label class="form-label text-white"></label>
+                                                                    <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoAcoplado" title="Agregar Mantenimiento">
+                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <div class="col-12">
+                                                                    <div class="table-responsive tabla-scroll-s">
+                                                                        <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosAcoplado">
+                                                                            <thead class="thead-light">
+                                                                                <tr class="text-center">
+                                                                                    <th>Tipo</th>
+                                                                                    <th>Observación</th>
+                                                                                    <th class="text-center" style="width: 50px;">Acción</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody id="tbodyMantenimientosAcoplado">
+                                                                                <tr th:each="m : ${mantenimientoA}"
+                                                                                    class="text-center text-secondary fila-mant-acoplado bg-light"
+                                                                                    th:data-tipo-id="${m.tipoMantenimiento.id}"
+                                                                                    th:data-estado="${m.tipoMantenimiento.nombre}"
+                                                                                    th:data-obs="${m.observacion}">
+                                                                                    <td th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                                                    <td>
+                                                                                        <input type="text" class="form-control form-control-sm border-0 text-secondary bg-light obs-acoplado"
+                                                                                               th:value="${m.observacion}" maxlength="45">
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-2 mb-2">
+                                                                    <label for="fechaI" class="form-label text-secondary mb-1">Fecha Inicio*</label>
+                                                                    <input type="date" class="form-control text-secondary" id="fechaI" name="fechaInicio" required="">
+                                                                </div> 
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-2 mb-2">
+                                                                    <label for="fechaF" class="form-label text-secondary mb-1">Fecha Fin*</label>
+                                                                    <input type="date" class="form-control text-secondary" id="fechaF" name="fechaFin" required="">
+                                                                </div> 
+                                                                <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-8 mb-3">
+                                                                    <label for="obs" class="form-label text-secondary mb-1">Observación</label>
+                                                                    <textarea class="form-control text-secondary" id="obs" name="observacion" rows="1" th:text="${obs}" placeholder="Ingrese observación de OT..." maxlength="500" size="500"></textarea>
+                                                                </div>
+                                                            </div>
 
-                                                                                        <button type="button" class="btn btn-primary" onclick="enviarKmVigencia()">Consultar</button>
-                                                                                    </div>
+                                                            <div class="text-center mb-2">
+                                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/ordenDeTrabajo/listar}" title="Cancelar">Cancelar</a>
+                                                            </div>
+                                                        </div>
+                                                        </form>                                                                          
+                                                        </div>
+                                                        </div>
+                                                        </div>                        
+                                                        <!-- Modal para ingresar Km de Vigencia -->
+                                                        <div class="modal fade" id="modalKm" tabindex="-1" aria-labelledby="modalKmLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header bg-primary">
+                                                                        <h5 class="modal-title text-white" id="modalKmLabel">Consulta de Mantenimientos</h5>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p class="text-secondary fw-bold">
+                                                                            Ingrese cantidad de Km:
+                                                                        </p>
+                                                                        <input type="number" class="form-control" id="kmVigenciaInput"
+                                                                               placeholder="Ingrese km" min="0">
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-primary" onclick="enviarKmVigencia()">Consultar</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="spinner" class="modal" style="display: none;">
+                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                    <span class="sr-only">Cargando...</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <script th:inline="javascript">
+                                                            document.addEventListener("DOMContentLoaded", function () {
 
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div id="spinner" class="modal" style="display: none;">
-                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                                                                    <span class="sr-only">Cargando...</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <script>
-                                                                            function enviarRegistroCamion() {
-                                                                                let idCamion = document.getElementById("idCamion").value;
-                                                                                let idAcoplado = document.getElementById("idAcoplado").value;
-                                                                                window.location.href = `/ordenDeTrabajo/registrar1?idCamion=${idCamion}&idAcoplado=${idAcoplado}`;
-                                                                            }
-                                                                        </script>
-                                                                        <script th:inline="javascript">
-                                                                            document.addEventListener("DOMContentLoaded", function () {
-                                                                                // Thymeleaf inserta la variable como texto seguro
-                                                                                const flag = '[[${flag}]]' === 'true';
-                                                                                console.log("FLAG RECIBIDO:", flag);
-                                                                                if (flag === true) {
-                                                                                    $('#modalKm').modal('show');  // Bootstrap 4.5 usa jQuery
-                                                                                }
-                                                                            });
+                                                            const error = /*[[${error != null}]]*/ false;
 
-                                                                            function enviarKmVigencia() {
-                                                                                const km = document.getElementById("kmVigenciaInput").value;
-                                                                                const idCamion = document.getElementById("idCamion").value;
-                                                                                const idAcoplado = document.getElementById("idAcoplado").value;
+                                                            if (error) {
+                                                            const mensaje = /*[[${error}]]*/ "";
 
-                                                                                if (!km || km.trim() === "") {
-                                                                                    alert("Debe ingresar un valor numérico de Km.");
-                                                                                    return;
-                                                                                }
-                                                                                if (!idCamion) {
-                                                                                    alert("Debe seleccionar Camión.");
-                                                                                    return;
-                                                                                }
-                                                                                const url = `/ordenDeTrabajo/buscarMantenimientos?km=${km}&idCamion=${idCamion}&idAcoplado=${idAcoplado}`;
-                                                                                window.location.href = url;
-                                                                            }
-                                                                        </script>
-                                                                        <script>
-                                                                            document.getElementById("formulario").addEventListener("submit", function (e) {
+                                                            document.getElementById("mensajeError").innerText = mensaje;
+                                                            $('#modalError').modal('show');
+                                                            }
 
-                                                                                // Contar filas reales de ambas tablas (camión y acoplado)
-                                                                                const filasCamion = document.querySelectorAll("#tablaMantenimientosCamion tbody tr").length;
-                                                                                const filasAcoplado = document.querySelectorAll("#tablaMantenimientosAcoplado tbody tr").length;
+                                                            });
+                                                        </script>
+                                                        <script>
+                                                            document.addEventListener("DOMContentLoaded", function () {
 
-                                                                                // Validar que haya al menos un mantenimiento cargado
-                                                                                if (filasCamion === 0 && filasAcoplado === 0) {
-                                                                                    e.preventDefault(); // frena el submit
-                                                                                    alert("Debe cargar al menos un tipo de mantenimiento (Camión o Acoplado).");
-                                                                                    return false;
-                                                                                }
+                                                            const selectCamion = document.getElementById("idCamion");
 
-                                                                            });
-                                                                        </script>
-                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                                        <script>
-                                                                                                                                                    let mantenimientosCamion = [];
-                                                                                                                                                    let mantenimientosAcoplado = [];
+                                                            selectCamion.addEventListener("change", function () {
 
-                                                                                                                                                    // --- CAMIÓN precargados ---
-                                                                                                                                                    $('#tablaMantenimientosCamion tbody tr').each(function () {
-                                                                                                                                                        const tipoId = $(this).data('tipo-id');
-                                                                                                                                                        const estado = $(this).data('estado');
+                                                            // Si tiene un valor válido (no vacío)
+                                                            if (this.value) {
+                                                            $('#modalKm').modal('show');
+                                                            }
 
-                                                                                                                                                        if (tipoId) {
-                                                                                                                                                            mantenimientosCamion.push({
-                                                                                                                                                                tipoMantenimiento: tipoId,
-                                                                                                                                                                aplicaA: "CAMION",
-                                                                                                                                                                observacion: "", // Se carga luego desde el input
-                                                                                                                                                                estado: estado
-                                                                                                                                                            });
-                                                                                                                                                        }
-                                                                                                                                                    });
+                                                            });
+                                                            });
 
-// --- ACOPLADO precargados ---
-                                                                                                                                                    $('#tablaMantenimientosAcoplado tbody tr').each(function () {
-                                                                                                                                                        const tipoId = $(this).data('tipo-id');
-                                                                                                                                                        const estado = $(this).data('estado');
+                                                            function enviarKmVigencia() {
+                                                            const km = document.getElementById("kmVigenciaInput").value;
+                                                            const idCamion = document.getElementById("idCamion").value;
 
-                                                                                                                                                        if (tipoId) {
-                                                                                                                                                            mantenimientosAcoplado.push({
-                                                                                                                                                                tipoMantenimiento: tipoId,
-                                                                                                                                                                aplicaA: "ACOPLADO",
-                                                                                                                                                                observacion: "",
-                                                                                                                                                                estado: estado
-                                                                                                                                                            });
-                                                                                                                                                        }
-                                                                                                                                                    });
-// --- CAMIÓN ---
-                                                                                                                                                    $('#addMantenimientoCamion').click(function () {
+                                                            if (!km || km.trim() === "") {
+                                                            alert("Debe ingresar un valor numérico de Km.");
+                                                            return;
+                                                            }
 
-                                                                                                                                                        $('#idCamion').prop('disabled', true);
+                                                            if (!idCamion) {
+                                                            alert("Debe seleccionar Camión.");
+                                                            return;
+                                                            }
 
-                                                                                                                                                        if ($('#idCamionHidden').length === 0) {
-                                                                                                                                                            $('<input>').attr({
-                                                                                                                                                                type: 'hidden',
-                                                                                                                                                                id: 'idCamionHidden',
-                                                                                                                                                                name: 'idCamion',
-                                                                                                                                                                value: $('#idCamion').val()
-                                                                                                                                                            }).appendTo('form');
-                                                                                                                                                        } else {
-                                                                                                                                                            $('#idCamionHidden').val($('#idCamion').val());
-                                                                                                                                                        }
+                                                            const url = `/ordenDeTrabajo/buscarMantenimientos?km=${km}&idCamion=${idCamion}`;
+                                                            window.location.href = url;
+                                                            }
+                                                        </script>
 
-                                                                                                                                                        const tipo = $('#tipo').val();
-                                                                                                                                                        const tipoTexto = $('#tipo option:selected').text();
-                                                                                                                                                        const observacion = $('#observacionC').val();
+                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                        <script>
+                                                            let mantenimientosCamion = [];
+                                                            let mantenimientosAcoplado = [];
+                                                            // --- CAMION precargados ---
+                                                            $('#tablaMantenimientosCamion tbody tr').each(function () {
 
-                                                                                                                                                        if (!tipo) {
-                                                                                                                                                            alert("Debe seleccionar Tipo antes de agregar.");
-                                                                                                                                                            return;
-                                                                                                                                                        }
+                                                            const fila = $(this);
+                                                            const tipoId = Number(fila.data('tipo-id'));
+                                                            const estado = fila.data('estado');
+                                                            const obs = fila.data('obs');
 
-// 🔹 Validar si el tipo ya fue agregado para CAMIÓN
+                                                            if (tipoId) {
+                                                            mantenimientosCamion.push({
+                                                            tipoMantenimiento: tipoId,
+                                                            aplicaA: "CAMION",
+                                                            observacion: obs,
+                                                            estado: estado
+                                                            });
+                                                            }
+                                                            });
 
-                                                                                                                                                        const existe = mantenimientosCamion.some(m => Number(m.tipoMantenimiento) === Number(tipo));
+                                                            // --- ACOPLADO precargados ---
+                                                            $('#tablaMantenimientosAcoplado tbody tr').each(function () {
 
+                                                            const fila = $(this);
+                                                            const tipoId = Number(fila.data('tipo-id'));
+                                                            const estado = fila.data('estado');
+                                                            const obs = fila.data('obs');
 
-                                                                                                                                                        if (existe) {
-                                                                                                                                                            alert("Ya se ha agregado este tipo de mantenimiento para el camión.");
-                                                                                                                                                            return;
-                                                                                                                                                        }
+                                                            if (tipoId) {
+                                                            mantenimientosAcoplado.push({
+                                                            tipoMantenimiento: tipoId,
+                                                            aplicaA: "ACOPLADO",
+                                                            observacion: obs,
+                                                            estado: estado
+                                                            });
+                                                            }
+                                                            });
 
-                                                                                                                                                        const mantenimiento = {
-                                                                                                                                                            tipoMantenimiento: tipo,
-                                                                                                                                                            aplicaA: "CAMION",
-                                                                                                                                                            observacion: observacion,
-                                                                                                                                                            estado: tipoTexto
-                                                                                                                                                        };
+                                                            $('#addMantenimientoCamion').click(function () {
 
-                                                                                                                                                        mantenimientosCamion.push(mantenimiento);
+                                                            $('#idCamion').prop('disabled', true);
 
-// Agregar fila visualmente
-                                                                                                                                                        const fila = `
-<tr class="text-center text-secondary">
-    <td>${tipoTexto}</td>
-    <td>
-        <input type="text"
-               class="form-control form-control-sm text-secondary obs-camion"
-               value="${observacion}"
-               placeholder="Ingrese Observación..."
-               maxlength="45">
-    </td>
-    <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
-</tr>`;
+                                                            if ($('#idCamionHidden').length === 0) {
+                                                            $('<input>').attr({
+                                                            type: 'hidden',
+                                                            id: 'idCamionHidden',
+                                                            name: 'idCamion',
+                                                            value: $('#idCamion').val()
+                                                            }).appendTo('form');
+                                                            } else {
+                                                            $('#idCamionHidden').val($('#idCamion').val());
+                                                            }
+
+                                                            const tipo = $('#tipo').val();
+                                                            const tipoTexto = $('#tipo option:selected').text();
+                                                            const observacion = $('#observacionC').val();
+
+                                                            if (!tipo) {
+                                                            alert("Debe seleccionar Tipo antes de agregar.");
+                                                            return;
+                                                            }
+
+                                                            const existe = mantenimientosCamion.some(m => Number(m.tipoMantenimiento) === Number(tipo));
+                                                            if (existe) {
+                                                            alert("Ya se ha agregado este tipo de mantenimiento para el camión.");
+                                                            return;
+                                                            }
+
+                                                            // ✅ Guardar en minutos en el array
+                                                            const mantenimiento = {
+                                                            tipoMantenimiento: Number(tipo),
+                                                            aplicaA: "CAMION",
+                                                            observacion: observacion,
+                                                            estado: tipoTexto
+                                                            };
+
+                                                            mantenimientosCamion.push(mantenimiento);
+
+                                                            const fila = `
+                                                            <tr class="text-center text-secondary fila-mant-camion bg-light"
+                                                            data-tipo-id="${tipo}">
+                                                            <td>${tipoTexto}</td>
+                                                            <td>
+                                                            <input type="text"
+                                                            class="form-control border-0 bg-light form-control-sm text-secondary obs-camion"
+                                                            value="${observacion || ''}"
+                                                            placeholder="Ingrese Observación..."
+                                                            maxlength="120">
+                                                            </td>
+                                                            <td>
+                                                            <button type="button" class="btn-eliminar eliminarFilaCamion">❌</button>
+                                                            </td>
+                                                            </tr>`;
+
+                                                            $('#tablaMantenimientosCamion tbody').append(fila);
+
+                                                            $('#tipo').val("");
+                                                            $('#observacionC').val("");
+                                                            });
 
 
-                                                                                                                                                        $('#tablaMantenimientosCamion tbody').append(fila);
+                                                            $(document).on('click', '.eliminarFilaCamion', function () {
+                                                            const index = $(this).closest('tr').index();
+                                                            mantenimientosCamion.splice(index, 1);
+                                                            $(this).closest('tr').remove();
+                                                            });
 
-                                                                                                                                                        document.getElementById("tipo").value = "";
-                                                                                                                                                        document.getElementById("observacionC").value = "";
+                                                            // --- ACOPLADO ---
+                                                            $('#addMantenimientoAcoplado').click(function () {
 
-                                                                                                                                                    });
+                                                            $('#idAcoplado').prop('disabled', true);
 
-                                                                                                                                                    $(document).on('click', '.eliminarFilaCamion', function () {
-                                                                                                                                                        const index = $(this).closest('tr').index();
-                                                                                                                                                        mantenimientosCamion.splice(index, 1);
-                                                                                                                                                        $(this).closest('tr').remove();
-                                                                                                                                                    });
+                                                            if ($('#idAcopladoHidden').length === 0) {
+                                                            $('<input>').attr({
+                                                            type: 'hidden',
+                                                            id: 'idAcopladoHidden',
+                                                            name: 'idAcoplado',
+                                                            value: $('#idAcoplado').val()
+                                                            }).appendTo('form');
+                                                            } else {
+                                                            $('#idAcopladoHidden').val($('#idAcoplado').val());
+                                                            }
 
-// --- ACOPLADO ---
-                                                                                                                                                    $('#addMantenimientoAcoplado').click(function () {
+                                                            const tipo = $('#tipoA').val();
+                                                            const tipoTexto = $('#tipoA option:selected').text();
+                                                            const observacion = $('#observacionA').val();
 
-                                                                                                                                                        $('#idAcoplado').prop('disabled', true);
+                                                            if (!tipo) {
+                                                            alert("Debe seleccionar Tipo antes de agregar.");
+                                                            return;
+                                                            }
 
-                                                                                                                                                        if ($('#idAcopladoHidden').length === 0) {
-                                                                                                                                                            $('<input>').attr({
-                                                                                                                                                                type: 'hidden',
-                                                                                                                                                                id: 'idAcopladoHidden',
-                                                                                                                                                                name: 'idAcoplado',
-                                                                                                                                                                value: $('#idAcoplado').val()
-                                                                                                                                                            }).appendTo('form');
-                                                                                                                                                        } else {
-                                                                                                                                                            $('#idAcopladoHidden').val($('#idAcoplado').val());
-                                                                                                                                                        }
+                                                            const existe = mantenimientosAcoplado.some(m => Number(m.tipoMantenimiento) === Number(tipo));
+                                                            if (existe) {
+                                                            alert("Ya se ha agregado este tipo de mantenimiento para el acoplado.");
+                                                            return;
+                                                            }
 
-                                                                                                                                                        const tipo = $('#tipoA').val();
-                                                                                                                                                        const tipoTexto = $('#tipoA option:selected').text();
-                                                                                                                                                        const observacion = $('#observacionA').val();
+                                                            const mantenimiento = {
+                                                            tipoMantenimiento: tipo,
+                                                            aplicaA: "ACOPLADO",
+                                                            observacion: observacion,
+                                                            estado: tipoTexto
+                                                            };
 
-                                                                                                                                                        if (!tipo) {
-                                                                                                                                                            alert("Debe seleccionar Tipo antes de agregar.");
-                                                                                                                                                            return;
-                                                                                                                                                        }
+                                                            mantenimientosAcoplado.push(mantenimiento);
 
-// 🔹 Validar si el tipo ya fue agregado para ACOPLADO
-                                                                                                                                                        const existe = mantenimientosAcoplado.some(m => Number(m.tipoMantenimiento) === Number(tipo));
-                                                                                                                                                        if (existe) {
-                                                                                                                                                            alert("Ya se ha agregado este tipo de mantenimiento para el acoplado.");
-                                                                                                                                                            return;
-                                                                                                                                                        }
+                                                            const fila = `
 
-                                                                                                                                                        const mantenimiento = {
-                                                                                                                                                            tipoMantenimiento: tipo,
-                                                                                                                                                            aplicaA: "ACOPLADO",
-                                                                                                                                                            observacion: observacion,
-                                                                                                                                                            estado: tipoTexto
-                                                                                                                                                        };
+                                                            <tr class="text-center text-secondary fila-mant-acoplado bg-light"
+                                                            data-tipo-id="${tipo}">
+                                                            <td>${tipoTexto}</td>
+                                                            <td>
+                                                            <input type="text"
+                                                            class="form-control border-0 bg-light form-control-sm text-secondary obs-acoplado"
+                                                            value="${observacion || ''}"
+                                                            placeholder="Ingrese Observación..."
+                                                            maxlength="120">
+                                                            </td>
+                                                            <td>
+                                                            <button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button>
+                                                            </td>
+                                                            </tr>`;
 
-                                                                                                                                                        mantenimientosAcoplado.push(mantenimiento);
+                                                            $('#tablaMantenimientosAcoplado tbody').append(fila);
 
-                                                                                                                                                        const fila = `
-<tr class="text-center text-secondary">
-    <td>${tipoTexto}</td>
-    <td>
-        <input type="text"
-               class="form-control form-control-sm text-secondary obs-acoplado"
-               value="${observacion}"
-               placeholder="Ingrese Observación..."
-               maxlength="45">
-    </td>
-    <td><button type="button" class="btn-eliminar eliminarFilaAcoplado">❌</button></td>
-</tr>`;
+                                                            $('#tipoA').val("");
+                                                            $('#observacionA').val("");
+                                                            });
 
-                                                                                                                                                        $('#tablaMantenimientosAcoplado tbody').append(fila);
+                                                            $(document).on('click', '.eliminarFilaAcoplado', function () {
+                                                            const index = $(this).closest('tr').index();
+                                                            mantenimientosAcoplado.splice(index, 1);
+                                                            $(this).closest('tr').remove();
+                                                            });
 
-                                                                                                                                                        document.getElementById("tipoA").value = "";
-                                                                                                                                                        document.getElementById("observacionA").value = "";
+                                                            $('#formulario').submit(function (event) {
 
-                                                                                                                                                    });
+                                                            if (mantenimientosCamion.length === 0 && mantenimientosAcoplado.length === 0) {
+                                                            alert("Debe agregar al menos un Mantenimiento para Camión o Acoplado.");
+                                                            event.preventDefault();
+                                                            return;
+                                                            }
 
-                                                                                                                                                    $(document).on('click', '.eliminarFilaAcoplado', function () {
-                                                                                                                                                        const index = $(this).closest('tr').index();
-                                                                                                                                                        mantenimientosAcoplado.splice(index, 1);
-                                                                                                                                                        $(this).closest('tr').remove();
-                                                                                                                                                    });
+                                                            $('#tablaMantenimientosCamion tbody tr').each(function (index) {
 
-// --- ENVIAR FORMULARIO ---
-                                                                                                                                                    $('#formulario').submit(function (event) {
-                                                                                                                                                        // 🔹 Validar que haya al menos un mantenimiento cargado
-                                                                                                                                                        if (mantenimientosCamion.length === 0 && mantenimientosAcoplado.length === 0) {
-                                                                                                                                                            alert("Debe agregar al menos un tipo de mantenimiento para camión o acoplado antes de enviar el formulario.");
-                                                                                                                                                            event.preventDefault();
-                                                                                                                                                            return;
-                                                                                                                                                        }
+                                                            const fila = $(this);
 
-                                                                                                                                                        // 🔹 Sincronizar OBSERVACIONES desde la tabla hacia los arrays JS
+                                                            const obs = fila.find('input.obs-camion').val() || "";
 
-                                                                                                                                                        // CAMIÓN
-                                                                                                                                                        $('#tablaMantenimientosCamion tbody tr').each(function (index) {
-                                                                                                                                                            const inputObs = $(this).find('input.obs-camion');
-                                                                                                                                                            if (inputObs.length) {
-                                                                                                                                                                mantenimientosCamion[index].observacion = inputObs.val();
-                                                                                                                                                            }
-                                                                                                                                                        });
+                                                            mantenimientosCamion[index].observacion = obs;
 
-                                                                                                                                                        // ACOPLADO
-                                                                                                                                                        $('#tablaMantenimientosAcoplado tbody tr').each(function (index) {
-                                                                                                                                                            const inputObs = $(this).find('input.obs-acoplado');
-                                                                                                                                                            if (inputObs.length) {
-                                                                                                                                                                mantenimientosAcoplado[index].observacion = inputObs.val();
-                                                                                                                                                            }
-                                                                                                                                                        });
+                                                            });
 
-                                                                                                                                                        // Mostrar spinner
-                                                                                                                                                        document.getElementById("spinner").style.display = "block";
+                                                            // 🔹 Sincronizar ACOPLADO
+                                                            $('#tablaMantenimientosAcoplado tbody tr').each(function (index) {
 
-                                                                                                                                                        // 🔹 Crear inputs ocultos con los JSON para enviar al backend
-                                                                                                                                                        $('<input>').attr({
-                                                                                                                                                            type: 'hidden',
-                                                                                                                                                            name: 'mantenimientosCamionJson',
-                                                                                                                                                            value: JSON.stringify(mantenimientosCamion)
-                                                                                                                                                        }).appendTo('#formulario');
+                                                            const fila = $(this);
 
-                                                                                                                                                        $('<input>').attr({
-                                                                                                                                                            type: 'hidden',
-                                                                                                                                                            name: 'mantenimientosAcopladoJson',
-                                                                                                                                                            value: JSON.stringify(mantenimientosAcoplado)
-                                                                                                                                                        }).appendTo('#formulario');
-                                                                                                                                                    });
-                                                                        </script>
-                                                                        </body>
-                                                                        </html>
+                                                            // Observación
+                                                            const obs = fila.find('input.obs-acoplado').val() || "";
 
+                                                            mantenimientosAcoplado[index].observacion = obs;
+
+                                                            });
+
+                                                            // 🔹 Crear inputs ocultos con los JSON para enviar al backend
+                                                            $('<input>').attr({
+                                                            type: 'hidden',
+                                                            name: 'mantenimientosCamionJson',
+                                                            value: JSON.stringify(mantenimientosCamion)
+                                                            }).appendTo('#formulario');
+
+                                                            $('<input>').attr({
+                                                            type: 'hidden',
+                                                            name: 'mantenimientosAcopladoJson',
+                                                            value: JSON.stringify(mantenimientosAcoplado)
+                                                            }).appendTo('#formulario');
+                                                            });
+
+                                                        </script>
+                                                        </body>
+                                                        </html>

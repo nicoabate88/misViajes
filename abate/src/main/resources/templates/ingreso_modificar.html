@@ -5,15 +5,23 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                     <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <style>
+                            .btn-eliminar {
+                                background: none;
+                                border: none;
+                                font-size: 16px;
+                                cursor: pointer;
+                            }
+                        </style>
                         <script>
                             window.onload = function () {
-                                var fechaActual = new Date();
-                                var dia = String(fechaActual.getDate()).padStart(2, '0');
-                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-                                var anio = fechaActual.getFullYear();
-                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+                            var fechaActual = new Date();
+                            var dia = String(fechaActual.getDate()).padStart(2, '0');
+                            var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                            var anio = fechaActual.getFullYear();
+                            var fechaFormateada = anio + '-' + mes + '-' + dia;
 
-                                document.getElementById('fecha').max = fechaFormateada;
+                            document.getElementById('fecha').max = fechaFormateada;
                             };
                         </script>
                         </head>
@@ -21,7 +29,7 @@
                             <div class="card-header mb-2">
                                 <div class="row">
                                     <div class="col-2">   
-                                        <a title="Volver" onclick="window.history.back();" type="button">
+                                        <a title="Volver" th:href="@{/caja/mostrarTransaccionAdmin(id=${idTransaccion}, idCaja=${idCaja}, desde=${desde}, hasta=${hasta})}" type="button">
                                             <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                 <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                             </svg> 
@@ -31,7 +39,7 @@
                                         <h4>Modificar Ingreso</h4>
                                     </div>
                                     <div title="Ir a Eliminar Ingreso" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
-                                        <a th:href="@{/ingreso/eliminar/__${ingreso.id}__}">
+                                        <a th:href="@{/ingreso/eliminar(id=${ingreso.id}, idTransaccion=${idTransaccion}, idCaja=${idCaja}, desde=${desde}, hasta=${hasta})}">
                                             <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
                                                 <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
@@ -43,76 +51,246 @@
                                 <div class="card border-secondary p-2" id="color-card"> 
                                     <form id="form" th:action="@{/ingreso/modifica}" method="POST">
                                         <input hidden th:value="${ingreso.id}" name="id"> 
-                                            <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="chofer" class="form-floting text-secondary">Chofer</label>
-                                                    <input type="text" class="form-control" id="chofer" th:value="${ingreso.chofer.nombre}" disabled readonly>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-8 col-xl-8 mb-2">
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
-                                                    <input type="date" class="form-control" id="fecha" th:value="${ingreso.fecha}" name="fecha" required>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="importe" class="form-label text-secondary">Importe*</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text">$</span>
-                                                        <input type="number" step="0.01" class="form-control" id="importe" th:value="${ingreso.importe}" name="importe" required>
-                                                    </div>    
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8 mb-5">
-                                                    <label for="observacion" class="form-label text-secondary">Observación*</label>
-                                                    <input type="text" class="form-control" id="observacion" th:value="${ingreso.observacion}" name="observacion" required minlength="1" maxlength="600" size="600">
-                                                </div>
-                                                <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                                </div>
-                                            </div>
-                                            <div class="text-center mb-2">
-                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Ingreso">Modificar</button>
-                                            </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
-                                            </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div id="spinner" class="modal" style="display: none;">
-                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                        <span class="sr-only">Cargando...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <script>
-                                document.getElementById('form').addEventListener('submit', function (event) {
+                                                <input hidden th:value="${idCaja}" name="idCaja">
+                                                    <input hidden th:value="${desde}" name="desde">
+                                                        <input hidden th:value="${hasta}" name="hasta">
+                                                            <div class="row">
+                                                                <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
+                                                                    <label for="chofer" class="form-floting text-secondary">Chofer</label>
+                                                                    <input type="text" class="form-control" id="chofer" th:value="${ingreso.chofer.nombre}" disabled readonly>
+                                                                </div>
+                                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                                    <input type="date" class="form-control" id="fecha" th:value="${ingreso.fecha}" name="fecha" required>
+                                                                </div>   
+                                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                                    <label for="importe" class="form-label text-secondary">Importe*</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text">$</span>
+                                                                        <input type="text" class="form-control" id="importe" name="importe" readonly
+                                                                               th:value="${#numbers.formatDecimal(ingreso.importe, 1, 'POINT', 2, 'COMMA')}">
+                                                                    </div>    
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-12 mb-3">
+                                                                    <label for="observacion" class="form-label text-secondary">Observación*</label>
+                                                                    <input type="text" class="form-control" id="observacion" th:value="${ingreso.observacion}" name="observacion" maxlength="600" size="600">
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                                <h5 class="text-secondary">Valores de Ingreso</h5>
+                                                                <!-- Alta de nuevo valor -->
+                                                                <div class="row">
+                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                                        <label class="form-label text-secondary">Tipo</label>
+                                                                        <select id="tipoValor" class="form-control">
+                                                                            <option value="">Seleccione</option>
+                                                                            <option th:each="t : ${tiposValor}" th:value="${t}" th:text="${t}"></option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                                        <label class="form-label text-secondary">Importe</label>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-text">$</span>
+                                                                            <input type="number" step="0.01" id="importeValor" class="form-control">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-10 col-sm-10 col-md-4 col-lg-5 col-xl-5 mb-2">
+                                                                        <label class="form-label text-secondary">Observación</label>
+                                                                        <input type="text" id="obsValor" class="form-control">
+                                                                    </div>
+                                                                    <div class="col-1">
+                                                                        <div class="form-floating">
+                                                                            <label class="form-label text-white"></label><br><br>
+                                                                                    <button type="button" class="btn btn-outline-primary border-primary p-1"
+                                                                                            onclick="agregarValor()" title="Agregar Valor">
+                                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
+                                                                                             class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                    </div>
+                                                                                    </div>
+                                                                                    </div>
+                                                                                    <!-- Tabla -->
+                                                                                    <div class="table-responsive">
+                                                                                        <table class="table table-borderless table-sm text-center">
+                                                                                            <thead>
+                                                                                                <tr id="darkblue">
+                                                                                                    <td>Tipo</td>
+                                                                                                    <td>Importe</td>
+                                                                                                    <td>Observación</td>
+                                                                                                    <td>Acción</td>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody id="tablaValores" style="color: dimgray">
+                                                                                            </tbody>
+                                                                                            <tfoot>
+                                                                                                <tr class="total-row" id="dimgray">
+                                                                                                    <td><b>TOTAL</b></td>
+                                                                                                    <td id="totalGeneral"><strong>$0,00</strong></td>
+                                                                                                    <td></td>
+                                                                                                    <td></td>
+                                                                                                </tr>
+                                                                                            </tfoot>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                    <br>
+                                                                                        <div class="text-center mb-2">
+                                                                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar Ingreso">Modificar</button>
+                                                                                        </div>
+                                                                                        <div class="text-center">
+                                                                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/caja/mostrarTransaccionAdmin(id=${idTransaccion}, idCaja=${idCaja}, desde=${desde}, hasta=${hasta})}" title="Cancelar">Cancelar</a>
+                                                                                        </div>
+                                                                                        <div id="hiddenValoresContainer"></div>
+                                                                                        </form>
+                                                                                        </div>
+                                                                                        </div>
+                                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <script>
+                                                                                            document.getElementById('form').addEventListener('submit', function (event) {
 
-                                    const importe = parseInt(document.getElementById('importe').value);
+                                                                                            const importe = parseInt(document.getElementById('importe').value);
 
-                                    if (importe <= 0) {
-                                        alert('Importe debe ser mayor que 0');
-                                        event.preventDefault();
-                                    }
-                                });
-                                const conceptoInput = document.getElementById('observacion');
-                                const maxLength = 600;
+                                                                                            if (importe <= 0) {
+                                                                                            alert('Importe debe ser mayor que 0');
+                                                                                            event.preventDefault();
+                                                                                            }
+                                                                                            });
+                                                                                            const conceptoInput = document.getElementById('observacion');
+                                                                                            const maxLength = 600;
 
-                                conceptoInput.addEventListener('input', function () {
-                                    if (conceptoInput.value.length > maxLength) {
-                                        conceptoInput.value = conceptoInput.value.slice(0, maxLength);
-                                    }
-                                });
-                            </script>
-                            <script>
-                                document.getElementById("form").addEventListener("submit", function () {
-                                    document.getElementById("spinner").style.display = "block";
-                                });
-                            </script>
-                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                        </body>
-                        </html>
+                                                                                            conceptoInput.addEventListener('input', function () {
+                                                                                            if (conceptoInput.value.length > maxLength) {
+                                                                                            conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                                                                            }
+                                                                                            });
+                                                                                        </script>
+                                                                                        <script>
+                                                                                            document.getElementById("form").addEventListener("submit", function(e){
+
+                                                                                            if (valores.length === 0) {
+                                                                                            e.preventDefault();
+                                                                                            alert("Debe agregar al menos un valor.");
+                                                                                            return;
+                                                                                            }
+
+                                                                                            // Si pasa la validación recién mostramos spinner
+                                                                                            document.getElementById("spinner").style.display = "block";
+                                                                                            });
+                                                                                        </script>
+                                                                                        <script th:inline="javascript">
+
+                                                                                            let valores = [];
+
+                                                                                            function formatoMonedaAR(n) {
+                                                                                            return Number(n).toLocaleString('es-AR', {
+                                                                                            minimumFractionDigits: 2,
+                                                                                            maximumFractionDigits: 2
+                                                                                            });
+                                                                                            }
+
+                                                                                            function agregarValor() {
+                                                                                            let tipo = document.getElementById("tipoValor").value;
+                                                                                            let importe = parseFloat(document.getElementById("importeValor").value);
+                                                                                            let obs = document.getElementById("obsValor").value;
+
+                                                                                            if (!tipo) { alert("Debe seleccionar un tipo de valor."); return; }
+                                                                                            if (!importe || importe <= 0) { alert("Ingrese un importe válido."); return; }
+
+                                                                                            valores.push({
+                                                                                            tipo: tipo,
+                                                                                            importe: importe,
+                                                                                            observacion: obs
+                                                                                            });
+
+                                                                                            renderTabla();
+                                                                                            limpiarInputs();
+                                                                                            }
+
+                                                                                            function renderTabla() {
+                                                                                            let tabla = document.getElementById("tablaValores");
+                                                                                            tabla.innerHTML = "";
+
+                                                                                            let total = 0;
+
+                                                                                            valores.forEach((v, index) => {
+                                                                                            total += Number(v.importe);
+
+                                                                                            tabla.insertAdjacentHTML("beforeend", `
+                                                                                            <tr>
+                                                                                            <td>${v.tipo}</td>
+                                                                                            <td>$${formatoMonedaAR(v.importe)}</td>
+                                                                                            <td>${v.observacion || ''}</td>
+                                                                                            <td><button type="button" class="btn-eliminar" onclick="eliminarValor(${index})">❌</button></td>
+                                                                                            </tr>
+                                                                                            `);
+                                                                                            });
+
+                                                                                            document.getElementById("totalGeneral").innerHTML =
+                                                                                            "<strong>$" + formatoMonedaAR(total) + "</strong>";
+
+                                                                                            document.getElementById("importe").value = formatoMonedaAR(total);
+
+                                                                                            generarInputsHidden();
+                                                                                            }
+
+                                                                                            function eliminarValor(index) {
+                                                                                            valores.splice(index, 1);
+                                                                                            renderTabla();
+                                                                                            }
+
+                                                                                            function limpiarInputs() {
+                                                                                            document.getElementById("tipoValor").value = "";
+                                                                                            document.getElementById("importeValor").value = "";
+                                                                                            document.getElementById("obsValor").value = "";
+                                                                                            }
+
+                                                                                            function generarInputsHidden() {
+                                                                                            const container = document.getElementById("hiddenValoresContainer");
+                                                                                            container.innerHTML = "";
+
+                                                                                            valores.forEach((v) => {
+
+                                                                                            const inputImporte = document.createElement("input");
+                                                                                            inputImporte.type = "hidden";
+                                                                                            inputImporte.name = "importes";
+                                                                                            inputImporte.value = v.importe;
+                                                                                            container.appendChild(inputImporte);
+
+                                                                                            const inputObs = document.createElement("input");
+                                                                                            inputObs.type = "hidden";
+                                                                                            inputObs.name = "observacionesValores";
+                                                                                            inputObs.value = v.observacion || "";
+                                                                                            container.appendChild(inputObs);
+
+                                                                                            const inputTipo = document.createElement("input");
+                                                                                            inputTipo.type = "hidden";
+                                                                                            inputTipo.name = "tipos";
+                                                                                            inputTipo.value = v.tipo;
+                                                                                            container.appendChild(inputTipo);
+                                                                                            });
+                                                                                            }
+
+                                                                                            /*[# th:each="v : ${ingreso.valores}"]*/
+                                                                                            valores.push({
+                                                                                            tipo: /*[[${v.tipo}]]*/,
+                                                                                            importe: /*[[${v.importe}]]*/,
+                                                                                            observacion: /*[[${v.observacion}]]*/
+                                                                                            });
+                                                                                            /*[/]*/
+
+                                                                                            // Render inicial
+                                                                                            renderTabla();
+                                                                                        </script>
+                                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                                        </body>
+                                                                                        </html>

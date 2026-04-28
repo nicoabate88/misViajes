@@ -15,9 +15,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,37 +54,31 @@ public class ChoferControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
         return "chofer_registrar.html";
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/registro")
-    public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
-            @RequestParam String cuenta, @RequestParam String caja, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
-            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam Double porcentaje, @RequestParam String estado, 
+    public String registro(@RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion,
+            @RequestParam String cuenta, @RequestParam String caja, @RequestParam String verDocumentacion, @RequestParam String documentacion,
+            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam Double porcentaje, @RequestParam String estado,
             @RequestParam String nombreUsuario, @RequestParam String password, @RequestParam String password2, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
 
-            choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, idAcoplado, caja, cuenta, verDocumentacion, documentacion,
+            choferServicio.crearChofer(logueado.getIdOrg(), nombre, cuil, idCamion, caja, cuenta, verDocumentacion, documentacion,
                     verMantenimiento, mantenimiento, nombreUsuario, porcentaje, estado, password, password2);
 
             return "redirect:/chofer/registrado";
 
         } catch (MiException ex) {
-            
-            if(idCamion != null ){
+
+            if (idCamion != null) {
                 Camion camion = camionServicio.buscarCamion(idCamion);
                 modelo.put("camion", camion);
-            } 
-            
-            if(idAcoplado != null ){
-                Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
-                modelo.put("acoplado", acoplado);
             }
 
             modelo.put("nombre", nombre);
@@ -94,7 +92,6 @@ public class ChoferControlador {
             modelo.put("nombreUsuario", nombreUsuario);
             modelo.put("porcentaje", porcentaje);
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.put("error", ex.getMessage());
 
             return "chofer_registrar.html";
@@ -121,19 +118,18 @@ public class ChoferControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Usuario> choferes = choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg());
         Boolean flag = false;
-        
-        for(Usuario c : choferes){
-            if(c.getCaja().equalsIgnoreCase("SI")){
-                flag = true;
-            }
+
+         if (!choferes.isEmpty()) {
+            flag = true;
         }
-        
+
         modelo.put("flag", flag);
         modelo.addAttribute("choferes", choferes);
 
         return "chofer_listar.html";
+        
     }
-    
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarFiltro")
     public String listarFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
@@ -144,7 +140,13 @@ public class ChoferControlador {
 
         if (filtrarInhabilitados) {
             // lógica cuando el checkbox está marcado
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            Boolean flag = false;
+            List<Usuario> choferes = choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg());
+            if (!choferes.isEmpty()) {
+            flag = true;
+            }
+            modelo.put("flag", flag);
+            modelo.addAttribute("choferes", choferes);
             modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
 
             return "chofer_listar.html";
@@ -158,7 +160,13 @@ public class ChoferControlador {
 
         } else {
 
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+            Boolean flag = false;
+            List<Usuario> choferes = choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg());
+            if (!choferes.isEmpty()) {
+            flag = true;
+            }
+            modelo.put("flag", flag);
+            modelo.addAttribute("choferes", choferes);
 
             return "chofer_listar.html";
 
@@ -175,10 +183,10 @@ public class ChoferControlador {
         return "chofer_mostrar.html";
 
     }
-    
+
     @GetMapping("/detalle/{id}")
     public String obtenerDetalle(@PathVariable Long id, ModelMap modelo) {
-        
+
         modelo.put("chofer", choferServicio.buscarChofer(id));
 
         return "fragmentos/detalle_chofer :: historialFragment";
@@ -193,7 +201,6 @@ public class ChoferControlador {
 
         modelo.put("chofer", choferServicio.buscarChofer(id));
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
         return "chofer_modificar.html";
 
@@ -201,15 +208,15 @@ public class ChoferControlador {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping("/modifica/{id}")
-    public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion, 
-            @RequestParam(required = false) Long idAcoplado, @RequestParam String verDocumentacion, @RequestParam String documentacion, 
-            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam Double porcentaje, @RequestParam String estado,  
+    public String modifica(@RequestParam Long id, @RequestParam String nombre, @RequestParam Long cuil, @RequestParam(required = false) Long idCamion,
+            @RequestParam String verDocumentacion, @RequestParam String documentacion,
+            @RequestParam String verMantenimiento, @RequestParam String mantenimiento, @RequestParam Double porcentaje, @RequestParam String estado,
             @RequestParam String nombreUsuario, ModelMap modelo, HttpSession session) {
 
         try {
-            
-            choferServicio.modificarChofer(id, nombre, cuil, idCamion, idAcoplado, verDocumentacion, documentacion, verMantenimiento, mantenimiento, nombreUsuario, porcentaje, estado);
- 
+
+            choferServicio.modificarChofer(id, nombre, cuil, idCamion, verDocumentacion, documentacion, verMantenimiento, mantenimiento, nombreUsuario, porcentaje, estado);
+
             return "redirect:/chofer/modificado/" + id;
 
         } catch (MiException ex) {
@@ -218,7 +225,6 @@ public class ChoferControlador {
 
             modelo.put("chofer", choferServicio.buscarChofer(id));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             modelo.put("error", ex.getMessage());
 
             return "chofer_modificar.html";
@@ -226,14 +232,14 @@ public class ChoferControlador {
         }
 
     }
-    
+
     @GetMapping("/modificado/{id}")
     public String modificado(@PathVariable Long id, ModelMap modelo) {
 
         modelo.put("chofer", choferServicio.buscarChofer(id));
         modelo.put("exito", "Chofer MODIFICADO con éxito");
 
-        return "chofer_registrado.html";     
+        return "chofer_registrado.html";
 
     }
 
@@ -256,14 +262,14 @@ public class ChoferControlador {
         return "redirect:/chofer/modificadoPsw/" + id;
 
     }
-    
+
     @GetMapping("/modificadoPsw/{id}")
     public String modificadoPsw(@PathVariable Long id, ModelMap modelo) {
 
         modelo.put("chofer", choferServicio.buscarChofer(id));
         modelo.put("exito", "Contraseña de Chofer MODIFICADA con éxito");
 
-        return "chofer_registrado.html";      
+        return "chofer_registrado.html";
 
     }
 
@@ -282,18 +288,18 @@ public class ChoferControlador {
     public String modificaPswChofer(@RequestParam Long id, @RequestParam String password, ModelMap modelo) {
 
         choferServicio.modificarPswChofer(id, password);
-        
+
         return "redirect:/chofer/modificadoPswChofer/" + id;
 
     }
-    
+
     @GetMapping("/modificadoPswChofer/{id}")
     public String modificadoPswChofer(@PathVariable Long id, ModelMap modelo) {
 
         modelo.put("chofer", choferServicio.buscarChofer(id));
         modelo.put("exito", "Contraseña MODIFICADA con éxito");
 
-        return "chofer_modificadoPsw.html";     
+        return "chofer_modificadoPsw.html";
 
     }
 
@@ -310,11 +316,10 @@ public class ChoferControlador {
     @GetMapping("/elimina/{id}")
     public String elimina(@PathVariable Long id, HttpSession session, ModelMap modelo) {
 
-
         try {
 
             choferServicio.eliminarChofer(id);
-            
+
             return "redirect:/chofer/eliminado";
 
         } catch (MiException ex) {
@@ -325,16 +330,23 @@ public class ChoferControlador {
             return "chofer_eliminar.html";
         }
     }
-    
+
     @GetMapping("/eliminado")
     public String eliminado(ModelMap modelo, HttpSession session) {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        modelo.put("id", logueado.getId());
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Usuario> choferes = choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg());
+        Boolean flag = false;
+
+         if (!choferes.isEmpty()) {
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("choferes", choferes);
         modelo.put("exito", "Chofer ELIMINADO con éxito");
 
-        return "index_admin.html";   
+        return "chofer_listar.html";
 
     }
 
@@ -343,25 +355,25 @@ public class ChoferControlador {
 
         String desde = obtenerFechaDesdeAño();
         String hasta = obtenerFechaHasta();
-                
+
         List<ChoferEstadistica> lista = choferServicio.estadisticaChofer(desde, hasta, id);
-        
+
         Boolean flag = true;
         if (lista.size() <= 1) {
             flag = false;
         }
-        
+
         for (ChoferEstadistica estadistica : lista) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-        } 
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
 
         Collections.sort(lista, ChoferEstadisticaComparador.ordenarMes);
 
@@ -373,28 +385,28 @@ public class ChoferControlador {
 
         return "chofer_estadistica.html";
     }
-    
+
     @PostMapping("/estadisticaFiltro")
-    public String estadisticaFiltro(@RequestParam Long idChofer, @RequestParam String desde, @RequestParam String hasta,  ModelMap modelo) throws ParseException {
-                
+    public String estadisticaFiltro(@RequestParam Long idChofer, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+
         List<ChoferEstadistica> lista = choferServicio.estadisticaChofer(desde, hasta, idChofer);
-        
+
         Boolean flag = true;
         if (lista.size() <= 1) {
             flag = false;
         }
-        
+
         for (ChoferEstadistica estadistica : lista) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-        } 
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
 
         Collections.sort(lista, ChoferEstadisticaComparador.ordenarMes);
 
@@ -406,7 +418,7 @@ public class ChoferControlador {
 
         return "chofer_estadistica.html";
     }
-    
+
     @GetMapping("/mostrarEstadistica")
     public String buscarEstadistica(ModelMap modelo, HttpSession session) throws ParseException {
 
@@ -421,17 +433,17 @@ public class ChoferControlador {
         }
 
         for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-            
-        } 
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+
+        }
 
         modelo.addAttribute("estadistica", estadisticasPorChofer);
         modelo.put("desde", desde);
@@ -440,31 +452,30 @@ public class ChoferControlador {
 
         return "chofer_estadisticaTodos.html";
     }
-    
+
     @PostMapping("/mostrarEstadisticaFiltro")
     public String buscarEstadisticaFiltro(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
+
         Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
         Boolean flag = true;
         if (estadisticasPorChofer.size() <= 1) {
             flag = false;
         }
-        
-         for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-         }
-         }
-        
-    
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
         modelo.addAttribute("estadistica", estadisticasPorChofer);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
@@ -472,103 +483,101 @@ public class ChoferControlador {
 
         return "chofer_estadisticaTodos.html";
     }
-    
-    
+
     @PostMapping("/exportarEstadisticaTodos")
     public String exportarEstadisticaTodos(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
+
         Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
-        
-         for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-         }
-        
-    
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
         modelo.addAttribute("estadistica", estadisticasPorChofer);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
 
         return "chofer_estadisticaTodosExportar.html";
-        
+
     }
-    
+
     @PostMapping("/exportaEstadisticaTodos")
     public void exportaEstadisticaTodos(@RequestParam String desde, @RequestParam String hasta, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
-    
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-               Map<Usuario, ChoferesEstadistica> estadisticas = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
-        
-         for (ChoferesEstadistica estadistica : estadisticas.values()) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-         }
-            
-    String htmlContent = generateHtmlFromEstadistica(estadisticas);
-    excelServicio.exportHtmlToExcelEstadisticaChoferes(htmlContent, response);
-    
+
+        Map<Usuario, ChoferesEstadistica> estadisticas = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+
+        for (ChoferesEstadistica estadistica : estadisticas.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        String htmlContent = generateHtmlFromEstadistica(estadisticas);
+        excelServicio.exportHtmlToExcelEstadisticaChoferes(htmlContent, response);
+
     }
-    
+
     @GetMapping("/imprimirEstadisticaTodos")
     public String imprimirEstadisticaTodos(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
+
         Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
-        
-         for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-         }
-        
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
         modelo.addAttribute("estadistica", estadisticasPorChofer);
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
 
         return "chofer_imprimirEstadisticaTodos.html";
-        
+
     }
-    
+
     @PostMapping("/estadisticaExportar")
     public String estadisticaExportar(@RequestParam String desde, @RequestParam String hasta, @RequestParam Long id, ModelMap modelo) throws ParseException {
 
         List<ChoferEstadistica> lista = choferServicio.estadisticaChofer(desde, hasta, id);
-        
+
         for (ChoferEstadistica estadistica : lista) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-        } 
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
 
         Collections.sort(lista, ChoferEstadisticaComparador.ordenarMesAsc);
 
@@ -586,18 +595,18 @@ public class ChoferControlador {
 
         List<ChoferEstadistica> lista = choferServicio.estadisticaChofer(desde, hasta, id);
         Usuario chofer = choferServicio.buscarChofer(id);
-        
+
         for (ChoferEstadistica estadistica : lista) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-        } 
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
 
         Collections.sort(lista, ChoferEstadisticaComparador.ordenarMesAsc);
 
@@ -605,23 +614,23 @@ public class ChoferControlador {
         excelServicio.exportHtmlToExcelChofer(htmlContent, response, chofer);
 
     }
-    
+
     @GetMapping("/imprimirEstadistica")
     public String imprimirEstadistica(@RequestParam Long idChofer, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         List<ChoferEstadistica> lista = choferServicio.estadisticaChofer(desde, hasta, idChofer);
-        
+
         for (ChoferEstadistica estadistica : lista) {
-           
-                if (estadistica.getKmRecorrido() > 0) {
-                    Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
-                    estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
-                    estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
-                } else {
-                    estadistica.setConsumo(0.0); 
-                    estadistica.setRentabilidad(0.0);
-                }
-        } 
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
 
         Collections.sort(lista, ChoferEstadisticaComparador.ordenarMesAsc);
 
@@ -631,11 +640,54 @@ public class ChoferControlador {
         modelo.put("hasta", hasta);
 
         return "chofer_imprimirEstadistica.html";
+
+    }
+    
+    @GetMapping("/imprimirChoferes")
+    public String imprimirChoferes(@RequestParam(required = false) Boolean inhabilitado, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg()));
+            
+            return "chofer_imprimirChoferes.html";
         
+        } else {
+
+            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+
+            return "chofer_imprimirChoferes.html";
+
+        }
+
+    }
+    
+    @PostMapping("/choferesExporta")
+    public void choferesExporta(@RequestParam(required = false) Boolean inhabilitado, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+        List<Usuario> choferes = new ArrayList();
+
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            choferes = choferServicio.bucarChoferesNombreAsc(logueado.getIdOrg());
+            
+        } else {
+
+            choferes = choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg());
+
+        }
+
+        String htmlContent = generateHtmlFromChoferes(choferes);
+        excelServicio.exportHtmlToExcelChoferesLista(htmlContent, response);
+
     }
 
-    
-            public String obtenerFechaDesdeAño() {
+    public String obtenerFechaDesdeAño() {
 
         LocalDate now = LocalDate.now();
 
@@ -648,7 +700,7 @@ public class ChoferControlador {
         return formattedDate;
 
     }
-    
+
     public String obtenerPrimerDiaMes() {
 
         LocalDate now = LocalDate.now();
@@ -663,7 +715,6 @@ public class ChoferControlador {
 
     }
 
-
     public String obtenerFechaHasta() {
 
         LocalDate now = LocalDate.now();
@@ -675,8 +726,8 @@ public class ChoferControlador {
         return formattedToday;
 
     }
-    
-        private String generateHtmlFromObjects(List<ChoferEstadistica> objects) {
+
+    private String generateHtmlFromObjects(List<ChoferEstadistica> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         sb.append("<thead><tr>"
@@ -706,38 +757,373 @@ public class ChoferControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
+
     private String generateHtmlFromEstadistica(Map<Usuario, ChoferesEstadistica> estadisticas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<table>");
+        sb.append("<thead><tr>")
+                .append("<th>Chofer</th>")
+                .append("<th>Viajes</th>")
+                .append("<th>KM</th>")
+                .append("<th>Diesel</th>")
+                .append("<th>Consumo</th>")
+                .append("<th>Gastos</th>")
+                .append("<th>Neto</th>")
+                .append("<th>Neto/KM</th>");
+        sb.append("</tr></thead>");
+
+        sb.append("<tbody>");
+        for (Map.Entry<Usuario, ChoferesEstadistica> entry : estadisticas.entrySet()) {
+            Usuario chofer = entry.getKey();
+            ChoferesEstadistica estadistica = entry.getValue();
+            sb.append("<tr>")
+                    .append("<td>").append(chofer.getNombre()).append("</td>")
+                    .append("<td>").append(estadistica.getFlete()).append("</td>")
+                    .append("<td>").append(estadistica.getKmRecorrido()).append("</td>")
+                    .append("<td>").append(estadistica.getLitro()).append("</td>")
+                    .append("<td>").append(estadistica.getConsumo()).append("</td>")
+                    .append("<td>").append(estadistica.getGasto()).append("</td>")
+                    .append("<td>").append(estadistica.getNeto()).append("</td>")
+                    .append("<td>").append(estadistica.getRentabilidad()).append("</td>");
+            sb.append("</tr>");
+        }
+        sb.append("</tbody></table>");
+        return sb.toString();
+    }
+    
+    private String generateHtmlFromChoferes(List<Usuario> choferes) {
     StringBuilder sb = new StringBuilder();
     sb.append("<table>");
-    sb.append("<thead><tr>")
-            .append("<th>Chofer</th>")
-            .append("<th>Viajes</th>")
-            .append("<th>KM</th>")
-            .append("<th>Diesel</th>")
-            .append("<th>Consumo</th>")
-            .append("<th>Gastos</th>")
-            .append("<th>Neto</th>")
-            .append("<th>Neto/KM</th>");
-    sb.append("</tr></thead>");
-
+    sb.append("<thead><tr>"
+            + "<th>Nombre</th>"
+            + "<th>CUIL</th>"
+            + "<th>Estado</th>"
+            + "<th>Camión</th>"
+            + "<th>Acoplado</th>"
+            + "</tr></thead>");
     sb.append("<tbody>");
-    for (Map.Entry<Usuario, ChoferesEstadistica> entry : estadisticas.entrySet()) {
-        Usuario chofer = entry.getKey();
-        ChoferesEstadistica estadistica = entry.getValue();
+    for (Usuario chofer : choferes) {
+        String dominioCamion = "-";
+        String dominioAcoplado = "-";
+        if (chofer.getCamion() != null) {
+            dominioCamion = chofer.getCamion().getDominio();
+            if (chofer.getCamion().getAcoplado() != null) {
+                dominioAcoplado = chofer.getCamion().getAcoplado().getDominio();
+            }
+        }
         sb.append("<tr>")
                 .append("<td>").append(chofer.getNombre()).append("</td>")
-                .append("<td>").append(estadistica.getFlete()).append("</td>")
-                .append("<td>").append(estadistica.getKmRecorrido()).append("</td>")
-                .append("<td>").append(estadistica.getLitro()).append("</td>")
-                .append("<td>").append(estadistica.getConsumo()).append("</td>")
-                .append("<td>").append(estadistica.getGasto()).append("</td>")
-                .append("<td>").append(estadistica.getNeto()).append("</td>")
-                .append("<td>").append(estadistica.getRentabilidad()).append("</td>");
-        sb.append("</tr>");
+                .append("<td>").append(chofer.getCuil()).append("</td>")
+                .append("<td>").append(chofer.getEstado()).append("</td>")
+                .append("<td>").append(dominioCamion).append("</td>")
+                .append("<td>").append(dominioAcoplado).append("</td>")
+                .append("</tr>");
     }
+
     sb.append("</tbody></table>");
     return sb.toString();
-}
+   
+    }
+
+    @PostMapping("/estadisticaViajeDesc")
+    public String estadisticaViajeDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getFlete).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
+
+    @PostMapping("/estadisticaKmDesc")
+    public String estadisticaKmDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getKmRecorrido).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
+
+    @PostMapping("/estadisticaDieselDesc")
+    public String estadisticaDieselDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getLitro).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
+    
+    @PostMapping("/estadisticaConsumoDesc")
+    public String estadisticaConsumoDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getConsumo).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
+
+    @PostMapping("/estadisticaGastoDesc")
+    public String estadisticaGastoDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getGasto).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
+
+    @PostMapping("/estadisticaNetoDesc")
+    public String estadisticaNetoDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getNeto).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
+
+    @PostMapping("/estadisticaRentabilidadDesc")
+    public String estadisticaRentabilidadDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Usuario, ChoferesEstadistica> estadisticasPorChofer = choferServicio.estadisticaChoferes(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorChofer.size() <= 1) {
+            flag = false;
+        }
+
+        for (ChoferesEstadistica estadistica : estadisticasPorChofer.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Usuario, ChoferesEstadistica> estadisticasOrdenadas = estadisticasPorChofer.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Usuario, ChoferesEstadistica>comparingByValue(
+                        Comparator.comparing(ChoferesEstadistica::getRentabilidad).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "chofer_estadisticaTodos.html";
+    }
 
 }

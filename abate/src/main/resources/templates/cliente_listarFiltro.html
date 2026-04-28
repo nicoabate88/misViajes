@@ -34,6 +34,7 @@
                                             <label for="chofer" class="form-floting">Cliente</label>  
                                             <select class="form-control border-secondary" id="chofer" name="id">
                                                 <option selected th:text="${cliente.nombre}"></option>
+                                                <option th:value=null>Todos</option>
                                                 <option th:each="cliente : ${clientes}"
                                                         th:value="${cliente.id}"
                                                         th:text="${cliente.nombre}"/>
@@ -51,45 +52,34 @@
                                 </div>
                                 <div class="card border-secondary p-3 mb-1" id="color-card">
                                     <h6 th:text="'Cliente '+${cliente.nombre}"></h6>
-                                    <h6 class="mb-1" id="dimgray" th:text="'CUIT '+${cliente.cuit}"></h6>
-                                    <p class="mb-0"  id="dimgray" th:text="'Localidad '+${cliente.localidad}"></p>
-                                    <p class="mb-0"  id="dimgray" th:text="'Domicilio '+${cliente.direccion}"></p>
-                                    <p class="mb-0"  id="dimgray" th:text="'Teléfono '+${cliente.telefono}"></p>
-                                    <p class="mb-0" id="dimgray" th:text="'Email '+${cliente.email}"></p>
-                                    <h6 class="mb-5" th:if="${cliente.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${cliente.estado}"></h6>
-                                    <h6 th:if="${cliente.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${cliente.estado}"></h6>
-                                    <div class="row text-center">
-                                        <div class="col-4">
-                                            <a th:href= "@{/flete/listarIdCliente/__${cliente.id}__}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
-                                                    <path d="M4 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4m8-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4M.115 3.18A.5.5 0 0 1 .5 3h15a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 14 12H2a.5.5 0 0 1-.491-.408l-1.5-8a.5.5 0 0 1 .106-.411zm.987.82 1.313 7h11.17l1.313-7z"/>
-                                                    <path fill-rule="evenodd" d="M6 1a2.498 2.498 0 0 1 4 0c.818 0 1.545.394 2 1 .67 0 1.552.57 2 1h-2c-.314 0-.611-.15-.8-.4-.274-.365-.71-.6-1.2-.6-.314 0-.611-.15-.8-.4a1.497 1.497 0 0 0-2.4 0c-.189.25-.486.4-.8.4-.507 0-.955.251-1.228.638q-.136.194-.308.362H3c.13-.147.401-.432.562-.545a1.6 1.6 0 0 0 .393-.393A2.5 2.5 0 0 1 6 1"/>
-                                                </svg><p id="icono2">Viajes</p></a>
+                                    <div class="row">
+                                        <div class="col-9">    
+                                            <h6 class="mb-1" id="dimgray" th:text="'CUIT '+${cliente.cuit}"></h6>
+                                            <p class="mb-0"  id="dimgray" th:text="'Localidad '+${cliente.localidad}"></p>
+                                            <p class="mb-0"  id="dimgray" th:text="'Domicilio '+${cliente.direccion}"></p>
+                                            <p class="mb-0"  id="dimgray" th:text="'Teléfono '+${cliente.telefono}"></p>
+                                            <p class="mb-0" id="dimgray" th:text="'Email '+${cliente.email}"></p>
+                                            <h6 th:if="${cliente.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${cliente.estado}"></h6>
+                                            <h6 th:if="${cliente.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${cliente.estado}"></h6>
                                         </div>
-                                        <div class="col-4">
-                                            <a th:href= "@{/cuenta/mostrarIdCliente/__${cliente.id}__}" >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
-                                                    <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
-                                                    <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/>
-                                                </svg><p id="icono2">Cuenta</p></a>
-                                        </div>
-                                        <div title="Ir a Modificar Cliente" class="col-4 text-center">
+                                        <div class="col-3 text-center" title="Ir a Modificar Cliente">                                       
                                             <a th:href="@{/cliente/modificar/__${cliente.id}__}">
                                                 <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                                     <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
                                                 </svg>     <p id="modificar">Modificar</p>
-                                            </a>
-                                        </div>
-                                    </div>                                   
+                                            </a>                                      
+                                        </div>                                   
+                                    </div>
                                 </div>
-                                <br>
-                                    <div class="text-center mb-2">
-                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Cliente" th:href="@{/cliente/registrar}">Nuevo</a>
-                                    </div>
-                                    <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/cliente/listar}">Volver</a>
-                                    </div>
-                            </div>
+                                    <br>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Cliente" th:href="@{/cliente/registrar}">Nuevo</a>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/cliente/listar}">Volver</a>
+                                        </div>
+                                </div>
+                         
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                         </body>

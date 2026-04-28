@@ -1,0 +1,436 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Registrar Masivo</title>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+                    <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <style>
+                            .tabla-scroll {
+                                max-height: 250px;       /* altura total de unas dos filas */
+                                min-height: 250px;       /* fuerza que tenga esa altura aunque esté vacía */
+                                overflow-y: auto;        /* agrega scroll vertical si se pasa */
+                                border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
+                                border-radius: 0.25rem;
+                            }
+
+                            .tabla-scroll table {
+                                margin-bottom: 0;
+                            }
+
+                            .tabla-scroll thead th {
+                                top: 0;
+                                background-color: #f8f9fa;
+                                z-index: 1;
+                            }
+
+                            .tabla-scroll tbody:empty::before {
+                                content: "";
+                                display: block;
+                                height: 250px; 
+                            }
+                            .btn-eliminar {
+                                background: none;
+                                border: none;
+                                color: red;          /* podés ajustar el color si querés */
+                                font-size: 18px;     /* tamaño del ícono */
+                                cursor: pointer;
+                            }
+
+                            .btn-eliminar:hover {
+                                transform: scale(1.2);  /* efecto sutil al pasar el mouse */
+                            }
+                        </style>
+                        <script>
+                            window.onload = function () {
+                            var fechaActual = new Date();
+                            var dia = String(fechaActual.getDate()).padStart(2, '0');
+                            var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                            var anio = fechaActual.getFullYear();
+                            var fechaFormateada = anio + '-' + mes + '-' + dia;
+
+                            document.getElementById('fecha').max = fechaFormateada;
+                            };
+                            document.addEventListener('DOMContentLoaded', function () {
+                            const inputFecha = document.getElementById('fecha');
+                            const hoy = new Date();
+                            const dia = String(hoy.getDate()).padStart(2, '0');
+                            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                            const anio = hoy.getFullYear();
+                            inputFecha.value = `${anio}-${mes}-${dia}`;
+                            });
+                        </script>
+                        </head>
+                        <body>
+                            <div class="card-header mb-2" style="height: 70px;">
+                                <div class="row">
+                                    <div class="col-2">   
+                                        <a title="Volver" th:href="@{/mantenimiento/listarAdminCamiones}" type="button">
+                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                            </svg> 
+                                        </a>   
+                                    </div>
+                                    <div  class="col-8 text-center">
+                                        <h4>Registrar Mantenimientos</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="container">  
+                                <form id="formulario" th:action="@{/mantenimiento/registroMasivoCamion}" method="POST">
+                                    <input hidden id="idOrg" th:value="${idOrg}" name="idOrg">
+                                        <div class="card border-secondary p-2 mb-1" id="color-card">
+                                            <div class="row mb-2">                                                                      
+                                                <div class="col-6 col-sm-6 col-md-5 col-lg-4 col-xl-4 mb-1">
+                                                    <label for="idCamion" class="form-floting text-secondary">Camión*</label>
+                                                    <select class="form-control text-secondary" id="idCamion" name="idCamion" required onchange="enviarRegistroCamion()">
+                                                        <option th:if="${camion == null}" selected disabled value="">Seleccione Camión</option>
+                                                        <option th:if="${camion != null}" selected th:value="${camion.id}"
+                                                                th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"></option>
+                                                        <option th:each="camion : ${camiones}"
+                                                                th:value="${camion.id}"
+                                                                th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
+                                                    </select>
+                                                </div>
+                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-1">
+                                                    <label for="fecha" class="form-label text-secondary">Fecha*</label>
+                                                    <input type="date" class="form-control text-secondary" id="fecha" name="fecha" required>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-7 col-sm-7 col-md-8 col-lg-3 col-xl-3 mb-2">
+                                                    <label for="tipo" class="form-floting text-secondary mb-1">Tipo Mantenimiento*</label>
+                                                    <select class="form-control text-secondary" id="tipo">
+                                                        <option selected disabled value="">Seleccione Tipo</option>
+                                                        <option th:each="tipo : ${tiposCamion}"
+                                                                th:value="${tipo.id}"
+                                                                th:text="${tipo.nombre}+' ('+${tipo.clase}+')'"
+                                                                th:attr="data-clase=${tipo.clase}"/>
+                                                    </select>
+                                                </div> 
+                                                <div class="col-5 col-sm-5 col-md-4 col-lg-2 col-xl-2"> 
+                                                    <label for="kmInicialCamion" class="form-label text-secondary mb-1">Km Camión*</label> 
+                                                    <div class="input-group"> 
+                                                        <span class="input-group-text text-secondary">km</span> 
+                                                        <input type="number" class="form-control text-secondary" id="kmInicialCamion"
+                                                               th:value=${kmCamion} oninput="calcularKmCamion()"> 
+                                                    </div> 
+                                                </div> 
+                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                    <label for="kmVigenciaCamion" class="form-label text-secondary mb-1">Km Vigencia*</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light text-success">km</span>
+                                                        <input type="number" class="form-control bg-light text-success" id="kmVigenciaCamion" th:value=${kmVigenciaCamion}
+                                                               oninput="calcularKmAlarmaCamion()">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2"> 
+                                                    <label for="kmProximoCamion" class="form-label text-secondary mb-1">Km Próximo*</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text text-secondary">km</span>
+                                                        <input type="number" class="form-control text-secondary" id="kmProximoCamion"
+                                                               th:value=${kmProximoCamion} oninput="calcularKmAlarmaCamion()">
+                                                    </div>
+                                                </div>                                                   
+                                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 col-xl-2 mb-2">
+                                                    <label for="kmAlarmaCamion" class="form-label text-secondary mb-1">Km Alarma*</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light text-danger">km</span>
+                                                        <input type="number" class="form-control bg-light text-danger" id="kmAlarmaCamion" 
+                                                               th:value=${kmAlarmaCamion}>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3"> 
+                                                <div class="col-10 col-sm-10 col-md-11 col-lg-11 col-xl-11">                                                 
+                                                    <input type="text" class="form-control text-secondary" id="observacionC" placeholder="Ingrese Observación..." maxlength="200" size="200">
+                                                </div>
+                                                <div class="form-floating" >
+                                                    <label class="form-label text-white"></label>
+                                                    <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
+                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-4">
+                                                <div class="col-12">
+                                                    <div class="table-responsive tabla-scroll">
+                                                        <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
+                                                            <thead class="thead-light">
+                                                                <tr class="text-center">
+                                                                    <th>Tipo</th>
+                                                                    <th>Km Camión</th>
+                                                                    <th>Km Vigencia</th>
+                                                                    <th>Km Próximo</th>
+                                                                    <th>Km Alarma</th>
+                                                                    <th>Observación</th>
+                                                                    <th class="text-center" style="width: 50px;">Acción</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody></tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>                                            
+                                            <div th:if="${error != null}" class="card bg-secondary mb-2 p-3 border-secondary text-center">                        
+                                                <h6 id="white" th:text="${error}"></h6>                                                                             
+                                            </div>
+                                            <div class="text-center mb-2">
+                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar">Registrar</button>
+                                            </div>
+                                            <div class="text-center">
+                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/mantenimiento/listarAdminCamiones}" title="Cancelar">Cancelar</a>
+                                            </div>
+                                        </div>
+                                </form>
+                                <input hidden id="kmC" th:value=${kmCamion}>
+                                    <input hidden id="kmVigenciaC" th:value=${kmVigenciaCamion}>
+                                        <input hidden id="kmProximoC" th:value=${kmProximoCamion}>
+                                            <input hidden id="kmAlarmaC" th:value=${kmAlarmaCamion}>
+                                                </div>
+                                                <div id="spinner" class="modal" style="display: none;">
+                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                            <span class="sr-only">Cargando...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script>
+                                                    document.getElementById('kmInicialCamion').addEventListener('keydown', function (event) {
+                                                    if (event.key === '.' || event.key === ',') {
+                                                    event.preventDefault();
+                                                    }
+                                                    });
+                                                    document.getElementById('kmInicialCamion').addEventListener('input', function () {
+                                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                    });
+
+                                                    document.getElementById('kmProximoCamion').addEventListener('keydown', function (event) {
+                                                    if (event.key === '.' || event.key === ',') {
+                                                    event.preventDefault();
+                                                    }
+                                                    });
+                                                    document.getElementById('kmProximoCamion').addEventListener('input', function () {
+                                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                    });
+                                                    document.getElementById('kmVigenciaCamion').addEventListener('keydown', function (event) {
+                                                    if (event.key === '.' || event.key === ',') {
+                                                    event.preventDefault();
+                                                    }
+                                                    });
+                                                    document.getElementById('kmVigenciaCamion').addEventListener('input', function () {
+                                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                    });
+                                                    document.getElementById('kmAlarmaCamion').addEventListener('keydown', function (event) {
+                                                    if (event.key === '.' || event.key === ',') {
+                                                    event.preventDefault();
+                                                    }
+                                                    });
+                                                    document.getElementById('kmAlarmaCamion').addEventListener('input', function () {
+                                                    this.value = this.value.replace(/[^0-9]/g, ''); // Elimina cualquier carácter no numérico
+                                                    });
+
+                                                    function enviarRegistroCamion() {
+
+                                                    let idCamion = document.getElementById("idCamion").value;
+                                                    let idOrg = document.getElementById("idOrg").value;
+
+                                                    window.location.href = `/mantenimiento/registrarMasivo1Camion?idOrg=${idOrg}&idCamion=${idCamion}`;
+
+                                                    }
+
+                                                    function calcularKmCamion() {
+                                                    const kmInicial = parseInt(document.getElementById('kmInicialCamion').value) || 0;
+                                                    const kmProximo = kmInicial + 10000;
+                                                    const kmAlarma = kmInicial + 9000;
+                                                    const kmVigencia = kmProximo - kmInicial;
+
+                                                    document.getElementById('kmProximoCamion').value = kmProximo >= 0 ? kmProximo : '';
+                                                    document.getElementById('kmAlarmaCamion').value = kmAlarma >= 0 ? kmAlarma : '';
+                                                    document.getElementById('kmVigenciaCamion').value = kmVigencia >= 0 ? kmVigencia : '';
+                                                    }
+
+                                                    function calcularKmAlarmaCamion() {
+
+                                                    const kmInicial = parseInt(document.getElementById('kmInicialCamion').value, 10) || 0;
+                                                    const kmVigencia = parseInt(document.getElementById('kmVigenciaCamion').value, 10);
+
+                                                    // Si kmVigencia es exactamente 0
+                                                    if (kmVigencia === 0) {
+                                                    document.getElementById('kmProximoCamion').value = 0;
+                                                    document.getElementById('kmAlarmaCamion').value = 0;
+                                                    return;
+                                                    }
+
+                                                    // Si está vacío o no es número, limpiamos
+                                                    if (isNaN(kmVigencia)) {
+                                                    document.getElementById('kmProximoCamion').value = '';
+                                                    document.getElementById('kmAlarmaCamion').value = '';
+                                                    return;
+                                                    }
+
+                                                    const kmProximo = kmInicial + kmVigencia;
+                                                    const kmAlarma = kmProximo - 1000;
+
+                                                    document.getElementById('kmProximoCamion').value = kmProximo > 0 ? kmProximo : '';
+                                                    document.getElementById('kmAlarmaCamion').value = kmAlarma > 0 ? kmAlarma : '';
+                                                    }
+
+                                                    function calcularKmAcoplado() {
+                                                    const kmInicial = parseInt(document.getElementById('kmInicialAcoplado').value) || 0;
+                                                    const kmProximo = kmInicial + 10000;
+                                                    const kmAlarma = kmInicial + 9000;
+                                                    const kmVigencia = kmProximo - kmInicial;
+
+                                                    document.getElementById('kmProximoAcoplado').value = kmProximo >= 0 ? kmProximo : '';
+                                                    document.getElementById('kmAlarmaAcoplado').value = kmAlarma >= 0 ? kmAlarma : '';
+                                                    document.getElementById('kmVigenciaAcoplado').value = kmVigencia >= 0 ? kmVigencia : '';
+                                                    }
+
+                                                </script>
+                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                <script>
+                                                    let mantenimientosCamion = [];
+
+                                                    // --- CAMIÓN ---
+                                                    $('#addMantenimientoCamion').click(function () {
+
+                                                    $('#idCamion').prop('disabled', true);
+
+                                                    if ($('#idCamionHidden').length === 0) {
+                                                    $('<input>').attr({
+                                                    type: 'hidden',
+                                                    id: 'idCamionHidden',
+                                                    name: 'idCamion',
+                                                    value: $('#idCamion').val()
+                                                    }).appendTo('form');
+                                                    } else {
+                                                    $('#idCamionHidden').val($('#idCamion').val());
+                                                    }
+
+                                                    const tipo = $('#tipo').val();
+                                                    const tipoTexto = $('#tipo option:selected').text();
+                                                    const km = $('#kmInicialCamion').val();
+                                                    const kmProximo = $('#kmProximoCamion').val();
+                                                    const kmVigencia = $('#kmVigenciaCamion').val();
+                                                    const kmAlarma = $('#kmAlarmaCamion').val();
+                                                    const observacion = $('#observacionC').val();
+
+                                                    const tipoId = $('#tipo').val();
+                                                    const tipoClase = $('#tipo option:selected').data('clase');
+
+                                                    const kmVal = Number(km);
+                                                    const kmProximoVal = Number(kmProximo);
+                                                    const kmVigenciaVal = Number(kmVigencia);
+                                                    const kmAlarmaVal = Number(kmAlarma);
+
+                                                    if (!tipoId || !km) {
+                                                    alert("Debe seleccionar un tipo y completar el Km.");
+                                                    return;
+                                                    }
+
+                                                    if (tipoClase === 'PREVENTIVO') {
+
+                                                    if (
+                                                    !kmProximo || !kmVigencia || !kmAlarma ||
+                                                    kmProximoVal <= 0 ||
+                                                    kmVigenciaVal <= 0 ||
+                                                    kmAlarmaVal <= 0
+                                                    ) {
+                                                    alert("Para mantenimiento PREVENTIVO debe completar Km Vigencia, Km Próximo y Km Alarma con valores mayores a 0.");
+                                                    return;
+                                                    }
+                                                    }
+
+                                                    // 🔹 Validar si el tipo ya fue agregado para CAMIÓN
+                                                    const existe = mantenimientosCamion.some(m => m.tipoMantenimiento === tipo);
+                                                    if (existe) {
+                                                    alert("Ya se ha agregado este tipo de mantenimiento.");
+                                                    return;
+                                                    }
+
+                                                    const mantenimiento = {
+                                                    tipoMantenimiento: tipo,
+                                                    aplicaA: "CAMION",
+                                                    km: km,
+                                                    kmVigencia: kmVigencia,
+                                                    kmProximo: kmProximo,
+                                                    kmAlarma: kmAlarma,
+                                                    observacion: observacion,
+                                                    estado: tipoTexto
+                                                    };
+
+                                                    const kmFmt = formatearMiles(km);
+                                                    const kmVigenciaFmt = formatearMiles(kmVigencia);
+                                                    const kmProximoFmt = formatearMiles(kmProximo);
+                                                    const kmAlarmaFmt = formatearMiles(kmAlarma);
+
+                                                    mantenimientosCamion.push(mantenimiento);
+
+                                                    let observacionMostrar = observacion;
+
+                                                    if (observacion && observacion.length > 25) {
+                                                    observacionMostrar = observacion.substring(0, 25) + '...';
+                                                    }
+
+                                                    // Agregar fila visualmente
+                                                    const fila = `
+                                                    <tr class="text-center text-secondary">
+                                                    <td>${tipoTexto}</td>
+                                                    <td>${kmFmt}</td>
+                                                    <td>${kmVigenciaFmt}</td>
+                                                    <td>${kmProximoFmt}</td>
+                                                    <td>${kmAlarmaFmt}</td>
+                                                    <td title="${observacion || ''}">${observacionMostrar || ''}</td>
+                                                    <td><button type="button" class="btn-eliminar eliminarFilaCamion">❌</button></td>
+                                                    </tr>`;
+                                                    $('#tablaMantenimientosCamion tbody').append(fila);
+
+                                                    document.getElementById("tipo").value = "";
+                                                    document.getElementById("kmInicialCamion").value = parseInt(document.getElementById('kmC').value) || 0;
+                                                    document.getElementById("kmVigenciaCamion").value = parseInt(document.getElementById('kmVigenciaC').value) || 0;
+                                                    document.getElementById("kmProximoCamion").value = parseInt(document.getElementById('kmProximoC').value) || 0;
+                                                    document.getElementById("kmAlarmaCamion").value = parseInt(document.getElementById('kmAlarmaC').value) || 0;
+                                                    document.getElementById("observacionC").value = "";
+
+                                                    });
+
+                                                    // Eliminar fila de camión
+                                                    $(document).on('click', '.eliminarFilaCamion', function () {
+                                                    const index = $(this).closest('tr').index();
+                                                    mantenimientosCamion.splice(index, 1);
+                                                    $(this).closest('tr').remove();
+                                                    });
+
+                                                    function formatearMiles(valor) {
+                                                    if (valor === null || valor === undefined || valor === '') {
+                                                    return '';
+                                                    }
+                                                    return Number(valor).toLocaleString('es-AR');
+                                                    }
+
+                                                    // --- ENVIAR FORMULARIO ---
+                                                    $('#formulario').submit(function (event) {
+                                                    // 🔹 Validar que haya al menos un mantenimiento cargado
+                                                    if (mantenimientosCamion.length === 0) {
+                                                    alert("Debe agregar al menos un tipo de mantenimiento antes de enviar el formulario.");
+                                                    event.preventDefault(); // Evita que se envíe
+                                                    return;
+                                                    }
+
+                                                    document.getElementById("spinner").style.display = "block";
+
+                                                    // 🔹 Crear inputs ocultos con los JSON para enviar al backend
+                                                    $('<input>').attr({
+                                                    type: 'hidden',
+                                                    name: 'mantenimientosCamionJson',
+                                                    value: JSON.stringify(mantenimientosCamion)
+                                                    }).appendTo('#formulario');
+                                                    });
+                                                </script>
+                                                </body>
+                                                </html>
+

@@ -525,20 +525,26 @@ public class GastoControlador {
         
     }
     
-    @GetMapping("/modificarDesdeCajaAdmin/{id}")
-    public String modificarCajaAdmin(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificarDesdeCajaAdmin")
+    public String modificarCajaAdmin(@RequestParam Long id, @RequestParam Long idTransaccion, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
 
         Gasto gasto = gastoServicio.buscarGasto(id);
         
         modelo.put("gasto", gasto);
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(gasto.getIdOrg()));
+        modelo.put("idTransaccion", idTransaccion);
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
         return "gasto_modificarDesdeCajaAdmin.html";
 
     }
     
     @PostMapping("/modificaDesdeCajaAdmin")
-    public String modificaCajaAdmin(@RequestParam Long idGasto, @RequestParam String fecha, @RequestParam Long idCamion, 
+    public String modificaCajaAdmin(@RequestParam Long idGasto, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, @RequestParam String fecha, @RequestParam Long idCamion, 
             @RequestParam("conceptos[]") List<String> conceptos, @RequestParam("cantidades[]") List<Integer> cantidades,
             @RequestParam("precios[]") List<Double> precios, HttpSession session) throws ParseException {
 
@@ -556,14 +562,18 @@ public class GastoControlador {
 
         gastoServicio.modificarGastoCaja(idGasto, fecha, idCamion, detalles, logueado);
 
-        return "redirect:/gasto/modificadoDesdeCajaAdmin/" + idGasto;
+        return "redirect:/gasto/modificadoDesdeCajaAdmin?idGasto=" + idGasto + "&idCaja=" + idCaja + "&desde=" + desde + "&hasta=" + hasta;
     }
         
-    @GetMapping("/modificadoDesdeCajaAdmin/{idGasto}")
-    public String modificadoCajaAdmin(@PathVariable Long idGasto, ModelMap modelo) {
+    @GetMapping("/modificadoDesdeCajaAdmin")
+    public String modificadoCajaAdmin(@RequestParam Long idGasto, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
         
         modelo.put("gasto", gastoServicio.buscarGasto(idGasto));
         modelo.put("exito", "Gasto MODIFICADO con éxito");
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
         return "transaccion_gastoAdmin.html";
 
@@ -612,8 +622,9 @@ public class GastoControlador {
 
     }
     
-    @GetMapping("/eliminarDesdeCaja/{id}")
-    public String eliminarCaja(@PathVariable Long id, ModelMap modelo, HttpSession session) {
+    @GetMapping("/eliminarDesdeCaja")
+    public String eliminarCaja(@RequestParam Long id, @RequestParam Long idTransaccion, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         
@@ -626,6 +637,10 @@ public class GastoControlador {
         } else {
             
         modelo.put("gasto", gastoServicio.buscarGasto(id));
+        modelo.put("idTransaccion", idTransaccion);
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
         return "gasto_eliminarDesdeCajaAdmin.html";
             
@@ -634,20 +649,12 @@ public class GastoControlador {
     }
     
     @GetMapping("/eliminaDesdeCajaAdmin")
-    public String eliminaCajaAdmin(@RequestParam Long idGasto, @RequestParam Long idChofer, ModelMap modelo) {
+    public String eliminaCajaAdmin(@RequestParam Long idGasto, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
 
         gastoServicio.eliminarGastoCaja(idGasto);
 
-        return "redirect:/caja/mostrarAdmin/" +idChofer;
-
-    }
-
-    @GetMapping("/eliminaDesdeCaja/{idGasto}")
-    public String eliminaCaja(@PathVariable Long idGasto, ModelMap modelo) {
-
-        gastoServicio.eliminarGastoCaja(idGasto);
-
-        return "redirect:/gasto/eliminadoDesdeCaja/";
+        return "redirect:/caja/mostrarFiltroAdminTodas?id=" + idCaja + "&desde=" + desde + "&hasta=" + hasta + "&eliminaG=" + "si";
 
     }
 

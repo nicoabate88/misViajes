@@ -194,8 +194,9 @@ public class CajaControlador {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/mostrarFiltroAdminTodas")
-    public String mostrarFiltroAdminTodas(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+    @GetMapping("/mostrarFiltroAdminTodas")
+    public String mostrarFiltroAdminTodas(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta,
+            @RequestParam(required = false) String elimina, @RequestParam(required = false) String eliminaG, ModelMap modelo) throws ParseException {
 
         Boolean flag = true;
 
@@ -210,6 +211,12 @@ public class CajaControlador {
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
+        if (elimina != null) {
+            modelo.put("exito", "Ingreso ELIMINADO con éxito");
+        }
+        if (eliminaG != null) {
+            modelo.put("exito", "Gasto ELIMINADO con éxito");
+        }
 
         return "caja_mostrarFiltroAdminTodas.html";
 
@@ -344,10 +351,15 @@ public class CajaControlador {
         }
     }
 
-    @GetMapping("/mostrarTransaccionAdmin/{id}")
-    public String mostrarTransaccionAdmin(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/mostrarTransaccionAdmin")
+    public String mostrarTransaccionAdmin(@RequestParam Long id, @RequestParam Long idCaja, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
 
         Transaccion transaccion = transaccionServicio.buscarTransaccion(id);
+        
+        modelo.put("idTransaccion", id);
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
         if (transaccion.getIngreso() != null) {
 

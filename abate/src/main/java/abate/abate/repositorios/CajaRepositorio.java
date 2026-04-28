@@ -16,7 +16,7 @@ public interface CajaRepositorio extends JpaRepository<Caja, Long> {
     @Query("SELECT c FROM Caja c WHERE c.idOrg = :id")
     public List<Caja> buscarCajas(@Param("id") Long id);
     
-    @Query("SELECT c FROM Caja c WHERE c.idOrg = :idOrg AND c.chofer.estado = 'HABILITADO'")
+    @Query("SELECT c FROM Caja c WHERE c.idOrg = :idOrg AND c.chofer.estado = 'HABILITADO' AND c.chofer.caja = 'SI'")
     List<Caja> buscarCajasChoferHabilitados(@Param("idOrg") Long idOrg);
 
 }

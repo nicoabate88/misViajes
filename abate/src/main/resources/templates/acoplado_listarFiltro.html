@@ -36,6 +36,7 @@
                                             <label for="camion" class="form-floting">Acoplado</label>  
                                             <select class="form-control border-secondary" id="camion" name="id">
                                                 <option selected th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"></option>
+                                                <option th:value=null>Todos</option>
                                                 <option th:each="acoplado : ${acoplados}"
                                                         th:value="${acoplado.id}"
                                                         th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>

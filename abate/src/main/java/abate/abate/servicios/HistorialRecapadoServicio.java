@@ -1,6 +1,7 @@
 
 package abate.abate.servicios;
 
+import abate.abate.dto.RecapadoItemDTO;
 import abate.abate.entidades.HistorialRecapado;
 import abate.abate.entidades.Neumatico;
 import abate.abate.entidades.NeumaticoProveedor;
@@ -27,7 +28,17 @@ public class HistorialRecapadoServicio {
     private NeumaticoProveedorRepositorio proveedorRepositorio;
     
     @Transactional
-    public void crearRecapado(String fecha, Long idNeumatico, Integer km, Integer kmEstimado, Long idProveedor, String observacion, Usuario usuario) throws ParseException{
+    public void crearRecapados(String fecha, List<RecapadoItemDTO> recapados, Long idProveedor, String observacion, Usuario usuario) throws ParseException {
+
+    for (RecapadoItemDTO item : recapados) {
+
+        crearRecapado(fecha, item.getIdNeumatico(), item.getKmEstimado(), idProveedor, observacion, usuario);
+        
+      }
+   }
+    
+    @Transactional
+    public void crearRecapado(String fecha, Long idNeumatico, Integer kmEstimado, Long idProveedor, String observacion, Usuario usuario) throws ParseException{
         
         HistorialRecapado recapado = new HistorialRecapado();
         
@@ -38,7 +49,7 @@ public class HistorialRecapadoServicio {
         
         recapado.setFechaEnvio(f);
         recapado.setIdOrg(usuario.getIdOrg());
-        recapado.setKmAlRecapar(km);
+        recapado.setKmAlRecapar(neumatico.getKm());
         recapado.setKmEstimado(kmEstimado);
         recapado.setObservacion(observacion.toUpperCase());
         recapado.setNeumatico(neumatico);
@@ -113,7 +124,11 @@ public class HistorialRecapadoServicio {
         recapadoRepositorio.save(recapado);
 
         neumatico.setUbicacion("DEPOSITO");
-        neumatico.setEstado("RECAPADO");
+        if(neumatico.getEstado().equalsIgnoreCase("RECAPADO") || neumatico.getEstado().equalsIgnoreCase("+RECAPADO")){
+            neumatico.setEstado("+RECAPADO");
+        } else {
+            neumatico.setEstado("RECAPADO");
+        }
         Integer kmEstimado = neumatico.getKm() + recapado.getKmEstimado();
         neumatico.setKmEstimado(kmEstimado);
         neumatico.setKmUtil(kmEstimado - neumatico.getKm());

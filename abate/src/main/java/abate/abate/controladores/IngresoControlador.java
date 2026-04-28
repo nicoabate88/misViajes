@@ -1,13 +1,15 @@
 package abate.abate.controladores;
 
 import abate.abate.entidades.Caja;
-import abate.abate.entidades.Imagen;
 import abate.abate.entidades.Ingreso;
 import abate.abate.entidades.Usuario;
+import abate.abate.entidades.ValorI;
+import abate.abate.entidades.ValorI.TipoValorI;
 import abate.abate.servicios.CajaServicio;
-import abate.abate.servicios.ImagenServicio;
 import abate.abate.servicios.IngresoServicio;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,8 +30,6 @@ public class IngresoControlador {
     private IngresoServicio ingresoServicio;
     @Autowired
     private CajaServicio cajaServicio;
-    @Autowired
-    private ImagenServicio imagenServicio;
 
     @GetMapping("/registrar/{id}")
     public String registrarIngreso(@PathVariable Long id, ModelMap modelo) {
@@ -37,18 +37,43 @@ public class IngresoControlador {
         Caja caja = cajaServicio.buscarCaja(id);
 
         modelo.put("caja", caja);
+        modelo.addAttribute("tiposValor", TipoValorI.values());
 
         return "ingreso_registrar.html";
     }
 
     @PostMapping("/registro")
     public String registroEntrega(@RequestParam Long idChofer, @RequestParam String fecha,
-            @RequestParam Double importe, @RequestParam(required = false) String observacion,
-            ModelMap modelo, HttpSession session) throws ParseException {
+            @RequestParam(required = false) List<Double> importes,
+            @RequestParam(required = false) List<String> observacionesValores, @RequestParam(required = false) List<TipoValorI> tipos, 
+            @RequestParam(required = false) String observacion, ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<ValorI> valores = new ArrayList<>();
 
-        ingresoServicio.crearIngreso(logueado.getIdOrg(), idChofer, fecha, importe, observacion, logueado.getId());
+        if (importes != null) {
+            for (int i = 0; i < importes.size(); i++) {
+
+                if (importes.get(i) != null && importes.get(i) > 0) {
+
+                    ValorI v = new ValorI();
+                    v.setImporte(importes.get(i));
+
+                    if (observacionesValores != null && observacionesValores.size() > i) {
+                        v.setObservacion(observacionesValores.get(i));
+                    }
+
+                    if (tipos != null && tipos.size() > i) {
+                        v.setTipo(tipos.get(i));
+                    }
+
+                    valores.add(v);
+                }
+            }
+        }
+
+        ingresoServicio.crearIngreso(logueado.getIdOrg(), idChofer, fecha, valores, observacion, logueado);
 
         return "redirect:/ingreso/registrado";
 
@@ -78,66 +103,95 @@ public class IngresoControlador {
 
     }
 
-    @GetMapping("/modificar/{id}")
-    public String modificar(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificar")
+    public String modificar(@RequestParam Long id, @RequestParam Long idTransaccion, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
 
         modelo.put("ingreso", ingresoServicio.buscarIngreso(id));
+        modelo.addAttribute("tiposValor", TipoValorI.values());
+        modelo.put("idTransaccion", idTransaccion);
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
         return "ingreso_modificar.html";
 
     }
 
     @PostMapping("/modifica")
-    public String modifica(@RequestParam Long id, @RequestParam String fecha,
-            @RequestParam Double importe, @RequestParam(required = false) String observacion,
+    public String modifica(@RequestParam Long id, @RequestParam Long idCaja, @RequestParam String desde, 
+            @RequestParam String hasta, @RequestParam String fecha,
+            @RequestParam(required = false) List<Double> importes, @RequestParam(required = false) List<String> observacionesValores,
+            @RequestParam(required = false) List<TipoValorI> tipos, @RequestParam(required = false) String observacion,
             ModelMap modelo, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        List<ValorI> valores = new ArrayList<>();
 
-        ingresoServicio.modificarIngreso(id, fecha, importe, observacion, logueado.getId());
+        if (importes != null) {
+            for (int i = 0; i < importes.size(); i++) {
 
-        return "redirect:/ingreso/modificado/" + id;
+                if (importes.get(i) != null && importes.get(i) > 0) {
+
+                    ValorI v = new ValorI();
+                    v.setImporte(importes.get(i));
+
+                    if (tipos != null && tipos.size() > i) {
+                        v.setTipo(tipos.get(i));
+                    }
+
+                    if (observacionesValores != null && observacionesValores.size() > i) {
+                        v.setObservacion(observacionesValores.get(i));
+                    }
+
+                    valores.add(v);
+                }
+            }
+        }
+
+        ingresoServicio.modificarIngreso(id, fecha, valores, observacion, logueado);
+
+        return "redirect:/ingreso/modificado?id=" + id + "&idCaja=" + idCaja + "&desde=" + desde + "&hasta=" + hasta;
     }
 
-    @GetMapping("/modificado/{id}")
-    public String ingresoModificado(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificado")
+    public String ingresoModificado(@RequestParam Long id, @RequestParam Long idCaja, @RequestParam String desde, 
+            @RequestParam String hasta, ModelMap modelo) {
 
         Ingreso ingreso = ingresoServicio.buscarIngreso(id);
 
         modelo.put("ingreso", ingreso);
         modelo.put("exito", "Ingreso de Caja MODIFICADO con éxito");
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
-        return "ingreso_mostrar.html";
+        return "ingreso_modificado.html";
     }
     
     
 
-    @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/eliminar")
+    public String eliminar(@RequestParam Long id, @RequestParam Long idTransaccion, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
 
         modelo.put("ingreso", ingresoServicio.buscarIngreso(id));
+        modelo.put("idTransaccion", idTransaccion);
+        modelo.put("idCaja", idCaja);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
 
         return "ingreso_eliminar.html";
     }
 
-    @GetMapping("/elimina/{id}")
-    public String elimina(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/elimina")
+    public String elimina(@RequestParam Long id, @RequestParam Long idCaja, 
+            @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) {
 
         ingresoServicio.eliminarIngreso(id);
         
-        return "redirect:/ingreso/eliminado";
-
-    }
-    
-    @GetMapping("/eliminado")
-    public String eliminado(ModelMap modelo, HttpSession session) {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.put("id", logueado.getId());
-        modelo.put("exito", "Ingreso ELIMINADO con éxito");
-
-        return "index_admin.html";      
+        return "redirect:/caja/mostrarFiltroAdminTodas?id=" + idCaja + "&desde=" + desde + "&hasta=" + hasta + "&elimina=" + "si";
 
     }
 

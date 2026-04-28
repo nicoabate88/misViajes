@@ -7,9 +7,9 @@
                     <link rel="stylesheet" href="/css/medidas_container.css">  
                         <style>
                             .recibo-datos {
-                display: flex;
-                justify-content: space-between;
-            }
+                                display: flex;
+                                justify-content: space-between;
+                            }
                         </style>
                         </head>
                         <body>                          
@@ -37,104 +37,95 @@
                             </div>
                             <div class="container mb-2">   
                                 <div class="card border-secondary p-3 mb-4" id="color-card">
-                                    <h6 th:text="'Fecha ' + ${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}+' - N° OT: '+${orden.idOrden}"></h6>
-                                    <p class="mb-1"><strong class="text-secondary">ESTADO: </strong> 
-                                        <strong><span class="text-danger" th:text="${orden.estado}"></span></strong></p>
-                                    <div class="recibo-datos">
-                                    <h6>
-                                        <span th:if="${orden.camion != null}" class="text-dark" th:text="'Camión: '+${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}+ ' '"></span>
-                                    </h6>
-                                    <h6>
-                                        <span th:if="${orden.acoplado != null}" class="text-dark" th:text="'Acoplado: '+${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span>
-                                    </h6>
+                                    <div class="row">
+                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                            <h6> 
+                                                <span><strong>Fecha: </strong></span>
+                                                <span th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></span>
+                                                <span><strong>N° OT: </strong></span>
+                                                <span th:text="${orden.idOrden}"></span>
+                                            </h6>
+                                            <h6><strong class="text-secondary">ESTADO: </strong> 
+                                                <strong><span class="text-danger" th:text="${orden.estado}"></span></strong></span></h6>
+                                            <h6 id="dimgray">
+                                                <span><strong>Proveedor: </strong></span><span th:text="${orden.proveedor.nombre}"></span>
+                                            </h6>
+                                        </div>
+                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 text-right">
+                                            <h6 id="dimgray"> 
+                                                <span><strong>Fecha Inicio: </strong></span>
+                                                <span th:text="${#dates.format(orden.fechaInicio, 'dd-MM-yyyy')}"></span>
+                                                <span><strong>Fecha Cierre: </strong></span>
+                                                <span th:text="${#dates.format(orden.fechaCierre, 'dd-MM-yyyy')}"></span>
+                                            </h6>
+                                            <h6 id="dimgray">
+                                                <span><strong>Camión: </strong></span>    
+                                                <span th:text="${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}"></span>
+                                            </h6>
+                                            <h6 id="dimgray" th:if="${orden.acoplado != null}">
+                                                <span><strong>Acoplado </strong></span>    
+                                                <span th:text="${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span>
+                                            </h6>
+                                        </div>
+                                    </div>              
+                                    <div th:if="${orden.camion != null}" class="p-3">
+                                        <h6 class="text-primary text-center">Mantenimientos Camión</h6>
+                                        <div class="row">
+                                            <div class="table-responsive tabla-scroll rounded">
+                                                <table class="table table-bordered table-hover table-sm mb-2">
+                                                    <thead class="thead-light">
+                                                        <tr class="text-center">                        
+                                                            <th>Tipo</th>
+                                                            <th>Fecha</th>
+                                                            <th>Km Camión</th>
+                                                            <th>Km Vigencia</th>
+                                                            <th>Observación</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'CAMION'}">
+                                                        <tr class="text-center text-secondary">
+                                                            <td th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                            <td th:text="${#dates.format(m.fecha, 'dd-MM-yyyy')}"></td>
+                                                            <td th:text="${m.km}"></td>
+                                                            <td th:text="${m.kmVigencia}"></td>
+                                                            <td th:text="${m.observacion}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="recibo-datos">
-                                    <h6 id="dimgray">
-                                        <span><strong>Lugar: </strong></span>    
-                                        <span class="mb-2" th:text="${orden.lugar}"></span>
-                                        <span th:if="${orden.proveedor != null}" class="mb-2" th:text="' ('+${orden.proveedor.nombre}+')'"></span>
-                                    </h6>
-                                    <h6 id="dimgray">
-                                        <span><strong>Chofer: </strong></span>
-                                        <span class="mb-2" th:text="${orden.chofer.nombre}"></span>
-                                    </h6>
-                                    </div>
-                                    <div class="recibo-datos">
-                                    <h6 id="dimgray">
-                                        <span th:if="${orden.checkTaller != null}"><strong>N° Check List Taller: </strong></span>
-                                        <span th:if="${orden.checkTaller != null}" class="mb-2" th:text="${orden.checkTaller}"></span>
-                                    </h6>
-                                        <h6 id="dimgray">
-                                        <span th:if="${orden.checkMetalurgica != null}"><strong>N° Check List Metalúrgica: </strong></span>
-                                        <span th:if="${orden.checkMetalurgica != null}" class="mb-2" th:text="${orden.checkMetalurgica}"></span>
-                                        </h6>
-                                        <h6 id="dimgray">
-                                        <span th:if="${orden.checkNogoya != null}"><strong>N° Check List Nogoyá: </strong></span>
-                                        <span th:if="${orden.checkNogoya != null}" class="mb-2" th:text="${orden.checkNogoya}"></span>
-                                        </h6>
-                                        <h6 id="dimgray">
-                                        <span th:if="${orden.checkAveria != null}"><strong>N° Planilla Avería: </strong></span>
-                                        <span th:if="${orden.checkAveria != null}" class="mb-2" th:text="${orden.checkAveria}"></span>
-                                    </h6>
+                                    <div th:if="${orden.acoplado != null}" class="p-3">
+                                        <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
+                                        <div class="row">
+                                            <div class="table-responsive tabla-scroll rounded">
+                                                <table class="table table-bordered table-hover table-sm mb-2">
+                                                    <thead class="thead-light">
+                                                        <tr class="text-center">                        
+                                                            <th>Tipo</th>
+                                                            <th>Fecha</th>
+                                                            <th>Km Acoplado</th>
+                                                            <th>Km Vigencia</th>
+                                                            <th>Observación</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'ACOPLADO'}">
+                                                        <tr class="text-center text-secondary">
+                                                            <td th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                            <td th:text="${#dates.format(m.fecha, 'dd-MM-yyyy')}"></td>
+                                                            <td th:text="${m.km}"></td>
+                                                            <td th:text="${m.kmVigencia}"></td>
+                                                            <td th:text="${m.observacion}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                     <p th:if="${orden.observacion != ''}" class="mb-0" id="dimgray">
                                         <span><strong>Observación </strong></span>
                                         <span th:text="${orden.observacion}"></span>
-                                    </p>    
-                                <div th:if="${orden.camion != null}" class="p-3">
-                                    <h6 class="text-primary text-center">Mantenimientos Camión</h6>
-                                    <div class="row">
-                                        <div class="table-responsive tabla-scroll rounded">
-                                            <table class="table table-bordered table-hover table-sm mb-2">
-                                                <thead class="thead-light">
-                                                    <tr class="text-center">                        
-                                                        <th>Tipo</th>
-                                                        <th>Fecha</th>
-                                                        <th>Km Camión</th>
-                                                        <th>Km Vigencia</th>
-                                                        <th>Observación</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'CAMION'}">
-                                                    <tr class="text-center text-secondary">
-                                                        <td th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                        <td th:text="${#dates.format(m.fecha, 'dd-MM-yyyy')}"></td>
-                                                        <td th:text="${m.km}"></td>
-                                                        <td th:text="${m.kmVigencia}"></td>
-                                                        <td th:text="${m.observacion}"></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div th:if="${orden.acoplado != null}" class="p-3">
-                                    <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
-                                    <div class="row">
-                                        <div class="table-responsive tabla-scroll rounded">
-                                            <table class="table table-bordered table-hover table-sm mb-2">
-                                                <thead class="thead-light">
-                                                    <tr class="text-center">                        
-                                                        <th>Tipo</th>
-                                                        <th>Fecha</th>
-                                                        <th>Km Camión</th>
-                                                        <th>Km Vigencia</th>
-                                                        <th>Observación</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'ACOPLADO'}">
-                                                    <tr class="text-center text-secondary">
-                                                        <td th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                        <td th:text="${#dates.format(m.fecha, 'dd-MM-yyyy')}"></td>
-                                                        <td th:text="${m.km}"></td>
-                                                        <td th:text="${m.kmVigencia}"></td>
-                                                        <td th:text="${m.observacion}"></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                    </p> 
                                     <p class='mb-0' id="darkgray" th:text="'Usuario '+${orden.usuario.nombre}"></p>
                                 </div>
                                 <div th:if="${exito != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center border border-secondary rounded">                        

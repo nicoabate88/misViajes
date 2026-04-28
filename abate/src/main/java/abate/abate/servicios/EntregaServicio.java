@@ -2,6 +2,7 @@ package abate.abate.servicios;
 
 import abate.abate.entidades.Entrega;
 import abate.abate.entidades.Usuario;
+import abate.abate.entidades.ValorE;
 import abate.abate.repositorios.UsuarioRepositorio;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +15,7 @@ import abate.abate.repositorios.EntregaRepositorio;
 import abate.abate.util.EntregaComparador;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class EntregaServicio {
@@ -26,18 +28,12 @@ public class EntregaServicio {
     private TransaccionServicio transaccionServicio;
 
     @Transactional
-    public void crearEntrega(Long idOrg, Long idChofer, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
+    public void crearEntrega(Long idOrg, Long idChofer, String fecha, List<ValorE> valores, String observacion, Usuario usuario) throws ParseException {
 
         Usuario chofer = new Usuario();
         Optional<Usuario> chof = usuarioRepositorio.findById(idChofer);
         if (chof.isPresent()) {
             chofer = chof.get();
-        }
-
-        Usuario usuario = new Usuario();
-        Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
-        if (user.isPresent()) {
-            usuario = user.get();
         }
 
         String obsMayusculas = observacion.toUpperCase();
@@ -50,9 +46,18 @@ public class EntregaServicio {
         entrega.setChofer(chofer);
         entrega.setFecha(f);
         entrega.setObservacion(obsMayusculas);
-        entrega.setImporte(importe);
         entrega.setUsuario(usuario);
         entrega.setIdEntrega(idEntrega + 1);
+
+        Double total = 0.0;
+
+        for (ValorE v : valores) {
+
+            entrega.addValor(v);   // mantiene relación bidireccional
+            total += v.getImporte();
+        }
+
+        entrega.setImporte(total);
 
         entregaRepositorio.save(entrega);
 
@@ -61,7 +66,7 @@ public class EntregaServicio {
     }
 
     @Transactional
-    public void modificarEntrega(Long idEntrega, Long idChofer, String fecha, Double importe, String observacion, Long idUsuario) throws ParseException {
+    public void modificarEntrega(Long idEntrega, Long idChofer, String fecha, List<ValorE> nuevosValores, String observacion, Usuario usuario) throws ParseException {
 
         Entrega entrega = new Entrega();
         Optional<Entrega> ent = entregaRepositorio.findById(idEntrega);
@@ -75,20 +80,24 @@ public class EntregaServicio {
             chofer = chof.get();
         }
 
-        Usuario usuario = new Usuario();
-        Optional<Usuario> user = usuarioRepositorio.findById(idUsuario);
-        if (user.isPresent()) {
-            usuario = user.get();
-        }
-
         String obsMayusculas = observacion.toUpperCase();
         Date f = convertirFecha(fecha);
 
         entrega.setChofer(chofer);
         entrega.setFecha(f);
-        entrega.setImporte(importe);
         entrega.setObservacion(obsMayusculas);
         entrega.setUsuario(usuario);
+
+        entrega.getValores().clear();
+
+        Double total = 0.0;
+
+        for (ValorE v : nuevosValores) {
+            entrega.addValor(v);
+            total += v.getImporte();
+        }
+
+        entrega.setImporte(total);
 
         entregaRepositorio.save(entrega);
 
@@ -99,20 +108,11 @@ public class EntregaServicio {
     @Transactional
     public void eliminarEntrega(Long idEntrega) {
 
-        Entrega entrega = new Entrega();
-        Optional<Entrega> ent = entregaRepositorio.findById(idEntrega);
-        if (ent.isPresent()) {
-            entrega = ent.get();
-        }
+        Entrega entrega = entregaRepositorio.getById(idEntrega);
 
         transaccionServicio.eliminarTransaccionEntrega(idEntrega);
 
-        entrega.setChofer(null);
-        entrega.setUsuario(null);
-
-        entregaRepositorio.save(entrega);
-
-        entregaRepositorio.deleteById(idEntrega);
+        entregaRepositorio.delete(entrega);
 
     }
 
@@ -144,7 +144,8 @@ public class EntregaServicio {
 
     public Entrega buscarEntrega(Long id) {
 
-        return entregaRepositorio.getById(id);
+        return entregaRepositorio.findByIdWithValores(id);
+
     }
 
     public ArrayList<Entrega> buscarEntregas(Long idOrg, String desde, String hasta) throws ParseException {

@@ -36,51 +36,38 @@
                                 </div>
                             </div>
                             <div class="container mb-2">   
-                                <div class="card border-secondary p-3 mb-4" id="color-card">
-                                    <h6 th:text="'Fecha ' + ${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}+' - N° OT: '+${orden.idOrden}"></h6>
-                                    <p class="mb-1"><strong class="text-secondary">ESTADO: </strong> 
-                                        <strong><span class="text-danger" th:text="${orden.estado}"></span></strong></p>
-                                    <div class="recibo-datos">
-                                        <h6>
-                                            <span th:if="${orden.camion != null}" class="text-dark" th:text="'Camión: '+${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}+ ' '"></span>
-                                        </h6>
-                                        <h6>
-                                            <span th:if="${orden.acoplado != null}" class="text-dark" th:text="'Acoplado: '+${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span>
-                                        </h6>
+                                <div class="card border-secondary p-3 mb-2" id="color-card">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                            <h6> 
+                                                <span><strong>Fecha: </strong></span>
+                                                <span th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></span>
+                                                <span><strong>N° OT: </strong></span>
+                                                <span th:text="${orden.idOrden}"></span>
+                                            </h6>
+                                            <h6><strong class="text-secondary">ESTADO: </strong> 
+                                                <strong><span class="text-danger" th:text="${orden.estado}"></span></strong></span></h6>
+                                            <h6 id="dimgray">
+                                                <span><strong>Proveedor: </strong></span><span th:text="${orden.proveedor.nombre}"></span>
+                                            </h6>
+                                        </div>
+                                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 text-right">
+                                            <h6 id="dimgray"> 
+                                                <span><strong>Fecha Inicio: </strong></span>
+                                                <span th:text="${#dates.format(orden.fechaInicio, 'dd-MM-yyyy')}"></span>
+                                                <span><strong>Fecha Fin: </strong></span>
+                                                <span th:text="${#dates.format(orden.fechaFin, 'dd-MM-yyyy')}"></span>
+                                            </h6>
+                                            <h6 id="dimgray">
+                                                <span><strong>Camión: </strong></span>    
+                                                <span th:text="${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}"></span>
+                                            </h6>
+                                            <h6 id="dimgray" th:if="${orden.acoplado != null}">
+                                                <span><strong>Acoplado </strong></span>    
+                                                <span th:text="${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span>
+                                            </h6>
+                                        </div>
                                     </div>
-                                    <div class="recibo-datos">
-                                        <h6 id="dimgray">
-                                            <span><strong>Lugar: </strong></span>    
-                                            <span class="mb-2" th:text="${orden.lugar}"></span>
-                                            <span th:if="${orden.proveedor != null}" class="mb-2" th:text="' ('+${orden.proveedor.nombre}+')'"></span>
-                                        </h6>
-                                        <h6 id="dimgray">
-                                            <span><strong>Chofer: </strong></span>
-                                            <span class="mb-2" th:text="${orden.chofer.nombre}"></span>
-                                        </h6>
-                                    </div>
-                                    <div class="recibo-datos">
-                                        <h6 id="dimgray">
-                                            <span th:if="${orden.checkTaller != null}"><strong>N° Check List Taller: </strong></span>
-                                            <span th:if="${orden.checkTaller != null}" class="mb-2" th:text="${orden.checkTaller}"></span>
-                                        </h6>
-                                        <h6 id="dimgray">
-                                            <span th:if="${orden.checkMetalurgica != null}"><strong>N° Check List Metalúrgica: </strong></span>
-                                            <span th:if="${orden.checkMetalurgica != null}" class="mb-2" th:text="${orden.checkMetalurgica}"></span>
-                                        </h6>
-                                        <h6 id="dimgray">
-                                            <span th:if="${orden.checkNogoya != null}"><strong>N° Check List Nogoyá: </strong></span>
-                                            <span th:if="${orden.checkNogoya != null}" class="mb-2" th:text="${orden.checkNogoya}"></span>
-                                        </h6>
-                                        <h6 id="dimgray">
-                                            <span th:if="${orden.checkAveria != null}"><strong>N° Planilla Avería: </strong></span>
-                                            <span th:if="${orden.checkAveria != null}" class="mb-2" th:text="${orden.checkAveria}"></span>
-                                        </h6>
-                                    </div>
-                                    <p th:if="${orden.observacion != ''}" class="mb-0" id="dimgray">
-                                        <span><strong>Observación </strong></span>
-                                        <span th:text="${orden.observacion}"></span>
-                                    </p>              
                                     <div th:if="${!mantenimientosC.isEmpty()}" class="p-3">
                                         <h6 class="text-primary text-center">Mantenimientos Camión</h6>
                                         <div class="row">
@@ -123,7 +110,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class='mb-0' id="darkgray" th:text="'Usuario '+${orden.usuario.nombre}"></p>
+                                    <p th:if="${orden.observacion != ''}" class="mb-0" id="dimgray">
+                                        <span><strong>Observación </strong></span>
+                                        <span th:text="${orden.observacion}"></span>
+                                    </p> 
                                 </div>
                                 <div th:if="${exito != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center border border-secondary rounded">                        
                                     <h6 id="white" th:text="${exito}"></h6>                                                                             

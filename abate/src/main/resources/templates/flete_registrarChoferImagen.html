@@ -50,8 +50,9 @@
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
                                                 <label for="acoplado" class="form-floting text-secondary">Acoplado*</label>
                                                 <select class="form-control" id="acoplado" name="idAcoplado" required>
-                                                    <option th:if="${chofer.acoplado} == null" selected value="">Seleccione Acoplado</option>
-                                                    <option th:if="${chofer.acoplado} != null" selected 
+                                                    <option th:if="${chofer.camion != null && chofer.camion.acoplado == null}" selected value="">Seleccione Acoplado</option>
+                                                    <option th:if="${chofer.camion == null}" selected value="">Seleccione Acoplado</option>
+                                                    <option th:if="${chofer.camion != null && chofer.camion.acoplado != null}" selected 
                                                             th:text="${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}" 
                                                             th:value="${chofer.acoplado.id}"></option>
                                                     <option th:each="acoplado : ${acoplados}"

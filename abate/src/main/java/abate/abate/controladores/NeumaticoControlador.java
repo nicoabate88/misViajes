@@ -4,6 +4,7 @@ package abate.abate.controladores;
 import abate.abate.dto.AuxilioDTO;
 import abate.abate.dto.AuxilioForm;
 import abate.abate.dto.PosicionNeumaticoForm;
+import abate.abate.dto.RecapadoRequestDTO;
 import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.AuxilioNeumatico;
 import abate.abate.entidades.Camion;
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/neumatico")
@@ -703,19 +705,9 @@ public class NeumaticoControlador {
     }
     
     @GetMapping("/recapar")
-    public String recapar(@RequestParam(required = false) Long idNeumatico, @RequestParam(required = false) String fecha,
-            ModelMap modelo, HttpSession session) {
+    public String recapar(ModelMap modelo, HttpSession session) {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        if (idNeumatico != null) {
-            modelo.put("neumatico", neumaticoServicio.buscarNeumatico(idNeumatico));
-        } else {
-            modelo.put("neumatico", null);
-        }
-        if (fecha != null) {
-            modelo.put("fecha", fecha);
-        }
         
         modelo.addAttribute("proveedores", proveedorServicio.buscarProveedoresAsc(logueado.getIdOrg()));
         modelo.addAttribute("neumaticos", neumaticoServicio.buscarNeumaticosDeposito(logueado.getIdOrg()));
@@ -725,26 +717,25 @@ public class NeumaticoControlador {
     }
 
     @PostMapping("/recapa")
-    public String recapa(@RequestParam String fecha, @RequestParam Long idNeumatico,
-            @RequestParam Integer km, @RequestParam Integer kmEstimado,
-            @RequestParam Long idProveedor, @RequestParam String observacion, ModelMap model, HttpSession session) throws ParseException {
+    public String recapa(@ModelAttribute RecapadoRequestDTO request, HttpSession session) throws ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        recapadoServicio.crearRecapado(fecha, idNeumatico, km, kmEstimado, idProveedor, observacion, logueado);
+        recapadoServicio.crearRecapados(request.getFecha(), request.getRecapados(), request.getIdProveedor(), request.getObservacion(), logueado);
 
-        return "redirect:/neumatico/recapado?&idOrg=" + logueado.getIdOrg();
+        return "redirect:/neumatico/recapado";
+
     }
 
     @GetMapping("/recapado")
-    public String recapado(@RequestParam Long idOrg, ModelMap modelo) {
+    public String recapado(ModelMap modelo, HttpSession session) {
+        
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        
+        modelo.put("exito", "Neumático/s enviado/s a RECAPAR");
+        modelo.addAttribute("recapados", neumaticoServicio.buscarRecapadoEnRecapado(logueado.getIdOrg()));
 
-        HistorialRecapado recapado = recapadoServicio.buscarUltimo(idOrg);
-
-        modelo.put("recapado", recapado);
-        modelo.put("exito", "Neumático enviado a RECAPAR");
-
-        return "neumatico_mostrarRecapado.html";
+        return "neumatico_listarRecapado.html";
     }
 
     @GetMapping("/modificarRecapado")
@@ -838,9 +829,8 @@ public class NeumaticoControlador {
         return "neumatico_listarRecapado.html";
 
     }
-
     
-    @PostMapping("/exportar")
+    @GetMapping("/exportar")
     public String exportarNeumaticos(@RequestParam String ubicacion, @RequestParam String estado, ModelMap modelo, HttpSession session) throws ParseException {
         
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");

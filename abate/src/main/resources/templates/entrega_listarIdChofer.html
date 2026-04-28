@@ -51,8 +51,8 @@
                                     </div>
                                     <div th:each="entrega : ${entregas}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
-                                            <h6 id="darkblue" th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                            <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                            <h6 th:text="'Fecha ' + ${#dates.format(entrega.fecha, 'dd-MM-yyyy')}+' - ID'+${entrega.idEntrega}"></h6>
+                                            <h6  id="dimgray" th:text="'Importe $'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                             <p class="mb-0" id="dimgray" th:text="${entrega.observacion}"></p>      
                                         </div>
                                     </div>

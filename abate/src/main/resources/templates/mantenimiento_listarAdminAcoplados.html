@@ -149,7 +149,7 @@
                                                                                 </button>
                                                                             </div>
                                                                             <div title="Ir a Registrar Mantenimiento" class="col-6 col-sm-6 col-md-5 col-lg-2 col-xl-2 p-4 text-center">
-                                                                                <a th:href="@{/mantenimiento/registrarMasivo}">
+                                                                                <a th:href="@{/mantenimiento/registrarMasivoAcoplado}">
                                                                                     <svg width="25" height="25" viewBox="0 0 511.99842 511" xmlns="http://www.w3.org/2000/svg"><path d="m371.53125 204.308594c37.8125 13.46875 80.636719 4.160156 109.460938-24.664063 31.402343-31.402343 39.644531-79.40625 20.511718-119.457031l-9.140625-19.128906-64.375 64.375-21.207031-21.199219 64.378906-64.378906-19.128906-9.140625c-40.050781-19.132813-88.058594-10.890625-119.457031 20.511718-28.835938 28.835938-38.140625 71.667969-24.65625 109.492188-1.316407 1.320312 11.335937-11.371094-73.132813 73.363281l-79.878906-79.882812-.003906-56.371094-106.511719-76.984375-48.046875 48.050781 76.996094 106.515625h56.375l79.871094 79.875c-30.265626 30.214844-41.328126 41.441406-73.332032 73.148438-37.828125-13.503906-80.683594-4.203125-109.527344 24.640625-31.402343 31.402343-39.644531 79.40625-20.507812 119.457031l9.136719 19.128906 64.378906-64.375 21.203125 21.203125-64.378906 64.375 19.128906 9.140625c40.050781 19.132813 88.058594 10.890625 119.457031-20.511718 28.824219-28.824219 38.136719-71.640626 24.667969-109.453126l40.65625-40.5 182.726562 180.851563 84.804688-84.804687-182.765625-180.890626zm-278.871094-78.882813-53.050781-73.394531 11.921875-11.921875 73.398438 53.046875.003906 32.269531zm251.019532 21.878907-4.558594-9.546876c-13.667969-28.605468-7.777344-62.898437 14.65625-85.332031 16.957031-16.953125 40.6875-24.460937 63.617187-21.210937l-53.015625 53.019531 63.605469 63.605469 53.015625-53.015625c3.25 22.929687-4.253906 46.660156-21.210938 63.617187-22.429687 22.433594-56.722656 28.320313-85.328124 14.65625l-9.578126-4.574218-87.738281 87.917968-21.15625-21.15625c99.164063-99.488281 86.601563-86.882812 87.691407-87.980468zm-175.664063 218.070312 4.582031 9.585938c13.664063 28.605468 7.773438 62.898437-14.65625 85.328124-16.957031 16.957032-40.6875 24.460938-63.617187 21.214844l53.015625-53.015625-63.609375-63.609375-53.015625 53.015625c-3.246094-22.929687 4.257812-46.660156 21.214844-63.617187 22.429687-22.429688 56.722656-28.320313 85.328124-14.65625l9.507813 4.542968 7.496094-7.40625c39.035156-38.605468 57.058593-56.878906 80.523437-80.269531l21.179688 21.179688c-99.460938 99.191406-86.851563 86.613281-87.949219 87.707031zm259.070313 104.71875-118.753907-117.535156 42.398438-42.398438 118.753906 117.535156zm-97.667969-181.027344-42.394531 42.398438-21.324219-21.101563 42.351562-42.445312zm0 0" fill="#000000" style="fill: rgb(0, 0, 139);"></path></svg>
                                                                                     <p class="mb-0">Nuevo</p> </a>
                                                                             </div>
@@ -183,10 +183,12 @@
                                                                                         </td>
                                                                                         <td class="text-center" th:text="${#dates.format(mantenimiento.fecha, 'dd-MM-yyyy')}"></td>
                                                                                         <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.km, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                                        <td class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                         <td th:if="${mantenimiento.kmProximo != 0}" class="text-center" th:text="${#numbers.formatDecimal(mantenimiento.kmProximo, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                        <td th:if="${mantenimiento.kmProximo == 0}" class="text-center">-</td>
                                                                                         <td class="text-center"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmActual, 0, 'POINT', 0, 'POINT')}"></strong></td>
-                                                                                        <td class="text-center text-primary"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
-                                                                                        <td class="text-center">
+                                                                                        <td th:if="${mantenimiento.kmProximo != 0}" class="text-center text-primary"><strong th:text="${#numbers.formatDecimal(mantenimiento.kmVigencia, 0, 'POINT', 0, 'POINT')}"></strong></td>
+                                                                                        <td th:if="${mantenimiento.kmProximo == 0}" class="text-center">-</td>
+                                                                                        <td th:if="${mantenimiento.kmProximo != 0}" class="text-center">
                                                                                             <span th:switch="${mantenimiento.estado}">
                                                                                                 <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">✅ VIGENTE</span>
                                                                                                 <span th:case="${T(abate.abate.entidades.Mantenimiento.Estado).PROXIMO_A_VENCER}">🟡 PRÓXIMO A VENCER</span>
@@ -212,7 +214,7 @@
                                                                 <div th:if="${mantenimientos.size >= 1}" class="container">
                                                                     <br>
                                                                         <div class="text-center mb-2">
-                                                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrarMasivo}">Nuevo</a>
+                                                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrarMasivoAcoplado}">Nuevo</a>
                                                                         </div>
                                                                         <div class="text-center mb-2">
                                                                             <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
@@ -226,7 +228,7 @@
                                                                     </div>
                                                                     <br>
                                                                         <div class="text-center mb-2">
-                                                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrarMasivo}">Nuevo</a>
+                                                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/registrarMasivoAcoplado}">Nuevo</a>
                                                                         </div>
                                                                         <div class="text-center mb-2">
                                                                             <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>

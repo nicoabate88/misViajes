@@ -40,87 +40,111 @@
                                             </svg> 
                                         </a>   
                                     </div>
-                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                    <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center" th:if="${flag == true}">
                                         <h4>Lista de Clientes</h4>
                                     </div>
-                                    <div title="Ir a Registrar Cliente" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
-                                        <a th:href="@{/cliente/registrar}">
-                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                                                <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-                                            </svg> <h6 id="icono">Nuevo</h6> </a>
+                                    <div  class="col-8 text-center" th:if="${flag != true}">
+                                        <h4>Lista de Clientes</h4>
                                     </div>
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                        <form>
+                                            <button id="exportButton" onclick="startExport(event)" class="btn btn-light" type="button">
+                                                <input type="hidden" id="inhabilitado" name="inhabilitado" th:value="${inhabilitado}">
+                                                    <h6 id="icono">Excel</h6>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                        <a title="Ir a Imprimir Lista" target="_blank" th:href="@{/cliente/imprimirClientes(inhabilitado=${inhabilitado})}">
+                                            <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                            </svg><p id="imprimirExporta">Imprimir</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="loadingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; text-align: center; z-index: 1000;">
+                                <div style="margin-top: 20%; font-size: 20px;">
+                                    <div class="spinner" style="margin-bottom: 20px;">
+                                        <svg viewBox="0 0 50 50" style="width: 50px; height: 50px;">
+                                            <circle cx="25" cy="25" r="20" fill="none" stroke-width="5" stroke="#fff" stroke-dasharray="31.4 31.4" stroke-linecap="round">
+                                                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+                                            </circle>
+                                        </svg>
+                                    </div>
+                                    Exportando... Por favor, espere.
                                 </div>
                             </div>
                             <div class="container mb-2"> 
                                 <div th:if="${!clientes.isEmpty()}">
                                     <div class="card-header pb-0" id="bgWhite">
-                                    <form class="row" th:action="@{/cliente/listarFiltro}" method="GET">
-                                        <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
-                                            <label for="cliente" class="form-floting">Cliente</label>  
-                                            <select class="form-control border-secondary" id="cliente" name="id">
-                                                <option th:value=null>Todos</option>
-                                                <option th:each="cliente : ${clientes}"
-                                                        th:value="${cliente.id}"
-                                                        th:text="${cliente.nombre}"/>
-                                            </select>
-                                        </div>
-                                        <div class="col-4 col-sm-4 col-md-3 col-lg-2 col-xl-2 mb-2 d-flex align-items-center">
+                                        <form class="row" th:action="@{/cliente/listarFiltro}" method="GET">
+                                            <div class="col-6 col-sm-6 col-md-6 col-lg-5 col-xl-5 mb-2">
+                                                <label for="cliente" class="form-floting">Cliente</label>  
+                                                <select class="form-control border-secondary" id="cliente" name="id">
+                                                    <option th:value=null>Todos</option>
+                                                    <option th:each="cliente : ${clientes}"
+                                                            th:value="${cliente.id}"
+                                                            th:text="${cliente.nombre}"/>
+                                                </select>
+                                            </div>
+                                            <div class="col-4 col-sm-4 col-md-3 col-lg-2 col-xl-2 mb-2 d-flex align-items-center">
                                                 <div class="form-check">                                                
-                                                    
+
                                                     <input class="form-check-input" type="checkbox" id="inhabilitado" name="inhabilitado" th:checked="${inhabilitado}">
                                                         <label class="form-check-label" for="inhabilitado">
                                                             Inhabilitados
                                                         </label>
                                                 </div>
                                             </div>
-                                        <div class="col-1 text-center">
-                                            <label for="ver" class="form-floting">Ver</label> 
-                                            <button id="ver"  class="btn btn-primary" type="submit">
-                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </form>   
-                                </div>
+                                            <div class="col-1 text-center">
+                                                <label for="ver" class="form-floting">Ver</label> 
+                                                <button id="ver"  class="btn btn-primary" type="submit">
+                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div title="Ir a Registrar Cliente" class="col-12 col-sm-12 col-md-3 col-lg-4 col-xl-4 p-4 text-center">
+                                                <a th:href="@{/cliente/registrar}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                                                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                                                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                                                    </svg> <p class="mb-0">Nuevo</p></a>
+                                            </div>
+                                        </form>   
+                                    </div>
+                                    <div th:if="${exito != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">
+                                        <h6 id="white" th:text="${exito}" class="mb-0 d-inline"></h6>
+                                        <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
                                     <div th:each="cliente : ${clientes}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
                                             <div class="row mb-2">
-                                            <div class="col-9">
-                                            <h6 class="mb-1" th:text="${cliente.nombre}"></h6>
-                                            <p class='mb-1' id="dimgray" th:text="'CUIT '+${cliente.cuit}"></p>
-                                            <h6 th:if="${cliente.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${cliente.estado}"></h6>
-                                            <h6 th:if="${cliente.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${cliente.estado}"></h6>
-                                            </div>
-                                            <div class="col-3 text-center"> 
-                                                <a href="#" th:attr="data-id=${cliente.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 -30 64 94" enable-background="new 0 0 64 64" xml:space="preserve"><g id="Loupe"><path d="M53.7602806,35.6955452c7.028801-7.0301018,7.0278015-18.4271011-0.0023003-25.455801 c-7.030098-7.0288005-18.4270973-7.0279007-25.4557934,0.0021992c-5.8004055,5.8014011-6.800106,14.5709-3.0264053,21.4111004 L4.9687819,51.960144l7.0709996,7.0710983L32.346981,38.7240448 C39.1881866,42.4984436,47.9591866,41.4976425,53.7602806,35.6955452z M12.0397816,56.2027435L7.7971873,51.960144 l18.5755939-18.5755997c0.5754051,0.8079987,1.2066994,1.588501,1.9315987,2.3133011 c0.7241001,0.7238998,1.5039005,1.3544998,2.3111,1.9292984L12.0397816,56.2027435z M29.7174816,34.282444 c-6.2378998-6.2378006-6.2382946-16.3880005-0.0009995-22.6264c3.0217037-3.0222998,7.0394993-4.6869001,11.3132-4.6873002 c4.2737999-0.0004001,8.2918968,1.6635003,11.3141975,4.6853004l0.0008011,0.0007992l0.0003014,0.0003004 c6.2377968,6.2378006,6.238205,16.3878994,0.0009003,22.6263008c-3.0216942,3.0223007-7.0395012,4.6869011-11.3132019,4.6872978 C36.7588806,38.9691429,32.7407799,37.3052444,29.7174816,34.282444z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M50.2242813,13.7756433c-2.4559021-2.4551992-5.7206993-3.8071995-9.1938019-3.8076 c-3.4726982,0.0007-6.7374992,1.3528004-9.1923981,3.809c-0.390501,0.3905001-0.3901005,1.0241003,0,1.4142008 c0.3908997,0.3908997,1.0237007,0.3905001,1.4141998,0c2.0779076-2.0778008,4.8400002-3.2227001,7.7789078-3.2227001 c2.9381905-0.0007,5.7010918,1.1434994,7.7788925,3.2213993c0.3908005,0.3908005,1.0237007,0.3904009,1.4141998,0 C50.6147804,14.7994442,50.6143799,14.165844,50.2242813,13.7756433z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></svg>     
-                                                    <p>Detalle</p></a>
-                                            </div>
-                                            </div>
-                                            <div class="row text-center">
-                                                 <div class="col-4">
-                                                <a th:href= "@{/flete/listarIdCliente/__${cliente.id}__}">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-minecart-loaded" viewBox="0 0 16 16">
-                                                        <path d="M4 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4m8-1a1 1 0 1 1 0-2 1 1 0 0 1 0 2m0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4M.115 3.18A.5.5 0 0 1 .5 3h15a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 14 12H2a.5.5 0 0 1-.491-.408l-1.5-8a.5.5 0 0 1 .106-.411zm.987.82 1.313 7h11.17l1.313-7z"/>
-                                                        <path fill-rule="evenodd" d="M6 1a2.498 2.498 0 0 1 4 0c.818 0 1.545.394 2 1 .67 0 1.552.57 2 1h-2c-.314 0-.611-.15-.8-.4-.274-.365-.71-.6-1.2-.6-.314 0-.611-.15-.8-.4a1.497 1.497 0 0 0-2.4 0c-.189.25-.486.4-.8.4-.507 0-.955.251-1.228.638q-.136.194-.308.362H3c.13-.147.401-.432.562-.545a1.6 1.6 0 0 0 .393-.393A2.5 2.5 0 0 1 6 1"/>
-                                                    </svg><p id="icono2">Viajes</p></a>
+                                                <div class="col-9">
+                                                    <h6 class="mb-1" th:text="${cliente.nombre}"></h6>
+                                                    <p class='mb-1' id="dimgray" th:text="'CUIT '+${cliente.cuit}"></p>
+                                                    <h6 th:if="${cliente.estado == 'HABILITADO'}" id="dimgray" th:text="'Estado '+${cliente.estado}"></h6>
+                                                    <h6 th:if="${cliente.estado == 'INHABILITADO'}" class="text-danger" th:text="'Estado '+${cliente.estado}"></h6>
                                                 </div>
-                                                <div class="col-4">
-                                                    <a th:href= "@{/cuenta/mostrarIdCliente/__${cliente.id}__}" >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
-                                                            <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4m4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5M9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8m1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
-                                                            <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96q.04-.245.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1 1 0 0 1 1 12z"/>
-                                                        </svg><p id="icono2">Cuenta</p></a>
+                                                <div class="col-3 text-center"> 
+                                                    <div>
+                                                        <a href="#" th:attr="data-id=${cliente.id}" onclick="verHistorial(this)" class="link-historial" title="Ver Detalle">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="30" viewBox="0 -30 64 94" enable-background="new 0 0 64 64" xml:space="preserve"><g id="Loupe"><path d="M53.7602806,35.6955452c7.028801-7.0301018,7.0278015-18.4271011-0.0023003-25.455801 c-7.030098-7.0288005-18.4270973-7.0279007-25.4557934,0.0021992c-5.8004055,5.8014011-6.800106,14.5709-3.0264053,21.4111004 L4.9687819,51.960144l7.0709996,7.0710983L32.346981,38.7240448 C39.1881866,42.4984436,47.9591866,41.4976425,53.7602806,35.6955452z M12.0397816,56.2027435L7.7971873,51.960144 l18.5755939-18.5755997c0.5754051,0.8079987,1.2066994,1.588501,1.9315987,2.3133011 c0.7241001,0.7238998,1.5039005,1.3544998,2.3111,1.9292984L12.0397816,56.2027435z M29.7174816,34.282444 c-6.2378998-6.2378006-6.2382946-16.3880005-0.0009995-22.6264c3.0217037-3.0222998,7.0394993-4.6869001,11.3132-4.6873002 c4.2737999-0.0004001,8.2918968,1.6635003,11.3141975,4.6853004l0.0008011,0.0007992l0.0003014,0.0003004 c6.2377968,6.2378006,6.238205,16.3878994,0.0009003,22.6263008c-3.0216942,3.0223007-7.0395012,4.6869011-11.3132019,4.6872978 C36.7588806,38.9691429,32.7407799,37.3052444,29.7174816,34.282444z" fill="#000000" style="fill: rgb(0, 0, 139);"></path><path d="M50.2242813,13.7756433c-2.4559021-2.4551992-5.7206993-3.8071995-9.1938019-3.8076 c-3.4726982,0.0007-6.7374992,1.3528004-9.1923981,3.809c-0.390501,0.3905001-0.3901005,1.0241003,0,1.4142008 c0.3908997,0.3908997,1.0237007,0.3905001,1.4141998,0c2.0779076-2.0778008,4.8400002-3.2227001,7.7789078-3.2227001 c2.9381905-0.0007,5.7010918,1.1434994,7.7788925,3.2213993c0.3908005,0.3908005,1.0237007,0.3904009,1.4141998,0 C50.6147804,14.7994442,50.6143799,14.165844,50.2242813,13.7756433z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></svg>     
+                                                            <p>Detalle</p></a>
+                                                    </div>
+                                                    <div title="Ir a Modificar Cliente">
+                                                        <a th:href="@{/cliente/modificar/__${cliente.id}__}">
+                                                            <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                                            </svg>     <p id="modificar">Modificar</p>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <div title="Ir a Modificar Cliente" class="col-4 text-center">
-                                                    <a th:href="@{/cliente/modificar/__${cliente.id}__}">
-                                                        <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                                        </svg>     <p id="modificar">Modificar</p>
-                                                    </a>
-                                                </div>
-                                            </div>                                   
+                                            </div>                                
                                         </div>
                                     </div>
                                     <br>
@@ -133,15 +157,15 @@
                                 </div>
                                 <div th:if="${clientes.isEmpty()}">
                                     <br>
-                                    <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
-                                        <h6 class="mb-2" id="azul">No existen Clientes Registrados</h6>
-                                    </div>
-                                    <div class="text-center mb-2">
-                                        <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Cliente" th:href="@{/cliente/registrar}">Nuevo</a>
-                                    </div>
-                                    <div class="text-center mb-2">
-                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
-                                    </div>
+                                        <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                            <h6 class="mb-2" id="azul">No existen Clientes Registrados</h6>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Registrar Cliente" th:href="@{/cliente/registrar}">Nuevo</a>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                        </div>
                                 </div>
                             </div>
                             <!-- Modal para mostrar historial -->
@@ -162,52 +186,109 @@
                             </div>
                             <script>
                                 function verHistorial(button) {
-                                    const clienteId = button.getAttribute('data-id');
+                                const clienteId = button.getAttribute('data-id');
 
-                                    fetch(`/cliente/detalle/${clienteId}`)
-                                            .then(response => {
-                                                if (!response.ok) {
-                                                    throw new Error("Error al obtener detalle");
-                                                }
-                                                return response.text();
-                                            })
-                                            .then(html => {
-                                                document.getElementById("historialContenido").innerHTML = html;
-                                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
-                                                modal.show();
-                                            })
-                                            .catch(error => {
-                                                console.error("Error:", error);
-                                                alert("No se pudo cargar el detalle del cliente.");
-                                            });
+                                fetch(`/cliente/detalle/${clienteId}`)
+                                .then(response => {
+                                if (!response.ok) {
+                                throw new Error("Error al obtener detalle");
+                                }
+                                return response.text();
+                                })
+                                .then(html => {
+                                document.getElementById("historialContenido").innerHTML = html;
+                                const modal = new bootstrap.Modal(document.getElementById('modalHistorial'));
+                                modal.show();
+                                })
+                                .catch(error => {
+                                console.error("Error:", error);
+                                alert("No se pudo cargar el detalle del cliente.");
+                                });
                                 }
 
 
                                 document.addEventListener("DOMContentLoaded", function () {
-                                    document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
-                                        btn.addEventListener("click", function () {
-                                            const id = this.getAttribute("data-id");
+                                document.querySelectorAll(".link-historial-alt").forEach(function (btn) {
+                                btn.addEventListener("click", function () {
+                                const id = this.getAttribute("data-id");
 
-                                            fetch("/cliente/detalle/" + id)
-                                                    .then(response => response.text())
-                                                    .then(html => {
-                                                        document.getElementById("modalHistorialAltContent").innerHTML = html;
-                                                        new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
-                                                    })
-                                                    .catch(error => console.error("Error al cargar detalle", error));
-                                        });
-                                    });
+                                fetch("/cliente/detalle/" + id)
+                                .then(response => response.text())
+                                .then(html => {
+                                document.getElementById("modalHistorialAltContent").innerHTML = html;
+                                new bootstrap.Modal(document.getElementById("modalHistorialAlt")).show();
+                                })
+                                .catch(error => console.error("Error al cargar detalle", error));
+                                });
+                                });
                                 });
 
                                 $(document).ready(function () {
-                                    $('#filtroForm').on('submit', function () {
-                                        $('#loadingModal').modal('show');
-                                    });
+                                $('#filtroForm').on('submit', function () {
+                                $('#loadingModal').modal('show');
+                                });
                                 });
                                 $(document).ready(function () {
-                                    $('#exportaForm').on('submit', function () {
-                                        $('#loadingModal').modal('show');
-                                    });
+                                $('#exportaForm').on('submit', function () {
+                                $('#loadingModal').modal('show');
+                                });
+                                });
+                            </script>
+                            <script>
+                                function startExport(event) {
+                                event.preventDefault();
+
+                                const modal = document.getElementById('loadingModal');
+                                modal.style.display = 'block';
+
+                                const inhabilitado = document.getElementById('inhabilitado').value;
+
+                                const url = `/cliente/clientesExporta?inhabilitado=${inhabilitado}`;
+
+                                fetch(url, {method: 'POST'})
+                                .then(response => {
+                                const contentDisposition = response.headers.get('Content-Disposition');
+                                let fileName = 'exportacion.xlsx';
+
+                                if (contentDisposition) {
+                                const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                                if (match && match[1]) {
+                                fileName = match[1];
+                                }
+                                }
+
+                                return response.blob().then(blob => ({blob, fileName}));
+                                })
+                                .then(({ blob, fileName }) => {
+                                const downloadUrl = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = downloadUrl;
+                                a.download = fileName;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                })
+                                .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error durante la exportación.');
+                                })
+                                .finally(() => {
+                                modal.style.display = 'none';
+                                });
+                                }
+                                document.addEventListener("DOMContentLoaded", function () {
+                                const volverBtn = document.getElementById("volver1");
+                                volverBtn.addEventListener("click", function (e) {
+                                // Mostrar spinner
+                                document.getElementById("spinner").style.display = "block";
+                                });
+                                });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                const volverBtn = document.getElementById("volver2");
+                                volverBtn.addEventListener("click", function (e) {
+                                // Mostrar spinner
+                                document.getElementById("spinner").style.display = "block";
+                                });
                                 });
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

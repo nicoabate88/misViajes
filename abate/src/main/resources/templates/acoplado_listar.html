@@ -40,20 +40,43 @@
                                             </svg> 
                                         </a>   
                                     </div>
-                                    <div  class="col-7 col-sm-7 col-md-7 col-lg-8 col-xl-8 text-center">
+                                    <div  class="col-6 col-sm-6 col-md-7 col-lg-8 col-xl-8 text-center" th:if="${flag == true}">
                                         <h4>Lista de Acoplados</h4>
                                     </div>
-                                    <div title="Ir a Registrar Acoplado" class="col-3 col-sm-3 col-md-3 col-lg-2 col-xl-2 text-center">
-                                        <a th:href="@{/acoplado/registrar}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M512,121H0v188.333h60V361H30v30h60v-81.667h30V361h154.58c6.192,17.458,22.865,30,42.42,30 c11.517,0,22.032-4.354,30-11.495c7.968,7.142,18.483,11.495,30,11.495c11.517,0,22.032-4.354,30-11.495 c7.968,7.142,18.483,11.495,30,11.495c24.813,0,45-20.187,45-45c0-15.114-7.498-28.502-18.961-36.667H512V121z M272,331H150 v-21.667h122V331z M317,361c-8.271,0-15-6.729-15-15s6.729-15,15-15s15,6.729,15,15S325.271,361,317,361z M377,361 c-8.271,0-15-6.729-15-15s6.729-15,15-15s15,6.729,15,15S385.271,361,377,361z M437,361c-8.271,0-15-6.729-15-15s6.729-15,15-15 s15,6.729,15,15S445.271,361,437,361z M482,279.333H30V151h452V279.333z" fill="#000000" style="fill: rgb(255, 255, 255);"></path></g></g></svg>
-                                            <h6 id="icono">Nuevo</h6> </a>
+                                    <div  class="col-8 text-center" th:if="${flag != true}">
+                                        <h4>Lista de Acoplados</h4>
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                        <form>
+                                            <button id="exportButton" onclick="startExport(event)" class="btn btn-light" type="button">
+                                                <input type="hidden" id="inhabilitado" name="inhabilitado" th:value="${inhabilitado}">
+                                                    <h6 id="icono">Excel</h6>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center" th:if="${flag == true}">
+                                        <a title="Ir a Imprimir Mantenimiento" target="_blank" th:href="@{/acoplado/imprimirAcoplados(inhabilitado=${inhabilitado})}">
+                                            <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                            </svg><p id="imprimirExporta">Imprimir</p>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="container mb-2">
-                                <div th:if="${exito != null}" class="card-body mb-2 text-center border border-secondary rounded" id="mensaje">                        
-                                    <h6 id="white" th:text="${exito}"></h6>                                                                             
+                            <div id="loadingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; text-align: center; z-index: 1000;">
+                                <div style="margin-top: 20%; font-size: 20px;">
+                                    <div class="spinner" style="margin-bottom: 20px;">
+                                        <svg viewBox="0 0 50 50" style="width: 50px; height: 50px;">
+                                            <circle cx="25" cy="25" r="20" fill="none" stroke-width="5" stroke="#fff" stroke-dasharray="31.4 31.4" stroke-linecap="round">
+                                                <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite" />
+                                            </circle>
+                                        </svg>
+                                    </div>
+                                    Exportando... Por favor, espere.
                                 </div>
+                            </div>
+                            <div class="container mb-2">
                                 <div th:if="${!acoplados.isEmpty()}">
                                     <div class="card-header pb-0" id="bgWhite">
                                         <form class="row" th:action="@{/acoplado/listarFiltro}" method="GET">
@@ -83,7 +106,18 @@
                                                     </svg>
                                                 </button>
                                             </div>
+                                            <div title="Ir a Registrar Acoplado" class="col-12 col-sm-12 col-md-2 col-lg-4 col-xl-4 p-4 text-center">
+                                                <a th:href="@{/acoplado/registrar}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="25" viewBox="0 0 512 252" style="enable-background:new 0 0 512 512;" xml:space="preserve"><g><g><path d="M512,121H0v188.333h60V361H30v30h60v-81.667h30V361h154.58c6.192,17.458,22.865,30,42.42,30 c11.517,0,22.032-4.354,30-11.495c7.968,7.142,18.483,11.495,30,11.495c11.517,0,22.032-4.354,30-11.495 c7.968,7.142,18.483,11.495,30,11.495c24.813,0,45-20.187,45-45c0-15.114-7.498-28.502-18.961-36.667H512V121z M272,331H150 v-21.667h122V331z M317,361c-8.271,0-15-6.729-15-15s6.729-15,15-15s15,6.729,15,15S325.271,361,317,361z M377,361 c-8.271,0-15-6.729-15-15s6.729-15,15-15s15,6.729,15,15S385.271,361,377,361z M437,361c-8.271,0-15-6.729-15-15s6.729-15,15-15 s15,6.729,15,15S445.271,361,437,361z M482,279.333H30V151h452V279.333z" fill="#000000" style="fill: rgb(0, 0, 139);"></path></g></g></svg> 
+                                                      <p class="mb-0">Nuevo</p> </a>
+                                            </div>
                                         </form>   
+                                    </div>
+                                    <div th:if="${exito != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">
+                                        <h6 id="white" th:text="${exito}" class="mb-0 d-inline"></h6>
+                                        <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
                                     <div th:each="acoplado : ${acoplados}">
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
@@ -195,6 +229,63 @@
                                     $('#exportaForm').on('submit', function () {
                                         $('#loadingModal').modal('show');
                                     });
+                                });
+                            </script>
+                            <script>
+                                function startExport(event) {
+                                event.preventDefault();
+
+                                const modal = document.getElementById('loadingModal');
+                                modal.style.display = 'block';
+
+                                const inhabilitado = document.getElementById('inhabilitado').value;
+
+                                const url = `/acoplado/acopladosExporta?inhabilitado=${inhabilitado}`;
+
+                                fetch(url, {method: 'POST'})
+                                .then(response => {
+                                const contentDisposition = response.headers.get('Content-Disposition');
+                                let fileName = 'exportacion.xlsx';
+
+                                if (contentDisposition) {
+                                const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                                if (match && match[1]) {
+                                fileName = match[1];
+                                }
+                                }
+
+                                return response.blob().then(blob => ({blob, fileName}));
+                                })
+                                .then(({ blob, fileName }) => {
+                                const downloadUrl = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = downloadUrl;
+                                a.download = fileName;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                })
+                                .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error durante la exportación.');
+                                })
+                                .finally(() => {
+                                modal.style.display = 'none';
+                                });
+                                }
+                                document.addEventListener("DOMContentLoaded", function () {
+                                const volverBtn = document.getElementById("volver1");
+                                volverBtn.addEventListener("click", function (e) {
+                                // Mostrar spinner
+                                document.getElementById("spinner").style.display = "block";
+                                });
+                                });
+                                document.addEventListener("DOMContentLoaded", function () {
+                                const volverBtn = document.getElementById("volver2");
+                                volverBtn.addEventListener("click", function (e) {
+                                // Mostrar spinner
+                                document.getElementById("spinner").style.display = "block";
+                                });
                                 });
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

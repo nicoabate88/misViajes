@@ -23,8 +23,7 @@
                             </div>
                             <div class="container mb-2">   
                                 <div class="card-header pb-0" id="bgWhite">
-                                    <form th:action="@{/recibo/listarFiltro}" method="POST">
-                                        <input hidden th:value="${id}" name="id">  
+                                    <form th:action="@{/recibo/listarFiltro}" method="GET">
                                             <div class="row">    
                                                 <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
                                                     <label for="desde" class="form-label">Desde</label>
@@ -56,6 +55,12 @@
                                             </div>
                                     </form>   
                                 </div>
+                                <div th:if="${exito != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">
+                                    <h6 id="white" th:text="${exito}" class="mb-0 d-inline"></h6>
+                                    <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
                                 <div th:if="${!recibos.isEmpty()}">
                                     <div class="card-body p-2">
                                         <h6 id="dimgray" th:text="'Total Recibos $'+${#numbers.formatDecimal(total, 0, 'POINT', 2, 'COMMA')}"></h6>
@@ -64,11 +69,11 @@
                                         <div class="card border-secondary p-3 mb-1" id="color-card">
                                             <div class="row">
                                                 <div class="col-8">
-                                                    <h6 th:text="'Importe $'+${#numbers.formatDecimal(recibo.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
-                                                    <h6 id="dimgray" th:text="'Fecha ' + ${#dates.format(recibo.fecha, 'dd-MM-yyyy')}+' - ID'+${recibo.idRecibo}"></h6>
+                                                    <h6 th:text="'Fecha ' + ${#dates.format(recibo.fecha, 'dd-MM-yyyy')}+' - ID'+${recibo.idRecibo}"></h6>
+                                                    <h6 id="dimgray" th:text="'Importe $'+${#numbers.formatDecimal(recibo.importe, 0, 'POINT', 2, 'COMMA')}"></h6>
                                                 </div>
                                                 <div class="col-4 text-center">
-                                                    <a th:href= "@{/recibo/modificar/__${recibo.id}__}" >
+                                                    <a th:href="@{/recibo/modificar(id=${recibo.id}, desde=${desde}, hasta=${hasta}, idCliente=${idCliente})}">
                                                         <svg id="modificar" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
                                                         </svg>     <p id="modificar">Modificar</p>
@@ -79,7 +84,6 @@
                                                 <div class="col-8">
                                                     <p id="dimgray" class="mb-1" th:text="${recibo.cliente.nombre}"></p>
                                                     <p class="mb-1" id="dimgray" th:text="${recibo.observacion}"></p>
-                                                    <p class='mb-0' id="darkgray" th:text="${recibo.usuario.nombre}"></p>
                                                 </div>
                                                 <div class="col-4 text-center">
                                                     <a title="Ir a Imprimir Recibo" target="_blank" th:href= "@{/recibo/imprimir/__${recibo.id}__}" >

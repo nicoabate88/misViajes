@@ -1,10 +1,14 @@
 package abate.abate.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,6 +29,20 @@ public class Ingreso {
     private String observacion;
     @OneToOne
     private Usuario usuario;
+    @OneToMany(mappedBy = "ingreso", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ValorI> valores = new ArrayList<>();
+    
+        // Helpers para mantener la relación consistente
+    public void addValor(ValorI v) {
+        valores.add(v);
+        v.setIngreso(this);
+    }
+
+    public void removeValor(ValorI v) {
+        valores.remove(v);
+        v.setIngreso(null);
+    }
+
 
     public Ingreso() {
     }
@@ -92,5 +110,15 @@ public class Ingreso {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
+    public List<ValorI> getValores() {
+        return valores;
+    }
+
+    public void setValores(List<ValorI> valores) {
+        this.valores = valores;
+    }
+    
+    
 
 }

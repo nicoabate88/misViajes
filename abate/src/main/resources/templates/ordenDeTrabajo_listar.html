@@ -57,7 +57,7 @@
                                 <div class="card-header mb-4" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" th:href="@{/mantenimiento/listarAdmin}" type="button">
+                                            <a title="Volver" th:href="@{/index}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -90,11 +90,11 @@
                                                 <select class="form-control text-secondary border-secondary" id="idCamion" name="idCamion">
                                                     <option th:if="${camion != null}" th:value="${camion.id}"
                                                             th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}" selected></option>
-                                                    <option th:value=null>TODOS</option>
+                                                    <option th:value=null>TODOS</option> 
                                                     <option th:each="camion : ${camiones}"
                                                             th:value="${camion.id}"
                                                             th:text="${camion.dominio}+' - '+${camion.marca}+' '+${camion.modelo}"/>
-                                                    <option value="">TODOS</option>
+                                                    
                                                 </select>
                                             </div>
                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 pb-3">
@@ -108,20 +108,18 @@
                                                             th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>
                                                 </select>
                                             </div>
-                                            <div class="col-5 col-sm-5 col-md-5 col-lg-2 col-xl-2 pb-3">
-                                                <label for="lugar" class="form-floting text-secondary">Lugar</label>
-                                                <select class="form-control text-secondary border-secondary" id="lugar" name="lugar">
-                                                    <option th:if="${lugar == 'CAMILO'}" selected th:value="CAMILO">CAMILO ALDAO</option>
-                                                    <option th:if="${lugar == 'NOGOYA'}" selected th:value="NOGOYA">NOGOYA</option>
-                                                    <option th:if="${lugar == 'EXTERNO'}" selected th:value="EXTERNO">PROVEEDOR EXTERNO</option>
-                                                    <option th:if="${lugar == 'TODOS'}" selected th:value="TODOS">TODOS</option>
-                                                    <option th:value="CAMILO">CAMILO ALDAO</option>
-                                                    <option th:value="NOGOYA">NOGOYA</option>
-                                                    <option th:value="EXTERNO">PROVEEDOR EXTERNO</option>
-                                                    <option th:value="TODOS">TODOS</option>
+                                            <div class="col-5 col-sm-5 col-md-6 col-lg-3 col-xl-3 pb-3">
+                                                <label for="idProveedor" class="form-floting text-secondary">Proveedor</label>
+                                                <select class="form-control text-secondary border-secondary" id="idProveedor" name="idProveedor">
+                                                    <option th:if="${proveedor != null}" th:value="${proveedor.id}"
+                                                            th:text="${proveedor.nombre}" selected></option>
+                                                    <option th:value=null>TODOS</option>
+                                                    <option th:each="proveedor : ${proveedores}"
+                                                            th:value="${proveedor.id}"
+                                                            th:text="${proveedor.nombre}"/>
                                                 </select>
                                             </div>
-                                            <div class="col-5 col-sm-5 col-md-5 col-lg-3 col-xl-3 pb-3">
+                                            <div class="col-5 col-sm-5 col-md-5 col-lg-2 col-xl-2 pb-3">
                                                 <label for="estado" class="form-floting text-secondary">Estado</label>
                                                 <select class="form-control text-secondary border-secondary" id="estado" name="estado">
                                                     <option th:if="${estado == 'ABIERTO'}" selected th:value="ABIERTO">ABIERTO - EN PROCESO</option>
@@ -132,7 +130,7 @@
                                                     <option th:value="TODOS">TODOS</option>
                                                 </select>
                                             </div>
-                                            <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                            <div class="col-2 col-sm-2 col-md-1 col-lg-1 col-xl-1 text-center">
                                                 <label for="ver" class="form-floting">Ver</label> 
                                                 <button id="ver"  class="btn btn-primary" type="submit">
                                                     <svg id="white" xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -142,29 +140,21 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <div th:if="${exito != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">
-                                        <h6 id="white" th:text="${exito}" class="mb-0 d-inline"></h6>
-                                        <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div th:if="${error != null}" class="alert bg-secondary alert-secondary alert-dismissible fade show mb-2 p-4 text-center" role="alert">                        
-                                        <h6 id="white" th:text="${error}"></h6>   
-                                        <button id="white" type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div th:if="${!ordenes.isEmpty()}">                                                             
+                                </div>
+                                <div th:if="${!ordenes.isEmpty()}" class="row justify-content-center mb-4">    
+                                    <div class="col-12 col-lg-10 px-3 px-md-4 px-lg-3 mb-4">
                                         <div class="table-responsive border border-secondary rounded">
                                             <table class="table border bg-light table-hover table-sm mb-0" id="dimgray">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center">N° OT</th>
-                                                        <th class="text-center">Fecha Alta</th>
-                                                        <th class="text-center">Lugar</th>
+                                                        <th class="text-center">Fecha</th>
+                                                        <th class="text-center">Proveedor</th>
                                                         <th class="text-center">Camión</th>
                                                         <th class="text-center">Acoplado</th>
                                                         <th class="text-center">Estado</th>
+                                                        <th class="text-center">Fecha Inicio</th>
+                                                        <th class="text-center">Fecha Fin</th>
                                                         <th class="text-center">Fecha Cierre</th>
                                                         <th class="text-center">Ver</th>
                                                     </tr>
@@ -173,12 +163,15 @@
                                                     <tr th:each="orden : ${ordenes}">
                                                         <td class="text-center" th:text="${orden.idOrden}"></td>
                                                         <td class="text-center" th:text="${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></td>
-                                                        <td class="text-center" th:text="${orden.lugar}"></td>
+                                                        <td class="text-center" th:text="${orden.proveedor.nombre}"></td>
                                                         <td th:if="${orden.camion != null}" class="text-center" th:text="${orden.camion.dominio}"></td>
                                                         <td th:if="${orden.camion == null}" class="text-center">-</td>
                                                         <td th:if="${orden.acoplado != null}" class="text-center" th:text="${orden.acoplado.dominio}"></td>
                                                         <td th:if="${orden.acoplado == null}" class="text-center">-</td>
                                                         <td class="text-center" th:text="${orden.estado}"></td>
+                                                        <td class="text-center" th:text="${#dates.format(orden.fechaInicio, 'dd-MM-yyyy')}"></td>
+
+                                                        <td class="text-center" th:text="${#dates.format(orden.fechaFin, 'dd-MM-yyyy')}"></td>
                                                         <td th:if="${orden.fechaCierre != null}" class="text-center" th:text="${#dates.format(orden.fechaCierre, 'dd-MM-yyyy')}"></td>
                                                         <td th:if="${orden.fechaCierre == null}" class="text-center">-</td>
                                                         <td class="text-center">
@@ -190,63 +183,101 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                    </div>
+
+                                    <div class="container">
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Nuevo" th:href="@{/ordenDeTrabajo/registrar}">Nuevo</a>
+                                        </div>
+                                        <div class="text-center mb-2">
+                                            <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                        </div>                                           
+                                    </div>
+                                </div>
+                                <div th:if="${ordenes.isEmpty()}" class="container"> 
+                                    <br>
+                                        <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
+                                            <h6 id="azul">No existe Orden de Trabajo para mostrar</h6>
+                                            <h6 id="azul">Por favor, seleccione Filtro</h6>
+                                        </div>
                                         <br>
                                             <div class="text-center mb-2">
                                                 <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Nuevo" th:href="@{/ordenDeTrabajo/registrar}">Nuevo</a>
                                             </div>
                                             <div class="text-center mb-2">
-                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
+                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
                                             </div>
-                                    </div>
-                                    <div th:if="${ordenes.isEmpty()}"> 
-                                        <br>
-                                            <div class="card border-secondary p-4 mb-2 text-center" id="color-card">
-                                                <h6 id="azul">No existe Orden de Trabajo para mostrar</h6>
-                                                <h6 id="azul">Por favor, seleccione Filtro</h6>
                                             </div>
-                                            <br>
-                                                <div class="text-center mb-2">
-                                                    <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" title="Nuevo" th:href="@{/ordenDeTrabajo/registrar}">Nuevo</a>
+
+                                            <div id="spinner" class="modal" style="display: none;"> 
+                                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                        <span class="sr-only">Cargando...</span>
+                                                    </div>
                                                 </div>
-                                                <div class="text-center mb-2">
-                                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/mantenimiento/listarAdmin}">Volver</a>
-                                                </div>
-                                                </div>
-                                                </div>
-                                                <div id="spinner" class="modal" style="display: none;"> 
-                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                                            <span class="sr-only">Cargando...</span>
+                                            </div>
+                                            <!-- Modal para mostrar historial -->
+                                            <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header position-relative modal-header-darkblue">
+                                                            <h4 class="modal-title mx-auto">Detalle de Camión</h4>
+                                                            <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body" id="historialContenido">
+                                                            <!-- Aquí se cargará el fragmento HTML con el historial -->
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- Modal para mostrar historial -->
-                                                <div class="modal fade" id="modalHistorial" tabindex="-1" role="dialog" aria-labelledby="modalHistorialLabel" aria-hidden="true">
-                                                    <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header position-relative modal-header-darkblue">
-                                                                <h4 class="modal-title mx-auto">Detalle de Camión</h4>
-                                                                <button type="button" class="close text-white" style="position: absolute; right: 15px;" data-dismiss="modal" aria-label="Cerrar">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body" id="historialContenido">
-                                                                <!-- Aquí se cargará el fragmento HTML con el historial -->
-                                                            </div>
+                                            </div>     
+                                            <!-- Modal para exito modificar OT -->
+                                            <div class="modal fade" id="modalExito" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-primary">
+                                                            <h5 class="modal-title text-white text-center">Mensaje</h5>
+                                                            <button type="button" class="btn-close btn-close-white"
+                                                                    data-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p class="text-secondary fw-bold text-center" id="mensajeExito">                                                                                                                                                                                                   
+                                                            </p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-primary bg-primary" data-dismiss="modal">
+                                                                Continuar
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                </div>                                                                              
-                                                <script>
-                                                    document.addEventListener("DOMContentLoaded", function () {
-                                                        const volverBtn = document.getElementById("ver");
-                                                        volverBtn.addEventListener("click", function (e) {
-                                                            // Mostrar spinner
-                                                            document.getElementById("spinner").style.display = "block";
-                                                        });
+                                                </div>
+                                            </div>
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function () {
+                                                    const volverBtn = document.getElementById("ver");
+                                                    volverBtn.addEventListener("click", function (e) {
+                                                        // Mostrar spinner
+                                                        document.getElementById("spinner").style.display = "block";
                                                     });
-                                                </script>
-                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                </body>
-                                                </html>
+                                                });
+                                            </script>
+                                            <script th:inline="javascript">
+                                                document.addEventListener("DOMContentLoaded", function () {
+
+                                                    const exito = /*[[${exito != null}]]*/ false;
+
+                                                    if (exito) {
+                                                        const mensaje = /*[[${exito}]]*/ "";
+
+                                                        document.getElementById("mensajeExito").innerText = mensaje;
+                                                        $('#modalExito').modal('show');
+                                                    }
+
+                                                });
+                                            </script>
+                                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                            </body>
+                                            </html>
 

@@ -62,11 +62,6 @@ public class CombustibleControlador {
             modelo.put("fechaAnterior", carga.getFechaCarga());
             modelo.put("camion", camion);
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-            if(logueado.getAcoplado() != null){
-            modelo.put("acoplado", logueado.getAcoplado());
-            } else {
-            modelo.put("acoplado", null);
-            }
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
             return "combustible_registrarChofer.html";
@@ -108,11 +103,6 @@ public class CombustibleControlador {
             modelo.put("fechaAnterior", carga.getFechaCarga());
             modelo.put("camion", camion);
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-            if(logueado.getAcoplado() != null){
-            modelo.put("acoplado", logueado.getAcoplado());
-            } else {
-            modelo.put("acoplado", null);
-            }
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
 
             return "combustible_registrarChofer.html";
@@ -154,7 +144,7 @@ public class CombustibleControlador {
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
             if(camion.getAcoplado() != null){
-            modelo.put("acoplado", acopladoServicio.buscarAcoplado(camion.getAcoplado().getId()));
+            modelo.put("acoplado", camion.getAcoplado());
             } else {
                 modelo.put("acoplado", null);
             }
@@ -203,7 +193,7 @@ public class CombustibleControlador {
             Combustible carga = combustibleServicio.cargaAnterior(camion);
             
             if(camion.getAcoplado() != null){
-            modelo.put("acoplado", acopladoServicio.buscarAcoplado(camion.getAcoplado().getId()));
+            modelo.put("acoplado", camion.getAcoplado());
             } else {
                 modelo.put("acoplado", null);
             }
@@ -1090,6 +1080,7 @@ public class CombustibleControlador {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         sb.append("<thead><tr>"
+                + "<th>ID</th>"
                 + "<th>Fecha</th>"
                 + "<th>Camión</th>"
                 + "<th>Chofer</th>"
@@ -1103,7 +1094,8 @@ public class CombustibleControlador {
                 + "</tr></thead>");
         sb.append("<tbody>");
         for (Combustible carga : objects) {
-            sb.append("<tr><td>").append(carga.getFechaCarga()).append("</td>"
+            sb.append("<tr><td>").append(carga.getIdCarga()).append("</td>"
+                    + "<td>").append(carga.getFechaCarga()).append("</td>"
                     + "<td>").append(carga.getCamion().getDominio()).append("</td>"
                     + "<td>").append(carga.getChofer().getNombre()).append("</td>"      
                     + "<td>").append(carga.getKmAnterior()).append("</td>"

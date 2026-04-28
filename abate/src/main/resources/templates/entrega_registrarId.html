@@ -109,10 +109,97 @@
                                 });
                             </script>
                             <script>
-                                document.getElementById("form").addEventListener("submit", function () {
-                                    document.getElementById("spinner").style.display = "block";
-                                });
-                            </script>
+                                                                            document.getElementById("form").addEventListener("submit", function(e){
+
+                                                                            if (valores.length === 0) {
+                                                                            e.preventDefault();
+                                                                            alert("Debe agregar al menos un valor.");
+                                                                            return;
+                                                                            }
+
+                                                                            // Si pasa la validación recién mostramos spinner
+                                                                            document.getElementById("spinner").style.display = "block";
+                                                                            });
+                                                                        </script>
+                                                                        <script>
+                                                                            let valores = [];
+
+                                                                            function agregarValor() {
+                                                                            let tipo = document.getElementById("tipoValor").value;
+                                                                            let importe = parseFloat(document.getElementById("importeValor").value);
+                                                                            let obs = document.getElementById("obsValor").value;
+
+                                                                            if (!tipo) { alert("Debe seleccionar un tipo de valor."); return; }
+                                                                            if (!importe || importe <= 0) { alert("Ingrese un importe válido."); return; }
+
+                                                                            valores.push({ tipo, importe, observacion: obs });
+
+                                                                            renderTabla();
+                                                                            limpiarInputs();
+                                                                            }
+
+                                                                            function renderTabla() {
+                                                                            let tabla = document.getElementById("tablaValores");
+                                                                            tabla.innerHTML = "";
+
+                                                                            let total = 0;
+
+                                                                            valores.forEach((v, index) => {
+                                                                            total += v.importe;
+
+                                                                            tabla.insertAdjacentHTML("beforeend", `
+                                                                            <tr>
+                                                                            <td>${v.tipo}</td>
+                                                                            <td>$${v.importe.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                                                            <td>${v.observacion || ''}</td>
+                                                                            <td><button type="button" class="btn-eliminar" onclick="eliminarValor(${index})">❌</button></td>
+                                                                            </tr>
+                                                                            `);
+                                                                            });
+
+                                                                            document.getElementById("totalGeneral").innerHTML = "<b>$" + total.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "</b>";
+                                                                            document.getElementById("importe").value =
+                                                                            total.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                                                                            generarInputsHidden();
+                                                                            }
+
+                                                                            function eliminarValor(index) {
+                                                                            valores.splice(index, 1);
+                                                                            renderTabla();
+                                                                            }
+
+                                                                            function limpiarInputs() {
+                                                                            document.getElementById("tipoValor").value = "";
+                                                                            document.getElementById("importeValor").value = "";
+                                                                            document.getElementById("obsValor").value = "";
+                                                                            }
+
+                                                                            function generarInputsHidden() {
+                                                                            const container = document.getElementById("hiddenValoresContainer");
+                                                                            container.innerHTML = ""; // acá sí podemos limpiar, no toca el resto del form
+
+                                                                            valores.forEach((v) => {
+                                                                            const inputImporte = document.createElement("input");
+                                                                            inputImporte.type = "hidden";
+                                                                            inputImporte.name = "importes";
+                                                                            inputImporte.value = v.importe;
+                                                                            container.appendChild(inputImporte);
+
+                                                                            const inputObs = document.createElement("input");
+                                                                            inputObs.type = "hidden";
+                                                                            inputObs.name = "observacionesValores";
+                                                                            inputObs.value = v.observacion || "";
+                                                                            container.appendChild(inputObs);
+
+                                                                            const inputTipo = document.createElement("input");
+                                                                            inputTipo.type = "hidden";
+                                                                            inputTipo.name = "tipos";
+                                                                            inputTipo.value = v.tipo; // debe coincidir con el enum (EFECTIVO, etc.)
+                                                                            container.appendChild(inputTipo);
+                                                                            });
+                                                                            }
+                                                                        </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                             <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                         </body>

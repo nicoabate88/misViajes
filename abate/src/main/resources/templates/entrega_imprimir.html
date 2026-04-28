@@ -142,11 +142,34 @@
                 <p class="mb-0"><strong>Entregué a: </strong><span th:text="${entrega.chofer.nombre}"></span></p>
                 <p><strong>CUIL: </strong><span th:text="${entrega.chofer.cuil}"></span></p>
                 <p class="mb-0"><strong>El Importe:</strong> <span th:text="'$'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 2, 'COMMA')}"></span></p>
-                <div class="d-flex align-items-center">
+                <div th:if="${entrega.observacion != ''}" class="d-flex align-items-center">
                     <label for="observacion" class="me-2 fw-bold">Observación:</label>
                     <input id="observacion" name="observacion" class="form-control-plaintext" 
-                           th:value="${entrega.observacion}" placeholder="Ingrese observación aquí">
+                           th:value="${entrega.observacion}">
                 </div>
+                <div class="table-responsive">
+                    <table class="table table-borderless table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th class="text-center text-secondary">Tipo</th>
+                                <th class="text-center text-secondary">Importe</th>
+                                <th class="text-center text-secondary">Observación</th>
+                            </tr>
+                        </thead>
+                        <tbody th:each="valor : ${entrega.valores}">
+                            <tr id="dimgray">
+                                <td class="text-center" th:text="${valor.tipo}"></td>
+                                <td class="text-center" th:text="'$'+${#numbers.formatDecimal(valor.importe, 0, 'POINT', 0, 'POINT')}"></td>
+                                <td class="text-center" th:text="${valor.observacion}"></td>
+                            </tr>
+                        </tbody>
+                        <tr> 
+                            <th class="text-center text-secondary">TOTAL</th>
+                            <th class="text-center text-secondary" th:text="'$'+${#numbers.formatDecimal(entrega.importe, 0, 'POINT', 0, 'POINT')}"></th>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div> 
             </div>
             <div class="recibo-section">
                 <h5></h5>

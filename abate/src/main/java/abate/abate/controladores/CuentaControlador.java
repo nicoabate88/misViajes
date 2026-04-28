@@ -64,7 +64,7 @@ public class CuentaControlador {
         for (Cuenta c : cuentas) {
             saldo = saldo + c.getSaldo();
         }
-        if(!cuentas.isEmpty()){
+        if (!cuentas.isEmpty()) {
             flag = true;
         }
 
@@ -75,7 +75,7 @@ public class CuentaControlador {
 
         return "cuenta_listarChofer.html";
     }
-    
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarChoferFiltro")
     public String listarChoferFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
@@ -86,21 +86,21 @@ public class CuentaControlador {
         Boolean flag = false;
 
         if (filtrarInhabilitados) {
-        Double saldo = 0.0;
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
-        for (Cuenta c : cuentas) {
-            saldo = saldo + c.getSaldo();
-        }
-        if(!cuentas.isEmpty()){
-            flag = true;
-        }
+            Double saldo = 0.0;
+            ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+            for (Cuenta c : cuentas) {
+                saldo = saldo + c.getSaldo();
+            }
+            if (!cuentas.isEmpty()) {
+                flag = true;
+            }
 
-        modelo.put("flag", flag);
-        modelo.addAttribute("cuentas", cuentas);
-        modelo.put("saldo", saldo);
-        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+            modelo.put("flag", flag);
+            modelo.addAttribute("cuentas", cuentas);
+            modelo.put("saldo", saldo);
+            modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
 
-        return "cuenta_listarChofer.html";
+            return "cuenta_listarChofer.html";
 
         } else if (id != null) {
 
@@ -110,21 +110,21 @@ public class CuentaControlador {
             return "cuenta_listarChoferFiltro.html";
 
         } else {
-            
-        Double saldo = 0.0;
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg());
-        for (Cuenta c : cuentas) {
-            saldo = saldo + c.getSaldo();
-        }
-        if(!cuentas.isEmpty()){
-            flag = true;
-        }
 
-        modelo.put("flag", flag);
-        modelo.addAttribute("cuentas", cuentas);
-        modelo.put("saldo", saldo);
+            Double saldo = 0.0;
+            ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg());
+            for (Cuenta c : cuentas) {
+                saldo = saldo + c.getSaldo();
+            }
+            if (!cuentas.isEmpty()) {
+                flag = true;
+            }
 
-        return "cuenta_listarChofer.html";
+            modelo.put("flag", flag);
+            modelo.addAttribute("cuentas", cuentas);
+            modelo.put("saldo", saldo);
+
+            return "cuenta_listarChofer.html";
 
         }
 
@@ -153,8 +153,9 @@ public class CuentaControlador {
 
     }
 
-    @PostMapping("/mostrarChoferFiltroAdmin")
-    public String mostrarChoferFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+    @GetMapping("/mostrarChoferFiltroAdmin")
+    public String mostrarChoferFiltroAdmin(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta,
+            @RequestParam(required = false) String elimina, ModelMap modelo) throws ParseException {
 
         Boolean flag = true;
 
@@ -169,6 +170,9 @@ public class CuentaControlador {
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
+        if (elimina != null) {
+            modelo.put("exito", "Entrega ELIMINADA con éxito");
+        }
 
         return "cuenta_mostrarChoferFiltroAdmin.html";
 
@@ -276,7 +280,7 @@ public class CuentaControlador {
         for (Cuenta c : cuentas) {
             saldo = saldo + c.getSaldo();
         }
-        if(!cuentas.isEmpty()){
+        if (!cuentas.isEmpty()) {
             flag = true;
         }
 
@@ -286,7 +290,7 @@ public class CuentaControlador {
 
         return "cuenta_listarCliente.html";
     }
-    
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/listarClienteFiltro")
     public String listarClienteFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
@@ -297,21 +301,21 @@ public class CuentaControlador {
         Boolean flag = false;
 
         if (filtrarInhabilitados) {
-        Double saldo = 0.0;
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
-        for (Cuenta c : cuentas) {
-            saldo = saldo + c.getSaldo();
-        }
-        if(!cuentas.isEmpty()){
-            flag = true;
-        }
+            Double saldo = 0.0;
+            ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+            for (Cuenta c : cuentas) {
+                saldo = saldo + c.getSaldo();
+            }
+            if (!cuentas.isEmpty()) {
+                flag = true;
+            }
 
-        modelo.put("flag", flag);
-        modelo.addAttribute("cuentas", cuentas);
-        modelo.put("saldo", saldo);
-        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+            modelo.put("flag", flag);
+            modelo.addAttribute("cuentas", cuentas);
+            modelo.put("saldo", saldo);
+            modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
 
-        return "cuenta_listarCliente.html";
+            return "cuenta_listarCliente.html";
 
         } else if (id != null) {
 
@@ -321,21 +325,21 @@ public class CuentaControlador {
             return "cuenta_listarClienteFiltro.html";
 
         } else {
-            
-        Double saldo = 0.0;
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg());
-        for (Cuenta c : cuentas) {
-            saldo = saldo + c.getSaldo();
-        }
-        if(!cuentas.isEmpty()){
-            flag = true;
-        }
 
-        modelo.put("flag", flag);
-        modelo.addAttribute("cuentas", cuentas);
-        modelo.put("saldo", saldo);
+            Double saldo = 0.0;
+            ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg());
+            for (Cuenta c : cuentas) {
+                saldo = saldo + c.getSaldo();
+            }
+            if (!cuentas.isEmpty()) {
+                flag = true;
+            }
 
-        return "cuenta_listarCliente.html";
+            modelo.put("flag", flag);
+            modelo.addAttribute("cuentas", cuentas);
+            modelo.put("saldo", saldo);
+
+            return "cuenta_listarCliente.html";
 
         }
 
@@ -391,8 +395,9 @@ public class CuentaControlador {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    @PostMapping("/mostrarClienteFiltro")
-    public String mostrarClienteFiltro(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
+    @GetMapping("/mostrarClienteFiltro")
+    public String mostrarClienteFiltro(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta,
+            @RequestParam(required = false) String elimina, ModelMap modelo) throws ParseException {
 
         Boolean flag = true;
 
@@ -407,6 +412,9 @@ public class CuentaControlador {
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
+        if (elimina != null) {
+            modelo.put("exito", "Recibo ELIMINADO con éxito");
+        }
 
         return "cuenta_mostrarClienteFiltro.html";
 
@@ -433,10 +441,14 @@ public class CuentaControlador {
 
     }
 
-    @GetMapping("/mostrarTransaccionCliente/{id}")
-    public String mostrarTransaccion(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/mostrarTransaccionCliente")
+    public String mostrarTransaccion(@RequestParam Long id, @RequestParam String desde, @RequestParam String hasta, @RequestParam Long idCuenta,  ModelMap modelo) {
 
         Transaccion transaccion = transaccionServicio.buscarTransaccion(id);
+        
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("idCuenta", idCuenta);
 
         if (transaccion.getFlete() != null) {
 
@@ -495,7 +507,6 @@ public class CuentaControlador {
 
         if (transaccion.getEntrega() != null) {
 
-
             modelo.put("entrega", entregaServicio.buscarEntrega(transaccion.getEntrega().getId()));
             modelo.put("importe", Math.abs(transaccion.getImporte()));
 
@@ -515,11 +526,16 @@ public class CuentaControlador {
 
     }
 
-    @GetMapping("/mostrarTransaccionDesdeCuenta/{id}")
-    public String mostrarTransaccionChoferAdminDesdeCuenta(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/mostrarTransaccionDesdeCuenta")
+    public String mostrarTransaccionChoferAdminDesdeCuenta(@RequestParam Long id, @RequestParam(required = false) Long idCuenta,
+            @RequestParam(required = false) String desde, @RequestParam(required = false) String hasta, ModelMap modelo) {
 
         Transaccion transaccion = transaccionServicio.buscarTransaccion(id);
-        Long idCuenta = cuentaServicio.buscarIdCuentaChofer(transaccion.getChofer().getId());
+        
+            modelo.put("idCuenta", idCuenta);
+            modelo.put("idTransaccion", id);
+            modelo.put("desde", desde);
+            modelo.put("hasta", hasta);
 
         if (transaccion.getFlete() != null) {
 
@@ -534,7 +550,6 @@ public class CuentaControlador {
 
             modelo.put("entrega", entregaServicio.buscarEntrega(transaccion.getEntrega().getId()));
             modelo.put("importe", Math.abs(transaccion.getImporte()));
-            modelo.put("idCuenta", idCuenta);
 
             return "transaccion_entregaCuenta.html";
 
@@ -545,7 +560,6 @@ public class CuentaControlador {
 
             modelo.put("idFlete", flete.getId());
             modelo.put("gasto", gasto);
-            modelo.put("idCuenta", idCuenta);
 
             return "transaccion_gastoCuenta.html";
 
@@ -586,7 +600,7 @@ public class CuentaControlador {
         }
 
     }
-    
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/habilitar/{id}")
     public String habilitarCuenta(@PathVariable Long id, ModelMap modelo) {
@@ -604,11 +618,11 @@ public class CuentaControlador {
         Cuenta cuenta = cuentaServicio.buscarCuenta(id);
 
         choferServicio.habilitarCuentaChofer(cuenta.getChofer().getId());
-        
-        return "redirect:/cuenta/habilitado/" +id;
+
+        return "redirect:/cuenta/habilitado/" + id;
 
     }
-    
+
     @GetMapping("/habilitado/{id}")
     public String habilitado(@PathVariable Long id, ModelMap modelo) {
 
@@ -636,10 +650,10 @@ public class CuentaControlador {
 
         choferServicio.inhabilitarCuentaChofer(cuenta.getChofer().getId());
 
-        return "redirect:/cuenta/inhabilitado/" +id;
+        return "redirect:/cuenta/inhabilitado/" + id;
 
     }
-    
+
     @GetMapping("/inhabilitado/{id}")
     public String inhabilitado(@PathVariable Long id, ModelMap modelo) {
 
@@ -689,10 +703,10 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuenta(htmlContent, response, cuenta.getChofer().getNombre(), cuenta.getSaldo());
 
     }
-    
+
     @GetMapping("/imprimirTodoAdmin")
     public String imprimirTodoAdmin(@RequestParam Long idCuenta, ModelMap modelo) throws ParseException {
-        
+
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
@@ -700,8 +714,8 @@ public class CuentaControlador {
         modelo.put("cuenta", cuenta);
         modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta));
 
-        return "cuenta_imprimirTodoAdmin.html";   
-        
+        return "cuenta_imprimirTodoAdmin.html";
+
     }
 
     @PostMapping("/exportarFiltroAdmin")
@@ -744,10 +758,10 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuentaMovimiento(htmlContent, response, cuenta.getChofer().getNombre(), desde, hasta);
 
     }
-    
+
     @GetMapping("/imprimirFiltroAdmin")
     public String imprimirFiltroAdmin(@RequestParam Long idCuenta, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
-        
+
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
 
         ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta);
@@ -757,8 +771,8 @@ public class CuentaControlador {
         modelo.put("desde", desde);
         modelo.put("hasta", hasta);
 
-        return "cuenta_imprimirFiltroAdmin.html";   
-        
+        return "cuenta_imprimirFiltroAdmin.html";
+
     }
 
     @PostMapping("/exportarTodoCliente")
@@ -787,10 +801,10 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuenta(htmlContent, response, cuenta.getCliente().getNombre(), cuenta.getSaldo());
 
     }
-    
+
     @GetMapping("/imprimirTodoCliente")
     public String imprimirTodoCliente(@RequestParam Long idCuenta, ModelMap modelo) throws ParseException {
-        
+
         Cuenta cuenta = cuentaServicio.buscarCuenta(idCuenta);
         String desde = obtenerFechaDesde();
         String hasta = obtenerFechaHasta();
@@ -798,8 +812,8 @@ public class CuentaControlador {
         modelo.put("cuenta", cuenta);
         modelo.addAttribute("transacciones", transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta));
 
-        return "cuenta_imprimirTodoCliente.html";   
-        
+        return "cuenta_imprimirTodoCliente.html";
+
     }
 
     @PostMapping("/exportarFiltroCliente")
@@ -842,10 +856,10 @@ public class CuentaControlador {
         excelServicio.exportHtmlToExcelCuentaMovimiento(htmlContent, response, cuenta.getCliente().getNombre(), desde, hasta);
 
     }
-    
+
     @GetMapping("/imprimirFiltroCliente")
     public String imprimirFIltroCliente(@RequestParam Long idCuenta, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
-        
+
         ArrayList<Transaccion> lista = transaccionServicio.buscarTransaccionIdCuentaFecha(idCuenta, desde, hasta);
 
         modelo.put("cuenta", cuentaServicio.buscarCuenta(idCuenta));
@@ -853,13 +867,13 @@ public class CuentaControlador {
         modelo.put("hasta", hasta);
         modelo.addAttribute("transacciones", lista);
 
-        return "cuenta_imprimirFiltroCliente.html";   
-        
+        return "cuenta_imprimirFiltroCliente.html";
+
     }
-    
+
     @PostMapping("/exportarCliente")
     public String exportarCliente(ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
@@ -871,33 +885,53 @@ public class CuentaControlador {
     }
 
     @PostMapping("/exportaCliente")
-    public void exportaCliente(HttpServletResponse response, HttpSession session) throws IOException, ParseException {
+    public void exportaCliente(@RequestParam(required = false) Boolean inhabilitado, HttpServletResponse response, HttpSession session) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ArrayList<Cuenta> cuentas;
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
 
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
-        
+        if (filtrarInhabilitados) {
+
+            cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+
+        } else {
+
+            cuentas = cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg());
+
+        }
+
         String htmlContent = generateHtmlFromObjectsClientes(cuentas);
         excelServicio.exportHtmlToExcelClientes(htmlContent, response);
 
     }
-    
-    @GetMapping("/imprimirCliente")
-    public String imprimirCliente(ModelMap modelo, HttpSession session) throws ParseException {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+    @GetMapping("/imprimirCliente")
+    public String imprimirCliente(@RequestParam(required = false) Boolean inhabilitado, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ArrayList<Cuenta> cuentas;
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+
+            cuentas = cuentaServicio.buscarCuentasCliente(logueado.getIdOrg());
+
+        } else {
+
+            cuentas = cuentaServicio.buscarCuentasClienteHab(logueado.getIdOrg());
+
+        }
 
         modelo.addAttribute("cuentas", cuentas);
 
         return "cuenta_imprimirCliente.html";
-        
+
     }
-    
+
     @PostMapping("/exportarChofer")
     public String exportarChofer(ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
@@ -909,28 +943,49 @@ public class CuentaControlador {
     }
 
     @PostMapping("/exportaChofer")
-    public void exportaChofer(HttpServletResponse response, HttpSession session) throws IOException, ParseException {
+    public void exportaChofer(@RequestParam(required = false) Boolean inhabilitado, HttpServletResponse response, HttpSession session) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
-        
+        ArrayList<Cuenta> cuentas;
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+
+            cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+
+        } else {
+
+            cuentas = cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg());
+
+        }
+
         String htmlContent = generateHtmlFromObjectsChoferes(cuentas);
         excelServicio.exportHtmlToExcelChoferes(htmlContent, response);
 
     }
-    
-    @GetMapping("/imprimirChofer")
-    public String imprimirChofer(ModelMap modelo, HttpSession session) throws ParseException {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
-        ArrayList<Cuenta> cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+    @GetMapping("/imprimirChofer")
+    public String imprimirChofer(@RequestParam(required = false) Boolean inhabilitado, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ArrayList<Cuenta> cuentas;
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+
+            cuentas = cuentaServicio.buscarCuentasChofer(logueado.getIdOrg());
+
+        } else {
+
+            cuentas = cuentaServicio.buscarCuentasChoferHab(logueado.getIdOrg());
+
+        }
 
         modelo.addAttribute("cuentas", cuentas);
 
         return "cuenta_imprimirChofer.html";
-        
+
     }
 
     private String generateHtmlFromObjects(ArrayList<Transaccion> objects) {
@@ -953,7 +1008,7 @@ public class CuentaControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
+
     private String generateHtmlFromObjectsClientes(ArrayList<Cuenta> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
@@ -970,7 +1025,7 @@ public class CuentaControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
+
     private String generateHtmlFromObjectsChoferes(ArrayList<Cuenta> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
@@ -987,19 +1042,19 @@ public class CuentaControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-        
+
     public String obtenerFechaDesde() {
-        
-    LocalDate now = LocalDate.now();
 
-    LocalDate firstDayTwoMonthsAgo = now.minusMonths(2).withDayOfMonth(1);
+        LocalDate now = LocalDate.now();
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate firstDayTwoMonthsAgo = now.minusMonths(2).withDayOfMonth(1);
 
-    String formattedDate = firstDayTwoMonthsAgo.format(formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    return formattedDate;
-}
+        String formattedDate = firstDayTwoMonthsAgo.format(formatter);
+
+        return formattedDate;
+    }
 
     public String obtenerFechaHasta() {
 

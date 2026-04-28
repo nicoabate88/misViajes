@@ -1,4 +1,3 @@
-
 package abate.abate.controladores;
 
 import abate.abate.entidades.Acoplado;
@@ -13,9 +12,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/acoplado")
 @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 public class AcopladoControlador {
-    
+
     @Autowired
     private AcopladoServicio acopladoServicio;
     @Autowired
@@ -41,7 +44,7 @@ public class AcopladoControlador {
 
     @GetMapping("/registrar")
     public String registrar(ModelMap modelo) {
-        
+
         modelo.addAttribute("acoplado", new Acoplado());
 
         return "acoplado_registrar.html";
@@ -78,59 +81,81 @@ public class AcopladoControlador {
 
         return "acoplado_mostrar.html";
     }
-    
+
     @GetMapping("/listar")
     public String listar(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Acoplado> acoplados = acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg());
+        Boolean flag = false;
 
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+        if (!acoplados.isEmpty()) {
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("acoplados", acoplados);
 
         return "acoplado_listar.html";
 
     }
-    
-        
+
     @GetMapping("/listarFiltro")
-    public String listarFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado, 
+    public String listarFiltro(@RequestParam(required = false) Long id, @RequestParam(required = false) Boolean inhabilitado,
             ModelMap modelo, HttpSession session) {
 
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
 
-    if (filtrarInhabilitados) {
-        // lógica cuando el checkbox está marcado
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
-        modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
-        
-        return "acoplado_listar.html";
-        
-    } else if(id != null) {
-        
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
-        
-        return "acoplado_listarFiltro.html";
-        
-    }  else {
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            List<Acoplado> acoplados = acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg());
+            Boolean flag = false;
 
-    modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-    
-    return "acoplado_listar.html";
-    
+            if (!acoplados.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("flag", flag);
+            modelo.addAttribute("acoplados", acoplados);
+            modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
+
+            return "acoplado_listar.html";
+
+        } else if (id != null) {
+
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+            modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
+
+            return "acoplado_listarFiltro.html";
+
+        } else {
+
+            List<Acoplado> acoplados = acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg());
+            Boolean flag = false;
+
+            if (!acoplados.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("flag", flag);
+            modelo.addAttribute("acoplados", acoplados);
+
+            return "acoplado_listar.html";
+
+        }
+
     }
-    
-    }
-    
+
     @GetMapping("/detalle/{id}")
     public String obtenerDetalle(@PathVariable Long id, ModelMap modelo) {
-        
+
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
 
         return "fragmentos/detalle_acoplado :: historialFragment";
 
     }
-    
+
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {
 
@@ -139,10 +164,10 @@ public class AcopladoControlador {
         return "acoplado_modificar.html";
 
     }
-    
+
     @PostMapping("/modifica")
     public String modifica(@ModelAttribute Acoplado acoplado, ModelMap model, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
@@ -170,8 +195,8 @@ public class AcopladoControlador {
         return "acoplado_mostrar.html";
 
     }
-    
-     @GetMapping("/eliminar/{id}")
+
+    @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, ModelMap modelo) {
 
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(id));
@@ -201,14 +226,21 @@ public class AcopladoControlador {
     public String eliminado(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Acoplado> acoplados = acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg());
+        Boolean flag = false;
 
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+        if (!acoplados.isEmpty()) {
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("acoplados", acoplados);
         modelo.put("exito", "Acoplado ELIMINADO con éxito");
 
         return "acoplado_listar.html";
 
     }
-    
+
     @GetMapping("/mostrarEstadisticaAcoplados")
     public String buscarEstadisticaAcoplados(ModelMap modelo, HttpSession session) throws ParseException {
 
@@ -248,7 +280,7 @@ public class AcopladoControlador {
 
         return "acoplado_estadisticaTodos.html";
     }
-    
+
     @GetMapping("/mostrarEstadistica/{id}")
     public String buscarEstadistica(@PathVariable Long id, ModelMap modelo) throws ParseException {
 
@@ -291,7 +323,7 @@ public class AcopladoControlador {
 
         return "acoplado_estadistica.html";
     }
-    
+
     @PostMapping("/estadisticaExportar")
     public String estadisticaExportar(@RequestParam String desde, @RequestParam String hasta, @RequestParam Long id, ModelMap modelo) throws ParseException {
 
@@ -321,7 +353,6 @@ public class AcopladoControlador {
 
     }
 
-        
     @PostMapping("/exportarEstadisticaAcoplados")
     public String exportarEstadisticaAcoplados(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
 
@@ -343,14 +374,14 @@ public class AcopladoControlador {
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         Map<Acoplado, AcopladosEstadistica> estadisticas = acopladoServicio.estadisticaAcoplados(desde, hasta, logueado.getIdOrg());
-        
+
         String htmlContent = generateHtmlFromEstadisticaAcoplados(estadisticas);
         excelServicio.exportHtmlToExcelEstadisticaAcoplados(htmlContent, response);
     }
-    
+
     @GetMapping("/imprimirEstadistica")
     public String imprimirEstadistica(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         Map<Acoplado, AcopladosEstadistica> estadisticasPorAcoplado = acopladoServicio.estadisticaAcoplados(desde, hasta, logueado.getIdOrg());
@@ -360,12 +391,12 @@ public class AcopladoControlador {
         modelo.put("hasta", hasta);
 
         return "acoplado_imprimirEstadistica.html";
-        
+
     }
-    
+
     @GetMapping("/imprimirEstadisticaAcoplado")
     public String imprimirEstadisticaAcoplado(@RequestParam Long idAcoplado, @RequestParam String desde, @RequestParam String hasta, ModelMap modelo) throws ParseException {
-        
+
         List<AcopladoEstadistica> lista = acopladoServicio.estadisticaAcoplado(desde, hasta, idAcoplado);
 
         Collections.sort(lista, AcopladoEstadisticaComparador.ordenarMes);
@@ -376,9 +407,54 @@ public class AcopladoControlador {
         modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
 
         return "acoplado_imprimirEstadisticaAcoplado.html";
-          
+
     }
     
+    @GetMapping("/imprimirAcoplados")
+    public String imprimirAcoplados(@RequestParam(required = false) Boolean inhabilitado, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg()));
+            
+            return "acoplado_imprimirAcoplados.html";
+        
+        } else {
+
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+
+            return "acoplado_imprimirAcoplados.html";
+
+        }
+
+    }
+    
+    @PostMapping("/acopladosExporta")
+    public void acopladosExporta(@RequestParam(required = false) Boolean inhabilitado, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+        List<Acoplado> acoplados = new ArrayList();
+
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            acoplados = acopladoServicio.buscarAcopladosAsc(logueado.getIdOrg());
+            
+        } else {
+
+            acoplados = acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg());
+
+        }
+
+        String htmlContent = generateHtmlFromAcoplados(acoplados);
+        excelServicio.exportHtmlToExcelAcopladosLista(htmlContent, response);
+
+    }
+
+
     private String generateHtmlFromObjects(List<AcopladoEstadistica> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
@@ -399,8 +475,8 @@ public class AcopladoControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-    
-     private String generateHtmlFromEstadisticaAcoplados(Map<Acoplado, AcopladosEstadistica> estadisticas) {
+
+    private String generateHtmlFromEstadisticaAcoplados(Map<Acoplado, AcopladosEstadistica> estadisticas) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         sb.append("<thead><tr>")
@@ -423,6 +499,28 @@ public class AcopladoControlador {
         return sb.toString();
     }
     
+    private String generateHtmlFromAcoplados(List<Acoplado> acoplados) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<table>");
+    sb.append("<thead><tr>"
+            + "<th>Dominio</th>"
+            + "<th>Marca</th>"
+            + "<th>Modelo</th>"
+            + "<th>Estado</th>"
+            + "</tr></thead>");
+    sb.append("<tbody>");
+    for (Acoplado acoplado : acoplados) {
+        sb.append("<tr>")
+                .append("<td>").append(acoplado.getDominio()).append("</td>")
+                .append("<td>").append(acoplado.getMarca()).append("</td>")
+                .append("<td>").append(acoplado.getModelo()).append("</td>")
+                .append("<td>").append(acoplado.getEstado()).append("</td>")
+                .append("</tr>");
+    }
+    sb.append("</tbody></table>");
+    return sb.toString();
+   
+    }
 
     public String obtenerPrimerDiaMes() {
 
@@ -437,7 +535,7 @@ public class AcopladoControlador {
         return formattedDate;
 
     }
-    
+
     public String obtenerFechaHasta() {
 
         LocalDate now = LocalDate.now();
@@ -449,8 +547,8 @@ public class AcopladoControlador {
         return formattedToday;
 
     }
-    
-        public String obtenerFechaDesdeAño() {
+
+    public String obtenerFechaDesdeAño() {
 
         LocalDate now = LocalDate.now();
 
@@ -463,7 +561,67 @@ public class AcopladoControlador {
         return formattedDate;
 
     }
-    
 
-    
+    @PostMapping("/mostrarEstadisticaViajeDesc")
+    public String buscarEstadisticaViajeDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Acoplado, AcopladosEstadistica> estadisticasPorAcoplado = acopladoServicio.estadisticaAcoplados(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorAcoplado.size() <= 1) {
+            flag = false;
+        }
+
+        Map<Acoplado, AcopladosEstadistica> estadisticasOrdenadas = estadisticasPorAcoplado.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Acoplado, AcopladosEstadistica>comparingByValue(
+                        Comparator.comparing(AcopladosEstadistica::getFlete).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "acoplado_estadisticaTodos.html";
+    }
+
+    @PostMapping("/mostrarEstadisticaKmDesc")
+    public String buscarEstadisticaKmDesc(@RequestParam String desde, @RequestParam String hasta, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Map<Acoplado, AcopladosEstadistica> estadisticasPorAcoplado = acopladoServicio.estadisticaAcoplados(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorAcoplado.size() <= 1) {
+            flag = false;
+        }
+
+        Map<Acoplado, AcopladosEstadistica> estadisticasOrdenadas = estadisticasPorAcoplado.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Acoplado, AcopladosEstadistica>comparingByValue(
+                        Comparator.comparing(AcopladosEstadistica::getKmRecorrido).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "acoplado_estadisticaTodos.html";
+    }
+
 }

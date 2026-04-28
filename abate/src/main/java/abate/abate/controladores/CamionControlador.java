@@ -15,7 +15,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +92,15 @@ public class CamionControlador {
     public String listar(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Camion> camiones = camionServicio.buscarCamionesHabAsc(logueado.getIdOrg());
+        Boolean flag = false;
 
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        if (!camiones.isEmpty()) {
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("camiones", camiones);
 
         return "camion_listar.html";
 
@@ -104,7 +115,15 @@ public class CamionControlador {
 
         if (filtrarInhabilitados) {
             // lógica cuando el checkbox está marcado
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            List<Camion> camiones = camionServicio.buscarCamionesAsc(logueado.getIdOrg());
+            modelo.addAttribute("camiones", camiones);
+            Boolean flag = false;
+            if (!camiones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("flag", flag);
+            modelo.addAttribute("camiones", camiones);
             modelo.put("inhabilitado", Boolean.TRUE.equals(inhabilitado));
 
             return "camion_listar.html";
@@ -118,7 +137,14 @@ public class CamionControlador {
 
         } else {
 
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+            List<Camion> camiones = camionServicio.buscarCamionesHabAsc(logueado.getIdOrg());
+            Boolean flag = false;
+            if (!camiones.isEmpty()) {
+                flag = true;
+            }
+
+            modelo.put("flag", flag);
+            modelo.addAttribute("camiones", camiones);
 
             return "camion_listar.html";
 
@@ -337,13 +363,20 @@ public class CamionControlador {
 
     @GetMapping("/eliminado")
     public String eliminado(ModelMap modelo, HttpSession session) {
-
+        
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        List<Camion> camiones = camionServicio.buscarCamionesHabAsc(logueado.getIdOrg());
+        Boolean flag = false;
 
-        modelo.put("id", logueado.getId());
+        if (!camiones.isEmpty()) {
+            flag = true;
+        }
+
+        modelo.put("flag", flag);
+        modelo.addAttribute("camiones", camiones);
         modelo.put("exito", "Camión ELIMINADO con éxito");
 
-        return "index_admin.html";
+        return "camion_listar.html";
 
     }
 
@@ -554,6 +587,79 @@ public class CamionControlador {
         String htmlContent = generateHtmlFromEstadisticaCamiones(estadisticas);
         excelServicio.exportHtmlToExcelEstadisticaCamiones(htmlContent, response);
     }
+    
+    @GetMapping("/imprimirCamiones")
+    public String imprimirCamiones(@RequestParam(required = false) Boolean inhabilitado, ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesAsc(logueado.getIdOrg()));
+            
+            return "camion_imprimirCamiones.html";
+        
+        } else {
+
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+
+            return "camion_imprimirCamiones.html";
+
+        }
+
+    }
+    
+    @PostMapping("/camionesExporta")
+    public void camionesExporta(@RequestParam(required = false) Boolean inhabilitado, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        boolean filtrarInhabilitados = Boolean.TRUE.equals(inhabilitado);
+        List<Camion> camiones = new ArrayList();
+
+        if (filtrarInhabilitados) {
+            // lógica cuando el checkbox está marcado
+            camiones = camionServicio.buscarCamionesAsc(logueado.getIdOrg());
+            
+        } else {
+
+            camiones = camionServicio.buscarCamionesHabAsc(logueado.getIdOrg());
+
+        }
+
+        String htmlContent = generateHtmlFromCamiones(camiones);
+        excelServicio.exportHtmlToExcelCamionesLista(htmlContent, response);
+
+    }
+    
+    private String generateHtmlFromCamiones(List<Camion> camiones) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<table>");
+    sb.append("<thead><tr>"
+            + "<th>Dominio</th>"
+            + "<th>Marca</th>"
+            + "<th>Modelo</th>"
+            + "<th>Estado</th>"
+            + "<th>Acoplado</th>"
+            + "</tr></thead>");
+    sb.append("<tbody>");
+    for (Camion camion : camiones) {
+        String dominioAcoplado = "-";
+            if (camion.getAcoplado() != null) {
+                dominioAcoplado = camion.getAcoplado().getDominio();
+            }
+        sb.append("<tr>")
+                .append("<td>").append(camion.getDominio()).append("</td>")
+                .append("<td>").append(camion.getMarca()).append("</td>")
+                .append("<td>").append(camion.getModelo()).append("</td>")
+                .append("<td>").append(camion.getEstado()).append("</td>")
+                .append("<td>").append(dominioAcoplado).append("</td>")
+                .append("</tr>");
+    }
+    sb.append("</tbody></table>");
+    return sb.toString();
+   
+    }
 
     private String generateHtmlFromObjects(ArrayList<CamionEstadistica> objects) {
         StringBuilder sb = new StringBuilder();
@@ -617,6 +723,314 @@ public class CamionControlador {
         }
         sb.append("</tbody></table>");
         return sb.toString();
+    }
+    
+    @PostMapping("/mostrarEstadisticaCamionesViajeDesc")
+    public String buscarEstadisticaCamionesViajesDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getFlete).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
+    }
+    
+    @PostMapping("/mostrarEstadisticaCamionesKmDesc")
+    public String buscarEstadisticaCamionesKmDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getKmRecorrido).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
+    }
+
+    @PostMapping("/mostrarEstadisticaCamionesDieselDesc")
+    public String buscarEstadisticaCamionesDieselDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getLitro).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
+    }
+
+    @PostMapping("/mostrarEstadisticaCamionesConsumoDesc")
+    public String buscarEstadisticaCamionesConsumoDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getConsumo).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
+    }
+    
+    @PostMapping("/mostrarEstadisticaCamionesGastoDesc")
+    public String buscarEstadisticaCamionesGastoDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getGasto).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
+    }
+    
+    @PostMapping("/mostrarEstadisticaCamionesNetoDesc")
+    public String buscarEstadisticaCamionesNetoDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getNeto).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
+    }
+    
+    @PostMapping("/mostrarEstadisticaCamionesRentabilidadDesc")
+    public String buscarEstadisticaCamionesRentabilidadDesc(@RequestParam String desde, @RequestParam String hasta,
+            ModelMap modelo, HttpSession session) throws ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Map<Camion, CamionesEstadistica> estadisticasPorCamion = camionServicio.estadisticaCamiones(desde, hasta, logueado.getIdOrg());
+        Boolean flag = true;
+        if (estadisticasPorCamion.size() <= 1) {
+            flag = false;
+        }
+
+        for (CamionesEstadistica estadistica : estadisticasPorCamion.values()) {
+
+            if (estadistica.getKmRecorrido() > 0) {
+                Double consumo = ((100.0 * estadistica.getLitro()) / estadistica.getKmRecorrido());
+                estadistica.setConsumo(Math.round(consumo * 100.0) / 100.0);
+                estadistica.setRentabilidad((double) Math.round(estadistica.getNeto() / estadistica.getKmRecorrido()));
+            } else {
+                estadistica.setConsumo(0.0);
+                estadistica.setRentabilidad(0.0);
+            }
+        }
+
+        Map<Camion, CamionesEstadistica> estadisticasOrdenadas = estadisticasPorCamion.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Camion, CamionesEstadistica>comparingByValue(
+                        Comparator.comparing(CamionesEstadistica::getRentabilidad).reversed() // Orden DESCENDENTE
+                ))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        modelo.addAttribute("estadistica", estadisticasOrdenadas);
+        modelo.put("desde", desde);
+        modelo.put("hasta", hasta);
+        modelo.put("flag", flag);
+
+        return "camion_estadisticaTodos.html";
+
     }
 
 }

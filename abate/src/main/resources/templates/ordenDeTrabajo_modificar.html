@@ -4,560 +4,639 @@
         <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-                    <link rel="stylesheet" href="/css/medidas_container.css"> 
-                        <style>
-                            .tabla-scroll {
-                                max-height: 170px;       /* altura total de unas dos filas */
-                                min-height: 170px;       /* fuerza que tenga esa altura aunque esté vacía */
-                                overflow-y: auto;        /* agrega scroll vertical si se pasa */
-                                border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
-                                border-radius: 0.25rem;
-                            }
-                            .tabla-scroll table {
-                                margin-bottom: 0;
-                            }
-                            .tabla-scroll thead th {
-                                top: 0;
-                                background-color: #f8f9fa;
-                                z-index: 1;
-                            }
-                            .tabla-scroll tbody:empty::before {
-                                content: "";
-                                display: block;
-                                height: 170px; 
-                            }
-                            .btn-eliminar {
-                                background: none;
-                                border: none;
-                                color: red;          /* podés ajustar el color si querés */
-                                font-size: 18px;     /* tamaño del ícono */
-                                cursor: pointer;
-                            }
-                            .btn-eliminar:hover {
-                                transform: scale(1.2);  /* efecto sutil al pasar el mouse */
-                            }
-                        </style>
-                        </head>
-                        <body>
-                            <div class="card-header mb-2" style="height: 70px;">
-                                <div class="row">
-                                    <div class="col-2">   
-                                        <a title="Volver" th:href="@{/ordenDeTrabajo/listar}" type="button">
-                                            <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
-                                                <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
-                                            </svg> 
-                                        </a>   
-                                    </div>
-                                    <div  class="col-8 text-center">
-                                        <h4>Orden de Trabajo</h4>
-                                    </div>
-                                    <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
-                                        <a title="Ir a Imprimir" target="_blank" th:href="@{/ordenDeTrabajo/imprimir/__${orden.id}__}">
-                                            <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-                                                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
-                                                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
-                                            </svg><p id="imprimirExporta">Imprimir</p>
-                                        </a>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+                        <link rel="stylesheet" href="/css/medidas_container.css"> 
+                            <style>
+                                .link-historial {
+                                    color: darkblue;
+                                    background: none;
+                                    border: none;
+                                    padding: 0;
+                                    cursor: pointer;
+                                }
+                                .modal-header-darkblue {
+                                    background-color: darkblue;
+                                    color: white;
+                                }
+                                .tabla-scroll-c {
+                                    max-height: 280px;       /* altura total de unas dos filas */
+                                    min-height: 280px;       /* fuerza que tenga esa altura aunque esté vacía */
+                                    overflow-y: auto;        /* agrega scroll vertical si se pasa */
+                                    border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
+                                    border-radius: 0.25rem;
+                                }
+                                .tabla-scroll-c table {
+                                    margin-bottom: 0;
+                                }
+                                .tabla-scroll-c thead th {
+                                    top: 0;
+                                    background-color: #f8f9fa;
+                                    z-index: 1;
+                                }
+                                .tabla-scroll-c tbody:empty::before {
+                                    content: "";
+                                    display: block;
+                                    height: 280px; 
+                                }
+                                .tabla-scroll-s {
+                                    max-height: 160px;       /* altura total de unas dos filas */
+                                    min-height: 160px;       /* fuerza que tenga esa altura aunque esté vacía */
+                                    overflow-y: auto;        /* agrega scroll vertical si se pasa */
+                                    border: 1px solid #dee2e6; /* mismo tono de borde bootstrap */
+                                    border-radius: 0.25rem;
+                                }
+                                .tabla-scroll-s table {
+                                    margin-bottom: 0;
+                                }
+                                .tabla-scroll-s thead th {
+                                    top: 0;
+                                    background-color: #f8f9fa;
+                                    z-index: 1;
+                                }
+                                .tabla-scroll-s tbody:empty::before {
+                                    content: "";
+                                    display: block;
+                                    height: 160px; 
+                                }
+                                .btn-eliminar {
+                                    background: none;
+                                    border: none;
+                                    color: red;          /* podés ajustar el color si querés */
+                                    font-size: 18px;     /* tamaño del ícono */
+                                    cursor: pointer;
+                                }
+                                .btn-eliminar:hover {
+                                    transform: scale(1.2);  /* efecto sutil al pasar el mouse */
+                                }
+                            </style>
+                            </head>
+                            <body>
+                                <div class="card-header mb-2" style="height: 70px;">
+                                    <div class="row">
+                                        <div class="col-2">   
+                                            <a title="Volver" th:href="@{/ordenDeTrabajo/listar}" type="button">
+                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
+                                                    <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
+                                                </svg> 
+                                            </a>   
+                                        </div>
+                                        <div  class="col-8 text-center">
+                                            <h4>Orden de Trabajo</h4>
+                                        </div>
+                                        <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 text-center">
+                                            <a title="Ir a Imprimir" target="_blank" th:href="@{/ordenDeTrabajo/imprimir/__${orden.id}__}">
+                                                <svg id="imprimirExporta" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                                                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+                                                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+                                                </svg><p id="imprimirExporta">Imprimir</p>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="container mb-2">  
-                                <form id="formulario" th:action="@{/ordenDeTrabajo/modifica}" method="POST">
-                                    <input type="hidden" name="id" th:value="${orden.id}">
-                                        <div class="card border-secondary p-2 mb-1" id="color-card">
-                                            <div class="row">   
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                    <label for="idOrden" class="form-label text-secondary mb-1">N° OT</label>
-                                                    <input type="text" class="form-control text-secondary" id="idOrden" th:value="${orden.idOrden}" disabled>
+                                <div class="container-fluid mt-2">  
+                                    <div class="row">
+                                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-2">
+                                            <div class="card border-secondary sticky-top" style="top: 15px;">
+                                                <div class="card-header bg-secondary text-white text-center">
+                                                    <h6 class="text-white"> 
+                                                        <span><strong th:text="'Fecha '+${#dates.format(orden.fechaAlta, 'dd-MM-yyyy')}"></strong></span>                                                                      
+                                                        <span><strong th:text="' - N° OT: '+${orden.idOrden}"></strong></span>
+                                                    </h6>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                    <label for="fecha" class="form-label text-secondary mb-1">Fecha</label>
-                                                    <input type="date" class="form-control text-secondary" id="fecha" th:value="${orden.fechaAlta}" disabled>
-                                                </div>
-                                                <div th:if="${orden.camion != null}" class="col-6 col-sm-6 col-md-3 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="idCamion" class="form-floting text-secondary mb-1">Camión</label>
-                                                    <input class="form-control text-secondary" id="idCamion" th:value="${orden.camion.dominio}+' - '+${orden.camion.marca}+' '+${orden.camion.modelo}" disabled>    
-                                                </div>
-                                                <div th:if="${orden.acoplado != null}" class="col-6 col-sm-6 col-md-3 col-lg-4 col-xl-4 mb-2">
-                                                    <label for="idAcoplado" class="form-floting text-secondary mb-1">Acoplado</label>
-                                                    <input class="form-control text-secondary" id="idAcoplado" th:value="${orden.acoplado.dominio}+' - '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}" disabled>
-                                                </div>
-                                            </div>
-                                            <div class="row">   
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Lugar</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.lugar}" disabled>
-                                                </div>
-                                                <div th:if="${orden.proveedor != null}" class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Proveedor</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.proveedor.nombre}" disabled>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Chofer</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.chofer.nombre}" disabled>
-                                                </div>
-                                                <div th:if="${orden.checkTaller != null}" class="col-4 col-sm-4 col-md-2 col-lg-2 col-xl-2 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Check List Taller</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.checkTaller}" disabled>
-                                                </div>
-                                                <div th:if="${orden.checkMetalurgica != null}" class="col-4 col-sm-4 col-md-2 col-lg-2 col-xl-2 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Check List Metal</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.checkMetalurgica}" disabled>
-                                                </div>
-                                                <div th:if="${orden.checkNogoya != null}" class="col-4 col-sm-4 col-md-2 col-lg-2 col-xl-2 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Check List Nogoyá</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.checkNogoya}" disabled>
-                                                </div>
-                                                <div th:if="${orden.checkAveria != null}" class="col-4 col-sm-4 col-md-2 col-lg-2 col-xl-2 mb-2">
-                                                    <label class="form-floting text-secondary mb-1">Planilla Avería</label>
-                                                    <input class="form-control text-secondary" th:value="${orden.checkAveria}" disabled>
+                                                <div class="card-body p-2">
+                                                    <h6 class="text-primary"><strong>ESTADO: </strong> 
+                                                        <strong><span th:text="${orden.estado}"></span></strong></span></h6>
+                                                    <h6 class="text-secondary mb-3">
+                                                        <span><strong>Proveedor: </strong></span><span th:text="${orden.proveedor.nombre}"></span>
+                                                    </h6>
+                                                    <h6 class="text-dark">
+                                                        <span><strong>Camión: </strong></span>   
+                                                        <span th:text="${orden.camion.dominio}+' '+${orden.camion.marca}+' '+${orden.camion.modelo}"></span>
+                                                    </h6>
+                                                    <h6 class="text-dark mb-3" th:if="${orden.acoplado != null}">
+                                                        <span><strong>Acoplado: </strong></span>    
+                                                        <span th:text="${orden.acoplado.dominio}+' '+${orden.acoplado.marca}+' '+${orden.acoplado.modelo}"></span>
+                                                    </h6>
                                                 </div>
                                             </div>
-                                            <div th:if="${orden.camion != null}">
-                                                <h6 class="text-primary text-center">Mantenimientos Camión</h6>
-                                                <div class="row mb-1">
-                                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-2">
-                                                        <label for="tipoCamionNuevo" class="text-secondary mb-1">Tipo Mantenimiento</label>
-                                                        <select id="tipoCamionNuevo" class="form-control text-secondary">
-                                                            <option disabled selected value="">Seleccione Tipo</option>
-                                                            <option th:each="t : ${tiposCamion}" th:value="${t.id}" th:text="${t.nombre}"></option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-3 col-sm-3 col-md-4 col-lg-2 col-xl-2 mb-2">
-                                                        <label for="kmCamionNuevo" class="text-secondary mb-1">Km Camión</label>
-                                                        <input type="number" class="form-control text-secondary" id="kmCamionNuevo" th:value="${kmCamion}">
-                                                    </div>
-                                                    <div class="col-3 col-sm-3 col-md-4 col-lg-2 col-xl-2 mb-2">
-                                                        <label for="kmVigenciaNuevo" class="text-secondary mb-1">Km Vigencia</label>
-                                                        <input type="number" class="form-control text-success" id="kmVigenciaNuevo" placeholder="Ingrese Km">
-                                                    </div>
-                                                    <div class="col-8 col-sm-8 col-md-9 col-lg-3 col-xl-3 mb-2">
-                                                        <label for="obsCamionNuevo" class="text-secondary mb-1">Observación</label>
-                                                        <input id="obsCamionNuevo" class="form-control text-secondary" placeholder="Observación..." maxlength="45" size="45">
-                                                    </div>
-                                                    <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 mb-2">
-                                                        <label for="nuevoEjecutadoC" class="text-secondary mb-1">Ejecutado</label>
-                                                        <div class="form-check text-center">
-                                                            <input class="form-check-input" type="checkbox" id="nuevoEjecutadoC">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-floating" >
-                                                        <label class="form-label text-white"></label><br><br>
-                                                                <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
-                                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                                    </svg>
-                                                                </button>
+                                        </div>
+
+                                        <!-- COLUMNA IZQUIERDA: FORMULARIO OT -->
+                                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8">
+                                            <form id="formulario" th:action="@{/ordenDeTrabajo/modifica}" method="POST">
+                                                <input type="hidden" name="id" th:value="${orden.id}">
+                                                    <div class="card border-secondary p-2 mb-1" id="color-card">
+                                                        <div th:if="${orden.camion != null}">
+                                                            <h5 class="text-primary text-center mb-1">Mantenimientos Camión</h5>
+                                                            <div class="row mb-1">
+                                                                <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                                    <label for="tipoCamionNuevo" class="text-secondary mb-1">Tipo</label>
+                                                                    <select id="tipoCamionNuevo" class="form-control text-secondary">
+                                                                        <option disabled selected value="">Seleccione Tipo</option>
+                                                                        <option th:each="t : ${tiposCamion}" th:value="${t.id}" th:text="${t.nombre}" th:attr="data-clase=${t.clase}"></option>
+                                                                    </select>
                                                                 </div>
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                                    <label for="kmCamionNuevo" class="text-secondary mb-1">Km Camión</label>
+                                                                    <input type="number" class="form-control text-secondary" id="kmCamionNuevo" th:value="${kmCamion}">
                                                                 </div>
-                                                                <div class="table-responsive tabla-scroll mb-2">
-                                                                    <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
-                                                                        <thead class="thead-light">
-                                                                            <tr class="text-center">
-                                                                                <th>Tipo</th>
-                                                                                <th>Km Camión</th>
-                                                                                <th>Km Vigencia</th>
-                                                                                <th>Observación</th>
-                                                                                <th>Ejecutado</th>
-                                                                                <th>Acción</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <tr th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'CAMION'}" class="text-center">
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center bg-transparent border-0 p-0" name="kmCamionExistente" th:value="${kmCamion}"></td>
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.km}" disabled></td>
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center text-success bg-transparent border-0 p-0" name="kmVigenciaExistente" placeholder="Ingrese Km"></td>
-                                                                                <!--
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center text-success bg-transparent border-0 p-0" name="kmVigenciaExistente" th:value="${kmVigenciaC}"></td>
-                                                                                -->
-                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.kmVigencia}" disabled></td>
-                                                                                <td><input type="text" class="text-center bg-transparent border-0 p-0" name="obsExistente" th:value="${m.observacion}" maxlength="45" size="45"
-                                                                                           th:disabled="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"></td>
-                                                                                <td><input type="checkbox" name="ejecutados" th:value="${m.id}"
-                                                                                           th:checked="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"
-                                                                                           th:disabled="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">
-                                                                                </td>
-                                                                                <td>-</td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
+                                                                <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                                    <label for="kmVigenciaNuevo" class="text-secondary mb-1">Km Vigencia</label>
+                                                                    <input type="number" class="form-control text-success" id="kmVigenciaNuevo" th:value="${kmVigenciaC}">
                                                                 </div>
+                                                                <div class="col-8 col-sm-8 col-md-9 col-lg-3 col-xl-3 mb-2">
+                                                                    <label for="obsCamionNuevo" class="text-secondary mb-1">Observación</label>
+                                                                    <input id="obsCamionNuevo" class="form-control text-secondary" placeholder="Observación..." maxlength="45" size="45">
                                                                 </div>
-                                                                <div th:if="${orden.acoplado != null}">
-                                                                    <h6 class="text-primary text-center">Mantenimientos Acoplado</h6>
-                                                                    <div class="row mb-1">
-                                                                        <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-2">
-                                                                            <label class="text-secondary mb-1">Tipo Mantenimiento</label>
-                                                                            <select id="tipoAcopladoNuevo" class="form-control text-secondary">
-                                                                                <option disabled selected value="">Seleccione Tipo</option>
-                                                                                <option th:each="t : ${tiposAcoplado}" 
-                                                                                        th:value="${t.id}" th:text="${t.nombre}"></option>
-                                                                            </select>
-                                                                        </div>
-                                                                        <div class="col-3 col-sm-3 col-md-4 col-lg-2 col-xl-2 mb-2">
-                                                                            <label for="kmAcopladoNuevo" class="text-secondary mb-1">Km Acoplado</label>
-                                                                            <input type="number" class="form-control text-secondary" id="kmAcopladoNuevo" th:value="${kmAcoplado}">
-                                                                        </div>
-                                                                        <div class="col-3 col-sm-3 col-md-4 col-lg-2 col-xl-2 mb-2">
-                                                                            <label for="kmVigenciaANuevo" class="text-secondary mb-1">Km Vigencia</label>
-                                                                            <input type="number" class="form-control text-success" id="kmVigenciaANuevo" placeholder="Ingrese Km">
-                                                                        </div>
-                                                                        <div class="col-8 col-sm-8 col-md-9 col-lg-3 col-xl-3 mb-2">
-                                                                            <label class="text-secondary mb-1">Observación</label>
-                                                                            <input id="obsAcopladoNuevo" class="form-control text-secondary" placeholder="Observación..." maxlength="45" size="45">
-                                                                        </div>
-                                                                        <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 mb-2">
-                                                                            <label for="nuevoEjecutadoA" class="text-secondary mb-1">Ejecutado</label>
-                                                                            <div class="form-check text-center">
-                                                                                <input class="form-check-input" type="checkbox" id="nuevoEjecutadoA">
+                                                                <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 mb-2">
+                                                                    <label for="nuevoEjecutadoC" class="text-secondary mb-1">Ejecutado</label>
+                                                                    <div class="form-check text-center">
+                                                                        <input class="form-check-input" type="checkbox" id="nuevoEjecutadoC">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-floating" >
+                                                                    <label class="form-label text-white"></label><br><br>
+                                                                            <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoCamion" title="Agregar Mantenimiento">
+                                                                                <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                    <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                                </svg>
+                                                                            </button>
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="form-floating" >
-                                                                            <label class="form-label text-white"></label><br><br>
-                                                                                    <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoAcoplado" title="Agregar Mantenimiento">
-                                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
-                                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
-                                                                                        </svg>
-                                                                                    </button>
+                                                                            </div>
+                                                                            <div class="table-responsive tabla-scroll-c mb-2 border border-2 rounded">
+                                                                                <table class="table table-sm table-bordered mb-0" id="tablaMantenimientosCamion">
+                                                                                    <thead class="thead-light">
+                                                                                        <tr class="text-center">
+                                                                                            <th>Tipo</th>
+                                                                                            <th>Km Camión</th>
+                                                                                            <th>Km Vigencia</th>
+                                                                                            <th>Observación</th>
+                                                                                            <th>Ejecutado</th>
+                                                                                            <th>Acción</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody class="text-secondary bg-light">
+                                                                                        <tr th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'CAMION'}" class="text-center fila-mant-camion" th:attr="data-clase=${m.tipoMantenimiento.clase}">
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center bg-transparent border-0 p-0 text-secondary" name="kmCamionExistente" th:value="${kmCamion}"></td>
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.km}" readonly></td>
+                                                                                            <th th:if="${m.estado == 'PENDIENTE'}">
+                                                                                                <input type="number"
+                                                                                                       class="text-center bg-transparent border-0 p-0"
+                                                                                                       th:classappend="${#strings.equalsIgnoreCase(m.tipoMantenimiento.clase, 'PREVENTIVO')} ? ' text-danger' : ' text-success'"
+                                                                                                       name="kmVigenciaExistente"
+                                                                                                       th:value="0">
+                                                                                            </th>
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.kmVigencia}" readonly></td>                                                                                                                              
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="text" class="text-center text-secondary bg-transparent border-0 p-0" name="obsExistente" th:value="${m.observacion}" maxlength="45"></td>
+                                                                                            <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="text" class="text-center text-secondary bg-transparent border-0 p-0" name="obsExistenteVigente" th:value="${m.observacion}" maxlength="45" readonly></td>
+                                                                                            <td><input type="checkbox" name="ejecutados" th:value="${m.id}"
+                                                                                                       th:checked="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"
+                                                                                                       th:readonly="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}">
+                                                                                            </td>
+                                                                                            <td>-</td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                            </div>
+                                                                            <div th:if="${orden.acoplado != null}">
+                                                                                <h5 class="text-primary text-center mb-1">Mantenimientos Acoplado</h5>
+                                                                                <div class="row mb-1">
+                                                                                    <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-2">
+                                                                                        <label class="text-secondary mb-1">Tipo</label>
+                                                                                        <select id="tipoAcopladoNuevo" class="form-control text-secondary">
+                                                                                            <option disabled selected value="">Seleccione Tipo</option>
+                                                                                            <option th:each="t : ${tiposAcoplado}" 
+                                                                                                    th:value="${t.id}" th:text="${t.nombre}" th:attr="data-clase=${t.clase}"></option>
+                                                                                        </select>
                                                                                     </div>
+                                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                                                        <label for="kmAcopladoNuevo" class="text-secondary mb-1">Km Acoplado</label>
+                                                                                        <input type="number" class="form-control text-secondary" id="kmAcopladoNuevo" th:value="${kmAcoplado}">
                                                                                     </div>
-                                                                                    <div class="table-responsive tabla-scroll mb-2">
-                                                                                        <table class="table table-sm table-bordered" id="tablaMantenimientosAcoplado">
-                                                                                            <thead class="thead-light">
-                                                                                                <tr class="text-center">
-                                                                                                    <th>Tipo</th>
-                                                                                                    <th>Km Acoplado</th>
-                                                                                                    <th>Km Vigencia</th>
-                                                                                                    <th>Observación</th>
-                                                                                                    <th>Ejecutado</th>
-                                                                                                    <th>Acción</th>
-                                                                                                </tr>
-                                                                                            </thead>
-                                                                                            <tbody>
-                                                                                                <tr th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'ACOPLADO'}" class="text-center">
-                                                                                                    <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                                                                    <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
-                                                                                                    <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center bg-transparent border-0 p-0" name="kmAcopladoExistente" th:value="${kmAcoplado}"></td>
-                                                                                                    <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.km}" disabled></td>
-                                                                                                    <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center text-success bg-transparent border-0 p-0" name="kmVigenciaAExistente" placeholder="Ingrese Km"></td>
-                                                                                                    <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.kmVigencia}" disabled></td>
-                                                                                                    <td><input type="text" class="text-center bg-transparent border-0 p-0" name="obsAcopladoExistente" th:value="${m.observacion}" maxlength="45" size="45" 
-                                                                                                               th:disabled="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"></td>
-                                                                                                    <td><input type="checkbox" id="ejecutadosA" name="ejecutados" th:value="${m.id}"
-                                                                                                               th:checked="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"
-                                                                                                               th:disabled="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"></td>
-                                                                                                    <td>-</td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
-                                                                                    </div> 
-                                                                                    </div>    
-                                                                                    <div class="row">
-                                                                                        <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-2">
-                                                                                            <label for="obs" class="form-label text-secondary mb-1">Observación</label>
-                                                                                            <textarea class="form-control text-secondary" id="obs" name="observacion" rows="1" th:text="${orden.observacion}" maxlength="500" size="500"></textarea>
-                                                                                        </div>  
-                                                                                        <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
-                                                                                            <label for="fechaI" class="form-label text-secondary mb-1">Fecha Inicio</label>
-                                                                                            <input type="date" class="form-control text-secondary" id="fechaI" th:value="${orden.fechaInicio}" name="fechaInicio">
-                                                                                        </div>
-                                                                                        <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-4">
-                                                                                            <label for="fechaF" class="form-label text-secondary mb-1">Fecha Fin</label>
-                                                                                            <input type="date" class="form-control text-secondary" id="fechaF" th:value="${orden.fechaFin}" name="fechaFin">
-                                                                                        </div>
+                                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-2 col-xl-2 mb-2">
+                                                                                        <label for="kmVigenciaANuevo" class="text-secondary mb-1">Km Vigencia</label>
+                                                                                        <input type="number" class="form-control text-success" id="kmVigenciaANuevo" th:value="${kmVigenciaA}">
                                                                                     </div>
-                                                                                    <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
-                                                                                        <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                                                    <div class="col-8 col-sm-8 col-md-9 col-lg-3 col-xl-3 mb-2">
+                                                                                        <label class="text-secondary mb-1">Observación</label>
+                                                                                        <input id="obsAcopladoNuevo" class="form-control text-secondary" placeholder="Observación..." maxlength="45" size="45">
                                                                                     </div>
-                                                                                    <div class="text-center mb-2">
-                                                                                        <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Guardar">Guardar</button>
-                                                                                    </div>
-                                                                                    <div class="text-center">
-                                                                                        <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/ordenDeTrabajo/listar}" title="Cancelar">Cancelar</a>
-                                                                                    </div>
-
-                                                                                    </div>
-                                                                                    </form>
-                                                                                    </div>
-                                                                                    <div id="spinner" class="modal" style="display: none;">
-                                                                                        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                                                                            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                                                                                <span class="sr-only">Cargando...</span>
-                                                                                            </div>
+                                                                                    <div class="col-2 col-sm-2 col-md-2 col-lg-1 col-xl-1 mb-2">
+                                                                                        <label for="nuevoEjecutadoA" class="text-secondary mb-1">Ejecutado</label>
+                                                                                        <div class="form-check text-center">
+                                                                                            <input class="form-check-input" type="checkbox" id="nuevoEjecutadoA">
                                                                                         </div>
                                                                                     </div>
-                                                                                    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                                                    <script>
-                                                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                                                    <div class="form-floating" >
+                                                                                        <label class="form-label text-white"></label><br><br>
+                                                                                                <button type="button" class="btn btn-outline-primary border-primary p-1" id="addMantenimientoAcoplado" title="Agregar Mantenimiento">
+                                                                                                    <svg id="white" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                                                    </svg>
+                                                                                                </button>
+                                                                                                </div>
+                                                                                                </div>
+                                                                                                <div class="table-responsive tabla-scroll-s mb-2">
+                                                                                                    <table class="table table-sm table-bordered" id="tablaMantenimientosAcoplado">
+                                                                                                        <thead class="thead-light">
+                                                                                                            <tr class="text-center">
+                                                                                                                <th>Tipo</th>
+                                                                                                                <th>Km Acoplado</th>
+                                                                                                                <th>Km Vigencia</th>
+                                                                                                                <th>Observación</th>
+                                                                                                                <th>Ejecutado</th>
+                                                                                                                <th>Acción</th>
+                                                                                                            </tr>
+                                                                                                        </thead>
+                                                                                                        <tbody class="text-secondary bg-light">
+                                                                                                            <tr th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'SEMI'}" class="text-center fila-mant-acoplado" th:attr="data-clase=${m.tipoMantenimiento.clase}">
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" name="kmAcopladoExistente" th:value="${kmAcoplado}"></td>
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.km}" readonly></td>
+                                                                                                                <th th:if="${m.estado == 'PENDIENTE'}">
+                                                                                                                    <input type="number"
+                                                                                                                           class="text-center bg-transparent border-0 p-0"
+                                                                                                                           th:classappend="${#strings.equalsIgnoreCase(m.tipoMantenimiento.clase, 'PREVENTIVO')} ? ' text-danger' : ' text-success'"
+                                                                                                                           name="kmVigenciaExistente"
+                                                                                                                           th:value="0">
+                                                                                                                </th>
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.kmVigencia}" readonly></td>
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="text" class="text-center text-secondary bg-transparent border-0 p-0" name="obsAcopladoExistente" th:value="${m.observacion}" maxlength="45"></td>
+                                                                                                                <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="text" class="text-center text-secondary bg-transparent border-0 p-0" name="obsExistenteVigente" th:value="${m.observacion}" maxlength="45" readonly></td>
+                                                                                                                <td><input type="checkbox" id="ejecutadosA" name="ejecutados" th:value="${m.id}"
+                                                                                                                           th:checked="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"
+                                                                                                                           th:readonly="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"></td>
+                                                                                                                <td>-</td>
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </div> 
+                                                                                                </div>    
+                                                                                                <div class="row mb-3">
+                                                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-2 mb-1">
+                                                                                                        <label for="fechaI" class="form-label text-secondary mb-1">Fecha Inicio</label>
+                                                                                                        <input type="date" class="form-control text-secondary" id="fechaI" th:value="${orden.fechaInicio}" name="fechaInicio" required="">
+                                                                                                    </div> 
+                                                                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-2 mb-1">
+                                                                                                        <label for="fechaF" class="form-label text-secondary mb-1">Fecha Fin</label>
+                                                                                                        <input type="date" class="form-control bg-white text-secondary" id="fechaF" th:value="${orden.fechaFin}" name="fechaFin" readonly>
+                                                                                                    </div> 
+                                                                                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-8 mb-1">
+                                                                                                        <label for="demora" class="form-label text-secondary mb-1">Observación</label>
+                                                                                                        <textarea class="form-control text-secondary" id="obs" name="observacion" rows="1" th:text="${orden.observacion}" maxlength="500" size="500"></textarea>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                                                                                    <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                                                                </div>
+                                                                                                <div class="text-center mb-2">
+                                                                                                    <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Guardar">Guardar</button>
+                                                                                                </div>
+                                                                                                <div class="text-center">
+                                                                                                    <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/ordenDeTrabajo/listar}" title="Cancelar">Cancelar</a>
+                                                                                                </div>
 
-                                                                                            const checksCamion = document.querySelectorAll('input[name="ejecutados"]');
+                                                                                                </div>
+                                                                                                </form>
+                                                                                                </div>
+                                                                                                </div>
+                                                                                                </div>
+                                                                                                <div id="spinner" class="modal" style="display: none;">
+                                                                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                                            <span class="sr-only">Cargando...</span>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                                                <script>
+                                                                                                    document.addEventListener("DOMContentLoaded", function () {
 
-                                                                                            checksCamion.forEach(chk => {
-                                                                                                chk.addEventListener("change", function () {
+                                                                                                    const checksCamion = document.querySelectorAll('input[name="ejecutados"]');
 
-                                                                                                    if (this.checked) {
-                                                                                                        const fila = this.closest("tr");
-                                                                                                        const kmVigencia = fila.querySelector('input[name="kmVigenciaExistente"]');
+                                                                                                    checksCamion.forEach(chk => {
+                                                                                                    chk.addEventListener("change", function () {
 
-                                                                                                        if (kmVigencia && kmVigencia.value.trim() === "") {
-                                                                                                            this.checked = false;
-                                                                                                            alert("Debe ingresar KM de Vigencia antes de marcar como ejecutado.");
-                                                                                                        }
+                                                                                                    if (!this.checked)
+                                                                                                    return;
+
+                                                                                                    const fila = this.closest("tr");
+
+                                                                                                    const clase = fila.dataset.clase;
+
+                                                                                                    const kmCamionInput = fila.querySelector('input[name="kmCamionExistente"]');
+                                                                                                    const kmVigenciaInput = fila.querySelector('input[name="kmVigenciaExistente"]');
+
+                                                                                                    const kmCamion = kmCamionInput ? Number(kmCamionInput.value) : null;
+                                                                                                    const kmVigencia = kmVigenciaInput ? Number(kmVigenciaInput.value) : null;
+
+                                                                                                    if (kmCamionInput && (kmCamionInput.value.trim() === "" || kmCamion < 0)) {
+                                                                                                    this.checked = false;
+                                                                                                    alert("Debe ingresar KM del camión (mayor o igual a 0).");
+                                                                                                    kmCamionInput.focus();
+                                                                                                    return;
                                                                                                     }
-                                                                                                });
-                                                                                            });
 
-                                                                                            const checksAcoplado = document.querySelectorAll('input[id="ejecutadosA"]');
-
-                                                                                            checksAcoplado.forEach(chk => {
-                                                                                                chk.addEventListener("change", function () {
-
-                                                                                                    if (this.checked) {
-                                                                                                        const fila = this.closest("tr");
-                                                                                                        const kmVigenciaA = fila.querySelector('input[name="kmVigenciaAExistente"]');
-
-                                                                                                        if (kmVigenciaA && kmVigenciaA.value.trim() === "") {
-                                                                                                            this.checked = false;
-                                                                                                            alert("Debe ingresar KM de Vigencia antes de marcar como ejecutado.");
-                                                                                                        }
+                                                                                                    if (clase === "PREVENTIVO") {
+                                                                                                    if (kmVigenciaInput && (kmVigenciaInput.value.trim() === "" || kmVigencia <= 0)) {
+                                                                                                    this.checked = false;
+                                                                                                    alert("Para mantenimientos PREVENTIVOS, el KM de Vigencia debe ser mayor a 0.");
+                                                                                                    kmVigenciaInput.focus();
+                                                                                                    return;
                                                                                                     }
-                                                                                                });
-                                                                                            });
-
-                                                                                        });
-                                                                                    </script>
-
-                                                                                    <script>
-                                                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                                                            // Obtiene todos los checkboxes ejecutados
-                                                                                            const checks = document.querySelectorAll('input[name="ejecutados"]');
-
-                                                                                            checks.forEach(chk => {
-                                                                                                chk.addEventListener("change", function (e) {
-
-                                                                                                    // Si intenta marcarlo…
-                                                                                                    if (this.checked) {
-
-                                                                                                        // Ubica el tr padre del checkbox (esta fila)
-                                                                                                        const fila = this.closest("tr");
-
-                                                                                                        // Busca el input kmVigenciaExistente dentro de esta fila
-                                                                                                        const kmVigencia = fila.querySelector('input[name="kmVigenciaExistente"]');
-
-                                                                                                        // Validar: si el input existe y está vacío
-                                                                                                        if (kmVigencia && (kmVigencia.value === "" || kmVigencia.value.trim() === "")) {
-
-                                                                                                            // Impedir que se marque
-                                                                                                            this.checked = false;
-
-                                                                                                            // Mostrar alerta
-                                                                                                            alert("Debe ingresar KM de vigencia antes de marcar como ejecutado.");
-                                                                                                        }
                                                                                                     }
-                                                                                                });
-                                                                                            });
-                                                                                        });
-                                                                                    </script>
 
-                                                                                    <script>
-                                                                                        let nuevosCamion = [];
-                                                                                        let nuevosAcoplado = [];
-                                                                                        function agregarFila(tablaId, tipoTexto, kmCamion, kmVigencia, observacion, ejec) {
-                                                                                            const fila = `
-<tr class="text-center fila-nueva-camion">
-<td class="tipoTexto text-secondary">${tipoTexto}</td>
-<td class="text-secondary">${kmCamion}</td>
-<td class="text-secondary">${kmVigencia}</td>
-<td class="text-secondary">${observacion}</td>
-<td class="text-secondary">${ejec ? "Sí" : "No"}</td>        
-<td>
-<button type="button" class="btn-eliminar eliminarNuevo">❌</button>
-</td>
-</tr>
-`;
+                                                                                                    if (clase === "CORRECTIVO") {
+                                                                                                    if (kmVigenciaInput && (kmVigenciaInput.value.trim() === "" || kmVigencia < 0)) {
+                                                                                                    this.checked = false;
+                                                                                                    alert("Para mantenimientos CORRECTIVOS, el KM de Vigencia no puede ser negativo.");
+                                                                                                    kmVigenciaInput.focus();
+                                                                                                    }
+                                                                                                    }
+                                                                                                    });
+                                                                                                    });
 
-                                                                                            document.querySelector(`#${tablaId} tbody`)
+                                                                                                    const checksAcoplado = document.querySelectorAll(
+                                                                                                    'tr.fila-mant-acoplado input[name="ejecutados"]'
+                                                                                                    );
+
+                                                                                                    checksAcoplado.forEach(chk => {
+                                                                                                    chk.addEventListener("change", function () {
+
+                                                                                                    if (!this.checked)
+                                                                                                    return;
+
+                                                                                                    const fila = this.closest("tr");
+
+                                                                                                    const clase = fila.dataset.clase; // PREVENTIVO | CORRECTIVO
+
+                                                                                                    const kmAcopladoInput = fila.querySelector('input[name="kmAcopladoExistente"]');
+                                                                                                    const kmVigenciaInput = fila.querySelector('input[name="kmVigenciaAExistente"]');
+
+                                                                                                    const kmAcoplado = kmAcopladoInput ? Number(kmAcopladoInput.value) : null;
+                                                                                                    const kmVigencia = kmVigenciaInput ? Number(kmVigenciaInput.value) : null;
+
+                                                                                                    if (kmAcopladoInput && (kmAcopladoInput.value.trim() === "" || kmAcoplado < 0)) {
+                                                                                                    this.checked = false;
+                                                                                                    alert("Debe ingresar KM del acoplado (mayor o igual a 0).");
+                                                                                                    kmAcopladoInput.focus();
+                                                                                                    return;
+                                                                                                    }
+
+                                                                                                    if (clase === "PREVENTIVO") {
+                                                                                                    if (kmVigenciaInput && (kmVigenciaInput.value.trim() === "" || kmVigencia <= 0)) {
+                                                                                                    this.checked = false;
+                                                                                                    alert("Para mantenimientos PREVENTIVOS, el KM de Vigencia debe ser mayor a 0.");
+                                                                                                    kmVigenciaInput.focus();
+                                                                                                    return;
+                                                                                                    }
+                                                                                                    }
+
+                                                                                                    if (clase === "CORRECTIVO") {
+                                                                                                    if (kmVigenciaInput && (kmVigenciaInput.value.trim() === "" || kmVigencia < 0)) {
+                                                                                                    this.checked = false;
+                                                                                                    alert("Para mantenimientos CORRECTIVOS, el KM de Vigencia no puede ser negativo.");
+                                                                                                    kmVigenciaInput.focus();
+                                                                                                    }
+                                                                                                    }
+                                                                                                    });
+
+                                                                                                    });
+                                                                                                    });
+                                                                                                </script>
+                                                                                                <script>
+                                                                                                    let nuevosCamion = [];
+                                                                                                    let nuevosAcoplado = [];
+
+                                                                                                    function agregarFila(tablaId, tipoTexto, kmCamion, kmVigencia, observacion, ejec) {
+                                                                                                    const fila = `
+                                                                                                    <tr class="text-center bg-light fila-mant-camion fila-nueva-camion">
+                                                                                                    <td class="tipoTexto text-secondary">${tipoTexto}</td>                                                                                                                                                      
+                                                                                                    <td class="text-secondary">${kmCamion}</td>
+                                                                                                    <td class="text-secondary">${kmVigencia}</td>
+                                                                                                    <td class="text-secondary">${observacion}</td>
+                                                                                                    <td class="text-secondary">${ejec ? "Sí" : "No"}</td>        
+                                                                                                    <td>
+                                                                                                    <button type="button" class="btn-eliminar eliminarNuevo">❌</button>
+                                                                                                    </td>
+                                                                                                    </tr>
+                                                                                                    `;
+
+                                                                                                    document.querySelector(`#${tablaId} tbody`)
                                                                                                     .insertAdjacentHTML('beforeend', fila);
-                                                                                        }
 
-                                                                                        function agregarFilaAcoplado(tipoTexto, kmAcoplado, kmVigenciaA, observacion, ejec) {
+                                                                                                    }
 
-                                                                                            const fila = `
-<tr class="text-center fila-nueva-acoplado">
-<td class="tipoTextoA text-secondary">${tipoTexto}</td>
-<td class="text-secondary">${kmAcoplado}</td>
-<td class="text-secondary">${kmVigenciaA}</td>
-<td class="text-secondary">${observacion}</td>
-<td class="text-secondary">${ejec ? "Sí" : "No"}</td>
-<td>
-<button type="button" class="btn-eliminar eliminarNuevoA">❌</button>
-</td>
-</tr>
-`;
-                                                                                            document.querySelector("#tablaMantenimientosAcoplado tbody")
+                                                                                                    function agregarFilaAcoplado(tipoTexto, kmAcoplado, kmVigenciaA, observacion, ejec) {
+
+                                                                                                    const fila = `
+                                                                                                    <tr class="text-center bg-light fila-mant-acoplado fila-nueva-acoplado">
+                                                                                                    <td class="tipoTextoA text-secondary">${tipoTexto}</td>
+                                                                                                    <td class="text-secondary">${kmAcoplado}</td>
+                                                                                                    <td class="text-secondary">${kmVigenciaA}</td>
+                                                                                                    <td class="text-secondary">${observacion}</td>
+                                                                                                    <td class="text-secondary">${ejec ? "Sí" : "No"}</td>
+                                                                                                    <td>
+                                                                                                    <button type="button" class="btn-eliminar eliminarNuevoA">❌</button>
+                                                                                                    </td>
+                                                                                                    </tr>
+                                                                                                    `;
+                                                                                                    document.querySelector("#tablaMantenimientosAcoplado tbody")
                                                                                                     .insertAdjacentHTML('beforeend', fila);
-                                                                                        }
 
-                                                                                        function obtenerTiposExistentes(tablaId) {
-                                                                                            return Array.from(
+                                                                                                    }
+
+                                                                                                    function obtenerTiposExistentes(tablaId) {
+                                                                                                    return Array.from(
                                                                                                     document.querySelectorAll(`#${tablaId} tbody tr:not(.fila-nueva) td:first-child`)
                                                                                                     ).map(td => td.textContent.trim());
-                                                                                        }
-                                                                                        function obtenerTiposNuevos(tablaId) {
-                                                                                            return Array.from(
+                                                                                                    }
+                                                                                                    function obtenerTiposNuevos(tablaId) {
+                                                                                                    return Array.from(
                                                                                                     document.querySelectorAll(`#${tablaId} tbody tr.fila-nueva td.tipoTexto`)
                                                                                                     ).map(td => td.textContent.trim());
-                                                                                        }
+                                                                                                    }
 
-                                                                                        function obtenerTiposExistentesA() {
-                                                                                            return Array.from(
+                                                                                                    function obtenerTiposExistentesA() {
+                                                                                                    return Array.from(
                                                                                                     document.querySelectorAll("#tablaMantenimientosAcoplado tbody tr:not(.fila-nueva-acoplado) td:first-child")
                                                                                                     ).map(td => td.textContent.trim());
-                                                                                        }
+                                                                                                    }
 
-                                                                                        function obtenerTiposNuevosA() {
-                                                                                            return Array.from(
+                                                                                                    function obtenerTiposNuevosA() {
+                                                                                                    return Array.from(
                                                                                                     document.querySelectorAll("#tablaMantenimientosAcoplado tbody tr.fila-nueva-acoplado td.tipoTextoA")
                                                                                                     ).map(td => td.textContent.trim());
-                                                                                        }
+                                                                                                    }
 
-                                                                                        const btnAddCamion = document.getElementById("addMantenimientoCamion");
+                                                                                                    const btnAddCamion = document.getElementById("addMantenimientoCamion");
 
-                                                                                        if (btnAddCamion) {
-                                                                                            btnAddCamion.onclick = function () {
+                                                                                                    if (btnAddCamion) {
+                                                                                                    btnAddCamion.onclick = function () {
 
-                                                                                                const tipo = tipoCamionNuevo.value;
-                                                                                                const texto = tipoCamionNuevo.options[tipoCamionNuevo.selectedIndex].text;
-                                                                                                const kmC = kmCamionNuevo.value;
-                                                                                                const kmV = kmVigenciaNuevo.value;
-                                                                                                const obs = obsCamionNuevo.value;
-                                                                                                const ejec = document.getElementById("nuevoEjecutadoC").checked;
+                                                                                                    const tipo = tipoCamionNuevo.value;
+                                                                                                    const texto = tipoCamionNuevo.options[tipoCamionNuevo.selectedIndex].text;
+                                                                                                    const kmC = kmCamionNuevo.value;
+                                                                                                    const kmV = kmVigenciaNuevo.value;
+                                                                                                    const obs = obsCamionNuevo.value;
+                                                                                                    const ejec = document.getElementById("nuevoEjecutadoC").checked;
 
-                                                                                                if (!tipo || !kmC || !kmV) {
-                                                                                                    alert("Debe completar Tipo, Km Camión y Km Vigencia.");
+                                                                                                    const tipoClase = $('#tipoCamionNuevo option:selected').data('clase');
+
+                                                                                                    const kmVal = Number(kmC);
+                                                                                                    const kmVigenciaVal = Number(kmV);
+
+                                                                                                    if (!tipo || !kmC || !kmV) {
+                                                                                                    alert("Debe seleccionar Tipo, Km Camión y Km Vigencia.");
                                                                                                     return;
-                                                                                                }
+                                                                                                    }
 
-                                                                                                // VALIDAR DUPLICADO EXISTENTE
-                                                                                                let existentes = obtenerTiposExistentes("tablaMantenimientosCamion");
-                                                                                                if (existentes.includes(texto)) {
+                                                                                                    if (tipoClase === 'PREVENTIVO') {
+
+                                                                                                    if (!kmV || kmVigenciaVal <= 0) {
+                                                                                                    alert("Para mantenimiento PREVENTIVO debe completar Km Vigencia con valores mayores a 0.");
+                                                                                                    return;
+                                                                                                    }
+                                                                                                    }
+
+                                                                                                    // VALIDAR DUPLICADO EXISTENTE
+                                                                                                    let existentes = obtenerTiposExistentes("tablaMantenimientosCamion");
+                                                                                                    if (existentes.includes(texto)) {
                                                                                                     alert("Este tipo de mantenimiento ya existe en la OT.");
                                                                                                     return;
-                                                                                                }
+                                                                                                    }
 
-                                                                                                // VALIDAR DUPLICADO NUEVO
-                                                                                                let nuevos = obtenerTiposNuevos("tablaMantenimientosCamion");
-                                                                                                if (nuevos.includes(texto)) {
+                                                                                                    // VALIDAR DUPLICADO NUEVO
+                                                                                                    let nuevos = obtenerTiposNuevos("tablaMantenimientosCamion");
+                                                                                                    if (nuevos.includes(texto)) {
                                                                                                     alert("Ya ha agregado este mantenimiento.");
                                                                                                     return;
-                                                                                                }
+                                                                                                    }
 
-                                                                                                const mantenimiento = {
+                                                                                                    const mantenimiento = {
                                                                                                     tipoMantenimiento: tipo,
                                                                                                     km: kmC,
                                                                                                     kmVigencia: kmV,
                                                                                                     observacion: obs,
                                                                                                     aplicaA: "CAMION",
                                                                                                     ejecutado: ejec
-                                                                                                };
+                                                                                                    };
+                                                                                                    nuevosCamion.push(mantenimiento);
 
-                                                                                                nuevosCamion.push(mantenimiento);
+                                                                                                    agregarFila("tablaMantenimientosCamion", texto, kmC, kmV, obs, ejec);
 
-                                                                                                agregarFila("tablaMantenimientosCamion", texto, kmC, kmV, obs, ejec);
+                                                                                                    tipoCamionNuevo.value = "";
+                                                                                                    kmVigenciaNuevo.value = 0;
+                                                                                                    obsCamionNuevo.value = "";
+                                                                                                    nuevoEjecutadoC.checked = false;
+                                                                                                    };
+                                                                                                    }
 
-                                                                                                tipoCamionNuevo.value = "";
-                                                                                                obsCamionNuevo.value = "";
-                                                                                                nuevoEjecutadoC.checked = false;
-                                                                                            };
-                                                                                        }
+                                                                                                    const btnAddAco = document.getElementById("addMantenimientoAcoplado");
 
-                                                                                        const btnAddAco = document.getElementById("addMantenimientoAcoplado");
+                                                                                                    if (btnAddAco) {
+                                                                                                    btnAddAco.onclick = function () {
+                                                                                                    const tipo = tipoAcopladoNuevo.value;
+                                                                                                    const texto = tipoAcopladoNuevo.options[tipoAcopladoNuevo.selectedIndex].text;
+                                                                                                    const kmA = kmAcopladoNuevo.value;
+                                                                                                    const kmV = kmVigenciaANuevo.value;
+                                                                                                    const obs = obsAcopladoNuevo.value;
+                                                                                                    const ejec = document.getElementById("nuevoEjecutadoA").checked;
 
-                                                                                        if (btnAddAco) {
-                                                                                            btnAddAco.onclick = function () {
-                                                                                                const tipo = tipoAcopladoNuevo.value;
-                                                                                                const texto = tipoAcopladoNuevo.options[tipoAcopladoNuevo.selectedIndex].text;
-                                                                                                const kmA = kmAcopladoNuevo.value;
-                                                                                                const kmV = kmVigenciaANuevo.value;
-                                                                                                const obs = obsAcopladoNuevo.value;
-                                                                                                const ejec = document.getElementById("nuevoEjecutadoA").checked;
+                                                                                                    const tipoClase = $('#tipoAcopladoNuevo option:selected').data('clase');
+                                                                                                    const kmVal = Number(kmA);
+                                                                                                    const kmVigenciaVal = Number(kmV);
 
-                                                                                                if (!tipo || !kmA || !kmV) {
-                                                                                                    alert("Debe completar Tipo, Km Acoplado y Km Vigencia.");
+                                                                                                    if (!tipo || !kmA || !kmV) {
+                                                                                                    alert("Debe seleccionar Tipo, Km Acoplado y Km Vigencia.");
                                                                                                     return;
-                                                                                                }
+                                                                                                    }
 
-                                                                                                let existentes = obtenerTiposExistentesA();
-                                                                                                if (existentes.includes(texto)) {
+                                                                                                    if (tipoClase === 'PREVENTIVO') {
+
+                                                                                                    if (!kmV || kmVigenciaVal <= 0) {
+                                                                                                    alert("Para mantenimiento PREVENTIVO debe completar Km Vigencia con valores mayores a 0.");
+                                                                                                    return;
+                                                                                                    }
+                                                                                                    }
+
+                                                                                                    let existentes = obtenerTiposExistentesA();
+                                                                                                    if (existentes.includes(texto)) {
                                                                                                     alert("Este tipo de mantenimiento ya existe en la OT.");
                                                                                                     return;
-                                                                                                }
+                                                                                                    }
 
-                                                                                                let nuevos = obtenerTiposNuevosA();
-                                                                                                if (nuevos.includes(texto)) {
+                                                                                                    let nuevos = obtenerTiposNuevosA();
+                                                                                                    if (nuevos.includes(texto)) {
                                                                                                     alert("Ya ha agregado este mantenimiento.");
                                                                                                     return;
-                                                                                                }
+                                                                                                    }
 
-                                                                                                const mantenimiento = {
+                                                                                                    const mantenimiento = {
                                                                                                     tipoMantenimiento: tipo,
                                                                                                     km: kmA,
                                                                                                     kmVigencia: kmV,
                                                                                                     observacion: obs,
                                                                                                     aplicaA: "ACOPLADO",
                                                                                                     ejecutado: ejec
-                                                                                                };
+                                                                                                    };
 
-                                                                                                nuevosAcoplado.push(mantenimiento);
+                                                                                                    nuevosAcoplado.push(mantenimiento);
 
-                                                                                                agregarFilaAcoplado(texto, kmA, kmV, obs, ejec);
-                                                                                                tipoAcopladoNuevo.value = "";
-                                                                                                obsAcopladoNuevo.value = "";
-                                                                                                nuevoEjecutadoA.value = false;
-                                                                                            }
-                                                                                        }
+                                                                                                    agregarFilaAcoplado(texto, kmA, kmV, obs, ejec);
 
+                                                                                                    tipoAcopladoNuevo.value = "";
+                                                                                                    obsAcopladoNuevo.value = "";
+                                                                                                    kmVigenciaANuevo.value = 0;
+                                                                                                    nuevoEjecutadoA.value = false;
+                                                                                                    }
+                                                                                                    }
 
-                                                                                        document.addEventListener("click", function (e) {
-                                                                                            if (e.target.classList.contains("eliminarNuevo")) {
-                                                                                                const fila = e.target.closest("tr");
-                                                                                                const index = Array.from(
-                                                                                                        document.querySelectorAll("#tablaMantenimientosCamion tbody tr.fila-nueva-camion")
-                                                                                                        ).indexOf(fila);
-                                                                                                nuevosCamion.splice(index, 1);
-                                                                                                fila.remove();
-                                                                                            }
-                                                                                        });
+                                                                                                    document.addEventListener("click", function (e) {
+                                                                                                    if (e.target.classList.contains("eliminarNuevo")) {
+                                                                                                    const fila = e.target.closest("tr");
+                                                                                                    const index = Array.from(
+                                                                                                    document.querySelectorAll("#tablaMantenimientosCamion tbody tr.fila-nueva-camion")
+                                                                                                    ).indexOf(fila);
+                                                                                                    nuevosCamion.splice(index, 1);
+                                                                                                    fila.remove();
+                                                                                                    }
 
-                                                                                        document.addEventListener("click", function (e) {
-                                                                                            if (e.target.classList.contains("eliminarNuevoA")) {
-                                                                                                const fila = e.target.closest("tr");
-                                                                                                const index = Array.from(
-                                                                                                        document.querySelectorAll("#tablaMantenimientosAcoplado tbody tr.fila-nueva-acoplado")
-                                                                                                        ).indexOf(fila);
-                                                                                                nuevosAcoplado.splice(index, 1);
-                                                                                                fila.remove();
-                                                                                            }
-                                                                                        });
+                                                                                                    });
 
-                                                                                        document.getElementById("formulario").onsubmit = function () {
-                                                                                            // 🔹 Crear inputs ocultos con los JSON para enviar al backend
-                                                                                            $('<input>').attr({
-                                                                                                type: 'hidden',
-                                                                                                name: 'nuevosCamionJson',
-                                                                                                value: JSON.stringify(nuevosCamion)
-                                                                                            }).appendTo('#formulario');
+                                                                                                    document.addEventListener("click", function (e) {
+                                                                                                    if (e.target.classList.contains("eliminarNuevoA")) {
+                                                                                                    const fila = e.target.closest("tr");
+                                                                                                    const index = Array.from(
+                                                                                                    document.querySelectorAll("#tablaMantenimientosAcoplado tbody tr.fila-nueva-acoplado")
+                                                                                                    ).indexOf(fila);
+                                                                                                    nuevosAcoplado.splice(index, 1);
+                                                                                                    fila.remove();
+                                                                                                    }
 
-                                                                                            $('<input>').attr({
-                                                                                                type: 'hidden',
-                                                                                                name: 'nuevosAcopladoJson',
-                                                                                                value: JSON.stringify(nuevosAcoplado)
-                                                                                            }).appendTo('#formulario');
-                                                                                        };
-                                                                                    </script>
-                                                                                    </body>
-                                                                                    </html>
+                                                                                                    });
+
+                                                                                                    document.getElementById("formulario").onsubmit = function () {
+                                                                                                    // 🔹 Crear inputs ocultos con los JSON para enviar al backend
+                                                                                                    $('<input>').attr({
+                                                                                                    type: 'hidden',
+                                                                                                    name: 'nuevosCamionJson',
+                                                                                                    value: JSON.stringify(nuevosCamion)
+                                                                                                    }).appendTo('#formulario');
+
+                                                                                                    $('<input>').attr({
+                                                                                                    type: 'hidden',
+                                                                                                    name: 'nuevosAcopladoJson',
+                                                                                                    value: JSON.stringify(nuevosAcoplado)
+                                                                                                    }).appendTo('#formulario');
+                                                                                                    };
+
+                                                                                                </script>
+                                                                                                </body>
+                                                                                                </html>
 

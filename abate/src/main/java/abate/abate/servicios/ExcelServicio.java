@@ -2,6 +2,7 @@ package abate.abate.servicios;
 
 import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
+import abate.abate.entidades.Cliente;
 import abate.abate.entidades.Usuario;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -623,6 +624,67 @@ public class ExcelServicio {
         workbook.write(outputStream);
         workbook.close();
         outputStream.close();
+
+    }
+
+    public void exportHtmlToExcelCliente(String htmlContent, HttpServletResponse response, Cliente cliente) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("EstadisticaCliente");
+
+        // Crear estilos para el título y el subtítulo
+        CellStyle titleStyle = workbook.createCellStyle();
+        Font titleFont = workbook.createFont();
+        titleFont.setFontHeightInPoints((short) 11);
+        titleStyle.setFont(titleFont);
+
+        int rowIndex = 0;
+
+        // Escribir el título
+        Row titleRow = sheet.createRow(rowIndex++);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue(cliente.getNombre());
+        titleCell.setCellStyle(titleStyle);
+
+        sheet.createRow(rowIndex++);
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        // Intenta convertir el texto en un número
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        // Si no es un número, se guarda como texto
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = 0;
+        if (sheet.getRow(3) != null) {
+            columnCount = sheet.getRow(3).getPhysicalNumberOfCells();
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=EstadisticaCliente.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
     }
 
     public void exportHtmlToExcelCuenta(String htmlContent, HttpServletResponse response, String nombre, Double saldo) throws IOException {
@@ -1005,6 +1067,46 @@ public class ExcelServicio {
         outputStream.close();
     }
 
+    public void exportHtmlToExcelEstadisticaClientes(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("EstadisticasClientes");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=EstadisticasClientes.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
     public void exportHtmlToExcelClientes(String htmlContent, HttpServletResponse response) throws IOException {
         Document doc = Jsoup.parse(htmlContent);
         Elements tables = doc.select("table");
@@ -1085,8 +1187,164 @@ public class ExcelServicio {
         outputStream.close();
     }
 
+    public void exportHtmlToExcelChoferesLista(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("ListaChoferes");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=ListaChoferes.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelClientesLista(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("ListaClientes");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=ListaClientes.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelCamionesLista(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("ListaCamiones");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=ListaCamiones.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+    public void exportHtmlToExcelAcopladosLista(String htmlContent, HttpServletResponse response) throws IOException {
+        Document doc = Jsoup.parse(htmlContent);
+        Elements tables = doc.select("table");
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("ListaAcoplados");
+
+        int rowIndex = 0;
+
+        for (Element table : tables) {
+            for (Element row : table.select("tr")) {
+                Row excelRow = sheet.createRow(rowIndex++);
+                int colIndex = 0;
+                for (Element cell : row.select("th, td")) {
+                    Cell excelCell = excelRow.createCell(colIndex++);
+                    String cellText = cell.text();
+
+                    try {
+                        double numericValue = Double.parseDouble(cellText);
+                        excelCell.setCellValue(numericValue);
+                    } catch (NumberFormatException e) {
+                        excelCell.setCellValue(cellText);
+                    }
+                }
+            }
+        }
+
+        int columnCount = sheet.getRow(0).getPhysicalNumberOfCells();
+        for (int i = 0; i < columnCount; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=ListaAcoplados.xlsx");
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
 }
-   
-
-
-

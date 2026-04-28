@@ -125,103 +125,140 @@
                                                                 <table class="table table-md bg-light table-hover mb-0" id="dimgray">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th class="text-center">Acoplado</th>
-                                                                            <th class="text-center">Viajes</th>
-                                                                            <th class="text-center">KM</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        <tr th:each="entry : ${estadistica}" class="fila-alta" th:classappend="${entry.key.dominio == 'TOTAL' ? 'total-general' : ''}">
-                                                                            <td class="text-center"><b><a id="dimgray" th:href="@{/acoplado/mostrarEstadistica/__${entry.key.id}__}" th:text="${entry.key.dominio}+' - '+${entry.key.marca}+' '+${entry.key.modelo}"></a></b></td>
-                                                                            <td class="text-center" th:text="${#numbers.formatDecimal(entry.value.flete, 0, 'POINT', 0, 'POINT')}" th:style="${entry.value.flete}"></td>
-                                                                            <td class="text-center" th:text="${#numbers.formatDecimal(entry.value.kmRecorrido, 0, 'POINT', 0, 'POINT')}"></td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                            <br>
-                                                                <div class="text-center mb-2">
-                                                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
-                                                                </div>
-                                                        </div>
-                                                        <div th:if="${estadistica.size <= 1}">
-                                                            <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
-                                                                <h6 id="azul">No existen Estadísticas de Acoplados para la fecha seleccionada</h6>
-                                                            </div>
-                                                            <div class="text-center mb-2">
-                                                                <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div id="spinner" class="modal" style="display: none;">
-                                                        <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                                            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                                                <span class="sr-only">Cargando...</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <script>
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            const volverBtn = document.getElementById("exportar");
-                                                            volverBtn.addEventListener("click", function (e) {
-                                                                // Mostrar spinner
-                                                                document.getElementById("spinner").style.display = "block";
-                                                            });
-                                                        });
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                            const volverBtn = document.getElementById("ver");
-                                                            volverBtn.addEventListener("click", function (e) {
-                                                                // Mostrar spinner
-                                                                document.getElementById("spinner").style.display = "block";
-                                                            });
-                                                        });
-                                                    </script>
-                                                    <script>
-                                                        function startExport(event) {
-                                                            event.preventDefault();
+                                                                            <th class="text-center">
+                                                                                <form th:action="@{/acoplado/mostrarEstadisticaAcopladosFiltro}" method="POST">
+                                                                                    <input hidden th:value="${desde}" name="desde">
+                                                                                        <input hidden th:value="${hasta}" name="hasta">
+                                                                                            Acoplado
+                                                                                            <button class="no-border" title="Ordenar Ascendente" type="submit">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                                                                                                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                                                                                </svg></button>
+                                                                                            </form></th>
+                                                                                            <th class="text-center">
+                                                                                                <form th:action="@{/acoplado/mostrarEstadisticaViajeDesc}" method="POST">
+                                                                                                    <input hidden th:value="${desde}" name="desde">
+                                                                                                        <input hidden th:value="${hasta}" name="hasta">
+                                                                                                            Viajes
+                                                                                                            <button class="no-border" title="Ordenar Ascendente" type="submit">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                                                                                                                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                                                                                                </svg></button>
+                                                                                                            </form></th>
+                                                                                                            <th class="text-center">
+                                                                                                                <form th:action="@{/acoplado/mostrarEstadisticaKmDesc}" method="POST">
+                                                                                                                    <input hidden th:value="${desde}" name="desde">
+                                                                                                                        <input hidden th:value="${hasta}" name="hasta">
+                                                                                                                            KM
+                                                                                                                            <button class="no-border" title="Ordenar Ascendente" type="submit">
+                                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                                                                                                                                    <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+                                                                                                                                </svg></button>
+                                                                                                                            </form></th>
+                                                                                                                            </tr>
+                                                                                                                            </thead>
+                                                                                                                            <tbody>
+                                                                                                                                <tr th:each="entry : ${estadistica}" class="fila-alta" th:classappend="${entry.key.dominio == 'TOTAL' ? 'total-general' : ''}">
+                                                                                                                                    <td class="text-center"><b><a id="dimgray" th:href="@{/acoplado/mostrarEstadistica/__${entry.key.id}__}" th:text="${entry.key.dominio}+' - '+${entry.key.marca}+' '+${entry.key.modelo}"></a></b></td>
+                                                                                                                                    <td class="text-center" th:text="${#numbers.formatDecimal(entry.value.flete, 0, 'POINT', 0, 'POINT')}" th:style="${entry.value.flete}"></td>
+                                                                                                                                    <td class="text-center" th:text="${#numbers.formatDecimal(entry.value.kmRecorrido, 0, 'POINT', 0, 'POINT')}"></td>
+                                                                                                                                </tr>
+                                                                                                                            </tbody>
+                                                                                                                            </table>
+                                                                                                                            </div>
+                                                                                                                            <br>
+                                                                                                                                <div class="text-center mb-2">
+                                                                                                                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                                                                                                                </div>
+                                                                                                                                </div>
+                                                                                                                                <div th:if="${estadistica.size <= 1}">
+                                                                                                                                    <div class="card border-secondary p-4 mb-4 text-center" id="color-card">
+                                                                                                                                        <h6 id="azul">No existen Estadísticas de Acoplados para la fecha seleccionada</h6>
+                                                                                                                                    </div>
+                                                                                                                                    <div class="text-center mb-2">
+                                                                                                                                        <a class="btn btn-primary bg-primary btn-lg w-50" type="button" title="Volver" th:href="@{/index}">Volver</a>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                </div>
+                                                                                                                                <div id="spinner" class="modal" style="display: none;">
+                                                                                                                                    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                                                                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                                                                            <span class="sr-only">Cargando...</span>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <script>
 
-                                                            const modal = document.getElementById('loadingModalExport');
-                                                            modal.style.display = 'block';
+                                                                                                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                                                                                                    let table = document.querySelector("tbody");
+                                                                                                                                    let totalRow = document.querySelector(".total-general");
 
-                                                            const desde = document.getElementById('desde').value;
-                                                            const hasta = document.getElementById('hasta').value;
+                                                                                                                                    if (totalRow) {
+                                                                                                                                    table.appendChild(totalRow); // Mueve la fila TOTAL al final
+                                                                                                                                    }
+                                                                                                                                    });
 
-                                                            const url = `/acoplado/exportaEstadisticaAcoplados?desde=${desde}&hasta=${hasta}`;
+                                                                                                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                                                                                                    const volverBtn = document.getElementById("exportar");
+                                                                                                                                    volverBtn.addEventListener("click", function (e) {
+                                                                                                                                    // Mostrar spinner
+                                                                                                                                    document.getElementById("spinner").style.display = "block";
+                                                                                                                                    });
+                                                                                                                                    });
+                                                                                                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                                                                                                    const volverBtn = document.getElementById("ver");
+                                                                                                                                    volverBtn.addEventListener("click", function (e) {
+                                                                                                                                    // Mostrar spinner
+                                                                                                                                    document.getElementById("spinner").style.display = "block";
+                                                                                                                                    });
+                                                                                                                                    });
+                                                                                                                                </script>
+                                                                                                                                <script>
+                                                                                                                                    function startExport(event) {
+                                                                                                                                    event.preventDefault();
 
-                                                            fetch(url, {method: 'POST'})
-                                                                    .then(response => {
-                                                                        const contentDisposition = response.headers.get('Content-Disposition');
-                                                                        let fileName = 'exportacion.xlsx';
+                                                                                                                                    const modal = document.getElementById('loadingModalExport');
+                                                                                                                                    modal.style.display = 'block';
 
-                                                                        if (contentDisposition) {
-                                                                            const match = contentDisposition.match(/filename="?([^"]+)"?/);
-                                                                            if (match && match[1]) {
-                                                                                fileName = match[1];
-                                                                            }
-                                                                        }
+                                                                                                                                    const desde = document.getElementById('desde').value;
+                                                                                                                                    const hasta = document.getElementById('hasta').value;
 
-                                                                        return response.blob().then(blob => ({blob, fileName}));
-                                                                    })
-                                                                    .then(({ blob, fileName }) => {
-                                                                        const downloadUrl = window.URL.createObjectURL(blob);
-                                                                        const a = document.createElement('a');
-                                                                        a.href = downloadUrl;
-                                                                        a.download = fileName;
-                                                                        document.body.appendChild(a);
-                                                                        a.click();
-                                                                        a.remove();
-                                                                    })
-                                                                    .catch(error => {
-                                                                        console.error('Error:', error);
-                                                                        alert('Error durante la exportación.');
-                                                                    })
-                                                                    .finally(() => {
-                                                                        modal.style.display = 'none';
-                                                                    });
-                                                        }
+                                                                                                                                    const url = `/acoplado/exportaEstadisticaAcoplados?desde=${desde}&hasta=${hasta}`;
 
-                                                    </script>
-                                                    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                                                    </body>
-                                                    </html>
+                                                                                                                                    fetch(url, {method: 'POST'})
+                                                                                                                                    .then(response => {
+                                                                                                                                    const contentDisposition = response.headers.get('Content-Disposition');
+                                                                                                                                    let fileName = 'exportacion.xlsx';
+
+                                                                                                                                    if (contentDisposition) {
+                                                                                                                                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                                                                                                                                    if (match && match[1]) {
+                                                                                                                                    fileName = match[1];
+                                                                                                                                    }
+                                                                                                                                    }
+
+                                                                                                                                    return response.blob().then(blob => ({blob, fileName}));
+                                                                                                                                    })
+                                                                                                                                    .then(({ blob, fileName }) => {
+                                                                                                                                    const downloadUrl = window.URL.createObjectURL(blob);
+                                                                                                                                    const a = document.createElement('a');
+                                                                                                                                    a.href = downloadUrl;
+                                                                                                                                    a.download = fileName;
+                                                                                                                                    document.body.appendChild(a);
+                                                                                                                                    a.click();
+                                                                                                                                    a.remove();
+                                                                                                                                    })
+                                                                                                                                    .catch(error => {
+                                                                                                                                    console.error('Error:', error);
+                                                                                                                                    alert('Error durante la exportación.');
+                                                                                                                                    })
+                                                                                                                                    .finally(() => {
+                                                                                                                                    modal.style.display = 'none';
+                                                                                                                                    });
+                                                                                                                                    }
+
+                                                                                                                                </script>
+                                                                                                                                <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                                                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                                                                                </body>
+                                                                                                                                </html>

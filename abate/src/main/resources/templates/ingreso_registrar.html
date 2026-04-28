@@ -5,15 +5,23 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                     <link rel="stylesheet" href="/css/medidas_container.css"> 
+                        <style>
+                            .btn-eliminar {
+                                background: none;
+                                border: none;
+                                font-size: 16px;
+                                cursor: pointer;
+                            }
+                        </style>
                         <script>
                             window.onload = function () {
-                                var fechaActual = new Date();
-                                var dia = String(fechaActual.getDate()).padStart(2, '0');
-                                var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-                                var anio = fechaActual.getFullYear();
-                                var fechaFormateada = anio + '-' + mes + '-' + dia;
+                            var fechaActual = new Date();
+                            var dia = String(fechaActual.getDate()).padStart(2, '0');
+                            var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                            var anio = fechaActual.getFullYear();
+                            var fechaFormateada = anio + '-' + mes + '-' + dia;
 
-                                document.getElementById('fecha').max = fechaFormateada;
+                            document.getElementById('fecha').max = fechaFormateada;
                             };
                         </script>
                         </head>
@@ -41,69 +49,206 @@
                                                     <label for="chofer" class="form-floting text-secondary">Chofer</label>
                                                     <input type="text" class="form-control" id="chofer" th:value="${caja.chofer.nombre}" disabled readonly>
                                                 </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-2 col-xl-2 mb-2">
                                                     <label for="saldo" class="form-label text-secondary">Saldo</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text">$</span>
                                                         <input type="text" class="form-control" th:value="${#numbers.formatDecimal(caja.saldo, 0, 'POINT', 2, 'COMMA')}" id="saldo" disabled readonly>
                                                     </div>    
                                                 </div>
-                                                <div class="d-none d-sm-block col-lg-4 col-xl-4">
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
                                                     <label for="fecha" class="form-label text-secondary">Fecha*</label>
                                                     <input type="date" class="form-control" id="fecha" name="fecha" required>
-                                                </div>
-                                                <div class="col-6 col-sm-6 col-md-6 col-lg-4 col-xl-4 mb-2">
+                                                </div>                                      
+                                                <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 mb-2">
                                                     <label for="importe" class="form-label text-secondary">Importe*</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text">$</span>
-                                                        <input type="number" step="0.01" class="form-control" id="importe" placeholder="Ingrese Importe" name="importe" required>
-                                                    </div>    
+                                                        <input type="text" class="form-control" id="importe" name="importe" readonly value="0,00">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-12 col-sm-12 col-md-12 col-lg-8 col-xl-8 mb-5">
+                                                <div class="col-12 mb-3">
                                                     <label for="observacion" class="form-label text-secondary">Observación*</label>
-                                                    <input type="text" class="form-control" id="observacion" placeholder="Ingrese Observación" name="observacion" required minlength="1" maxlength="600" size="600">
-                                                </div>
-                                                <div class="d-none d-sm-block col-lg-4 col-xl-4">
+                                                    <input type="text" class="form-control" id="observacion" placeholder="Ingrese Observación" name="observacion" maxlength="600" size="600">
                                                 </div>
                                             </div>
-                                            <div class="text-center mb-2">
-                                                <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Ingreso">Registrar</button>
-                                            </div>
-                                            <div class="text-center">
-                                                <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/caja/mostrarAdmin/__${caja.chofer.id}__}" title="Cancelar">Cancelar</a>
-                                            </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div id="spinner" class="modal" style="display: none;">
-                                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-                                    <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                                        <span class="sr-only">Cargando...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <script>
-                                const conceptoInput = document.getElementById('observacion');
-                                const maxLength = 600;
+                                            <hr>
+                                                <h5 class="text-secondary">Valores de Ingreso</h5>
+                                                <div class="row">
+                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                        <label class="form-label text-secondary">Tipo</label>
+                                                        <select id="tipoValor" class="form-control">
+                                                            <option value="">Seleccione</option>
+                                                            <option th:each="t : ${tiposValor}" th:value="${t}" th:text="${t}"></option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 mb-2">
+                                                        <label class="form-label text-secondary">Importe</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">$</span>
+                                                            <input type="number" step="0.01" id="importeValor" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-10 col-sm-10 col-md-4 col-lg-5 col-xl-5 mb-2">
+                                                        <label class="form-label text-secondary">Observación</label>
+                                                        <input type="text" id="obsValor" class="form-control">
+                                                    </div>
+                                                    <div class="col-1">  
+                                                        <div class="form-floating" >
+                                                            <label class="form-label text-white"></label><br><br>
+                                                                    <button type="button" class="btn btn-outline-primary border-primary p-1" onclick="agregarValor()" title="Agregar Valor">
+                                                                        <svg id="white" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                                                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                    </div>
+                                                                    </div> 
+                                                                    </div>
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-borderless table-sm text-center">
+                                                                            <thead>
+                                                                                <tr id="darkblue">
+                                                                                    <td>Tipo</td>
+                                                                                    <td>Importe</td>
+                                                                                    <td>Observación</td>
+                                                                                    <td>Acción</td>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody id="tablaValores" style="color: dimgray">
+                                                                            </tbody>
+                                                                            <tfoot>
+                                                                                <tr class="total-row" id="dimgray">
+                                                                                    <td><b>TOTAL</b></td>
+                                                                                    <td id="totalGeneral"><strong>$0.00</strong></td>
+                                                                                    <td></td>
+                                                                                    <td></td>
+                                                                                </tr>
+                                                                            </tfoot>
+                                                                        </table>
+                                                                    </div>
+                                                                    <br>
+                                                                        <div class="text-center mb-2">
+                                                                            <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Registrar Ingreso">Registrar</button>
+                                                                        </div>
+                                                                        <div class="text-center">
+                                                                            <a class="btn btn-primary bg-primary border-light w-50" type="button" th:href="@{/caja/mostrarAdmin/__${caja.chofer.id}__}" title="Cancelar">Cancelar</a>
+                                                                        </div>
+                                                                        <div id="hiddenValoresContainer"></div>
+                                                                        </form>
+                                                                        </div>
+                                                                        </div>
+                                                                        <div id="spinner" class="modal" style="display: none;">
+                                                                            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                                                                                <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                                                                                    <span class="sr-only">Cargando...</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <script>
+                                                                            const conceptoInput = document.getElementById('observacion');
+                                                                            const maxLength = 600;
 
-                                conceptoInput.addEventListener('input', function () {
-                                    if (conceptoInput.value.length > maxLength) {
-                                        conceptoInput.value = conceptoInput.value.slice(0, maxLength);
-                                    }
-                                });
-                            </script>
-                            <script>
-                                document.getElementById("form").addEventListener("submit", function () {
-                                    document.getElementById("spinner").style.display = "block";
-                                });
-                            </script>
-                            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-                        </body>
-                        </html>
+                                                                            conceptoInput.addEventListener('input', function () {
+                                                                            if (conceptoInput.value.length > maxLength) {
+                                                                            conceptoInput.value = conceptoInput.value.slice(0, maxLength);
+                                                                            }
+                                                                            });
+                                                                        </script>
+                                                                        <script>
+                                                                            document.getElementById("form").addEventListener("submit", function(e){
+
+                                                                            if (valores.length === 0) {
+                                                                            e.preventDefault();
+                                                                            alert("Debe agregar al menos un valor.");
+                                                                            return;
+                                                                            }
+
+                                                                            // Si pasa la validación recién mostramos spinner
+                                                                            document.getElementById("spinner").style.display = "block";
+                                                                            });
+                                                                        </script>
+                                                                        <script>
+                                                                            let valores = [];
+
+                                                                            function agregarValor() {
+                                                                            let tipo = document.getElementById("tipoValor").value;
+                                                                            let importe = parseFloat(document.getElementById("importeValor").value);
+                                                                            let obs = document.getElementById("obsValor").value;
+
+                                                                            if (!tipo) { alert("Debe seleccionar un tipo de valor."); return; }
+                                                                            if (!importe || importe <= 0) { alert("Ingrese un importe válido."); return; }
+
+                                                                            valores.push({ tipo, importe, observacion: obs });
+
+                                                                            renderTabla();
+                                                                            limpiarInputs();
+                                                                            }
+
+                                                                            function renderTabla() {
+                                                                            let tabla = document.getElementById("tablaValores");
+                                                                            tabla.innerHTML = "";
+
+                                                                            let total = 0;
+
+                                                                            valores.forEach((v, index) => {
+                                                                            total += v.importe;
+
+                                                                            tabla.insertAdjacentHTML("beforeend", `
+                                                                            <tr>
+                                                                            <td>${v.tipo}</td>
+                                                                            <td>$${v.importe.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                                                            <td>${v.observacion || ''}</td>
+                                                                            <td><button type="button" class="btn-eliminar" onclick="eliminarValor(${index})">❌</button></td>
+                                                                            </tr>
+                                                                            `);
+                                                                            });
+
+                                                                            document.getElementById("totalGeneral").innerHTML = "<b>$" + total.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + "</b>";
+                                                                            document.getElementById("importe").value =
+                                                                            total.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+                                                                            generarInputsHidden();
+                                                                            }
+
+                                                                            function eliminarValor(index) {
+                                                                            valores.splice(index, 1);
+                                                                            renderTabla();
+                                                                            }
+
+                                                                            function limpiarInputs() {
+                                                                            document.getElementById("tipoValor").value = "";
+                                                                            document.getElementById("importeValor").value = "";
+                                                                            document.getElementById("obsValor").value = "";
+                                                                            }
+
+                                                                            function generarInputsHidden() {
+                                                                            const container = document.getElementById("hiddenValoresContainer");
+                                                                            container.innerHTML = ""; // acá sí podemos limpiar, no toca el resto del form
+
+                                                                            valores.forEach((v) => {
+                                                                            const inputImporte = document.createElement("input");
+                                                                            inputImporte.type = "hidden";
+                                                                            inputImporte.name = "importes";
+                                                                            inputImporte.value = v.importe;
+                                                                            container.appendChild(inputImporte);
+
+                                                                            const inputObs = document.createElement("input");
+                                                                            inputObs.type = "hidden";
+                                                                            inputObs.name = "observacionesValores";
+                                                                            inputObs.value = v.observacion || "";
+                                                                            container.appendChild(inputObs);
+
+                                                                            const inputTipo = document.createElement("input");
+                                                                            inputTipo.type = "hidden";
+                                                                            inputTipo.name = "tipos";
+                                                                            inputTipo.value = v.tipo; // debe coincidir con el enum (EFECTIVO, etc.)
+                                                                            container.appendChild(inputTipo);
+                                                                            });
+                                                                            }
+                                                                        </script>
+                                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+                                                                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+                                                                        </body>
+                                                                        </html>

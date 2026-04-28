@@ -507,6 +507,131 @@ public class DocumentacionServicio {
         return lista;
         
     }
+     
+    public List<Documentacion> obtenerDocumentacionesPorVencerFiltro(Long idOrg, int dias, Long idCamion, Long idAcoplado, Long idChofer) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.DAY_OF_MONTH, dias); // Sumamos 30 días
+        Date fechaLimite = calendar.getTime(); // Fecha límite
+
+        List<Documentacion> lista = documentacionRepositorio.findDocumentacionesPorVencerFiltrado(idOrg, fechaLimite, idCamion, idAcoplado, idChofer);
+
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+
+                Date fechaActual = new Date();
+                long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+                int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);
+                d.setDiasVigencia(diasVigencia);
+
+                if (diasVigencia <= 30 && diasVigencia > 0) {
+                    d.setEstado("PRÓXIMO A VENCER");
+                }
+                if (diasVigencia <= 0) {
+                    d.setEstado("VENCIDO");
+                }
+
+            }
+        }
+
+        return lista;
+
+    }
+
+    public List<Documentacion> obtenerDocumentacionesPorVencerCamion(Long idCamion, int dias) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.DAY_OF_MONTH, dias); // Sumamos 30 días
+        Date fechaLimite = calendar.getTime(); // Fecha límite
+
+        List<Documentacion> lista = documentacionRepositorio.findDocumentacionesPorVencerCamion(idCamion, fechaLimite);
+
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+
+                Date fechaActual = new Date();
+                long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+                int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);
+                d.setDiasVigencia(diasVigencia);
+
+                if (diasVigencia <= 30 && diasVigencia > 0) {
+                    d.setEstado("PRÓXIMO A VENCER");
+                }
+                if (diasVigencia <= 0) {
+                    d.setEstado("VENCIDO");
+                }
+
+            }
+        }
+
+        return lista;
+
+    }
+
+    public List<Documentacion> obtenerDocumentacionesPorVencerAcoplado(Long idAcoplado, int dias) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.DAY_OF_MONTH, dias); // Sumamos 30 días
+        Date fechaLimite = calendar.getTime(); // Fecha límite
+
+        List<Documentacion> lista = documentacionRepositorio.findDocumentacionesPorVencerAcoplado(idAcoplado, fechaLimite);
+
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+
+                Date fechaActual = new Date();
+                long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+                int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);
+                d.setDiasVigencia(diasVigencia);
+
+                if (diasVigencia <= 30 && diasVigencia > 0) {
+                    d.setEstado("PRÓXIMO A VENCER");
+                }
+                if (diasVigencia <= 0) {
+                    d.setEstado("VENCIDO");
+                }
+
+            }
+        }
+
+        return lista;
+
+    }
+
+    public List<Documentacion> obtenerDocumentacionesPorVencerChofer(Long idChofer, int dias) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.DAY_OF_MONTH, dias); // Sumamos 30 días
+        Date fechaLimite = calendar.getTime(); // Fecha límite
+
+        List<Documentacion> lista = documentacionRepositorio.findDocumentacionesPorVencerChofer(idChofer, fechaLimite);
+
+        if (!lista.isEmpty()) {
+            for (Documentacion d : lista) {
+
+                Date fechaActual = new Date();
+                long diferenciaMillis = d.getFechaVencimiento().getTime() - fechaActual.getTime();
+                int diasVigencia = (int) TimeUnit.MILLISECONDS.toDays(diferenciaMillis);
+                d.setDiasVigencia(diasVigencia);
+
+                if (diasVigencia <= 30 && diasVigencia > 0) {
+                    d.setEstado("PRÓXIMO A VENCER");
+                }
+                if (diasVigencia <= 0) {
+                    d.setEstado("VENCIDO");
+                }
+
+            }
+        }
+
+        return lista;
+
+    }
+ 
     
     public List<Documentacion> buscarDocumentacionCamiones(Long idOrg) {
           

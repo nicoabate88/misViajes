@@ -71,10 +71,8 @@
                                                                     <thead>
                                                                         <tr>
                                                                             <th class="text-center">Número</th>
-                                                                            <th class="text-center">Vehículo</th>
                                                                             <th class="text-center">Marca</th>
                                                                             <th class="text-center">Modelo</th>
-                                                                            <th class="text-center">Proveedor</th>
                                                                             <th class="text-center">FechaIngreso</th>
                                                                             <th class="text-center">Estado</th>
                                                                             <th class="text-center">Ubicación</th>
@@ -88,10 +86,8 @@
                                                                     <tbody>
                                                                         <tr th:each="neumatico : ${neumaticos}">
                                                                             <td class="text-center" th:text="${neumatico.numero}"></td>
-                                                                            <td class="text-center" th:text="${neumatico.aplicaA}"></td>
                                                                             <td class="text-center" th:text="${neumatico.marca.marca}"></td>
                                                                             <td class="text-center" th:text="${neumatico.modelo}"></td>
-                                                                            <td class="text-center" th:text="${neumatico.proveedor.nombre}"></td>
                                                                             <td class="text-center" th:text="${#dates.format(neumatico.fechaIngreso, 'dd-MM-yyyy')}"></td>
                                                                             <td class="text-center" th:text="${neumatico.estado}"></td>
                                                                             <td class="text-center" th:text="${neumatico.ubicacion}"></td>
