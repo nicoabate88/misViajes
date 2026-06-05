@@ -10,7 +10,7 @@
                                 <div class="card-header mb-2" style="height: 70px;">
                                     <div class="row">
                                         <div class="col-2">   
-                                            <a title="Volver" onclick="window.history.back();" type="button">
+                                            <a title="Volver" th:href="@{/documentacion/listarAdmin}" type="button">
                                                 <svg id="white" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-arrow-left-square-fill" viewBox="0 0 16 16">
                                                     <path d="M16 14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-4.5-6.5H5.707l2.147-2.146a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708-.708L5.707 8.5H11.5a.5.5 0 0 0 0-1"/>
                                                 </svg> 
@@ -31,11 +31,14 @@
                                     <h6 id="white">¿Seguro desea ELIMINAR esta Imagen?</h6>
                                     <p id="white">Si la imagen es eliminada, no podrá ser recuperada.</p>
                                 </div>
-                                <div class="text-center mb-2">
-                                    <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" th:href="@{/imagen/eliminaDocumentacion/__${id}__}" title="Eliminar Imagen">Eliminar</a>
+                                <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border-secondary text-center">                        
+                                    <h6 id="white" th:text="${error}"></h6>                                                                            
+                                </div>  
+                                <div th:if="${error == null}" class="text-center mb-2">
+                                    <a class="btn btn-secondary bg-secondary btn-lg w-50" type="button" th:href="@{/imagen/eliminaDocumentacion(id=${id}, idDocumentacion=${idDocumentacion})}" title="Eliminar Imagen">Eliminar</a>
                                 </div>    
                                 <div class="text-center mb-2">
-                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" onclick="window.history.back();" title="Cancelar">Cancelar</a>
+                                    <a class="btn btn-primary bg-primary btn-lg w-50" type="button" th:href="@{/documentacion/listarAdmin}" title="Cancelar">Cancelar</a>
                                 </div>
                             </div>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

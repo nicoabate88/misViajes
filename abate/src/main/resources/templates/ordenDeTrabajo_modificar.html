@@ -181,7 +181,7 @@
                                                                                             <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
                                                                                             <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center bg-transparent border-0 p-0 text-secondary" name="kmCamionExistente" th:value="${kmCamion}"></td>
                                                                                             <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.km}" readonly></td>
-                                                                                            <th th:if="${m.estado == 'PENDIENTE'}">
+                                                                                            <th th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}">
                                                                                                 <input type="number"
                                                                                                        class="text-center bg-transparent border-0 p-0"
                                                                                                        th:classappend="${#strings.equalsIgnoreCase(m.tipoMantenimiento.clase, 'PREVENTIVO')} ? ' text-danger' : ' text-success'"
@@ -252,12 +252,12 @@
                                                                                                             </tr>
                                                                                                         </thead>
                                                                                                         <tbody class="text-secondary bg-light">
-                                                                                                            <tr th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'SEMI'}" class="text-center fila-mant-acoplado" th:attr="data-clase=${m.tipoMantenimiento.clase}">
+                                                                                                            <tr th:each="m : ${mantenimientos}" th:if="${m.aplicaA.name() == 'ACOPLADO'}" class="text-center fila-mant-acoplado" th:attr="data-clase=${m.tipoMantenimiento.clase}">
                                                                                                                 <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}" th:text="${m.tipoMantenimiento.nombre}"></td>
                                                                                                                 <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}" class="text-secondary" th:text="${m.tipoMantenimiento.nombre}"></td>
                                                                                                                 <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" name="kmAcopladoExistente" th:value="${kmAcoplado}"></td>
                                                                                                                 <td th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).VIGENTE}"><input type="number" class="text-center text-secondary bg-transparent border-0 p-0" th:value="${m.km}" readonly></td>
-                                                                                                                <th th:if="${m.estado == 'PENDIENTE'}">
+                                                                                                                <th th:if="${m.estado == T(abate.abate.entidades.Mantenimiento.Estado).PENDIENTE}">
                                                                                                                     <input type="number"
                                                                                                                            class="text-center bg-transparent border-0 p-0"
                                                                                                                            th:classappend="${#strings.equalsIgnoreCase(m.tipoMantenimiento.clase, 'PREVENTIVO')} ? ' text-danger' : ' text-success'"
@@ -305,6 +305,32 @@
                                                                                                 </div>
                                                                                                 </div>
                                                                                                 </div>
+                                                                                                <!-- Modal OT abierta -->
+                                                                                                <div class="modal fade" id="modalOtAbierta" tabindex="-1"
+                                                                                                     aria-labelledby="modalOtAbiertaLabel" aria-hidden="true">
+                                                                                                    <div class="modal-dialog modal-dialog-centered">
+                                                                                                        <div class="modal-content">
+                                                                                                            <div class="modal-header bg-primary">
+                                                                                                                <h5 class="modal-title text-white"
+                                                                                                                    id="modalOtAbiertaLabel">
+                                                                                                                    Mensaje
+                                                                                                                </h5>
+                                                                                                            </div>
+                                                                                                            <div class="modal-body">
+                                                                                                                <p class="text-secondary fw-bold mb-0">
+                                                                                                                    El Vehículo seleccionado tiene OT en estado Abierto. Es necesario continuar la carga de Mantenimiento desde OT.
+                                                                                                                </p>
+                                                                                                            </div>
+                                                                                                            <div class="modal-footer">
+                                                                                                                <button type="button"
+                                                                                                                        class="btn btn-primary"
+                                                                                                                        data-dismiss="modal">
+                                                                                                                    Aceptar
+                                                                                                                </button>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
                                                                                                 <div id="spinner" class="modal" style="display: none;">
                                                                                                     <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
                                                                                                         <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
@@ -312,6 +338,21 @@
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
+                                                                                                <!-- Script para abrir el modal automáticamente -->
+                                                                                                <script th:inline="javascript">
+
+                                                                                                    let flag = [[${flag}]];
+
+                                                                                                    if(flag){
+                                                                                                    window.addEventListener('load', function () {
+                                                                                                    let modal = new bootstrap.Modal(
+                                                                                                    document.getElementById('modalOtAbierta')
+                                                                                                    );
+                                                                                                    modal.show();
+                                                                                                    });
+                                                                                                    }
+
+                                                                                                </script>
                                                                                                 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
                                                                                                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
                                                                                                 <script>

@@ -67,7 +67,7 @@ public interface OrdenDeTrabajoRepositorio extends JpaRepository<OrdenDeTrabajo,
 
     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndEstado(Long idCamion, Long idAcoplado, OrdenDeTrabajo.Estado estado);
     
-     List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndProveedorIdAndEstado(Long idCamion, Long idAcoplado, Long idProveedor, OrdenDeTrabajo.Estado estado);
+    List<OrdenDeTrabajo> findByCamionIdAndAcopladoIdAndProveedorIdAndEstado(Long idCamion, Long idAcoplado, Long idProveedor, OrdenDeTrabajo.Estado estado);
     
     OrdenDeTrabajo findTopByProveedorOrderByIdDesc(Proveedor proveedor);
 

@@ -7,6 +7,7 @@ import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Imagen;
 import abate.abate.entidades.TipoDocumentacion;
 import abate.abate.entidades.Usuario;
+import abate.abate.excepciones.MiException;
 import abate.abate.servicios.CombustibleServicio;
 import abate.abate.servicios.DocumentacionServicio;
 import abate.abate.servicios.FleteServicio;
@@ -3019,6 +3020,7 @@ public class ImagenControlador {
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
                 model.addAttribute("flag", flag);
+                model.addAttribute("idDocumentacion", id);
 
                 return "imagen_mostrarDocumentacionPdf.html";
 
@@ -3028,6 +3030,7 @@ public class ImagenControlador {
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
                 model.addAttribute("flag", flag);
+                model.addAttribute("idDocumentacion", id);
 
                 return "imagen_mostrarDocumentacion.html";
 
@@ -3065,6 +3068,7 @@ public class ImagenControlador {
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
                 model.addAttribute("flag", true);
+                 model.addAttribute("idDocumentacion", id);
 
                 return "imagen_mostrarDocumentacionPdf.html";
 
@@ -3074,6 +3078,7 @@ public class ImagenControlador {
                 model.addAttribute("imagenNombre", imagen.getNombre());
                 model.addAttribute("id", idImagen);
                 model.addAttribute("flag", true);
+                model.addAttribute("idDocumentacion", id);
 
                 return "imagen_mostrarDocumentacion.html";
             }
@@ -3650,18 +3655,19 @@ public class ImagenControlador {
 
     }
 
-    @GetMapping("/modificarDocumentacion/{id}") //llega id de Imagen
-    public String modificarDocumentacion(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/modificarDocumentacion") //llega id de Imagen
+    public String modificarDocumentacion(@RequestParam Long id, @RequestParam Long idDocumentacion, ModelMap modelo) {
 
         modelo.put("id", id);
+        modelo.put("idDocumentacion", idDocumentacion);
 
         return "imagen_documentacionModificar.html";
     }
 
     @PostMapping("/modificaDocumentacion")
-    public String modificaDocumentacion(@RequestParam Long id, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
+    public String modificaDocumentacion(@RequestParam Long id, @RequestParam Long idDocumentacion, @RequestParam("file") MultipartFile file, ModelMap modelo) throws IOException {
 
-        Documentacion documentacion = documentacionServicio.buscarDocumentacionIdImagen(id);
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(idDocumentacion);
 
         try {
 
@@ -3680,6 +3686,7 @@ public class ImagenControlador {
 
         } catch (Exception e) {
             modelo.addAttribute("id", id);
+            modelo.put("idDocumentacion", idDocumentacion);
             modelo.addAttribute("error", "Ocurrió un error al procesar su imagen. Intente nuevamente o ingrese otro archivo");
             return "imagen_documentacionModificar.html";
         }
@@ -3709,11 +3716,12 @@ public class ImagenControlador {
 
     }
 
-    @GetMapping("/eliminarDocumentacion/{id}")
-    public String eliminarDocumentacion(@PathVariable Long id, ModelMap model) {
+    @GetMapping("/eliminarDocumentacion")
+    public String eliminarDocumentacion(@RequestParam Long id, @RequestParam Long idDocumentacion, ModelMap model) {
 
         Imagen imagen = imagenServicio.obtenerImagenPorId(id);
 
+        model.put("idDocumentacion", idDocumentacion);
         model.addAttribute("imagenNombre", imagen.getNombre());
         model.addAttribute("id", id);
 
@@ -3721,14 +3729,28 @@ public class ImagenControlador {
 
     }
 
-    @GetMapping("/eliminaDocumentacion/{id}")
-    public String eliminaDocumentacion(@PathVariable Long id, ModelMap modelo) {
+    @GetMapping("/eliminaDocumentacion")
+    public String eliminaDocumentacion(@RequestParam Long id, @RequestParam Long idDocumentacion, ModelMap modelo) {
 
-        Documentacion documentacion = documentacionServicio.buscarDocumentacionIdImagen(id);
+        try {
+            
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(idDocumentacion);
 
         imagenServicio.eliminarImagenDocumentacion(id, documentacion.getId());
 
         return "redirect:/imagen/eliminadoDocumentacion/" + documentacion.getId();
+        
+        } catch (MiException ex) {
+            
+            modelo.put("error", ex.getMessage());
+            Imagen imagen = imagenServicio.obtenerImagenPorId(id);
+            modelo.addAttribute("idDocumentacion", idDocumentacion);
+            modelo.addAttribute("imagenNombre", imagen.getNombre());
+            modelo.addAttribute("id", id);
+
+        return "imagen_eliminarDocumentacion.html";
+            
+        }
 
     }
 

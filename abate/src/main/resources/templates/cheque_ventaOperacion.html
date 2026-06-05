@@ -1,0 +1,511 @@
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Cheque Operacion</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">  
+
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+
+        <link rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+        <style>
+
+            body{
+                background-color:#f4f6f9;
+            }
+
+            .card-financiera{
+                border:none;
+                border-radius:15px;
+                overflow:hidden;
+            }
+
+            .card-header-financiero{
+                background:linear-gradient(135deg,#1e3c72,#2a5298);
+                color:white;
+                padding:20px;
+            }
+
+            .titulo-financiero{
+                font-weight:700;
+                margin-bottom:5px;
+            }
+
+            .subtitulo-financiero{
+                opacity:0.85;
+                margin-bottom:0;
+            }
+
+            .card-resumen{
+                border:none;
+                border-radius:15px;
+            }
+
+            .valor-financiero{
+                font-size:1.5rem;
+                font-weight:700;
+            }
+
+            .tabla-cheques tbody tr:hover{
+                background-color:#f8f9fa;
+            }
+
+            .btn-financiero{
+                border-radius:10px;
+                padding:10px 20px;
+                font-weight:600;
+            }
+
+            .badge-vencimiento{
+                font-size:0.85rem;
+                padding:8px 10px;
+                border-radius:8px;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="container-fluid py-4">
+
+            <!-- TITULO -->
+
+            <div class="row mb-4">
+                <div class="col-12 col-md-6 mt-3 mt-md-0">
+                    <h2 class="font-weight-bold mb-1">
+                        Venta de Cheques
+                    </h2>
+                </div>
+
+                <div class="col-12 col-md-6 text-md-right mt-3 mt-md-0">
+
+                    <div class="d-flex flex-column flex-md-row justify-content-md-end">
+                        <a href="/cuentaBancaria/listar"
+                           class="btn btn-secondary btn-financiero">
+
+                            <i class="bi bi-arrow-left mr-1"></i>
+
+                            Volver
+
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESUMEN -->
+
+            <div class="row mb-4">
+
+                <!-- CUENTA -->
+
+                <div class="col-md-3 mb-3">
+
+                    <div class="card shadow-sm card-resumen h-100">
+
+                        <div class="card-body">
+
+                            <div class="text-muted small mb-2">
+                                Cuenta Bancaria
+                            </div>
+
+                            <div class="font-weight-bold">
+                                <span th:text="${cuenta.banco}">
+                                </span>
+                            </div>
+
+                            <div class="text-muted">
+                                <span th:text="${cuenta.numeroCuenta}">
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- LIMITE -->
+
+                <div class="col-md-3 mb-3">
+
+                    <div class="card shadow-sm card-resumen h-100">
+
+                        <div class="card-body">
+
+                            <div class="text-muted small mb-2">
+                                Límite Operativo
+                            </div>
+
+                            <div class="valor-financiero text-primary"
+                                 id="limiteOperativo"
+                                 th:text="'$'+${#numbers.formatDecimal(cuenta.limiteOperativo,1,'POINT',2,'COMMA')}">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- SALDO ACTUAL -->
+
+                <div class="col-md-3 mb-3">
+
+                    <div class="card shadow-sm card-resumen h-100">
+
+                        <div class="card-body">
+
+                            <div class="text-muted small mb-2">
+                                Saldo Disponible
+                            </div>
+
+                            <div class="valor-financiero text-success"
+                                 id="saldoActual"
+                                 th:data-saldo="${cuenta.saldoDisponible}"
+                                 th:text="'$'+${#numbers.formatDecimal(cuenta.saldoDisponible,1,'POINT',2,'COMMA')}">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- SALDO PROYECTADO -->
+
+                <div class="col-md-3 mb-3">
+
+                    <div class="card shadow-sm card-resumen h-100">
+
+                        <div class="card-body">
+
+                            <div class="text-muted small mb-2">
+                                Saldo Proyectado
+                            </div>
+
+                            <div class="valor-financiero text-danger"
+                                 id="saldoProyectado">
+
+                                $ 0.00
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CARD PRINCIPAL -->
+
+            <div class="card shadow-sm card-financiera">
+
+                <!-- HEADER -->
+
+                <div class="card-header-financiero">
+
+                    <h4 class="titulo-financiero">
+                        Cheques en Cartera
+                    </h4>
+
+                    <p class="subtitulo-financiero">
+                        Seleccione los cheques que desea vender
+                    </p>
+
+                </div>
+
+                <!-- BODY -->
+
+                <div class="card-body">
+
+                    <form id="formVentaCheque" action="/cheque/confirmar-venta" method="POST">
+
+                        <!-- CUENTA -->
+
+                        <input type="hidden"
+                               name="idCuentaBancaria"
+                               th:value="${cuenta.id}">
+
+                        <!-- TABLA -->
+
+                        <div class="table-responsive">
+
+                            <table class="table table-hover align-middle tabla-cheques">
+
+                                <thead class="thead-light">
+
+                                    <tr>
+
+                                        <th width="60">
+                                            Selección
+                                        </th>
+
+                                        <th>
+                                            Número
+                                        </th>
+
+                                        <th>
+                                            Banco
+                                        </th>
+
+                                        <th>
+                                            Titular
+                                        </th>
+
+                                        <th>
+                                            Importe
+                                        </th>
+
+                                        <th>
+                                            Vencimiento
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <tr th:each="c : ${cheques}">
+
+                                        <!-- CHECK -->
+
+                                        <td>
+
+                                            <input type="checkbox"
+                                                   name="idsCheques"
+                                                   th:value="${c.id}"
+                                                   class="check-cheque"
+                                                   th:data-importe="${c.importe}">
+
+                                        </td>
+
+                                        <!-- NUMERO -->
+
+                                        <td class="font-weight-bold"
+                                            th:text="${c.numeroCheque}">
+                                        </td>
+
+                                        <!-- BANCO -->
+
+                                        <td th:text="${c.bancoEmisor.nombre}">
+                                        </td>
+
+                                        <!-- TITULAR -->
+
+                                        <td th:text="${c.titular}">
+                                        </td>
+
+                                        <!-- IMPORTE -->
+
+                                        <td class="font-weight-bold text-success"
+                                            th:text="'$'+${#numbers.formatDecimal(c.importe,1,'POINT',2,'COMMA')}">
+                                        </td>
+
+                                        <!-- VENCIMIENTO -->
+
+                                        <td>
+
+                                            <span class="badge badge-light badge-vencimiento"
+                                                  th:text="${#dates.format(c.fechaVencimiento,'dd/MM/yyyy')}">
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <tr th:if="${#lists.isEmpty(cheques)}">
+
+                                        <td colspan="6"
+                                            class="text-center text-muted py-5">
+
+                                            No existen cheques en cartera.
+
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                        <div id="mensajeError"
+                             class="alert alert-danger mt-3 d-none">
+
+                            Debe seleccionar al menos un cheque para realizar la venta.
+
+                        </div>
+
+                        <!-- TOTAL -->
+
+                        <div class="row mt-4">
+
+                            <div class="col-md-4 offset-md-8">
+
+                                <div class="card bg-light border-0">
+
+                                    <div class="card-body">
+
+                                        <div class="d-flex justify-content-between mb-2">
+
+                                            <span>
+                                                Total operación
+                                            </span>
+
+                                            <span class="font-weight-bold text-success"
+                                                  id="totalOperacion">
+
+                                                $ 0.00
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BOTONES -->
+
+                        <div class="text-right mt-4">
+
+                            <a href="/cheque/venta"
+                               class="btn btn-outline-secondary btn-financiero mr-2">
+
+                                Volver
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-financiero shadow-sm">
+
+                                <i class="bi bi-cash-stack mr-1"></i>
+
+                                Confirmar Venta
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+
+            const checks = document.querySelectorAll('.check-cheque');
+
+            const totalOperacion = document.getElementById('totalOperacion');
+
+            const saldoActualElemento = document.getElementById('saldoActual');
+
+            const saldoProyectado = document.getElementById('saldoProyectado');
+
+            const saldoActual = parseFloat(
+            saldoActualElemento.dataset.saldo
+            );
+
+            function actualizarTotales() {
+
+            let total = 0;
+
+            checks.forEach(check => {
+
+            if (check.checked) {
+
+            total += parseFloat(check.dataset.importe);
+
+            }
+
+            });
+
+            const saldoFinal = saldoActual - total;
+
+            totalOperacion.innerText =
+            '$' + total.toLocaleString('es-AR', {
+            minimumFractionDigits: 2
+            });
+
+            saldoProyectado.innerText =
+            '$' + saldoFinal.toLocaleString('es-AR', {
+            minimumFractionDigits: 2
+            });
+
+            if (saldoFinal < 0) {
+
+            saldoProyectado.classList.remove('text-primary');
+
+            saldoProyectado.classList.add('text-danger');
+
+            } else {
+
+            saldoProyectado.classList.remove('text-danger');
+
+            saldoProyectado.classList.add('text-primary');
+
+            }
+
+            }
+
+            checks.forEach(check => {
+
+            check.addEventListener('change', actualizarTotales);
+
+            });
+
+            actualizarTotales();
+
+        </script>
+
+        <script>
+
+            document.getElementById('formVentaCheque')
+            .addEventListener('submit', function (e) {
+
+            const seleccionado =
+            document.querySelector('.check-cheque:checked');
+
+            const mensaje =
+            document.getElementById('mensajeError');
+
+            if (!seleccionado) {
+
+            e.preventDefault();
+
+            mensaje.classList.remove('d-none');
+
+            return false;
+            }
+
+            mensaje.classList.add('d-none');
+
+            });
+
+        </script>
+
+    </body>
+
+</html>

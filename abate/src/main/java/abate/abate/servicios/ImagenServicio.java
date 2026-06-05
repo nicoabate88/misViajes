@@ -6,6 +6,7 @@ import abate.abate.entidades.Flete;
 import abate.abate.entidades.Gasto;
 import abate.abate.entidades.Imagen;
 import abate.abate.entidades.Usuario;
+import abate.abate.excepciones.MiException;
 import abate.abate.repositorios.CombustibleRepositorio;
 import abate.abate.repositorios.DocumentacionRepositorio;
 import abate.abate.repositorios.FleteRepositorio;
@@ -291,16 +292,53 @@ public class ImagenServicio {
     }
     
     @Transactional
-    public void eliminarImagenDocumentacion(Long id, Long idDocumentacion){
-        
+    public void eliminarImagenDocumentacion(Long id, Long idDocumentacion) throws MiException {
+
+        Long cantidad = documentacionRepositorio.countByImagenId(id);
+
+        // La imagen está asociada a más de una documentación
+        if (cantidad != null && cantidad > 1) {
+
+            throw new MiException("No se puede eliminar la imagen porque está asociada a otra documentación.");
+
+        }
+
         Documentacion documentacion = documentacionRepositorio.getById(idDocumentacion);
-        
+
         documentacion.setImagen(null);
-        
+
         documentacionRepositorio.save(documentacion);
-        
+
+        imagenRepositorio.deleteById(id);
+
+    }
+    
+    @Transactional
+    public void eliminarImagenDocu(Long id, Long idDocumentacion) {
+
+        Long cantidad = documentacionRepositorio.countByImagenId(id);
+
+        // La imagen está asociada a más de una documentación
+        if (cantidad != null && cantidad > 1) {
+
+        Documentacion documentacion = documentacionRepositorio.getById(idDocumentacion);
+
+        documentacion.setImagen(null);
+
+        documentacionRepositorio.save(documentacion);
+
+        } else {
+
+        Documentacion documentacion = documentacionRepositorio.getById(idDocumentacion);
+
+        documentacion.setImagen(null);
+
+        documentacionRepositorio.save(documentacion);
+
         imagenRepositorio.deleteById(id);
         
+        }
+
     }
 
     public Imagen obtenerImagenPorId(Long id) {

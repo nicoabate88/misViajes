@@ -57,6 +57,7 @@ public class DocumentacionControlador {
     @Autowired
     private ExcelServicio excelServicio;
     
+    /*
     @GetMapping("/registrar/{aplicaA}")
     public String registrar(@PathVariable TipoDocumentacion.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
         
@@ -223,7 +224,7 @@ public class DocumentacionControlador {
 
         return "documentacion_mostrarChofer.html";
     }
-    
+    */
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {
         
@@ -385,7 +386,7 @@ public class DocumentacionControlador {
     }
 
     @GetMapping("/elimina/{id}")
-    public String elimina(@PathVariable Long id, ModelMap modelo) {
+    public String elimina(@PathVariable Long id, ModelMap modelo) throws MiException {
 
         documentacionServicio.eliminarDocumentacion(id);
         

@@ -53,8 +53,8 @@
                                                     <option th:if="${chofer.camion != null && chofer.camion.acoplado == null}" selected value="">Seleccione Acoplado</option>
                                                     <option th:if="${chofer.camion == null}" selected value="">Seleccione Acoplado</option>
                                                     <option th:if="${chofer.camion != null && chofer.camion.acoplado != null}" selected 
-                                                            th:text="${chofer.acoplado.dominio}+' - '+${chofer.acoplado.marca}+' '+${chofer.acoplado.modelo}" 
-                                                            th:value="${chofer.acoplado.id}"></option>
+                                                            th:text="${chofer.camion.acoplado.dominio}+' - '+${chofer.camion.acoplado.marca}+' '+${chofer.camion.acoplado.modelo}" 
+                                                            th:value="${chofer.camion.acoplado.id}"></option>
                                                     <option th:each="acoplado : ${acoplados}"
                                                             th:value="${acoplado.id}"
                                                             th:text="${acoplado.dominio}+' - '+${acoplado.marca}+' '+${acoplado.modelo}"/>

@@ -51,9 +51,9 @@
                                             </div>
 
                                             <div class="container">
-                                                 <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
-                                                                    <h6 id="white" th:text="${error}"></h6>                                                                             
-                                                                </div>
+                                                <div th:if="${error != null}" class="card-body mb-5 text-center border border-secondary rounded" id="mensaje">                        
+                                                    <h6 id="white" th:text="${error}"></h6>                                                                             
+                                                </div>
                                             </div>
                                             <div class="text-center mb-2">
                                                 <button class="btn btn-secondary bg-secondary border-light w-50" type="submit" title="Modificar PSW">Modificar</button>
@@ -66,14 +66,14 @@
                             </div>
                             <script>
                                 document.getElementById('form').addEventListener('submit', function (event) {
-                                    const psw = document.getElementById('password').value;
-                                    const psw2 = document.getElementById('password2').value;
+                                const psw = document.getElementById('password').value;
+                                const psw2 = document.getElementById('password2').value;
 
-                                    if (psw !== psw2) {
-                                        alert('Las Contraseñas ingresadas deben ser iguales');
-                                        event.preventDefault();
-                                        return;
-                                    }
+                                if (psw !== psw2) {
+                                alert('Las Contraseñas ingresadas deben ser iguales');
+                                event.preventDefault();
+                                return;
+                                }
                                 });
                             </script>
                             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

@@ -53,7 +53,7 @@
                                                                 <span th:case="'VENCIDO'" th:text="'Estado ❌ VENCIDO '"></span>
                                                                 <span class="text-primary" th:text="${docu.diasVigencia}+' días'"></span>
                                                                 </strong></span> </div>
-                                                        <p th:if="${docu.observacion != ''}" id="dimgray" th:text="'Observación '+${docu.observacion}"></p> 
+                                                        <p class="mb-0" th:if="${docu.observacion != ''}" id="dimgray" th:text="'Observación '+${docu.observacion}"></p> 
                                                     </div>
                                                     <div class="col-3 col-md-3">
                                                     <div class="text-center">

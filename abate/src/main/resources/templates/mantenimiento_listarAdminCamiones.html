@@ -120,7 +120,7 @@
                                                                             <div class="col-6 col-sm-6 col-md-6 col-lg-3 col-xl-3 pb-3">
                                                                                 <label for="idTipo" class="form-floting text-secondary">Tipo de Mantenimiento</label>
                                                                                 <select class="form-control text-secondary border-secondary" id="idTipo" name="idTipo">
-                                                                                    <option th:if="${tipo == null && seleccioneT != null}" value="" selected disabled>Seleccione Tipo de Mantenimiento</option>
+                                                                                    <option th:if="${tipo == null && seleccioneT != null}" value="" selected disabled>Seleccione Tipo</option>
                                                                                     <option th:if="${tipo != null}" selected th:value="${tipo.id}" th:text="${tipo.nombre}"></option>
                                                                                     <option th:if="${tipo == null && seleccioneT == null}" selected value="">TODOS</option>
                                                                                     <option value="">TODOS</option>

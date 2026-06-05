@@ -263,7 +263,7 @@ public class OrdenDeTrabajoControlador {
     }
 
     @GetMapping("/modificar")
-    public String modificar(@RequestParam Long id, ModelMap modelo) {
+    public String modificar(@RequestParam Long id, @RequestParam(required = false) Boolean flag, ModelMap modelo) {
 
         OrdenDeTrabajo orden = ordenServicio.buscarOrden(id);
 
@@ -294,6 +294,7 @@ public class OrdenDeTrabajoControlador {
         modelo.addAttribute("mantenimientos", orden.getMantenimientos());
         modelo.addAttribute("tiposCamion", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(orden.getIdOrg(), TipoMantenimiento.AplicaA.CAMION));
         modelo.addAttribute("tiposAcoplado", tipoMantenimientoServicio.buscarTiposOrdenAplicaA(orden.getIdOrg(), TipoMantenimiento.AplicaA.ACOPLADO));
+        modelo.addAttribute("flag", flag);
 
         return "ordenDeTrabajo_modificar.html";
 

@@ -106,10 +106,7 @@ public class DocumentacionServicio {
             buscarVigente.setFechaVencimiento(documentacion.getFechaVencimiento());
             buscarVigente.setUsuario(documentacion.getUsuario());
             buscarVigente.setObservacion(documentacion.getObservacion());
-
-            if(buscarVigente.getImagen() != null){
-                imagenServicio.eliminarImagenDocumentacion(buscarVigente.getImagen().getId(), buscarVigente.getId());
-            }
+            buscarVigente.setImagen(null);
             
             documentacionRepositorio.save(buscarVigente);
             
@@ -211,14 +208,14 @@ public class DocumentacionServicio {
     }
     
     @Transactional
-    public void eliminarDocumentacion(Long id)  {
+    public void eliminarDocumentacion(Long id) throws MiException {
 
         Documentacion documentacion = documentacionRepositorio.getById(id);
-        
-        if(documentacion.getImagen() != null){
-            imagenServicio.eliminarImagenDocumentacion(documentacion.getImagen().getId(), id);
+
+        if (documentacion.getImagen() != null) {
+            imagenServicio.eliminarImagenDocu(documentacion.getImagen().getId(), id);
         }
-        
+
         documentacion.setCamion(null);
         documentacion.setChofer(null);
         documentacion.setAcoplado(null);
@@ -226,7 +223,7 @@ public class DocumentacionServicio {
         documentacion.setTipoDocumentacion(null);
 
         documentacionRepositorio.save(documentacion);
-        
+
         documentacionRepositorio.deleteById(id);
 
     }

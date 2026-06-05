@@ -4,6 +4,7 @@ import abate.abate.dto.MantenimientoDTO;
 import abate.abate.entidades.Acoplado;
 import abate.abate.entidades.Camion;
 import abate.abate.entidades.Mantenimiento;
+import abate.abate.entidades.OrdenDeTrabajo;
 import abate.abate.entidades.TipoMantenimiento;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.AcopladoServicio;
@@ -11,6 +12,7 @@ import abate.abate.servicios.CamionServicio;
 import abate.abate.servicios.CombustibleServicio;
 import abate.abate.servicios.ExcelServicio;
 import abate.abate.servicios.MantenimientoServicio;
+import abate.abate.servicios.OrdenDeTrabajoServicio;
 import abate.abate.servicios.TipoMantenimientoServicio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +57,10 @@ public class MantenimientoControlador {
     private CombustibleServicio combustibleServicio;
     @Autowired
     private ExcelServicio excelServicio;
+    @Autowired
+    private OrdenDeTrabajoServicio ordenServicio;
 
+    /*
     @GetMapping("/registrarChofer/{aplicaA}")
     public String registrarChofer(@PathVariable TipoMantenimiento.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
 
@@ -348,7 +353,7 @@ public class MantenimientoControlador {
 
         }
     }
-
+*/
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {
 
@@ -1387,6 +1392,21 @@ public class MantenimientoControlador {
 
     @GetMapping("/registrarMasivo1Camion")
     public String registrarMasivo1Camion(@RequestParam Long idOrg, @RequestParam Long idCamion, ModelMap modelo) {
+        
+        OrdenDeTrabajo orden = ordenServicio.buscarOrdenAbiertaCamion(idCamion);
+
+        if(orden != null) {
+            
+        Boolean flag = false;    
+            
+        if ((orden.getEstado().equals(OrdenDeTrabajo.Estado.ABIERTO)) || orden.getEstado().equals(OrdenDeTrabajo.Estado.EN_PROCESO)) {
+            
+            flag = true;
+
+            return "redirect:/ordenDeTrabajo/modificar?id=" + orden.getId() + "&flag=" + flag;
+
+        }
+        }
 
         Camion camion = camionServicio.buscarCamion(idCamion);
         int kmCamion = combustibleServicio.kmUltimaCarga(camion);
@@ -1465,6 +1485,21 @@ public class MantenimientoControlador {
 
     @GetMapping("/registrarMasivo1Acoplado")
     public String registrarMasivo1Acoplado(@RequestParam Long idOrg, @RequestParam Long idAcoplado, ModelMap modelo) {
+        
+        OrdenDeTrabajo orden = ordenServicio.buscarOrdenAbiertaAcoplado(idAcoplado);
+
+        if(orden != null) {
+            
+        Boolean flag = false;    
+            
+        if ((orden.getEstado().equals(OrdenDeTrabajo.Estado.ABIERTO)) || orden.getEstado().equals(OrdenDeTrabajo.Estado.EN_PROCESO)) {
+            
+            flag = true;
+
+            return "redirect:/ordenDeTrabajo/modificar?id=" + orden.getId() + "&flag=" + flag;
+
+        }
+        }
 
         Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
         int km = combustibleServicio.kmAcoplado(acoplado, obtenerFechaFija());
@@ -1538,6 +1573,25 @@ public class MantenimientoControlador {
         Acoplado acoplado = null;
 
         if (chofer.getCamion() != null) {
+            
+            OrdenDeTrabajo orden = ordenServicio.buscarOrdenAbiertaCamion(chofer.getCamion().getId());
+
+        if(orden != null) {
+            
+        Boolean flag = false;  
+            
+        if ((orden.getEstado().equals(OrdenDeTrabajo.Estado.ABIERTO)) || orden.getEstado().equals(OrdenDeTrabajo.Estado.EN_PROCESO)) {
+            
+            flag = true;
+
+           // return "redirect:/ordenDeTrabajo/modificar?id=" + orden.getId() + "&flag=" + flag;
+            
+            modelo.put("flag", flag);
+            
+            return "mantenimiento_registrarMasivoChofer.html";
+
+        }
+        }
 
             camion = chofer.getCamion();
             int kmCamion = combustibleServicio.kmUltimaCarga(camion);
@@ -1547,6 +1601,7 @@ public class MantenimientoControlador {
             modelo.put("kmVigenciaCamion", 10000);
 
         }
+        
         if (chofer.getAcoplado() != null) {
 
             acoplado = chofer.getAcoplado();

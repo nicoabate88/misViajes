@@ -73,7 +73,7 @@ public class ChoferServicio {
     private DocumentacionServicio documentacionServicio;
 
     @Transactional
-    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, String caja, String cuenta,String verDocumentacion, String documentacion,
+    public void crearChofer(Long idOrg, String nombre, Long cuil, Long idCamion, String caja, String cuenta, String verDocumentacion, String documentacion,
             String verMantenimiento, String mantenimiento, String nombreUsuario, Double porcentaje, String estado, String password, String password2) throws MiException {
 
         String nombreUsuarioMin = nombreUsuario.toLowerCase();

@@ -99,6 +99,8 @@ public interface DocumentacionRepositorio extends JpaRepository<Documentacion, L
     
     @Query("SELECT d FROM Documentacion d WHERE chofer_id = :id AND d.estado = 'VIGENTE' AND d.fechaVencimiento <= :fechaLimite")
     List<Documentacion> findDocumentacionesPorVencerChofer(@Param("id") Long id, @Param("fechaLimite") Date fechaLimite);
+    
+    Long countByImagenId(Long idImagen);
 
     
 }

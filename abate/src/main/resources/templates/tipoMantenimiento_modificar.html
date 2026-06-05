@@ -46,13 +46,17 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="mb-5">
+                                            <div class="mb-0">
                                                 <label>Aplica a*</label>
                                                 <div th:each="valor : ${aplicaA}">
                                                     <input type="checkbox" name="aplicaA" th:value="${valor}" th:id="${valor}"
                                                            th:checked="${tipo.aplicaA.contains(valor)}"/>
                                                     <label th:for="${valor}" th:text="${valor}"></label>
                                                 </div>
+                                            </div>
+                                            <div class="mb-4 p-4 col-12 text-center">
+                                                <p class="text-secondary mb-1"><strong>Clase PREVENTIVO:</strong> para todos los mantenimientos Preventivos, será OBLIGATORIO ingresar KM Vigencia y se mostrará alarma de vencimiento.</p>
+                                                <p class="text-secondary"><strong>Clase CORRECTIVO:</strong> para todos los mantenimientos Correctivos, será OPCIONAL ingresar KM Vigencia y en aquellos que no se ingresen KM Vigencia, NO se mostrará alarma de vencimiento.</p>
                                             </div>
                                             <div th:if="${error != null}" class="card bg-secondary mb-4 p-3 border border-secondary rounded text-center">                        
                                                 <h6 id="white" th:text="${error}"></h6>                                                                             
