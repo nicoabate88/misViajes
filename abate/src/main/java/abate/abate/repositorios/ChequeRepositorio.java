@@ -1,4 +1,3 @@
-
 package abate.abate.repositorios;
 
 import abate.abate.entidades.Banco;
@@ -22,17 +21,15 @@ public interface ChequeRepositorio extends JpaRepository<Cheque, Long> {
 
     ArrayList<Cheque> findByEstadoAndFechaVencimientoLessThanEqual(EstadoCheque estado, Date fecha);
 
+    ArrayList<Cheque> findByEstadoAndFechaAcreditacionLessThanEqual(EstadoCheque estado, Date fechaAcreditacion);
+
     Boolean existsByBancoEmisorAndNumeroCheque(Banco bancoEmisor, String numeroCheque);
-    
-   // ArrayList<Cheque> findByIdOrgAndNumeroChequeContainingIgnoreCase(Long idOrg, String numeroCheque);
-    
+
+    // ArrayList<Cheque> findByIdOrgAndNumeroChequeContainingIgnoreCase(Long idOrg, String numeroCheque);
     @Query("SELECT c "
-     + "FROM Cheque c "
-     + "WHERE c.idOrg = :idOrg "
-     + "AND c.numeroCheque LIKE %:numeroCheque%")
-ArrayList<Cheque> buscarPorNumero(
-        @Param("idOrg") Long idOrg,
-        @Param("numeroCheque") String numeroCheque
-);
-    
+            + "FROM Cheque c "
+            + "WHERE c.idOrg = :idOrg "
+            + "AND c.numeroCheque LIKE %:numeroCheque%")
+    ArrayList<Cheque> buscarPorNumero(@Param("idOrg") Long idOrg, @Param("numeroCheque") String numeroCheque);
+
 }

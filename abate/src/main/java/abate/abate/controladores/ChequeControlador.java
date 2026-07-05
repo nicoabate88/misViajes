@@ -1,6 +1,5 @@
 package abate.abate.controladores;
 
-import abate.abate.entidades.Banco;
 import abate.abate.entidades.Cheque;
 import abate.abate.entidades.Cheque.EstadoCheque;
 import abate.abate.entidades.CuentaBancaria;
@@ -9,6 +8,7 @@ import abate.abate.excepciones.MiException;
 import abate.abate.servicios.BancoServicio;
 import abate.abate.servicios.ChequeServicio;
 import abate.abate.servicios.CuentaBancariaServicio;
+import abate.abate.servicios.TitularChequeServicio;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +36,9 @@ public class ChequeControlador {
 
     @Autowired
     private BancoServicio bancoServicio;
+    
+    @Autowired
+    private TitularChequeServicio titularServicio;
 
     @Autowired
     private CuentaBancariaServicio cuentaBancariaServicio;
@@ -77,17 +80,17 @@ public class ChequeControlador {
         modelo.addAttribute("cantidadCheques", lista.size());
 
         modelo.addAttribute("lista", lista);
-        
-        if (registrado == true){
-            
-        modelo.put("exito", "Cheque registrado correctamente.");
-            
+
+        if (registrado == true) {
+
+            modelo.put("exito", "Cheque registrado correctamente.");
+
         }
-        
-        if (actualizado == true){
-            
-        modelo.put("exito", "Cheque actualizado correctamente.");
-           
+
+        if (actualizado == true) {
+
+            modelo.put("exito", "Cheque actualizado correctamente.");
+
         }
 
         return "cheque_listar.html";
@@ -104,9 +107,8 @@ public class ChequeControlador {
 
         Long idOrg = usuario.getIdOrg();
 
-        ArrayList<Banco> bancos = bancoServicio.buscarBancosHabilitados(idOrg);
-
-        modelo.addAttribute("bancos", bancos);
+        modelo.addAttribute("bancos", bancoServicio.buscarBancosHabilitados(idOrg));
+        modelo.addAttribute("titulares", titularServicio.buscarTitularesHabilitados(idOrg));
 
         return "cheque_registrar.html";
 
@@ -116,9 +118,9 @@ public class ChequeControlador {
         GUARDAR
      */
     @PostMapping("/guardar-cheque")
-    public String guardarCheque(@RequestParam String numeroCheque, @RequestParam Long idBanco, @RequestParam String titular,
+    public String guardarCheque(@RequestParam String numeroCheque, @RequestParam Long idBanco, @RequestParam Long idTitular,
             @RequestParam BigDecimal importe, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaEmision,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaVencimiento,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaVencimiento, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaAcreditacion,
             @RequestParam(required = false) String observacion, HttpSession session, ModelMap modelo) {
 
         try {
@@ -127,8 +129,8 @@ public class ChequeControlador {
 
             Long idOrg = usuario.getIdOrg();
 
-            chequeServicio.registrarCheque(idOrg, numeroCheque, idBanco, titular, importe, fechaEmision, fechaVencimiento, observacion);
-            
+            chequeServicio.registrarCheque(idOrg, numeroCheque, idBanco, idTitular, importe, fechaEmision, fechaVencimiento, fechaAcreditacion, observacion);
+
             Boolean registrado = true;
 
             return "redirect:/cheque/listar?&registrado=" + registrado;
@@ -139,9 +141,8 @@ public class ChequeControlador {
 
             Long idOrg = usuario.getIdOrg();
 
-            ArrayList<Banco> bancos = bancoServicio.buscarBancosHabilitados(idOrg);
-
-            modelo.addAttribute("bancos", bancos);
+            modelo.addAttribute("bancos", bancoServicio.buscarBancosHabilitados(idOrg));
+            modelo.addAttribute("titulares", titularServicio.buscarTitularesHabilitados(idOrg));
 
             modelo.put("error", e.getMessage());
 
@@ -161,7 +162,7 @@ public class ChequeControlador {
 
         if (cheque != null) {
 
-            if (!cheque.getEstado().equals(EstadoCheque.EN_CARTERA)) {
+            if (cheque.getEstado().equals(EstadoCheque.ACREDITADO) || cheque.getEstado().equals(EstadoCheque.VENDIDO)) {
                 throw new MiException("Solo se pueden modificar cheques en cartera");
             }
 
@@ -169,17 +170,14 @@ public class ChequeControlador {
 
             Long idOrg = usuario.getIdOrg();
 
-            ArrayList<Banco> bancos = bancoServicio.buscarBancosHabilitados(idOrg);
-
             ArrayList<EstadoCheque> estados = new ArrayList<>();
 
             estados.add(EstadoCheque.EN_CARTERA);
             estados.add(EstadoCheque.ANULADO);
 
             modelo.addAttribute("estados", estados);
-
-            modelo.addAttribute("bancos", bancos);
-
+            modelo.addAttribute("bancos", bancoServicio.buscarBancosHabilitados(idOrg));
+            modelo.addAttribute("titulares", titularServicio.buscarTitularesHabilitados(idOrg));
             modelo.addAttribute("cheque", cheque);
 
             return "cheque_modificar.html";
@@ -192,16 +190,17 @@ public class ChequeControlador {
 
     @PostMapping("/actualizar-cheque")
     public String actualizarCheque(@RequestParam Long idCheque, @RequestParam String numeroCheque,
-            @RequestParam Long idBanco, @RequestParam String titular, @RequestParam BigDecimal importe,
+            @RequestParam Long idBanco, @RequestParam Long idTitular, @RequestParam BigDecimal importe,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaEmision,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaVencimiento,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaAcreditacion,
             @RequestParam String observacion, @RequestParam EstadoCheque estado, RedirectAttributes redirectAttributes) {
 
         try {
 
-            chequeServicio.actualizarCheque(idCheque, numeroCheque, idBanco, titular,
-                    importe, fechaEmision, fechaVencimiento, observacion, estado);
-            
+            chequeServicio.actualizarCheque(idCheque, numeroCheque, idBanco, idTitular,
+                    importe, fechaEmision, fechaVencimiento, fechaAcreditacion, observacion, estado);
+
             Boolean actualizado = true;
 
             return "redirect:/cheque/listar?&actualizado=" + actualizado;
@@ -282,6 +281,45 @@ public class ChequeControlador {
 
     }
 
+    @GetMapping("/anularCheque")
+    public String anularCheque(@RequestParam Long idCheque, @RequestParam Long idCuenta,
+            ModelMap modelo) throws Exception {
+
+        Cheque cheque = chequeServicio.buscarPorId(idCheque);
+
+        if (cheque.getEstado() != EstadoCheque.VENDIDO) {
+            throw new Exception("El cheque ya no se encuentra vendido.");
+        }
+
+        modelo.put("id", idCuenta);
+        modelo.put("cheque", cheque);
+
+        return "cheque_anular.html";
+    }
+
+    @PostMapping("/anularChequeConfirmar")
+    public String anularChequeConfirmar(@RequestParam Long idCheque,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+
+            chequeServicio.anularVentaCheque(idCheque);
+
+            redirectAttributes.addFlashAttribute(
+                    "exito",
+                    "Venta de cheque anulado correctamente.");
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    e.getMessage());
+        }
+
+        return "redirect:/cuentaBancaria/listar";
+
+    }
+
     @GetMapping("/buscar-numero")
     public String buscarNumeroCheque(@RequestParam String numeroCheque, ModelMap modelo, HttpSession session) {
 
@@ -310,13 +348,12 @@ public class ChequeControlador {
         modelo.addAttribute("totalImporte", totalImporte);
 
         modelo.addAttribute("cantidadCheques", lista.size());
-        
+
         modelo.addAttribute("numeroChequeBusqueda", numeroCheque);
 
         modelo.addAttribute("lista", lista);
 
         return "cheque_listar.html";
-        
 
     }
 

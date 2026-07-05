@@ -98,6 +98,15 @@
                             Lista de Cheques
 
                         </a>
+                        
+                        <a href="/titularCheque/listar"
+                           class="btn btn-secondary btn-financiero mb-2 mb-md-0 mr-md-2">
+
+                            <i class="bi bi-plus-circle mr-1"></i>
+
+                            Ver Titular
+
+                        </a>
 
                         <a href="/banco/listar"
                            class="btn btn-primary btn-financiero mb-2 mb-md-0 mr-md-2">
@@ -197,17 +206,25 @@
                             </div>
 
                             <!-- TITULAR -->
-
+                            
                             <div class="col-md-6 mb-4">
 
                                 <label class="label-financiero">
-                                    Titular
+                                    Titular Emisor
                                 </label>
 
-                                <input type="text"
-                                       name="titular"
-                                       class="form-control"
-                                       placeholder="Ingrese titular">
+                                <select name="idTitular" class="custom-select" required>
+
+                                    <option value="">
+                                        Seleccione titular
+                                    </option>
+
+                                    <option th:each="t : ${titulares}"
+                                            th:value="${t.id}"
+                                            th:text="${t.nombre}">
+                                    </option>
+
+                                </select>
 
                             </div>
 
@@ -231,7 +248,7 @@
 
                             <!-- FECHA EMISION -->
 
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-4 mb-1">
 
                                 <label class="label-financiero">
                                     Fecha Emisión
@@ -246,16 +263,37 @@
 
                             <!-- FECHA VENCIMIENTO -->
 
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-4 mb-1">
 
                                 <label class="label-financiero">
                                     Fecha Vencimiento
                                 </label>
 
                                 <input type="date"
+                                       id="fechaVencimiento"
                                        name="fechaVencimiento"
                                        class="form-control"
                                        required>
+
+                            </div>
+
+                            <!-- FECHA ACREDITACION -->
+
+                            <div class="col-md-4 mb-1">
+
+                                <label class="label-financiero">
+                                    Fecha Acreditación
+                                </label>
+
+                                <input type="date"
+                                       id="fechaAcreditacion"
+                                       name="fechaAcreditacion"
+                                       class="form-control"
+                                       required>
+
+                                <small class="form-text text-muted">
+                                    2 días hábiles posteriores a fecha vencimiento.
+                                </small>
 
                             </div>
 
@@ -268,7 +306,7 @@
                                 </label>
 
                                 <textarea name="observacion"
-                                          rows="4"
+                                          rows="3"
                                           class="form-control"
                                           placeholder="Ingrese observaciones del cheque"></textarea>
 
@@ -318,6 +356,90 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+            const fechaVencimiento = document.getElementById('fechaVencimiento');
+            const fechaAcreditacion = document.getElementById('fechaAcreditacion');
+
+            function esFinDeSemana(fecha) {
+            const diaSemana = fecha.getDay();
+            return diaSemana === 0 || diaSemana === 6;
+            }
+
+            function moverAlProximoDiaHabil(fecha) {
+
+            while (esFinDeSemana(fecha)) {
+            fecha.setDate(fecha.getDate() + 1);
+            }
+
+            return fecha;
+            }
+
+            function sumarDiasHabiles(fecha, cantidadDias) {
+
+            let diasHabiles = 0;
+
+            while (diasHabiles < cantidadDias) {
+
+            fecha.setDate(fecha.getDate() + 1);
+
+            if (!esFinDeSemana(fecha)) {
+            diasHabiles++;
+            }
+            }
+
+            return fecha;
+            }
+
+            function formatearFecha(fecha) {
+
+            const yyyy = fecha.getFullYear();
+            const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dd = String(fecha.getDate()).padStart(2, '0');
+
+            return `${yyyy}-${mm}-${dd}`;
+            }
+
+            fechaVencimiento.addEventListener('change', function () {
+
+            if (!this.value) {
+            fechaAcreditacion.value = '';
+            return;
+            }
+
+            let fecha = new Date(this.value + 'T00:00:00');
+
+            fecha = moverAlProximoDiaHabil(fecha);
+
+            fecha = sumarDiasHabiles(fecha, 2);
+
+            fechaAcreditacion.value = formatearFecha(fecha);
+
+            });
+
+            fechaAcreditacion.addEventListener('change', function () {
+
+            if (!fechaVencimiento.value || !this.value) {
+            return;
+            }
+
+            if (this.value < fechaVencimiento.value) {
+
+            alert('La fecha de acreditación no puede ser anterior a la fecha de vencimiento.');
+
+            this.value = '';
+
+            this.focus();
+            }
+
+            });
+
+            });
+
+        </script>
 
     </body>
 

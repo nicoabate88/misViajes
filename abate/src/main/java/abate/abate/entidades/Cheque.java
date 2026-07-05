@@ -26,9 +26,9 @@ public class Cheque {
 
     @ManyToOne
     private Banco bancoEmisor;
-
+    @ManyToOne
+    private TitularCheque titularEmisor;
     private String titular;
-
     private BigDecimal importe;
 
     @Temporal(TemporalType.DATE)
@@ -36,6 +36,9 @@ public class Cheque {
 
     @Temporal(TemporalType.DATE)
     private Date fechaVencimiento;
+    
+    @Temporal(TemporalType.DATE)
+    private Date fechaAcreditacion;
 
     @Temporal(TemporalType.DATE)
     private Date fechaVenta;
@@ -123,6 +126,14 @@ public class Cheque {
         this.fechaVencimiento = fechaVencimiento;
     }
 
+    public Date getFechaAcreditacion() {
+        return fechaAcreditacion;
+    }
+
+    public void setFechaAcreditacion(Date fechaAcreditacion) {
+        this.fechaAcreditacion = fechaAcreditacion;
+    }
+
     public Date getFechaVenta() {
         return fechaVenta;
     }
@@ -154,7 +165,13 @@ public class Cheque {
     public void setCuentaBancaria(CuentaBancaria cuentaBancaria) {
         this.cuentaBancaria = cuentaBancaria;
     }
-    
-    
+
+    public TitularCheque getTitularEmisor() {
+        return titularEmisor;
+    }
+
+    public void setTitularEmisor(TitularCheque titularEmisor) {
+        this.titularEmisor = titularEmisor;
+    }
     
 }

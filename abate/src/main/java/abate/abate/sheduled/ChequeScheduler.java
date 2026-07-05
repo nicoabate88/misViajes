@@ -12,10 +12,9 @@ public class ChequeScheduler {
     @Autowired
     private ChequeServicio chequeServicio;
 
-    
+    //@Scheduled(cron = "0 */1 * * * *")  //Cada 1 minuto
     //TODOS LOS DIAS 00:05 
     @Scheduled(cron = "0 5 0 * * *")
-    //@Scheduled(cron = "*/30 * * * * *")
     public void acreditarChequesAutomaticamente() {
 
         try {

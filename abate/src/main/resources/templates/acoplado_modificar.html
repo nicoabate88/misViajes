@@ -8,30 +8,30 @@
                         <script>
                             // JS para agregar un nuevo eje dinámicamente
                             function agregarEje() {
-                                const index = document.querySelectorAll('.eje-row').length;
-                                const contenedor = document.getElementById('ejesContainer');
+                            const index = document.querySelectorAll('.eje-row').length;
+                            const contenedor = document.getElementById('ejesContainer');
 
-                                const nuevaFila = document.createElement('tr');
-                                nuevaFila.className = 'eje-row';
-                                nuevaFila.innerHTML = `
-            <td><input type="hidden" name="ejes[${index}].id" value="">
-                <input type="text" class="form-control" name="ejes[${index}].numero" value="" readonly></td>
-            <td><input type="text" class="form-control" name="ejes[${index}].nombre" required minlength="1" maxlength="20" size="20"></td>
-            <td class="text-center">
-                <select class="form-control" name="ejes[${index}].elevable">
-                    <option value="false">No</option>
-                    <option value="true">Sí</option>
-                </select>
-            </td>
-            <td><input type="number" class="form-control" name="ejes[${index}].porcentaje" min="1" max="100" required></td>
-            <td><input type="number" class="form-control" name="ejes[${index}].cantidadNeumatico" min="1" max="4" required></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button></td>
-        `;
-                                contenedor.appendChild(nuevaFila);
+                            const nuevaFila = document.createElement('tr');
+                            nuevaFila.className = 'eje-row';
+                            nuevaFila.innerHTML = `
+                            <td><input type="hidden" name="ejes[${index}].id" value="">
+                            <input type="text" class="form-control" name="ejes[${index}].numero" value="" readonly></td>
+                            <td><input type="text" class="form-control" name="ejes[${index}].nombre" required minlength="1" maxlength="20" size="20"></td>
+                            <td class="text-center">
+                            <select class="form-control" name="ejes[${index}].elevable">
+                            <option value="false">No</option>
+                            <option value="true">Sí</option>
+                            </select>
+                            </td>
+                            <td><input type="number" class="form-control" name="ejes[${index}].porcentaje" min="1" max="100" required></td>
+                            <td><input type="number" class="form-control" name="ejes[${index}].cantidadNeumatico" min="1" max="4" required></td>
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarFila(this)">Eliminar</button></td>
+                            `;
+                            contenedor.appendChild(nuevaFila);
                             }
 
                             function eliminarFila(boton) {
-                                boton.closest('tr').remove();
+                            boton.closest('tr').remove();
                             }
                         </script>
                         </head>
@@ -163,7 +163,7 @@
                                                                     </div>
                                                                     <script>
                                                                         document.getElementById("form").addEventListener("submit", function () {
-                                                                            document.getElementById("spinner").style.display = "block";
+                                                                        document.getElementById("spinner").style.display = "block";
                                                                         });
                                                                     </script>
                                                                     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

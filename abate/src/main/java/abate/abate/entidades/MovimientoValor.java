@@ -19,26 +19,17 @@ public class MovimientoValor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long idOrg;
-
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-
     @Enumerated(EnumType.STRING)
     private TipoMovimientoValor tipoMovimiento;
-
     private BigDecimal importe;
-
     private BigDecimal saldoAnterior;
-
     private BigDecimal saldoPosterior;
-
     private String descripcion;
-
     @ManyToOne
     private CuentaBancaria cuentaBancaria;
-
     @ManyToOne
     private Cheque cheque;
 
@@ -52,7 +43,7 @@ public class MovimientoValor {
     ANULACION_VENTA_CHEQUE,
     AJUSTE_MANUAL,
     MODIFICACION_LIMITE_OPERATIVO
-}
+    }
 
     public Long getId() {
         return id;

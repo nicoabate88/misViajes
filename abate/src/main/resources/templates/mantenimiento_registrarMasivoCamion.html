@@ -243,9 +243,9 @@
 
                                                     function calcularKmCamion() {
                                                     const kmInicial = parseInt(document.getElementById('kmInicialCamion').value) || 0;
-                                                    const kmProximo = kmInicial + 10000;
-                                                    const kmAlarma = kmInicial + 9000;
-                                                    const kmVigencia = kmProximo - kmInicial;
+                                                    const kmProximo = 0;
+                                                    const kmAlarma = 0;
+                                                    const kmVigencia = 0;
 
                                                     document.getElementById('kmProximoCamion').value = kmProximo >= 0 ? kmProximo : '';
                                                     document.getElementById('kmAlarmaCamion').value = kmAlarma >= 0 ? kmAlarma : '';

@@ -39,6 +39,25 @@
                             }
                         </style>
                         <script>
+                            window.onload = function () {
+                            var fechaActual = new Date();
+                            var dia = String(fechaActual.getDate()).padStart(2, '0');
+                            var mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                            var anio = fechaActual.getFullYear();
+                            var fechaFormateada = anio + '-' + mes + '-' + dia;
+
+                            document.getElementById('fecha').max = fechaFormateada;
+                            };
+                            document.addEventListener('DOMContentLoaded', function () {
+                            const inputFecha = document.getElementById('fecha');
+                            const hoy = new Date();
+                            const dia = String(hoy.getDate()).padStart(2, '0');
+                            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                            const anio = hoy.getFullYear();
+                            inputFecha.value = `${anio}-${mes}-${dia}`;
+                            });
+                        </script>
+                        <script>
                             document.addEventListener('DOMContentLoaded', function () {
                                 const option1 = document.querySelector('input[name="options"][value="option1"]');
                                 const option2 = document.querySelector('input[name="options"][value="option2"]');

@@ -1,4 +1,3 @@
-
 package abate.abate.controladores;
 
 import abate.abate.dto.DocumentacionDTO;
@@ -20,7 +19,9 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,12 +39,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 @Controller
 @RequestMapping("/documentacion")
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CHOFER')")
 public class DocumentacionControlador {
-    
+
     @Autowired
     private DocumentacionServicio documentacionServicio;
     @Autowired
@@ -57,211 +57,655 @@ public class DocumentacionControlador {
     @Autowired
     private ExcelServicio excelServicio;
     
-    /*
-    @GetMapping("/registrar/{aplicaA}")
-    public String registrar(@PathVariable TipoDocumentacion.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
-        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
-        modelo.put("aplica", aplicaA);
-        modelo.put("idOrg", logueado.getIdOrg());
-
-        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
-        }
-
-        return "documentacion_registrar.html";
-
-    }
-    
-    @GetMapping("/registrar1")
-    public String registrar1(Long idOrg, @RequestParam TipoDocumentacion.AplicaA aplicaA, ModelMap modelo) {
-        
-        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(idOrg));
-        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(idOrg));
-        } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(idOrg));
-        }
-        
-        modelo.put("idOrg", idOrg);
-        modelo.put("aplica", aplicaA);
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(idOrg, aplicaA));
-        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
-
-        return "documentacion_registrar.html";
-
-    }
-    
-    @PostMapping("/registro")
-    public String registro(@RequestParam TipoDocumentacion.AplicaA aplicaA, @RequestParam Long idTipo, @RequestParam Long idEntidad, @RequestParam String fechaAlta, 
-            @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException, MiException {
+     @GetMapping("/registrarMasivo")
+    public String registrarMasivo(ModelMap modelo, HttpSession session) {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        try {
-            
-            documentacionServicio.crearDocumentacion(idTipo, aplicaA, idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
-            
-            return "redirect:/documentacion/registrado/ " +logueado.getIdOrg();
-            
-        } catch (MiException ex) {
-            
-        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
-        }
-        
-        modelo.put("idOrg", logueado.getIdOrg());
-        modelo.put("tipo", tipoDocumentacionServicio.buscarTipo(idTipo));
-        modelo.put("aplica", aplicaA);
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
-        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
-        modelo.put("fechaAlta", fechaAlta);
-        modelo.put("fechaVencimiento", fechaVencimiento);
-        modelo.put("obs", observacion);
-        modelo.put("error", ex.getMessage());
 
-        return "documentacion_registrar.html";
-            
-        }    
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
 
+        return "documentacion_registrarMasivo.html";
     }
 
-    @GetMapping("/registrado/{id}")
-    public String registrado(@PathVariable Long id, ModelMap modelo) {
-
-        Long idDoc = documentacionServicio.buscarUltimo(id);
-        
-        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(idDoc));
-        modelo.put("exito", "Documentación REGISTRADA con éxito");
-
-        return "documentacion_mostrar.html";
-    }
-    
-    @GetMapping("/registrarChofer/{aplicaA}")
-    public String registrarChofer(@PathVariable TipoDocumentacion.AplicaA aplicaA, ModelMap modelo, HttpSession session) {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
-        modelo.put("aplica", aplicaA);
-
-        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camion", logueado.getCamion());
-        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplado", logueado.getAcoplado());
-        } else {
-            modelo.addAttribute("chofer", logueado);
-        }
-
-        return "documentacion_registrarChofer.html";
-
-    }
-    
-    @PostMapping("/registroChofer")
-    public String registroChofer(@RequestParam TipoDocumentacion.AplicaA aplicaA, @RequestParam Long idTipo, @RequestParam String fechaAlta, 
-            @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException, MiException {
+    @PostMapping("/registroMasivo")
+    public String registroMasivo(@RequestParam("documentacionCamionJson") String documentacionCamionJson, @RequestParam Long idCamion,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        Long idEntidad;
-        
-        try {
-            
-        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            idEntidad = logueado.getCamion().getId();
-        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            idEntidad = logueado.getAcoplado().getId();
-        } else {
-            idEntidad = logueado.getId();
-        }
-            
-            documentacionServicio.crearDocumentacion(idTipo, aplicaA, idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
-            
-            return "redirect:/documentacion/registradoChofer/ " +logueado.getIdOrg();
-            
-        } catch (MiException ex) {
-            
-        if(aplicaA == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camion", logueado.getCamion());
-        } else if(aplicaA == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplado", logueado.getAcoplado());
-        } else {
-            modelo.addAttribute("chofer", logueado);
-        }
-        
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), aplicaA));
-        modelo.put("aplica", aplicaA);
-        modelo.put("fechaAlta", fechaAlta);
-        modelo.put("fechaVencimiento", fechaVencimiento);
-        modelo.put("obs", observacion);
-        modelo.put("error", ex.getMessage());
+        ObjectMapper mapper = new ObjectMapper();
 
-        return "documentacion_registrarChofer.html";
-            
-        }    
+        List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionCamion = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionCamionDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            tipo.setId(dto.getTipoDocumentacion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            //d.setFechaAlta(dto.getFechaAlta());
+            //d.setFechaVencimiento(dto.getFechaVencimiento());
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+            Camion camion = camionServicio.buscarCamion(idCamion);
+            d.setCamion(camion);
+
+            d = documentacionServicio.crearDocumentacionMasivo(d);
+
+            documentacionCamion.add(d);
+
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
+
+        return "redirect:/documentacion/registradoMasivo";
 
     }
-    
-    @GetMapping("/registradoChofer/{id}")
-    public String registradoChofer(@PathVariable Long id, ModelMap modelo) {
 
-        Long idDoc = documentacionServicio.buscarUltimo(id);
-        
-        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(idDoc));
-        modelo.put("exito", "Documentación REGISTRADA con éxito");
+    @GetMapping("/registradoMasivo")
+    public String registradoMasivo(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
 
-        return "documentacion_mostrarChofer.html";
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionC", documentacionC);
+
+        return "documentacion_mostrarMasivo.html";
     }
-    */
+
+    @GetMapping("/registrarMasivoA")
+    public String registrarMasivoA(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
+
+        return "documentacion_registrarMasivoAcoplado.html";
+    }
+
+    @PostMapping("/registroMasivoA")
+    public String registroMasivoA(@RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson, @RequestParam(required = false) Long idAcoplado,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionAcoplado = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionAcopladoDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            tipo.setId(dto.getTipoDocumentacion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+            Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
+            d.setAcoplado(acoplado);
+
+            d = documentacionServicio.crearDocumentacionMasivo(d);
+
+            documentacionAcoplado.add(d);
+
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
+
+        return "redirect:/documentacion/registradoMasivoA";
+
+    }
+
+    @GetMapping("/registradoMasivoA")
+    public String registradoMasivoA(@ModelAttribute("documentacionA") List<Documentacion> documentacionA, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionA", documentacionA);
+
+        return "documentacion_mostrarMasivoAcoplado.html";
+    }
+
+    @GetMapping("/registrarMasivoTipo")
+    public String registrarMasivoTipo(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
+
+        return "documentacion_registrarMasivoTipo.html";
+    }
+
+    @PostMapping("/registroMasivoTipo")
+    public String registroMasivoTipo(@RequestParam(required = false) Long tipoCamion,
+            @RequestParam("documentacionCamionJson") String documentacionCamionJson,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionCamion = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionCamionDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            Camion camion = camionServicio.buscarCamion(dto.getCamion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setCamion(camion);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+
+            d = documentacionServicio.crearDocumentacionMasivoTipo(d);
+
+            documentacionCamion.add(d);
+
+        }
+
+        for (Documentacion d : documentacionCamion) {
+            d.setEstado(d.getCamion().getDominio());
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
+        redirectAttributes.addFlashAttribute("tipoCamion", tipoCamion);
+
+        return "redirect:/documentacion/registradoMasivoTipo";
+
+    }
+
+    @GetMapping("/registradoMasivoTipo")
+    public String registradoMasivoTipo(@ModelAttribute("documentacionC") List<Documentacion> documentacionC,
+            @ModelAttribute("tipoCamion") Long tipoCamion, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionC", documentacionC);
+        modelo.addAttribute("tipoCamion", tipoDocumentacionServicio.buscarTipo(tipoCamion));
+
+        return "documentacion_mostrarMasivoTipo.html";
+    }
+
+    @GetMapping("/registrarMasivoTipoA")
+    public String registrarMasivoTipoA(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
+
+        return "documentacion_registrarMasivoTipoAcoplado.html";
+    }
+
+    @PostMapping("/registroMasivoTipoA")
+    public String registroMasivoTipoA(@RequestParam(required = false) Long tipoAcoplado,
+            @RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionAcoplado = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionAcopladoDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            Acoplado acoplado = acopladoServicio.buscarAcoplado(dto.getAcoplado());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAcoplado(acoplado);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+
+            d = documentacionServicio.crearDocumentacionMasivoTipo(d);
+
+            documentacionAcoplado.add(d);
+
+        }
+
+        for (Documentacion d : documentacionAcoplado) {
+            d.setEstado(d.getAcoplado().getDominio());
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
+        redirectAttributes.addFlashAttribute("tipoAcoplado", tipoAcoplado);
+
+        return "redirect:/documentacion/registradoMasivoTipoA";
+
+    }
+
+    @GetMapping("/registradoMasivoTipoA")
+    public String registradoMasivoTipoA(@ModelAttribute("documentacionA") List<Documentacion> documentacionA,
+            @ModelAttribute("tipoAcoplado") Long tipoAcoplado, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionA", documentacionA);
+        modelo.addAttribute("tipoAcoplado", tipoDocumentacionServicio.buscarTipo(tipoAcoplado));
+
+        return "documentacion_mostrarMasivoTipoAcoplado.html";
+    }
+
+    @GetMapping("/registrarMasivoTipoChofer")
+    public String registrarMasivoTipoChofer(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tiposChofer", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
+
+        return "documentacion_registrarMasivoTipoChofer.html";
+    }
+
+    @PostMapping("/registroMasivoTipoChofer")
+    public String registroMasivoTipoChofer(@RequestParam(required = false) Long tipoChofer, @RequestParam("documentacionChoferJson") String documentacionChoferJson,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionChoferDTO = Arrays.asList(mapper.readValue(documentacionChoferJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionChofer = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionChoferDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            Usuario chofer = choferServicio.buscarChofer(dto.getChofer());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setChofer(chofer);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+
+            d = documentacionServicio.crearDocumentacionMasivoTipo(d);
+
+            documentacionChofer.add(d);
+
+        }
+
+        for (Documentacion d : documentacionChofer) {
+            d.setEstado(d.getChofer().getNombre());
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionChofer", documentacionChofer);
+        redirectAttributes.addFlashAttribute("tipoChofer", tipoChofer);
+
+        return "redirect:/documentacion/registradoMasivoTipoChofer";
+
+    }
+
+    @GetMapping("/registradoMasivoTipoChofer")
+    public String registradoMasivoTipoChofer(@ModelAttribute("documentacionChofer") List<Documentacion> documentacionChofer,
+            @ModelAttribute("tipoChofer") Long tipoChofer, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionChofer", documentacionChofer);
+        modelo.addAttribute("tipoChofer", tipoDocumentacionServicio.buscarTipo(tipoChofer));
+
+        return "documentacion_mostrarMasivoTipoChofer.html";
+
+    }
+
+    @GetMapping("/registrarMasivoAdmin")
+    public String registrarMasivoAdmin(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
+
+        return "documentacion_registrarMasivoAdmin.html";
+    }
+
+    @PostMapping("/registroMasivoAdmin")
+    public String registroMasivoAdmin(@RequestParam("documentacionChoferJson") String documentacionChoferJson,
+            @RequestParam(required = false) Long idChofer, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionChoferDTO = Arrays.asList(mapper.readValue(documentacionChoferJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionChofer = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionChoferDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            tipo.setId(dto.getTipoDocumentacion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+            Usuario chofer = choferServicio.buscarChofer(idChofer);
+            d.setChofer(chofer);
+
+            d = documentacionServicio.crearDocumentacionMasivo(d);
+
+            documentacionChofer.add(d);
+
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionC", documentacionChofer);
+
+        return "redirect:/documentacion/registradoMasivoAdmin";
+
+    }
+
+    @GetMapping("/registradoMasivoAdmin")
+    public String registradoMasivoAdmin(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionC", documentacionC);
+
+        return "documentacion_mostrarMasivoAdmin.html";
+    }
+
+    @GetMapping("/registrarMasivoChofer")
+    public String registrarMasivoChofer(ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.addAttribute("chofer", logueado);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
+
+        return "documentacion_registrarMasivoChofer.html";
+    }
+
+    @PostMapping("/registroMasivoChofer")
+    public String registroMasivoChofer(@RequestParam("documentacionChoferJson") String documentacionChoferJson,
+            @RequestParam(required = false) Long idChofer, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionChoferDTO = Arrays.asList(mapper.readValue(documentacionChoferJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionChofer = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionChoferDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            tipo.setId(dto.getTipoDocumentacion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+            d.setChofer(logueado);
+
+            d = documentacionServicio.crearDocumentacionMasivo(d);
+
+            documentacionChofer.add(d);
+
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionC", documentacionChofer);
+
+        return "redirect:/documentacion/registradoMasivoChofer";
+
+    }
+
+    @GetMapping("/registradoMasivoChofer")
+    public String registradoMasivoChofer(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo, HttpSession session) {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.put("chofer", logueado);
+        modelo.addAttribute("documentacionC", documentacionC);
+
+        return "documentacion_mostrarMasivoChofer.html";
+    }
+
+    @GetMapping("/registrarMasivoChoferCamion")
+    public String registrarMasivoChoferCamion(ModelMap modelo, HttpSession session) {
+
+        Usuario chofer = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.put("camion", chofer.getCamion());
+        modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
+
+        return "documentacion_registrarMasivoChoferCamion.html";
+
+    }
+
+    @PostMapping("/registroMasivoChoferCamion")
+    public String registroMasivoChoferCamion(@RequestParam("documentacionCamionJson") String documentacionCamionJson,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionCamion = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionCamionDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            tipo.setId(dto.getTipoDocumentacion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+            Camion camion = logueado.getCamion();
+            d.setCamion(camion);
+
+            d = documentacionServicio.crearDocumentacionMasivo(d);
+
+            documentacionCamion.add(d);
+
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
+
+        return "redirect:/documentacion/registradoMasivoChoferCamion";
+
+    }
+
+    @GetMapping("/registradoMasivoChoferCamion")
+    public String registradoMasivoChoferCamion(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionC", documentacionC);
+
+        return "documentacion_mostrarMasivoChoferCamion.html";
+    }
+
+    @GetMapping("/registrarMasivoChoferAcoplado")
+    public String registrarMasivoChoferAcoplado(ModelMap modelo, HttpSession session) {
+
+        Usuario chofer = (Usuario) session.getAttribute("usuariosession");
+
+        modelo.put("acoplado", chofer.getAcoplado());
+        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
+
+        return "documentacion_registrarMasivoChoferAcoplado.html";
+
+    }
+
+    @PostMapping("/registroMasivoChoferAcoplado")
+    public String registroMasivoChoferAcoplado(@RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
+            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
+
+        List<Documentacion> documentacionAcoplado = new ArrayList<>();
+        for (DocumentacionDTO dto : documentacionAcopladoDTO) {
+            Documentacion d = new Documentacion();
+            TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
+            tipo.setId(dto.getTipoDocumentacion());
+            String obsMayusculas = dto.getObservacion().toUpperCase();
+            d.setTipoDocumentacion(tipo);
+            d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(dto.getFechaAlta());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaAltaMenosUno = cal.getTime();
+            cal.setTime(dto.getFechaVencimiento());
+            cal.add(Calendar.DAY_OF_MONTH, -1);
+            Date fechaVencimientoMenosUno = cal.getTime();
+            d.setFechaAlta(fechaAltaMenosUno);
+            d.setFechaVencimiento(fechaVencimientoMenosUno);
+            d.setObservacion(obsMayusculas);
+            d.setEstado("VIGENTE");
+            d.setIdOrg(logueado.getIdOrg());
+            d.setUsuario(logueado);
+            Acoplado acoplado = logueado.getAcoplado();
+            d.setAcoplado(acoplado);
+
+            d = documentacionServicio.crearDocumentacionMasivo(d);
+
+            documentacionAcoplado.add(d);
+
+        }
+
+        redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
+
+        return "redirect:/documentacion/registradoMasivoChoferAcoplado";
+
+    }
+
+    @GetMapping("/registradoMasivoChoferAcoplado")
+    public String registradoMasivoChoferAcoplado(@ModelAttribute("documentacionA") List<Documentacion> documentacionA, ModelMap modelo) {
+
+        modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
+        modelo.addAttribute("documentacionA", documentacionA);
+
+        return "documentacion_mostrarMasivoChoferAcoplado.html";
+
+    }
+
     @GetMapping("/modificar/{id}")
     public String modificar(@PathVariable Long id, ModelMap modelo) {
-        
+
         Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
-        
-        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+
+        if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION) {
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
-        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+        } else if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO) {
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
         } else {
             modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
         }
-        
-            modelo.put("documentacion", documentacion);
-            modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
-            modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
 
-            return "documentacion_modificar.html";
+        modelo.put("documentacion", documentacion);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+
+        return "documentacion_modificar.html";
 
     }
-    
+
     @GetMapping("/modificar1")
     public String modificar1(@RequestParam Long id, @RequestParam TipoDocumentacion.AplicaA aplicaA, ModelMap modelo) throws ParseException {
-        
+
         Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
-        if(aplicaA != documentacion.getAplicaA()){
+        if (aplicaA != documentacion.getAplicaA()) {
             documentacion.setAplicaA(aplicaA);
         }
-        
-        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
+
+        if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION) {
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
-        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
+        } else if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO) {
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
         } else {
             modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
         }
-        
+
         modelo.put("documentacion", documentacion);
         modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
         modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
@@ -272,39 +716,40 @@ public class DocumentacionControlador {
 
     @PostMapping("/modifica")
     public String modifica(@RequestParam Long id, @RequestParam TipoDocumentacion.AplicaA aplicaA, @RequestParam Long idTipo, @RequestParam Long idEntidad,
-        @RequestParam String fechaAlta, @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException {
-        
+            @RequestParam String fechaAlta, @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException {
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         try {
             documentacionServicio.modificarDocumentacion(id, idTipo, aplicaA, idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
-            
+
             return "redirect:/documentacion/modificado/" + id;
-            
+
         } catch (MiException ex) {
-            
-        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
-        if(idTipo != documentacion.getTipoDocumentacion().getId()){
-            documentacion.setTipoDocumentacion(tipoDocumentacionServicio.buscarTipo(idTipo));
-        } if(aplicaA != documentacion.getAplicaA()){
-            documentacion.setAplicaA(aplicaA);
-        }
-        
-        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
-            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
-        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
-            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
-        } else {
-            modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
-        }
-        
-        modelo.put("documentacion", documentacion);
-        modelo.addAttribute("tipos",  tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
-        modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
-        modelo.put("error", ex.getMessage());
-        
-        return "documentacion_modificar.html";
-           
+
+            Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+            if (idTipo != documentacion.getTipoDocumentacion().getId()) {
+                documentacion.setTipoDocumentacion(tipoDocumentacionServicio.buscarTipo(idTipo));
+            }
+            if (aplicaA != documentacion.getAplicaA()) {
+                documentacion.setAplicaA(aplicaA);
+            }
+
+            if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION) {
+                modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(documentacion.getIdOrg()));
+            } else if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO) {
+                modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(documentacion.getIdOrg()));
+            } else {
+                modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(documentacion.getIdOrg()));
+            }
+
+            modelo.put("documentacion", documentacion);
+            modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+            modelo.addAttribute("aplicaA", TipoDocumentacion.AplicaA.values());
+            modelo.put("error", ex.getMessage());
+
+            return "documentacion_modificar.html";
+
         }
 
     }
@@ -312,73 +757,73 @@ public class DocumentacionControlador {
     @GetMapping("/modificado/{id}")
     public String modificado(@PathVariable Long id, ModelMap modelo) {
 
-            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
-            modelo.put("exito", "Documentación MODIFICADA con éxito");
+        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+        modelo.put("exito", "Documentación MODIFICADA con éxito");
 
-            return "documentacion_mostrar.html";        
+        return "documentacion_mostrar.html";
 
     }
-    
+
     @GetMapping("/modificarChofer/{id}")
     public String modificarChofer(@PathVariable Long id, ModelMap modelo) {
-        
-        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
-        
-            modelo.put("documentacion", documentacion);
-            modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
 
-            return "documentacion_modificarChofer.html";
+        Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
+
+        modelo.put("documentacion", documentacion);
+        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+
+        return "documentacion_modificarChofer.html";
 
     }
-    
+
     @PostMapping("/modificaChofer")
-    public String modificaChofer(@RequestParam Long id, @RequestParam Long idTipo, @RequestParam String fechaAlta, 
+    public String modificaChofer(@RequestParam Long id, @RequestParam Long idTipo, @RequestParam String fechaAlta,
             @RequestParam String fechaVencimiento, @RequestParam String observacion, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
 
         Documentacion documentacion = documentacionServicio.buscarDocumentacion(id);
-        
+
         try {
-        
-        Long idEntidad;
-            
-        if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION){
-            idEntidad = documentacion.getCamion().getId();
-        } else if(documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO){
-            idEntidad = documentacion.getAcoplado().getId();
-        } else {
-            idEntidad = documentacion.getChofer().getId();
-        }
-            
+
+            Long idEntidad;
+
+            if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.CAMION) {
+                idEntidad = documentacion.getCamion().getId();
+            } else if (documentacion.getAplicaA() == TipoDocumentacion.AplicaA.ACOPLADO) {
+                idEntidad = documentacion.getAcoplado().getId();
+            } else {
+                idEntidad = documentacion.getChofer().getId();
+            }
+
             documentacionServicio.modificarDocumentacion(id, idTipo, documentacion.getAplicaA(), idEntidad, fechaAlta, fechaVencimiento, observacion, logueado);
-            
+
             return "redirect:/documentacion/modificadoChofer/" + id;
-            
+
         } catch (MiException ex) {
-            
-        modelo.put("documentacion", documentacion);
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
-        modelo.put("error", ex.getMessage());
-        
-        return "documentacion_modificarChofer.html";
-           
+
+            modelo.put("documentacion", documentacion);
+            modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(documentacion.getIdOrg(), documentacion.getAplicaA()));
+            modelo.put("error", ex.getMessage());
+
+            return "documentacion_modificarChofer.html";
+
         }
 
     }
-    
+
     @GetMapping("/modificadoChofer/{id}")
     public String modificadoChofer(@PathVariable Long id, ModelMap modelo) {
 
-            modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
-            modelo.put("exito", "Documentación MODIFICADA con éxito");
+        modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
+        modelo.put("exito", "Documentación MODIFICADA con éxito");
 
-            return "documentacion_mostrarChofer.html";        
+        return "documentacion_mostrarChofer.html";
 
     }
-    
+
     @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Long id,ModelMap modelo) {
+    public String eliminar(@PathVariable Long id, ModelMap modelo) {
 
         modelo.put("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
 
@@ -389,163 +834,163 @@ public class DocumentacionControlador {
     public String elimina(@PathVariable Long id, ModelMap modelo) throws MiException {
 
         documentacionServicio.eliminarDocumentacion(id);
-        
+
         return "redirect:/documentacion/eliminado";
     }
-    
+
     @GetMapping("/eliminado")
     public String eliminado(ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
-        if(logueado.getRol().equalsIgnoreCase("CHOFER")){
-            
+
+        if (logueado.getRol().equalsIgnoreCase("CHOFER")) {
+
             modelo.put("chofer", logueado);
             modelo.put("exito", "Documentación ELIMINADO con éxito");
 
             return "index_chofer.html";
-            
+
         } else {
 
-        modelo.put("exito", "Documentacion ELIMINADA con éxito");
+            modelo.put("exito", "Documentacion ELIMINADA con éxito");
 
-        return "documentacion_listarAdmin.html";
-        
+            return "documentacion_listarAdmin.html";
+
         }
     }
-    
+
     @GetMapping("/listarChofer/{id}")
     public String listarChofer(@PathVariable Long id, ModelMap modelo) {
-        
+
         Usuario chofer = choferServicio.buscarChofer(id);
         Boolean flag = false;
-        if(chofer.getDocumentacion().equalsIgnoreCase("SI")){
+        if (chofer.getDocumentacion().equalsIgnoreCase("SI")) {
             flag = true;
         }
-        
+
         modelo.put("flag", flag);
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdChofer(id));
         modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
-        
+
         return "documentacion_listarChofer.html";
-        
+
     }
-    
+
     @GetMapping("/camionChofer")
     public String camionChofer(ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-       
+
         Boolean flag = false;
-        if(logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getCamion() != null ) {
+        if (logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getCamion() != null) {
             flag = true;
         }
-        
-        if(logueado.getCamion() != null){
-            
+
+        if (logueado.getCamion() != null) {
+
             modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
             modelo.put("camion", logueado.getCamion());
             modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdCamion(logueado.getCamion().getId()));
             modelo.put("flag", flag);
             modelo.put("aplica", TipoDocumentacion.AplicaA.CAMION);
-            
+
             return "documentacion_listarCamionChofer.html";
-            
+
         } else {
-        
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        
-        return "documentacion_listarCamionesChofer.html";
-        
+
+            modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
+
+            return "documentacion_listarCamionesChofer.html";
+
         }
-        
+
     }
-    
+
     @GetMapping("/listarCamionChofer")
     public String listarCamionChofer(@RequestParam Long idCamion, ModelMap modelo) {
-        
+
         Camion camion = camionServicio.buscarCamion(idCamion);
-        
+
         modelo.put("camion", camion);
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(camion.getIdOrg()));
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdCamion(idCamion));
-        
+
         return "documentacion_listarCamionChofer.html";
     }
-    
+
     @GetMapping("/acopladoChofer")
     public String acopladoChofer(ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
+
         Boolean flag = false;
-        if(logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getAcoplado() != null ) {
+        if (logueado.getDocumentacion().equalsIgnoreCase("SI") && logueado.getAcoplado() != null) {
             flag = true;
         }
-        
-        if(logueado.getCamion() != null && logueado.getCamion().getAcoplado() != null){
-       
-        modelo.put("acoplado", logueado.getCamion().getAcoplado());
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(logueado.getCamion().getAcoplado().getId()));
-        modelo.put("flag", flag);
-        modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
-        
-        return "documentacion_listarAcopladoChofer.html";
-        
+
+        if (logueado.getCamion() != null && logueado.getCamion().getAcoplado() != null) {
+
+            modelo.put("acoplado", logueado.getCamion().getAcoplado());
+            modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
+            modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(logueado.getCamion().getAcoplado().getId()));
+            modelo.put("flag", flag);
+            modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
+
+            return "documentacion_listarAcopladoChofer.html";
+
         } else {
-            
+
             modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
             return "documentacion_listarAcopladosChofer.html";
-            
+
         }
-        
+
     }
-    
+
     @GetMapping("/listarAcopladoChofer")
     public String listarAcopladoChofer(@RequestParam Long idAcoplado, ModelMap modelo) {
-        
+
         Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
-        
+
         modelo.put("acoplado", acoplado);
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(acoplado.getIdOrg()));
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionIdAcoplado(idAcoplado));
-        
+
         return "documentacion_listarAcopladoChofer.html";
     }
-    
+
     @GetMapping("/listarAdmin")
     public String listarAdmin(@RequestParam(required = false) String mensaje, ModelMap modelo) {
-        
-        if(mensaje != null){
-        if(mensaje.equalsIgnoreCase("exito")){
-        modelo.put("exito", "Las imágenes se han cargado correctamente.");
-        } else if(mensaje.equalsIgnoreCase("error")){
-        modelo.put("error", "Ocurrió un error al procesar las imagenes. No han sido cargadas.");
+
+        if (mensaje != null) {
+            if (mensaje.equalsIgnoreCase("exito")) {
+                modelo.put("exito", "Las imágenes se han cargado correctamente.");
+            } else if (mensaje.equalsIgnoreCase("error")) {
+                modelo.put("error", "Ocurrió un error al procesar las imagenes. No han sido cargadas.");
+            }
         }
-        }
-        
+
         return "documentacion_listarAdmin.html";
-        
+
     }
-    
+
     @GetMapping("/listarAdminVencimiento")
     public String listarAdminVencimiento(ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         int dias = 30;
         Boolean flag = false;
-        
+
         List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
-        if(!documentaciones.isEmpty()){
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
+        if (!documentaciones.isEmpty()) {
             flag = true;
         }
-        
+
         modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
         modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
@@ -553,23 +998,23 @@ public class DocumentacionControlador {
         modelo.put("dias", dias);
         modelo.put("flag", flag);
         modelo.put("ninguno", 0L);
-        
+
         return "documentacion_listarAdminVencimiento.html";
-        
+
     }
-    
+
     @PostMapping("/listarAdminVencimientoFiltro")
     public String listarAdminVencimientoFiltro(@RequestParam int dias, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
             @RequestParam(required = false) Long idChofer, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
         List<Documentacion> documentaciones = new ArrayList<>();
-        
-        if((idCamion != null && idCamion == 0L) || (idAcoplado != null && idAcoplado == 0L) || (idChofer != null && idChofer == 0L)){
-            
+
+        if ((idCamion != null && idCamion == 0L) || (idAcoplado != null && idAcoplado == 0L) || (idChofer != null && idChofer == 0L)) {
+
             documentaciones = documentacionServicio.obtenerDocumentacionesPorVencerFiltro(logueado.getIdOrg(), dias, idCamion, idAcoplado, idChofer);
-            
+
         } else if (idCamion == null && idAcoplado == null && idChofer == null) {
 
             documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
@@ -591,7 +1036,7 @@ public class DocumentacionControlador {
                 modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
 
             }
-            
+
             if (idChofer != null) {
 
                 List<Documentacion> documentacionesCh = documentacionServicio.obtenerDocumentacionesPorVencerChofer(idChofer, dias);
@@ -735,29 +1180,29 @@ public class DocumentacionControlador {
         return "documentacion_listarAdminCamiones.html";
 
     }
-    
+
     @GetMapping("/listarAdminCamion")
     public String listarAdminCamion(@RequestParam Long id, @RequestParam(required = false) Long idCamion, ModelMap modelo) {
-        
+
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
         modelo.put("idCamion", idCamion);
-        
+
         return "documentacion_listarAdminCamion.html";
-        
+
     }
-    
+
     @GetMapping("/listarAdminAcoplados")
     public String listarAdminAcoplados(ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
-        
+
         List<Documentacion> documentaciones = new ArrayList();
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.ACOPLADO);
         modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
@@ -769,15 +1214,15 @@ public class DocumentacionControlador {
         modelo.put("flag", flag);
         modelo.put("seleccioneA", "seleccione");
         modelo.put("seleccioneT", "seleccione");
-        
+
         return "documentacion_listarAdminAcoplados.html";
-        
+
     }
-    
+
     @PostMapping("/listarAdminAcopladosFiltro")
     public String listarAdminAcopladosFiltro(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
-       Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
         List<Documentacion> documentaciones = new ArrayList();
 
@@ -851,32 +1296,32 @@ public class DocumentacionControlador {
         modelo.put("flag", flag);
         modelo.put("idAcoplado", idAcoplado);
         modelo.put("idTipo", idTipo);
-        
+
         return "documentacion_listarAdminAcoplados.html";
-        
+
     }
-    
+
     @GetMapping("/listarAdminAcoplado")
     public String listarAdminAcoplado(@RequestParam Long id, @RequestParam(required = false) Long idAcoplado, ModelMap modelo) {
-        
+
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
         modelo.put("idAcoplado", idAcoplado);
-        
+
         return "documentacion_listarAdminAcoplado.html";
-        
+
     }
-    
+
     @GetMapping("/listarAdminChoferes")
     public String listarAdminChoferes(ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
-        
+
         List<Documentacion> documentaciones = new ArrayList();
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
 
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("aplica", TipoDocumentacion.AplicaA.CHOFER);
@@ -889,14 +1334,14 @@ public class DocumentacionControlador {
         modelo.put("flag", flag);
         modelo.put("seleccioneC", "seleccione");
         modelo.put("seleccioneT", "seleccione");
-        
+
         return "documentacion_listarAdminChoferes.html";
-        
+
     }
-    
+
     @PostMapping("/listarAdminChoferesFiltro")
     public String listarAdminChoferesFiltro(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         Boolean flag = false;
         List<Documentacion> documentaciones = new ArrayList();
@@ -971,598 +1416,50 @@ public class DocumentacionControlador {
         modelo.put("flag", flag);
         modelo.put("idChofer", idChofer);
         modelo.put("idTipo", idTipo);
-        
+
         return "documentacion_listarAdminChoferes.html";
-        
+
     }
-    
+
     @GetMapping("/listarAdminChofer")
     public String listarAdminChofer(@RequestParam Long id, @RequestParam(required = false) Long idChofer, ModelMap modelo) {
-        
+
         modelo.addAttribute("documentacion", documentacionServicio.buscarDocumentacionDiasVigencia(id));
         modelo.put("idChofer", idChofer);
-        
+
         return "documentacion_listarAdminChofer.html";
-        
-    }
-    
-    @GetMapping("/registrarMasivo")
-    public String registrarMasivo(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
-        
-        return "documentacion_registrarMasivo.html"; 
-    }
-    
-    @PostMapping("/registroMasivo")
-    public String registroMasivo(@RequestParam("documentacionCamionJson") String documentacionCamionJson, @RequestParam Long idCamion,
-    ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    
-    List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionCamion = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionCamionDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    tipo.setId(dto.getTipoDocumentacion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    Camion camion = camionServicio.buscarCamion(idCamion);
-    d.setCamion(camion);
-            
-    d = documentacionServicio.crearDocumentacionMasivo(d);
-    
-    documentacionCamion.add(d);
-    
-    }
-    
-        redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
-    
-        return "redirect:/documentacion/registradoMasivo";
-        
-    }
-    
-    @GetMapping("/registradoMasivo")
-    public String registradoMasivo(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
-
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionC", documentacionC);
-        
-        return "documentacion_mostrarMasivo.html";
-    }
-    
-    @GetMapping("/registrarMasivoA")
-    public String registrarMasivoA(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
-        
-        return "documentacion_registrarMasivoAcoplado.html"; 
-    }
-    
-    @PostMapping("/registroMasivoA")
-    public String registroMasivoA(@RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson, @RequestParam(required = false) Long idAcoplado,
-    ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-
-    List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionAcoplado = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionAcopladoDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    tipo.setId(dto.getTipoDocumentacion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    Acoplado acoplado = acopladoServicio.buscarAcoplado(idAcoplado);
-    d.setAcoplado(acoplado);
-            
-    d = documentacionServicio.crearDocumentacionMasivo(d);
-
-    documentacionAcoplado.add(d);
-    
-    }
-
-    redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
-
-    return "redirect:/documentacion/registradoMasivoA";
 
     }
-    
-    @GetMapping("/registradoMasivoA")
-        public String registradoMasivoA(@ModelAttribute("documentacionA") List<Documentacion> documentacionA, ModelMap modelo) {
 
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionA", documentacionA);
-        
-        return "documentacion_mostrarMasivoAcoplado.html";
-    }
-    
-    
-    @GetMapping("/registrarMasivoTipo")
-    public String registrarMasivoTipo(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.addAttribute("camiones", camionServicio.buscarCamionesHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
-        
-        return "documentacion_registrarMasivoTipo.html"; 
-    }
-    
-    @PostMapping("/registroMasivoTipo")
-    public String registroMasivoTipo(@RequestParam(required = false) Long tipoCamion,
-            @RequestParam("documentacionCamionJson") String documentacionCamionJson,
-            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-        
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    
-    List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionCamion = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionCamionDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    Camion camion = camionServicio.buscarCamion(dto.getCamion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setCamion(camion);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    
-    d = documentacionServicio.crearDocumentacionMasivoTipo(d);
-    
-    documentacionCamion.add(d);
-    
-    }
-    
-    for(Documentacion d : documentacionCamion){
-        d.setEstado(d.getCamion().getDominio());
-    }
-
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
-    redirectAttributes.addFlashAttribute("tipoCamion", tipoCamion);
-
-    return "redirect:/documentacion/registradoMasivoTipo";
-
-    }
-    
-    @GetMapping("/registradoMasivoTipo")
-    public String registradoMasivoTipo(@ModelAttribute("documentacionC") List<Documentacion> documentacionC,  
-            @ModelAttribute("tipoCamion") Long tipoCamion, ModelMap modelo) {
-        
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionC", documentacionC);
-         modelo.addAttribute("tipoCamion", tipoDocumentacionServicio.buscarTipo(tipoCamion));
-        
-        return "documentacion_mostrarMasivoTipo.html";
-    }
-    
-    @GetMapping("/registrarMasivoTipoA")
-    public String registrarMasivoTipoA(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        modelo.addAttribute("acoplados", acopladoServicio.buscarAcopladosHabAsc(logueado.getIdOrg()));
-        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
-        
-        return "documentacion_registrarMasivoTipoAcoplado.html"; 
-    }
-    
-    @PostMapping("/registroMasivoTipoA")
-    public String registroMasivoTipoA(@RequestParam(required = false) Long tipoAcoplado,
-            @RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
-            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-        
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-
-    List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionAcoplado = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionAcopladoDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    Acoplado acoplado = acopladoServicio.buscarAcoplado(dto.getAcoplado());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAcoplado(acoplado);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    
-    d = documentacionServicio.crearDocumentacionMasivoTipo(d);
-    
-    documentacionAcoplado.add(d);
-    
-    }
-    
-    for(Documentacion d : documentacionAcoplado){
-        d.setEstado(d.getAcoplado().getDominio());
-    }
-
-    redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
-    redirectAttributes.addFlashAttribute("tipoAcoplado", tipoAcoplado);
-
-    return "redirect:/documentacion/registradoMasivoTipoA";
-
-    }
-    
-    @GetMapping("/registradoMasivoTipoA")
-    public String registradoMasivoTipoA(@ModelAttribute("documentacionA") List<Documentacion> documentacionA,  
-        @ModelAttribute("tipoAcoplado") Long tipoAcoplado, ModelMap modelo) {
-        
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionA", documentacionA);
-         modelo.addAttribute("tipoAcoplado", tipoDocumentacionServicio.buscarTipo(tipoAcoplado));
-        
-        return "documentacion_mostrarMasivoTipoAcoplado.html";
-    }
-    
-    @GetMapping("/registrarMasivoTipoChofer")
-    public String registrarMasivoTipoChofer(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
-        modelo.addAttribute("tiposChofer", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
-        
-        return "documentacion_registrarMasivoTipoChofer.html"; 
-    }
-    
-    @PostMapping("/registroMasivoTipoChofer")
-    public String registroMasivoTipoChofer(@RequestParam(required = false) Long tipoChofer, @RequestParam("documentacionChoferJson") String documentacionChoferJson, 
-            ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-        
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    
-    List<DocumentacionDTO> documentacionChoferDTO = Arrays.asList(mapper.readValue(documentacionChoferJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionChofer = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionChoferDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    Usuario chofer = choferServicio.buscarChofer(dto.getChofer());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setChofer(chofer);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    
-    d = documentacionServicio.crearDocumentacionMasivoTipo(d);
-    
-    documentacionChofer.add(d);
-    
-    }
-    
-    for(Documentacion d : documentacionChofer){
-        d.setEstado(d.getChofer().getNombre());
-    }
-    
-    redirectAttributes.addFlashAttribute("documentacionChofer", documentacionChofer);
-    redirectAttributes.addFlashAttribute("tipoChofer", tipoChofer);
-    
-    return "redirect:/documentacion/registradoMasivoTipoChofer";
-    
-    }
-    
-    @GetMapping("/registradoMasivoTipoChofer")
-    public String registradoMasivoTipoChofer(@ModelAttribute("documentacionChofer") List<Documentacion> documentacionChofer,
-        @ModelAttribute("tipoChofer") Long tipoChofer, ModelMap modelo) {
-        
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionChofer", documentacionChofer);
-         modelo.addAttribute("tipoChofer", tipoDocumentacionServicio.buscarTipo(tipoChofer));
-        
-        return "documentacion_mostrarMasivoTipoChofer.html";
-        
-    }
-    
-    @GetMapping("/registrarMasivoAdmin")
-    public String registrarMasivoAdmin(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.addAttribute("choferes", choferServicio.bucarChoferesHabNombreAsc(logueado.getIdOrg()));
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
-        
-        return "documentacion_registrarMasivoAdmin.html"; 
-    }
-    
-    @PostMapping("/registroMasivoAdmin")
-    public String registroMasivoAdmin(@RequestParam("documentacionChoferJson") String documentacionChoferJson,
-    @RequestParam(required = false) Long idChofer, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    
-    List<DocumentacionDTO> documentacionChoferDTO = Arrays.asList(mapper.readValue(documentacionChoferJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionChofer = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionChoferDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    tipo.setId(dto.getTipoDocumentacion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    Usuario chofer = choferServicio.buscarChofer(idChofer);
-    d.setChofer(chofer);
-            
-    d = documentacionServicio.crearDocumentacionMasivo(d);
-        
-    documentacionChofer.add(d);
-    }
-    
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionChofer);
-
-    return "redirect:/documentacion/registradoMasivoAdmin";
-
-   }
-    @GetMapping("/registradoMasivoAdmin")
-    public String registradoMasivoAdmin(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
-
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionC", documentacionC);
-        
-        return "documentacion_mostrarMasivoAdmin.html";
-    }
-
-    
-    
-     @GetMapping("/registrarMasivoChofer")
-    public String registrarMasivoChofer(ModelMap modelo, HttpSession session) {
-
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.addAttribute("chofer", logueado);
-        modelo.addAttribute("tipos", tipoDocumentacionServicio.buscarTiposAplicaA(logueado.getIdOrg(), TipoDocumentacion.AplicaA.CHOFER));
-        
-        return "documentacion_registrarMasivoChofer.html"; 
-    }
-    
-    @PostMapping("/registroMasivoChofer")
-    public String registroMasivoChofer(@RequestParam("documentacionChoferJson") String documentacionChoferJson,
-    @RequestParam(required = false) Long idChofer, ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    
-    List<DocumentacionDTO> documentacionChoferDTO = Arrays.asList(mapper.readValue(documentacionChoferJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionChofer = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionChoferDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    tipo.setId(dto.getTipoDocumentacion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    d.setChofer(logueado);
-            
-    d = documentacionServicio.crearDocumentacionMasivo(d);
-
-    documentacionChofer.add(d);
-    
-    }
-    
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionChofer);
-
-    return "redirect:/documentacion/registradoMasivoChofer";
-
-}
-    @GetMapping("/registradoMasivoChofer")
-    public String registradoMasivoChofer(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo, HttpSession session) {
-        
-        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.put("chofer", logueado);
-         modelo.addAttribute("documentacionC", documentacionC);
-        
-        return "documentacion_mostrarMasivoChofer.html";
-    }
-    
-    @GetMapping("/registrarMasivoChoferCamion")
-    public String registrarMasivoChoferCamion(ModelMap modelo, HttpSession session) {
-        
-        Usuario chofer = (Usuario) session.getAttribute("usuariosession");
-        
-        modelo.put("camion", chofer.getCamion());
-        modelo.addAttribute("tiposCamion", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.CAMION));
-        
-        return "documentacion_registrarMasivoChoferCamion.html"; 
-        
-    }
-    
-    @PostMapping("/registroMasivoChoferCamion")
-    public String registroMasivoChoferCamion(@RequestParam("documentacionCamionJson") String documentacionCamionJson,
-    ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-    
-    List<DocumentacionDTO> documentacionCamionDTO = Arrays.asList(mapper.readValue(documentacionCamionJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionCamion = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionCamionDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    tipo.setId(dto.getTipoDocumentacion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    Camion camion = logueado.getCamion();
-    d.setCamion(camion);
-            
-    d = documentacionServicio.crearDocumentacionMasivo(d);
-    
-    documentacionCamion.add(d);
-    
-    }
-    
-    redirectAttributes.addFlashAttribute("documentacionC", documentacionCamion);
-
-    return "redirect:/documentacion/registradoMasivoChoferCamion";
-
-}
-    
-    @GetMapping("/registradoMasivoChoferCamion")
-    public String registradoMasivoChoferCamion(@ModelAttribute("documentacionC") List<Documentacion> documentacionC, ModelMap modelo) {
-        
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionC", documentacionC);
-        
-        return "documentacion_mostrarMasivoChoferCamion.html";
-    }
-    
-     @GetMapping("/registrarMasivoChoferAcoplado")
-    public String registrarMasivoChoferAcoplado(ModelMap modelo, HttpSession session) {
-        
-        Usuario chofer = (Usuario) session.getAttribute("usuariosession");
-
-        modelo.put("acoplado", chofer.getAcoplado());
-        modelo.addAttribute("tiposAcoplado", tipoDocumentacionServicio.buscarTiposAplicaA(chofer.getIdOrg(), TipoDocumentacion.AplicaA.ACOPLADO));
-        
-        return "documentacion_registrarMasivoChoferAcoplado.html"; 
-        
-    }
-    
-    @PostMapping("/registroMasivoChoferAcoplado")
-    public String registroMasivoChoferAcoplado(@RequestParam("documentacionAcopladoJson") String documentacionAcopladoJson,
-    ModelMap modelo, RedirectAttributes redirectAttributes, HttpSession session) throws JsonProcessingException, ParseException {
-    
-    Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-    ObjectMapper mapper = new ObjectMapper();
-
-    List<DocumentacionDTO> documentacionAcopladoDTO = Arrays.asList(mapper.readValue(documentacionAcopladoJson, DocumentacionDTO[].class));
-    
-    List<Documentacion> documentacionAcoplado = new ArrayList<>();
-    for (DocumentacionDTO dto : documentacionAcopladoDTO) {
-    Documentacion d = new Documentacion();
-    TipoDocumentacion tipo = tipoDocumentacionServicio.buscarTipo(dto.getTipoDocumentacion());
-    tipo.setId(dto.getTipoDocumentacion());
-    String obsMayusculas = dto.getObservacion().toUpperCase();
-    d.setTipoDocumentacion(tipo);
-    d.setAplicaA(TipoDocumentacion.AplicaA.valueOf(dto.getAplicaA()));
-    d.setFechaAlta(dto.getFechaAlta());
-    d.setFechaVencimiento(dto.getFechaVencimiento());
-    d.setObservacion(obsMayusculas);
-    d.setEstado("VIGENTE");
-    d.setIdOrg(logueado.getIdOrg());
-    d.setUsuario(logueado);
-    Acoplado acoplado = logueado.getAcoplado();
-    d.setAcoplado(acoplado);
-        
-    d = documentacionServicio.crearDocumentacionMasivo(d);
-
-    documentacionAcoplado.add(d);
-    
-    }
-
-    redirectAttributes.addFlashAttribute("documentacionA", documentacionAcoplado);
-
-    return "redirect:/documentacion/registradoMasivoChoferAcoplado";
-
-}
-    
-    @GetMapping("/registradoMasivoChoferAcoplado")
-    public String registradoMasivoChoferAcoplado(@ModelAttribute("documentacionA") List<Documentacion> documentacionA, ModelMap modelo) {
-        
-         modelo.put("exito", "La carga de Documentación se ha REGISTRADO con éxito");
-         modelo.addAttribute("documentacionA", documentacionA);
-        
-        return "documentacion_mostrarMasivoChoferAcoplado.html";
-        
-    }
-    
-    
-      @PostMapping("/exportarVencimiento")
+    @PostMapping("/exportarVencimiento")
     public String exportarVencimiento(@RequestParam Integer dias, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
-        
+
         List<Documentacion> documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("dias", dias);
-        
+
         return "documentacion_exportarVencimientos.html";
 
     }
-    
-     @PostMapping("/exportaVencimiento")
+
+    @PostMapping("/exportaVencimiento")
     public void exportaVencimiento(@RequestParam int dias, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
             @RequestParam(required = false) Long idChofer, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList<>();
-        
-        if((idCamion != null && idCamion == 0L) || (idAcoplado != null && idAcoplado == 0L) || (idChofer != null && idChofer == 0L)){
-            
+
+        if ((idCamion != null && idCamion == 0L) || (idAcoplado != null && idAcoplado == 0L) || (idChofer != null && idChofer == 0L)) {
+
             documentaciones = documentacionServicio.obtenerDocumentacionesPorVencerFiltro(logueado.getIdOrg(), dias, idCamion, idAcoplado, idChofer);
-            
+
         } else if (idCamion == null && idAcoplado == null && idChofer == null) {
 
             documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
@@ -1582,7 +1479,7 @@ public class DocumentacionControlador {
                 documentaciones.addAll(documentacionesA);
 
             }
-            
+
             if (idChofer != null) {
 
                 List<Documentacion> documentacionesCh = documentacionServicio.obtenerDocumentacionesPorVencerChofer(idChofer, dias);
@@ -1593,27 +1490,27 @@ public class DocumentacionControlador {
         }
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
 
-            String htmlContent = generateHtmlFromObjects(documentacionPorTipo);
-            excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
+        String htmlContent = generateHtmlFromObjects(documentacionPorTipo);
+        excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
 
     }
-    
+
     @PostMapping("/exportarCamiones")
     public String exportarCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
 
-       Usuario logueado = (Usuario) session.getAttribute("usuariosession");
+        Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList();
 
         if (idCamion != null && idTipo == null) {
 
             documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
 
-        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
 
             modelo.put("documentacion", documentacionesPorTipo);
 
@@ -1622,9 +1519,9 @@ public class DocumentacionControlador {
             documentaciones = documentacionServicio.buscarDocumentacionCamionesIdTipo(logueado.getIdOrg(), idTipo);
 
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-            
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
             modelo.put("documentacion", documentacionesPorTipo);
 
         } else if (idCamion != null && idTipo != null) {
@@ -1632,18 +1529,18 @@ public class DocumentacionControlador {
             documentaciones = documentacionServicio.buscarDocumentacionCamionIdTipo(idCamion, idTipo);
 
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-            
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
             modelo.put("documentacion", documentacionesPorTipo);
 
         } else {
 
             documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
 
-        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
 
             modelo.put("documentacion", documentacionesPorTipo);
 
@@ -1651,12 +1548,12 @@ public class DocumentacionControlador {
 
         modelo.put("idCamion", idCamion);
         modelo.put("idTipo", idTipo);
-        
+
         return "documentacion_exportarCamiones.html";
 
     }
-    
-     @PostMapping("/exportaCamiones")
+
+    @PostMapping("/exportaCamiones")
     public void exportaCamion(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
@@ -1666,9 +1563,9 @@ public class DocumentacionControlador {
 
             documentaciones = documentacionServicio.buscarDocumentacionIdCamion(idCamion);
 
-        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
 
             String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
             excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
@@ -1678,9 +1575,9 @@ public class DocumentacionControlador {
             documentaciones = documentacionServicio.buscarDocumentacionCamionesIdTipo(logueado.getIdOrg(), idTipo);
 
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-            
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
             String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
             excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
 
@@ -1689,9 +1586,9 @@ public class DocumentacionControlador {
             documentaciones = documentacionServicio.buscarDocumentacionCamionIdTipo(idCamion, idTipo);
 
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-            
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
             String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
             excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
 
@@ -1699,19 +1596,19 @@ public class DocumentacionControlador {
 
             documentaciones = documentacionServicio.buscarDocumentacionCamiones(logueado.getIdOrg());
 
-        Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+            Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
+                    .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
 
             String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
             excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
 
         }
     }
-    
+
     @PostMapping("/exportarAcoplados")
     public String exportarAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList();
 
@@ -1756,15 +1653,15 @@ public class DocumentacionControlador {
             modelo.put("documentacion", documentacionesPorTipo);
 
         }
-        
+
         modelo.put("idAcoplado", idAcoplado);
         modelo.put("idTipo", idTipo);
-        
+
         return "documentacion_exportarAcoplados.html";
 
     }
-    
-     @PostMapping("/exportaAcoplados")
+
+    @PostMapping("/exportaAcoplados")
     public void exportaAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
@@ -1817,10 +1714,10 @@ public class DocumentacionControlador {
         }
 
     }
-    
+
     @PostMapping("/exportarChoferes")
     public String exportarChoferes(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) throws ParseException {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList();
 
@@ -1851,7 +1748,7 @@ public class DocumentacionControlador {
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
                     .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
                     .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-            
+
             modelo.put("documentacion", documentacionesPorTipo);
 
         } else {
@@ -1868,12 +1765,12 @@ public class DocumentacionControlador {
 
         modelo.put("idChofer", idChofer);
         modelo.put("idTipo", idTipo);
-        
+
         return "documentacion_exportarChoferes.html";
 
     }
-    
-     @PostMapping("/exportaChoferes")
+
+    @PostMapping("/exportaChoferes")
     public void exportaChoferes(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, HttpSession session, HttpServletResponse response) throws IOException, ParseException {
 
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
@@ -1908,7 +1805,7 @@ public class DocumentacionControlador {
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
                     .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
                     .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-            
+
             String htmlContent = generateHtmlFromObjects(documentacionesPorTipo);
             excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
 
@@ -1924,10 +1821,10 @@ public class DocumentacionControlador {
             excelServicio.exportHtmlToExcelDocumentacion(htmlContent, response);
 
         }
-        
+
     }
-    
-        private String generateHtmlFromObjects(Map<String, List<Documentacion>> objects) {
+
+    private String generateHtmlFromObjects(Map<String, List<Documentacion>> objects) {
         StringBuilder sb = new StringBuilder();
         sb.append("<table>");
         sb.append("<thead><tr>"
@@ -1945,9 +1842,9 @@ public class DocumentacionControlador {
             for (Documentacion documento : documentos) {
                 String dominio = "";
                 if (documento.getAcoplado() != null) {
-                    dominio = documento.getAcoplado().getDominio()+' '+documento.getAcoplado().getMarca()+' '+documento.getAcoplado().getModelo();
+                    dominio = documento.getAcoplado().getDominio() + ' ' + documento.getAcoplado().getMarca() + ' ' + documento.getAcoplado().getModelo();
                 } else if (documento.getCamion() != null) {
-                    dominio = documento.getCamion().getDominio()+' '+documento.getCamion().getMarca()+' '+documento.getCamion().getModelo();
+                    dominio = documento.getCamion().getDominio() + ' ' + documento.getCamion().getMarca() + ' ' + documento.getCamion().getModelo();
                 } else if (documento.getChofer() != null) {
                     dominio = documento.getChofer().getNombre();
                 }
@@ -1964,10 +1861,10 @@ public class DocumentacionControlador {
         sb.append("</tbody></table>");
         return sb.toString();
     }
-        
+
     @GetMapping("/imprimirCamiones")
     public String imprimirCamiones(@RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList();
 
@@ -1989,7 +1886,6 @@ public class DocumentacionControlador {
             Map<String, List<Documentacion>> documentacionesPorTipo = documentaciones.stream()
                     .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
                     .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-
 
             modelo.put("documentacion", documentacionesPorTipo);
 
@@ -2015,15 +1911,15 @@ public class DocumentacionControlador {
             modelo.put("documentacion", documentacionesPorTipo);
 
         }
-        
+
         modelo.put("idCamion", idCamion);
 
         return "documentacion_imprimirCamiones.html";
     }
-    
+
     @GetMapping("/imprimirAcoplados")
     public String imprimirAcoplados(@RequestParam(required = false) Long idAcoplado, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList();
 
@@ -2070,15 +1966,15 @@ public class DocumentacionControlador {
             modelo.put("documentacion", documentacionesPorTipo);
 
         }
-        
+
         modelo.put("idAcoplado", idAcoplado);
 
         return "documentacion_imprimirAcoplados.html";
     }
-    
+
     @GetMapping("/imprimirChoferes")
     public String imprimirChoferes(@RequestParam(required = false) Long idChofer, @RequestParam(required = false) Long idTipo, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList();
 
@@ -2125,24 +2021,24 @@ public class DocumentacionControlador {
             modelo.put("documentacion", documentacionesPorTipo);
 
         }
-        
+
         modelo.put("idChofer", idChofer);
         modelo.put("idTipo", idTipo);
 
         return "documentacion_imprimirChoferes.html";
     }
-    
+
     @GetMapping("/imprimirVencimiento")
     public String imprimirVencimiento(@RequestParam int dias, @RequestParam(required = false) Long idCamion, @RequestParam(required = false) Long idAcoplado,
             @RequestParam(required = false) Long idChofer, ModelMap modelo, HttpSession session) {
-        
+
         Usuario logueado = (Usuario) session.getAttribute("usuariosession");
         List<Documentacion> documentaciones = new ArrayList<>();
-        
-        if((idCamion != null && idCamion == 0L) || (idAcoplado != null && idAcoplado == 0L) || (idChofer != null && idChofer == 0L)){
-            
+
+        if ((idCamion != null && idCamion == 0L) || (idAcoplado != null && idAcoplado == 0L) || (idChofer != null && idChofer == 0L)) {
+
             documentaciones = documentacionServicio.obtenerDocumentacionesPorVencerFiltro(logueado.getIdOrg(), dias, idCamion, idAcoplado, idChofer);
-            
+
         } else if (idCamion == null && idAcoplado == null && idChofer == null) {
 
             documentaciones = documentacionServicio.obtenerDocumentacionesPorVencer(logueado.getIdOrg(), dias);
@@ -2164,7 +2060,7 @@ public class DocumentacionControlador {
                 modelo.put("acoplado", acopladoServicio.buscarAcoplado(idAcoplado));
 
             }
-            
+
             if (idChofer != null) {
 
                 List<Documentacion> documentacionesCh = documentacionServicio.obtenerDocumentacionesPorVencerChofer(idChofer, dias);
@@ -2174,12 +2070,11 @@ public class DocumentacionControlador {
             }
 
         }
-        
 
         Map<String, List<Documentacion>> documentacionPorTipo = documentaciones.stream()
-    .sorted(Comparator.comparing(Documentacion::getDiasVigencia)) 
-    .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
-        
+                .sorted(Comparator.comparing(Documentacion::getDiasVigencia))
+                .collect(Collectors.groupingBy(doc -> doc.getTipoDocumentacion().getNombre()));
+
         modelo.put("documentacion", documentacionPorTipo);
         modelo.put("dias", dias);
 
@@ -2187,4 +2082,3 @@ public class DocumentacionControlador {
     }
 
 }
-

@@ -1,11 +1,15 @@
 package abate.abate.controladores;
 
+import abate.abate.entidades.Cheque.EstadoCheque;
 import abate.abate.entidades.CuentaBancaria;
 import abate.abate.entidades.CuentaBancaria.EstadoCuentaBancaria;
 import abate.abate.entidades.MovimientoValor;
+import abate.abate.entidades.MovimientoValor.TipoMovimientoValor;
+import abate.abate.entidades.TitularCheque;
 import abate.abate.entidades.Usuario;
 import abate.abate.servicios.CuentaBancariaServicio;
 import abate.abate.servicios.MovimientoValorServicio;
+import abate.abate.servicios.TitularChequeServicio;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import javax.servlet.http.HttpSession;
@@ -28,6 +32,8 @@ public class CuentaBancariaControlador {
     private CuentaBancariaServicio cuentaBancariaServicio;
     @Autowired
     private MovimientoValorServicio movimientoValorServicio;
+    @Autowired
+    private TitularChequeServicio titularServicio;
 
     @GetMapping("/listar")
     public String cuentaBancaria(@RequestParam(required = false, defaultValue = "HABILITADA") String estado,
@@ -73,23 +79,23 @@ public class CuentaBancariaControlador {
         modelo.addAttribute("lista", lista);
 
         modelo.addAttribute("orden", orden);
-        
+
         modelo.addAttribute("estado", estado);
 
         modelo.addAttribute("totalLimiteOperativo", totalLimiteOperativo);
 
         modelo.addAttribute("totalSaldoDisponible", totalSaldoDisponible);
-        
-        if (registrado == true){
-            
-        modelo.put("exito", "Cuenta bancaria registrada correctamente.");
-            
+
+        if (registrado == true) {
+
+            modelo.put("exito", "Cuenta bancaria registrada correctamente.");
+
         }
-        
-        if (actualizado == true){
-            
-        modelo.put("exito", "Cuenta bancaria actualizada correctamente.");
-            
+
+        if (actualizado == true) {
+
+            modelo.put("exito", "Cuenta bancaria actualizada correctamente.");
+
         }
 
         return "cuentaBancaria_listar.html";
@@ -136,7 +142,7 @@ public class CuentaBancariaControlador {
             cuenta.setEstado(estado);
 
             cuentaBancariaServicio.registrarCuentaBancaria(cuenta);
-            
+
             Boolean registrado = true;
 
             return "redirect:/cuentaBancaria/listar?&registrado=" + registrado;
@@ -177,8 +183,8 @@ public class CuentaBancariaControlador {
         try {
 
             cuentaBancariaServicio.modificarCuentaBancaria(id, banco, numeroCuenta, limiteOperativo, estado);
-            
-             Boolean actualizado = true;
+
+            Boolean actualizado = true;
 
             return "redirect:/cuentaBancaria/listar?&actualizado=" + actualizado;
 
@@ -203,12 +209,47 @@ public class CuentaBancariaControlador {
 
         ArrayList<MovimientoValor> movimientos = movimientoValorServicio.buscarMovimientosCuenta(cuenta);
 
-        modelo.addAttribute("cuenta", cuenta);
+        BigDecimal totalPendienteLiberar = cuenta.getLimiteOperativo().subtract(cuenta.getSaldoDisponible());
 
+        modelo.addAttribute("cuenta", cuenta);
         modelo.addAttribute("movimientos", movimientos);
+        modelo.addAttribute("totalPendiente", totalPendienteLiberar);
+        modelo.addAttribute("titulares", titularServicio.buscarTitularesHabilitados(cuenta.getIdOrg()));
 
         return "cuentaBancaria_movimiento.html";
 
     }
+    
+    @GetMapping("/movimiento/titular")
+    public String movimientosCuentaPorTitular(@RequestParam Long idCuenta,
+        @RequestParam Long idTitular, ModelMap modelo) throws Exception {
+
+    CuentaBancaria cuenta = cuentaBancariaServicio.buscarPorId(idCuenta);
+
+    if (cuenta == null) {
+        throw new Exception("Cuenta bancaria no encontrada.");
+    }
+
+    TitularCheque titular = titularServicio.buscarPorId(idTitular);
+
+    if (titular == null) {
+        throw new Exception("Titular no encontrado.");
+    }
+
+    ArrayList<MovimientoValor> movimientos = movimientoValorServicio.buscarVentasPendientesPorCuentaYTitular(cuenta, titular);
+
+   BigDecimal totalTitularPendiente = BigDecimal.ZERO;
+
+   for (MovimientoValor m : movimientos) {
+    totalTitularPendiente = totalTitularPendiente.add(m.getImporte());
+   }
+
+    modelo.addAttribute("movimientos", movimientos);
+    modelo.addAttribute("titular", titular);
+    modelo.addAttribute("cuenta", cuenta);
+    modelo.addAttribute("totalPendiente", totalTitularPendiente);
+
+    return "fragmentos/cuentaBancaria_chequesVendidos :: resultados";
+}
 
 }

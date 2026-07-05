@@ -280,11 +280,11 @@
 
                                     <th>Importe</th>
 
-                                    <th>Vencimiento</th>
+                                    <th>Acreditación</th>
 
                                     <th>Estado</th>
 
-                                    <th>Cuenta</th>
+                                    <th>Cuenta Bancaria</th>
 
                                     <th class="text-center">
                                         Acción
@@ -311,7 +311,7 @@
 
                                     <!-- TITULAR -->
 
-                                    <td th:text="${c.titular}">
+                                    <td th:text="${c.titularEmisor.nombre}">
                                     </td>
 
                                     <!-- IMPORTE -->
@@ -326,7 +326,7 @@
 
                                     <!-- VENCIMIENTO -->
 
-                                    <td th:text="${#dates.format(c.fechaVencimiento,'dd/MM/yyyy')}">
+                                    <td th:text="${#dates.format(c.fechaAcreditacion,'dd/MM/yyyy')}">
                                     </td>
 
                                     <!-- ESTADO -->
@@ -389,7 +389,7 @@
 
                                     <!-- ACCIONES -->
 
-                                    <td th:if="${c.estado.name() == 'EN_CARTERA'}" class="text-center">
+                                    <td th:if="${c.estado.name() == 'EN_CARTERA' || c.estado.name() == 'ANULADO'}" class="text-center">
 
                                         <a th:href="@{/cheque/modificar-cheque/{id}(id=${c.id})}"
                                            class="btn btn-sm btn-outline-primary"
